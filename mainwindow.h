@@ -108,7 +108,7 @@ private:
     UnitsOps dirigenteOp;
     Competenza *m_competenza;
     bool m_loadingTimeCards;
-    QProgressBar *timeCardReaderPB;
+    QProgressBar *progressBar;
     QLabel *msgLabel;
 
     QMenu *gdCalendarMenu;

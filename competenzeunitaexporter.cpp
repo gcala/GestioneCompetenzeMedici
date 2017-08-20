@@ -89,6 +89,8 @@ void CompetenzeUnitaExporter::run()
         unitaIdList << getUnitaIDs(m_idMese);
     }
 
+    emit totalRows(unitaIdList.count());
+
     fileName += ".pdf";
 
     QPdfWriter writer(m_path + QDir::separator() + fileName);
@@ -102,7 +104,11 @@ void CompetenzeUnitaExporter::run()
 
     bool isFileStart = true;
 
+    int currRow = 0;
+
     foreach (QString unitaId, unitaIdList) {
+        currRow++;
+        emit currentRow(currRow);
         if(!isFileStart)
             writer.newPage();
 

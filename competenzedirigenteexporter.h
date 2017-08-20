@@ -45,6 +45,8 @@ protected:
 
 signals:
       void exportFinished();
+      void totalRows(int);
+      void currentRow(int);
 
 private:
     const int m_maxPageWidth;

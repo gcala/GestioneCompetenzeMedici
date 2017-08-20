@@ -44,6 +44,8 @@ protected:
 
 signals:
       void exportFinished();
+      void totalRows(int);
+      void currentRow(int);
 
 private:
     QString m_path;

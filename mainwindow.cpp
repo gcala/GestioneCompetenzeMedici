@@ -40,13 +40,13 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    timeCardReaderPB = new QProgressBar(this);
-    timeCardReaderPB->setMinimumWidth(200);
+    progressBar = new QProgressBar(this);
+    progressBar->setMinimumWidth(200);
     msgLabel = new QLabel(this);
     msgLabel->setAlignment(Qt::AlignRight);
     statusBar()->addWidget(msgLabel,1);
-    statusBar()->addWidget(timeCardReaderPB);
-    timeCardReaderPB->setVisible(false);
+    statusBar()->addWidget(progressBar);
+    progressBar->setVisible(false);
 
     m_loadingTimeCards = false;
 
@@ -156,7 +156,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&worker, SIGNAL(totalRows(int)), this, SLOT(setTotalRows(int)));
     connect(&worker, SIGNAL(currentRow(int)), this, SLOT(setCurrentRow(int)));
     connect(&unitaCompetenzeExporter, SIGNAL(exportFinished()), this, SLOT(exported()));
+    connect(&unitaCompetenzeExporter, SIGNAL(totalRows(int)), this, SLOT(setTotalRows(int)));
+    connect(&unitaCompetenzeExporter, SIGNAL(currentRow(int)), this, SLOT(setCurrentRow(int)));
     connect(&dirigenteCompetenzeExporter, SIGNAL(exportFinished()), this, SLOT(exported()));
+    connect(&dirigenteCompetenzeExporter, SIGNAL(totalRows(int)), this, SLOT(setTotalRows(int)));
+    connect(&dirigenteCompetenzeExporter, SIGNAL(currentRow(int)), this, SLOT(setCurrentRow(int)));
 
     ui->tabWidget->setCurrentIndex(0);
     ui->tabWidget->show();
@@ -743,7 +747,8 @@ void MainWindow::on_actionCaricaCartellini_triggered()
         m_loadingTimeCards = true;
         worker.setFile(fileName);
         worker.start();
-        timeCardReaderPB->setVisible(true);
+        progressBar->setVisible(true);
+        msgLabel->setText("Importo i cartellini");
         ui->unitaTab->setEnabled(false);
         ui->dirigentiTab->setEnabled(false);
         ui->competenzeDirigenteTab->setEnabled(false);
@@ -752,7 +757,8 @@ void MainWindow::on_actionCaricaCartellini_triggered()
 
 void MainWindow::handleResults()
 {
-    timeCardReaderPB->setVisible(false);
+    progressBar->setVisible(false);
+    msgLabel->setText("");
     populateDirigentiCB();
 
     ui->unitaTab->setEnabled(true);
@@ -767,16 +773,18 @@ void MainWindow::exported()
 {
     ui->actionStampaCompetenzeUnita->setEnabled(true);
     ui->actionStampaCompetenzeDirigenti->setEnabled(true);
+    progressBar->setVisible(false);
+    msgLabel->setText("");
 }
 
 void MainWindow::setTotalRows(int value)
 {
-    timeCardReaderPB->setMaximum(value);
+    progressBar->setMaximum(value);
 }
 
 void MainWindow::setCurrentRow(int value)
 {
-    timeCardReaderPB->setValue(value);
+    progressBar->setValue(value);
 }
 
 void MainWindow::on_saveCompetenzeButton_clicked()
@@ -936,6 +944,9 @@ void MainWindow::on_actionStampaCompetenzeDirigenti_triggered()
     if(!printDialog->proceed)
         return;
 
+    progressBar->setVisible(true);
+    msgLabel->setText("Esportazione competenze dirigenti");
+
     dirigenteCompetenzeExporter.setPath(printDialog->path());
     dirigenteCompetenzeExporter.setMese(printDialog->currentMeseData());
     dirigenteCompetenzeExporter.setUnita(printDialog->currentUnitaData());
@@ -958,6 +969,9 @@ void MainWindow::on_actionStampaCompetenzeUnita_triggered()
 
     if(!printDialog->proceed)
         return;
+
+    progressBar->setVisible(true);
+    msgLabel->setText("Esportazione competenze unità");
 
     unitaCompetenzeExporter.setPath(printDialog->path());
     unitaCompetenzeExporter.setMese(printDialog->currentMeseData());
