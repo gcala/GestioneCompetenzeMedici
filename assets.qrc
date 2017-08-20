@@ -1,0 +1,26 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/configure.svg</file>
+        <file>icons/dialog-cancel.svg</file>
+        <file>icons/dialog-close.svg</file>
+        <file>icons/dialog-ok.svg</file>
+        <file>icons/document-edit.svg</file>
+        <file>icons/help-about-symbolic.svg</file>
+        <file>icons/help-donate.svg</file>
+        <file>icons/help-whatsthis.svg</file>
+        <file>icons/labplot-workbook-new.svg</file>
+        <file>icons/list-add.svg</file>
+        <file>icons/list-remove.svg</file>
+        <file>icons/logo.svg</file>
+        <file>icons/network-server-database.svg</file>
+        <file>icons/tools-report-bug.svg</file>
+        <file>icons/view-pim-news.svg</file>
+        <file>icons/view-calendar-month.svg</file>
+        <file>icons/kt-restore-defaults.svg</file>
+        <file>icons/view-process-users.svg</file>
+        <file>icons/list-add-user.svg</file>
+        <file>icons/view-bank.svg</file>
+        <file>icons/document-open.svg</file>
+        <file>images/sc_header.jpg</file>
+    </qresource>
+</RCC>
