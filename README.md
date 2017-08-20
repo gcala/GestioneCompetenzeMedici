@@ -1,5 +1,7 @@
 # Gestione Competenze Medici
 
+![preview](http://i.imgur.com/D65qGuA.png)
+
 Software per la gestione delle competenze dei Dirigenti Medici e delle Unità Operative dell'[Azienda Ospedaliera Regionale San Carlo di Potenza](http://www.ospedalesancarlo.it/).
 
 ## Installazione
