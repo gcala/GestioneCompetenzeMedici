@@ -22,5 +22,6 @@
         <file>icons/view-bank.svg</file>
         <file>icons/document-open.svg</file>
         <file>images/sc_header.jpg</file>
+        <file>icons/edit-copy.svg</file>
     </qresource>
 </RCC>

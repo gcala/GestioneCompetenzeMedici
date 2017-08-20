@@ -171,6 +171,7 @@ MainWindow::MainWindow(QWidget *parent) :
         QMessageBox::warning(this, "Nessun Database", "Nessun database configurato (primo avvio?)\nUsare il menu File per aprire un database esistente \no per crearne uno nuovo.");
         ui->unitaTB->setEnabled(false);
         ui->dirigenteTB->setEnabled(false);
+        ui->actionBackupDatabase->setEnabled(false);
         return;
     }
 
@@ -178,9 +179,11 @@ MainWindow::MainWindow(QWidget *parent) :
         QMessageBox::warning(this, "Il database non esiste", "L'ultimo file database usato non è stato trovato:\n" + currentDatabase.absoluteFilePath());
         ui->unitaTB->setEnabled(false);
         ui->dirigenteTB->setEnabled(false);
+        ui->actionBackupDatabase->setEnabled(false);
         return;
     }
 
+    needsBackup();
     connectToDatabase();
     populateUnitaCB();
     populateDirigentiCB();
@@ -227,6 +230,7 @@ void MainWindow::on_actionNuovoDatabase_triggered()
 
         populateUnitaCB();
         populateDirigentiCB();
+        ui->actionBackupDatabase->setEnabled(true);
     }
 }
 
@@ -612,8 +616,10 @@ void MainWindow::on_actionApriDatabase_triggered()
     // be sure that a valid path was selected
     if( QFile::exists( fileName ) ) {
         currentDatabase.setFile(fileName);
+        needsBackup();
         connectToDatabase();
         populateUnitaCB();
+        ui->actionBackupDatabase->setEnabled(true);
     }
 }
 
@@ -1007,4 +1013,45 @@ void MainWindow::altreCalendarClicked(const QDate &date)
     m_competenza->setAltreAssenze(altreCalendar->getDates());
     populateCompetenzeTab();
     ui->saveCompetenzeButton->setEnabled(m_competenza->isModded());
+}
+
+void MainWindow::on_actionBackupDatabase_triggered()
+{
+    backupDatabase(QTime::currentTime().toString("_hh:mm:ss"), false);
+}
+
+void MainWindow::backupDatabase(const QString &time, bool quiet)
+{
+    const QString fileName = backupFileName(time);
+    QDir backupDir(currentDatabase.absolutePath() + QDir::separator() + "backups");
+
+    if(!backupDir.exists()) {
+        if(!backupDir.mkdir(backupDir.absolutePath())) {
+            QMessageBox::critical(this, "Errore Backup", "Impossibile creare la cartella backups in " + currentDatabase.absolutePath(), QMessageBox::Ok);
+            return;
+        }
+    }
+
+    if(!QFile::copy(currentDatabase.absoluteFilePath(), fileName)) {
+        QMessageBox::critical(this, "Errore Backup", "Impossibile eseguire la copia di backup\n" + fileName, QMessageBox::Ok);
+    } else {
+        if(!quiet)
+            QMessageBox::information(this, "Backup Eseguito", "La copia di backup è stata eseguita:\n" + fileName, QMessageBox::Ok);
+    }
+}
+
+QString MainWindow::backupFileName(const QString &time) const
+{
+    QString fileName = currentDatabase.completeBaseName();
+
+    QDir backupDir(currentDatabase.absolutePath() + QDir::separator() + "backups");
+
+    return backupDir.absolutePath() + QDir::separator() + fileName + "_backup_" + QDate::currentDate().toString("yyyyMMdd") + time + ".db";
+}
+
+void MainWindow::needsBackup()
+{
+    if(!QFile::exists(backupFileName(""))) {
+        backupDatabase("", true);
+    }
 }

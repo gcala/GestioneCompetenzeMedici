@@ -95,6 +95,8 @@ private slots:
     void rCalendarClicked(const QDate &date);
     void altreCalendarClicked(const QDate &date);
 
+    void on_actionBackupDatabase_triggered();
+
 private:
     Ui::MainWindow *ui;
     bool unitaReadOnlyMode;
@@ -110,6 +112,7 @@ private:
     bool m_loadingTimeCards;
     QProgressBar *progressBar;
     QLabel *msgLabel;
+    bool m_isScheduledBackup;
 
     QMenu *gdCalendarMenu;
     CalendarManager *gdCalendar;
@@ -163,6 +166,9 @@ private:
     CompetenzeUnitaExporter unitaCompetenzeExporter;
     CompetenzeDirigenteExporter dirigenteCompetenzeExporter;
 
+    QString backupFileName(const QString &time) const;
+    void backupDatabase(const QString &time, bool quiet);
+    void needsBackup();
     void loadSettings();
     void saveSettings();
     void toggleUnitaEditMode();

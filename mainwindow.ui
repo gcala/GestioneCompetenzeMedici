@@ -3294,6 +3294,8 @@
     <addaction name="actionApriDatabase"/>
     <addaction name="actionCaricaCartellini"/>
     <addaction name="separator"/>
+    <addaction name="actionBackupDatabase"/>
+    <addaction name="separator"/>
     <addaction name="actionChiudi"/>
    </widget>
    <widget class="QMenu" name="menu_Aiuto">
@@ -3512,6 +3514,18 @@
    </property>
    <property name="text">
     <string>Stampa &amp;Competenze Unità</string>
+   </property>
+  </action>
+  <action name="actionBackupDatabase">
+   <property name="icon">
+    <iconset resource="assets.qrc">
+     <normaloff>:/icons/edit-copy.svg</normaloff>:/icons/edit-copy.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Backup Database</string>
+   </property>
+   <property name="toolTip">
+    <string>Crea una copia di riserva del database corrente</string>
    </property>
   </action>
  </widget>
