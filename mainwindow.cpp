@@ -813,6 +813,8 @@ void MainWindow::on_dmpEdit_timeChanged(const QTime &time)
 {
     m_competenza->setDmp(time);
     mostraDifferenzaOre();
+    elaboraGuardie();
+    elaboraRep();
     ui->saveCompetenzeButton->setEnabled(m_competenza->isModded());
 }
 

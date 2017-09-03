@@ -446,7 +446,21 @@ QString CompetenzaData::oreEffettuate()
 
 QString CompetenzaData::oreProntaDisp()
 {
-    return m_dipendente->minutiGrep() % 60 <= m_arrotondamento ? QString::number(m_dipendente->minutiGrep() / 60) : QString::number(m_dipendente->minutiGrep() / 60 + 1);
+//    return m_dipendente->minutiGrep() % 60 <= m_arrotondamento ? QString::number(m_dipendente->minutiGrep() / 60) : QString::number(m_dipendente->minutiGrep() / 60 + 1);
+    if(m_dipendente->minutiGrep() == 0)
+        return QString("//");
+
+    int oreGrep = m_dipendente->minutiGrep() % 60 <= m_arrotondamento ? m_dipendente->minutiGrep() / 60 : m_dipendente->minutiGrep() / 60 + 1;
+    int diffOreArrot = differenzaMin() % 60 <= m_arrotondamento ? differenzaMin() / 60 : differenzaMin() / 60 + 1;
+
+    int residuoOre = diffOreArrot - numOreGuarPagabili() - numGrFestPagabili() * 12;
+
+    if(residuoOre <= 0)
+        return "//";
+
+    if(oreGrep <= residuoOre)
+        return QString::number(oreGrep);
+    return QString::number(residuoOre);
 }
 
 QString CompetenzaData::differenzaOre()
@@ -859,7 +873,8 @@ QString CompetenzaData::oreGrep()
 
 int CompetenzaData::numGrFestPagabili() const
 {
-    int totMin = differenzaMin();
+    if(differenzaMin() <= 0)
+        return 0;
 
     int numGrFest = 0;
 
@@ -871,7 +886,7 @@ int CompetenzaData::numGrFestPagabili() const
     }
 
     for(int i = numGrFest; i >= 0; i--) {
-        if((i * 12 * 60) <= totMin) {
+        if((i * 12 * 60) <= differenzaMin()) {
             numGrFest = i;
             break;
         }
@@ -882,6 +897,10 @@ int CompetenzaData::numGrFestPagabili() const
 int CompetenzaData::numOreGuarPagabili() const
 {
     int totMin = differenzaMin();
+
+    if(totMin <= 0)
+        return 0;
+
     totMin -= numGrFestPagabili() * 12 * 60;
 
     int numOreGuarNott = numGuar();
@@ -1073,6 +1092,9 @@ QString CompetenzaData::r_n_fes()
 
 QString CompetenzaData::oreStraordinarioGuardie() const
 {
+    if(numOreGuarPagabili() == 0 && numGrFestPagabili() == 0)
+        return "//";
+
     QString text;
     if(numGrFestPagabili() > 0)
         text += QString::number(480*numGrFestPagabili());
