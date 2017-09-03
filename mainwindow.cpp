@@ -931,6 +931,7 @@ void MainWindow::elaboraRep()
     ui->r_d_fes->setText(m_competenza->r_d_fes());
     ui->r_n_fer->setText(m_competenza->r_n_fer());
     ui->r_n_fes->setText(m_competenza->r_n_fes());
+    ui->totOreRep->setText(m_competenza->oreGrep());
 }
 
 void MainWindow::on_actionStampaCompetenzeDirigenti_triggered()

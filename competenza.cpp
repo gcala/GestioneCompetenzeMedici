@@ -851,6 +851,9 @@ QString CompetenzaData::repCount() const
 
 QString CompetenzaData::oreGrep()
 {
+    if(m_dipendente->minutiGrep() == 0)
+        return QString();
+
     return inOrario(m_dipendente->minutiGrep());
 }
 
