@@ -724,10 +724,10 @@ void CompetenzeDirigenteExporter::printDistribuzioneOreReperibilita(QPainter &pa
     painter.setPen(Qt::black);
     painter.setFont(bodyFontBold());
 
-    painter.drawText(QRect(6800,7750,1200,140), Qt::AlignLeft | Qt::AlignVCenter, m_competenza->r_d_fer());
-    painter.drawText(QRect(6800,8050,1200,140), Qt::AlignLeft | Qt::AlignVCenter, m_competenza->r_d_fes());
-    painter.drawText(QRect(6800,8650,1200,140), Qt::AlignLeft | Qt::AlignVCenter, m_competenza->r_n_fer());
-    painter.drawText(QRect(6800,8950,1200,140), Qt::AlignLeft | Qt::AlignVCenter, m_competenza->r_n_fes());
+    painter.drawText(QRect(6800,7750,1200,140), Qt::AlignLeft | Qt::AlignVCenter, QString::number(m_competenza->r_d_fer()));
+    painter.drawText(QRect(6800,8050,1200,140), Qt::AlignLeft | Qt::AlignVCenter, QString::number(m_competenza->r_d_fes()));
+    painter.drawText(QRect(6800,8650,1200,140), Qt::AlignLeft | Qt::AlignVCenter, QString::number(m_competenza->r_n_fer()));
+    painter.drawText(QRect(6800,8950,1200,140), Qt::AlignLeft | Qt::AlignVCenter, QString::number(m_competenza->r_n_fes()));
     painter.drawText(QRect(8000,8450,1200,140), Qt::AlignLeft | Qt::AlignVCenter, m_competenza->oreGrep());
     painter.restore();
 }
@@ -846,7 +846,7 @@ void CompetenzeDirigenteExporter::printOreProntaDisponibilita(QPainter &painter)
     painter.setPen(Qt::black);
     painter.setFont(bodyFontBold());
 
-    painter.drawText(QRect(3600,10950,6200,150), Qt::AlignLeft | Qt::AlignVCenter, m_competenza->oreProntaDisp());
+    painter.drawText(QRect(3600,10950,6200,150), Qt::AlignLeft | Qt::AlignVCenter, QString::number(m_competenza->oreProntaDisp()));
     painter.restore();
 }
 

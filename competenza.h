@@ -52,7 +52,7 @@ public:
     QString orarioGiornaliero();
     QString oreDovute();
     QString oreEffettuate();
-    QString oreProntaDisp();
+    int oreProntaDisp();
     QString differenzaOre();
     QString differenzaOreSenzaDmp();
     QString deficitOrario();
@@ -96,6 +96,9 @@ public:
     int numOreGuarFesENot() const;
     int numOreGuarFesONot() const;
     int numOreGuarOrd() const;
+    int numOreRepFesENot();
+    int numOreRepFesONot();
+    int numOreRepOrd();
 
     int g_d_fer_F() const;
     int g_d_fer_S() const;
@@ -111,10 +114,10 @@ public:
     int g_n_fes_D() const;
     int totOreGuardie() const;
 
-    QString r_d_fer();
-    QString r_d_fes();
-    QString r_n_fer();
-    QString r_n_fes();
+    int r_d_fer();
+    int r_d_fes();
+    int r_n_fer();
+    int r_n_fes();
 
     QString oreStraordinarioGuardie() const;
 

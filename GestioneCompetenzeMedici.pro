@@ -39,7 +39,8 @@ SOURCES += \
         calendarmanagerrep.cpp \
         printdialog.cpp \
         competenzeunitaexporter.cpp \
-        competenzedirigenteexporter.cpp
+        competenzedirigenteexporter.cpp \
+    utilities.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -58,7 +59,8 @@ HEADERS += \
         calendarmanagerrep.h \
         printdialog.h \
         competenzeunitaexporter.h \
-        competenzedirigenteexporter.h
+        competenzedirigenteexporter.h \
+    utilities.h
 
 FORMS += \
         mainwindow.ui \

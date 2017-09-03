@@ -80,7 +80,7 @@ public:
     QString orarioGiornaliero();
     QString oreDovute();
     QString oreEffettuate();
-    QString oreProntaDisp();
+    int oreProntaDisp();
     QString differenzaOre();
     QString differenzaOreSenzaDmp();
     int differenzaMin() const;
@@ -125,6 +125,9 @@ public:
     int numOreGuarFesENot() const;
     int numOreGuarFesONot() const;
     int numOreGuarOrd() const;
+    int numOreRepFesENot();
+    int numOreRepFesONot();
+    int numOreRepOrd();
 
     int g_d_fer_F() const;
     int g_d_fer_S() const;
@@ -140,10 +143,10 @@ public:
     int g_n_fes_D() const;
     int totOreGuardie() const;
 
-    QString r_d_fer();
-    QString r_d_fes();
-    QString r_n_fer();
-    QString r_n_fes();
+    int r_d_fer();
+    int r_d_fes();
+    int r_n_fer();
+    int r_n_fes();
 
     QString oreStraordinarioGuardie() const;
 
@@ -444,11 +447,11 @@ QString CompetenzaData::oreEffettuate()
     return inOrario(m_dipendente->minutiFatti() + m_dipendente->minutiEccr() + m_dipendente->minutiGrep() + m_dipendente->minutiGuar());
 }
 
-QString CompetenzaData::oreProntaDisp()
+int CompetenzaData::oreProntaDisp()
 {
 //    return m_dipendente->minutiGrep() % 60 <= m_arrotondamento ? QString::number(m_dipendente->minutiGrep() / 60) : QString::number(m_dipendente->minutiGrep() / 60 + 1);
     if(m_dipendente->minutiGrep() == 0)
-        return QString("//");
+        return 0;
 
     int oreGrep = m_dipendente->minutiGrep() % 60 <= m_arrotondamento ? m_dipendente->minutiGrep() / 60 : m_dipendente->minutiGrep() / 60 + 1;
     int diffOreArrot = differenzaMin() % 60 <= m_arrotondamento ? differenzaMin() / 60 : differenzaMin() / 60 + 1;
@@ -456,11 +459,11 @@ QString CompetenzaData::oreProntaDisp()
     int residuoOre = diffOreArrot - numOreGuarPagabili() - numGrFestPagabili() * 12;
 
     if(residuoOre <= 0)
-        return "//";
+        return 0;
 
     if(oreGrep <= residuoOre)
-        return QString::number(oreGrep);
-    return QString::number(residuoOre);
+        return oreGrep;
+    return residuoOre;
 }
 
 QString CompetenzaData::differenzaOre()
@@ -961,6 +964,38 @@ int CompetenzaData::numOreGuarOrd() const
     return (g_d_fer_F() + g_d_fer_S() + g_d_fer_D());
 }
 
+int CompetenzaData::numOreRepFesENot()
+{
+    if(r_n_fes() >=  oreProntaDisp())
+        return  oreProntaDisp();
+
+    return r_n_fes();
+}
+
+int CompetenzaData::numOreRepFesONot()
+{
+    int restoOre =  oreProntaDisp() - numOreRepFesENot();
+    if(restoOre <= 0)
+        return 0;
+
+    if((r_n_fer() + r_d_fes()) >= restoOre)
+        return restoOre;
+
+    return r_n_fer() + r_d_fes();
+}
+
+int CompetenzaData::numOreRepOrd()
+{
+    int restoOre = oreProntaDisp() - numOreRepFesENot() - numOreRepFesONot();
+    if(restoOre <= 0)
+        return 0;
+
+    if(r_d_fer() >= restoOre)
+        return restoOre;
+
+    return r_d_fer();
+}
+
 int CompetenzaData::g_d_fer_F() const
 {
     return m_g_d_fer_F;
@@ -1026,7 +1061,7 @@ int CompetenzaData::totOreGuardie() const
     return m_totOreGuardie;
 }
 
-QString CompetenzaData::r_d_fer()
+int CompetenzaData::r_d_fer()
 {
     int minuti = 0;
     QMap<int, QPair<int, int> >::const_iterator i = m_dipendente->grep().constBegin();
@@ -1036,13 +1071,10 @@ QString CompetenzaData::r_d_fer()
         i++;
     }
 
-    if(minuti == 0)
-        return "";
-
-    return inOrario(minuti);
+    return minuti;
 }
 
-QString CompetenzaData::r_d_fes()
+int CompetenzaData::r_d_fes()
 {
     int minuti = 0;
     QMap<int, QPair<int, int> >::const_iterator i = m_dipendente->grep().constBegin();
@@ -1052,13 +1084,10 @@ QString CompetenzaData::r_d_fes()
         i++;
     }
 
-    if(minuti == 0)
-        return "";
-
-    return inOrario(minuti);
+    return minuti;
 }
 
-QString CompetenzaData::r_n_fer()
+int CompetenzaData::r_n_fer()
 {
     int minuti = 0;
     QMap<int, QPair<int, int> >::const_iterator i = m_dipendente->grep().constBegin();
@@ -1068,13 +1097,10 @@ QString CompetenzaData::r_n_fer()
         i++;
     }
 
-    if(minuti == 0)
-        return "";
-
-    return inOrario(minuti);
+    return minuti;
 }
 
-QString CompetenzaData::r_n_fes()
+int CompetenzaData::r_n_fes()
 {
     int minuti = 0;
     QMap<int, QPair<int, int> >::const_iterator i = m_dipendente->grep().constBegin();
@@ -1084,10 +1110,7 @@ QString CompetenzaData::r_n_fes()
         i++;
     }
 
-    if(minuti == 0)
-        return "";
-
-    return inOrario(minuti);
+    return minuti;
 }
 
 QString CompetenzaData::oreStraordinarioGuardie() const
@@ -1399,7 +1422,7 @@ QString Competenza::oreEffettuate()
     return data->oreEffettuate();
 }
 
-QString Competenza::oreProntaDisp()
+int Competenza::oreProntaDisp()
 {
     return data->oreProntaDisp();
 }
@@ -1619,6 +1642,21 @@ int Competenza::numOreGuarOrd() const
     return data->numOreGuarOrd();
 }
 
+int Competenza::numOreRepFesENot()
+{
+    return data->numOreRepFesENot();
+}
+
+int Competenza::numOreRepFesONot()
+{
+    return data->numOreRepFesONot();
+}
+
+int Competenza::numOreRepOrd()
+{
+    return data->numOreRepOrd();
+}
+
 int Competenza::g_d_fer_F() const
 {
     return data->g_d_fer_F();
@@ -1684,22 +1722,22 @@ int Competenza::totOreGuardie() const
     return data->totOreGuardie();
 }
 
-QString Competenza::r_d_fer()
+int Competenza::r_d_fer()
 {
     return data->r_d_fer();
 }
 
-QString Competenza::r_d_fes()
+int Competenza::r_d_fes()
 {
     return data->r_d_fes();
 }
 
-QString Competenza::r_n_fer()
+int Competenza::r_n_fer()
 {
     return data->r_n_fer();
 }
 
-QString Competenza::r_n_fes()
+int Competenza::r_n_fes()
 {
     return data->r_n_fes();
 }

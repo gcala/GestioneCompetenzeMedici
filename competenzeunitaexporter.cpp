@@ -148,9 +148,9 @@ void CompetenzeUnitaExporter::run()
             printNumOreGuarFesENot(painter,m_competenza->numOreGuarFesENot() > 0 ? QString::number(m_competenza->numOreGuarFesENot()) : "//",counter);
             printNumOreGuarFesONot(painter,m_competenza->numOreGuarFesONot() > 0 ? QString::number(m_competenza->numOreGuarFesONot()) : "//",counter);
             printNumOreGuarOrd(painter,m_competenza->numOreGuarOrd() > 0 ? QString::number(m_competenza->numOreGuarOrd()) : "//",counter);
-//            printNumOreRepFesENot(painter,m_competenza->numOreRepFesENot() > 0 ? QString::number(m_competenza->numOreRepFesENot()) : "//",counter);
-//            printNumOreRepFesONot(painter,m_competenza->numOreRepFesONot() > 0 ? QString::number(m_competenza->numOreRepFesONot()) : "//",counter);
-//            printNumOreRepOrd(painter,m_competenza->numOreRepOrd() > 0 ? QString::number(m_competenza->numOreRepOrd()) : "//",counter);
+            printNumOreRepFesENot(painter,m_competenza->numOreRepFesENot() > 0 ? QString::number(m_competenza->numOreRepFesENot()) : "//",counter);
+            printNumOreRepFesONot(painter,m_competenza->numOreRepFesONot() > 0 ? QString::number(m_competenza->numOreRepFesONot()) : "//",counter);
+            printNumOreRepOrd(painter,m_competenza->numOreRepOrd() > 0 ? QString::number(m_competenza->numOreRepOrd()) : "//",counter);
             counter++;
         }
         isFileStart = false;

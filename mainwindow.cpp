@@ -28,6 +28,7 @@
 #include "calendarmanager.h"
 #include "calendarmanagerrep.h"
 #include "competenza.h"
+#include "utilities.h"
 
 #include <QtWidgets>
 #include <QSqlQueryModel>
@@ -893,7 +894,7 @@ void MainWindow::populateCompetenzeTab()
     ui->oreDovuteLabel->setText(m_competenza->oreDovute());
     ui->oreEffettuateLabel->setText(m_competenza->oreEffettuate());
 
-    ui->oreStraordinarioRepLabel->setText(m_competenza->oreProntaDisp());
+    ui->oreStraordinarioRepLabel->setText(QString::number(m_competenza->oreProntaDisp()));
 
     mostraDifferenzaOre();
     elaboraGuardie();
@@ -929,10 +930,10 @@ void MainWindow::elaboraRep()
     ui->rPainterWidget->setRepMap(m_competenza->rep());
     ui->repLabel->setText(m_competenza->repCount());
 
-    ui->r_d_fer->setText(m_competenza->r_d_fer());
-    ui->r_d_fes->setText(m_competenza->r_d_fes());
-    ui->r_n_fer->setText(m_competenza->r_n_fer());
-    ui->r_n_fes->setText(m_competenza->r_n_fes());
+    ui->r_d_fer->setText(Utilities::inOrario(m_competenza->r_d_fer()));
+    ui->r_d_fes->setText(Utilities::inOrario(m_competenza->r_d_fes()));
+    ui->r_n_fer->setText(Utilities::inOrario(m_competenza->r_n_fer()));
+    ui->r_n_fes->setText(Utilities::inOrario(m_competenza->r_n_fes()));
     ui->totOreRep->setText(m_competenza->oreGrep());
 }
 
