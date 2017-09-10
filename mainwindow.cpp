@@ -1034,7 +1034,7 @@ void MainWindow::altreCalendarClicked(const QDate &date)
 
 void MainWindow::on_actionBackupDatabase_triggered()
 {
-    backupDatabase(QTime::currentTime().toString("_hh:mm:ss"), false);
+    backupDatabase(QTime::currentTime().toString("_hhmmss"), false);
 }
 
 void MainWindow::backupDatabase(const QString &time, bool quiet)
