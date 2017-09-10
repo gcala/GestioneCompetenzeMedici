@@ -25,6 +25,7 @@
 #include <QThread>
 
 class Dipendente;
+class NomiUnitaDialog;
 
 class TimeCardsReader : public QThread
 {
@@ -52,6 +53,7 @@ private:
       QStringList causaliDaValutare;
       QString fileName;
       Dipendente *m_dipendente;
+      NomiUnitaDialog *m_nomiDialog;
       bool m_timeCardBegin;
 
       int mese2Int(const QString &mese);

@@ -172,10 +172,10 @@ void PrintDialog::on_meseCB_currentIndexChanged(int index)
         return;
 
     QSqlQuery query;
-    query.prepare("SELECT " + ui->meseCB->currentData(Qt::UserRole).toString() + ".id_unita,unita.nome_full,unita.numero "
+    query.prepare("SELECT " + ui->meseCB->currentData(Qt::UserRole).toString() + ".id_unita,unita.nome_full,unita.id "
                   "FROM " + ui->meseCB->currentData(Qt::UserRole).toString() + " "
                   "LEFT JOIN unita "
-                  "ON " + ui->meseCB->currentData(Qt::UserRole).toString() + ".id_unita=unita.id ORDER BY length(unita.numero), unita.numero;");
+                  "ON " + ui->meseCB->currentData(Qt::UserRole).toString() + ".id_unita=unita.id ORDER BY length(unita.id), unita.id;");
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
         return;

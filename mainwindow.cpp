@@ -21,7 +21,6 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "connection.h"
 #include "insertdbvalues.h"
 #include "printdialog.h"
 #include "sqlqueries.h"
@@ -29,11 +28,14 @@
 #include "calendarmanagerrep.h"
 #include "competenza.h"
 #include "utilities.h"
+#include "databasewizard.h"
+#include "sqlitedatabasemanager.h"
 
 #include <QtWidgets>
 #include <QSqlQueryModel>
-#include <QSqlDatabase>
 #include <QDebug>
+#include <QSqlError>
+#include <QSqlQuery>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -133,6 +135,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     insertDialog = new InsertDBValues(this);
     printDialog = new PrintDialog(this);
+    databaseWizard = new DatabaseWizard(this);
 
     unitaOrePagateModel = new QSqlQueryModel;
     ui->unitaOrePagateTW->setModel(unitaOrePagateModel);
@@ -196,6 +199,7 @@ MainWindow::~MainWindow()
     saveSettings();
     delete insertDialog;
     delete printDialog;
+    delete databaseWizard;
     delete ui;
 }
 
@@ -208,31 +212,14 @@ void MainWindow::mostraDifferenzaOre()
 
 void MainWindow::on_actionNuovoDatabase_triggered()
 {
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Salva il database"),
-                                                    currentDatabase.absolutePath().isEmpty() ? QDir::homePath() : currentDatabase.absolutePath(),
-                                                    tr("Database (*.db)"));
+    databaseWizard->exec();
+    currentDatabase.setFile(The::dbManager()->currentDatabase());
 
-    if(!fileName.isEmpty()) {
-        qDebug() << "Creo nuovo database" << fileName;
-        QSqlDatabase db = QSqlDatabase::database();
-        if(!db.databaseName().isEmpty()) {
-            db.close();
-            db.removeDatabase(currentDatabase.absoluteFilePath());
-        }
-        currentDatabase.setFile(fileName);
-        connectToDatabase();
-        SqlQueries::createUnitsTable();
-        SqlQueries::createUnitsPayedHoursTable();
-        SqlQueries::createDoctorsTable();
-        SqlQueries::createUnitsRepTable();
-        SqlQueries::populateUnitsTable();
-        SqlQueries::populateUnitsPayedHoursTable();
-        SqlQueries::populateUnitsRepTable();
-
-        populateUnitaCB();
-        populateDirigentiCB();
-        ui->actionBackupDatabase->setEnabled(true);
-    }
+    clearWidgets();
+    populateUnitaCB();
+    populateDirigentiCB();
+    populateMeseCompetenzeCB();
+    ui->actionBackupDatabase->setEnabled(true);
 }
 
 void MainWindow::toggleUnitaEditMode()
@@ -273,22 +260,39 @@ void MainWindow::toggleDirigenteEditMode()
     currentDirigenteIndex = ui->dirigentiComboBox->currentIndex();
 }
 
-void MainWindow::populateUnitaCB()
+void MainWindow::clearWidgets()
 {
     ui->unitaComboBox->clear();
+    ui->unitaNomeLE->clear();
+    ui->unitaBreveLE->clear();
+    ui->raggrLE->clear();
+    ui->unitaNumLE->clear();
+    unitaOrePagateModel->clear();
+    unitaReperibilitaModel->clear();
+    ui->dirigentiComboBox->clear();
+    ui->dirigenteNomeLE->clear();
+    ui->dirigenteMatricolaSB->clear();
+    ui->dirigenteUnitaLE->clear();
     ui->dirigentiUnitaComboBox->clear();
-//    printDialog->clearUnita();
-//    printDialog->addUnita("Tutte", -1);
+    ui->meseCompetenzeCB->clear();
+    ui->unitaCompetenzeCB->clear();
+    ui->dirigentiCompetenzeCB->clear();
+    ui->workDaysLabel->clear();
+    ui->ferieLabel->clear();
+    ui->congediLabel->clear();
+    ui->malattiaLabel->clear();
+    ui->rmpLabel->clear();
+    ui->altreLabel->clear();
+}
 
-    QSqlQuery query;
-    query.prepare("SELECT id,nome_full,numero FROM unita;");
-    if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
-    }
-    while(query.next()) {
-        ui->unitaComboBox->addItem(query.value(2).toString() + " - " + query.value(1).toString(), query.value(0));
-        ui->dirigentiUnitaComboBox->addItem(query.value(2).toString() + " - " + query.value(1).toString(), query.value(0));
-//        printDialog->addUnita(query.value(2).toString() + " - " + query.value(1).toString(), query.value(0));
+void MainWindow::populateUnitaCB()
+{
+    const QMap<int, QString> map = SqlQueries::units();
+    QMap<int, QString>::const_iterator i = map.constBegin();
+    while (i != map.constEnd()) {
+        ui->unitaComboBox->addItem(QString::number(i.key()) + " - " + i.value(), i.key());
+        ui->dirigentiUnitaComboBox->addItem(QString::number(i.key()) + " - " + i.value(), i.key());
+        ++i;
     }
 
     SqlQueries::buildUnitsMap();
@@ -403,8 +407,14 @@ void MainWindow::restoreDirigenteValues()
 
 void MainWindow::connectToDatabase()
 {
-    if(!createConnection(currentDatabase.absoluteFilePath()))
+    if(!The::dbManager()->createConnection(currentDatabase.absoluteFilePath())) {
+        setWindowTitle("Gestione Competenze Medici");
         return;
+    }
+
+    QFileInfo fi(The::dbManager()->currentDatabase());
+
+    setWindowTitle("Gestione Competenze Medici - " + fi.completeBaseName());
 }
 
 void MainWindow::populateMeseCompetenzeCB()
@@ -442,10 +452,10 @@ void MainWindow::populateUnitaCompetenzeCB()
         return;
 
     QSqlQuery query;
-    query.prepare("SELECT " + ui->meseCompetenzeCB->currentData(Qt::UserRole).toString() + ".id_unita,unita.nome_full,unita.numero "
+    query.prepare("SELECT " + ui->meseCompetenzeCB->currentData(Qt::UserRole).toString() + ".id_unita,unita.nome_full,unita.id "
                   "FROM " + ui->meseCompetenzeCB->currentData(Qt::UserRole).toString() + " "
                   "LEFT JOIN unita "
-                  "ON " + ui->meseCompetenzeCB->currentData(Qt::UserRole).toString() + ".id_unita=unita.id ORDER BY length(unita.numero), unita.numero;");
+                  "ON " + ui->meseCompetenzeCB->currentData(Qt::UserRole).toString() + ".id_unita=unita.id ORDER BY length(unita.id), unita.id;");
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
         return;
@@ -499,7 +509,6 @@ void MainWindow::on_editUnitaSaveButton_clicked()
                              ui->raggrLE->text(),
                              ui->unitaNomeLE->text(),
                              ui->unitaBreveLE->text(),
-                             ui->unitaNumLE->text(),
                              ui->otherNamesLE->text());
         break;
     default:
@@ -619,7 +628,10 @@ void MainWindow::on_actionApriDatabase_triggered()
         currentDatabase.setFile(fileName);
         needsBackup();
         connectToDatabase();
+        clearWidgets();
         populateUnitaCB();
+        populateDirigentiCB();
+        populateMeseCompetenzeCB();
         ui->actionBackupDatabase->setEnabled(true);
     }
 }
@@ -654,8 +666,8 @@ void MainWindow::on_unitaComboBox_currentIndexChanged(int index)
         ui->unitaNomeLE->setText(query.value(2).toString());
         ui->unitaBreveLE->setText(query.value(3).toString());
         ui->raggrLE->setText(query.value(1).toString());
-        ui->unitaNumLE->setText(query.value(4).toString());
-        ui->otherNamesLE->setText(query.value(5).toString());
+        ui->unitaNumLE->setText(query.value(0).toString());
+        ui->otherNamesLE->setText(query.value(4).toString());
     }
 
     populateUnitaOrePagate();
@@ -684,18 +696,16 @@ void MainWindow::on_dirigentiComboBox_currentIndexChanged(int index)
     }
 
     // recupero nome completo da id
-    query.prepare("SELECT nome_full,numero FROM unita WHERE id=" + id_unita + ";");
+    query.prepare("SELECT nome_full FROM unita WHERE id=" + id_unita + ";");
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
 
-    QString unitaNum;
     while(query.next()) {
         ui->dirigenteUnitaLE->setText(query.value(0).toString());
-        unitaNum = query.value(1).toString();
     }
 
-    ui->dirigentiUnitaComboBox->setCurrentText(unitaNum + " - " + ui->dirigenteUnitaLE->text());
+    ui->dirigentiUnitaComboBox->setCurrentText(id_unita + " - " + ui->dirigenteUnitaLE->text());
 }
 
 void MainWindow::on_unitaOrePagateTW_activated(const QModelIndex &index)
@@ -841,6 +851,9 @@ void MainWindow::on_dirigentiCompetenzeCB_currentIndexChanged(int index)
         return;
 
     ui->restoreCompetenzeButton->setEnabled(false);
+
+    if(ui->meseCompetenzeCB->currentData(Qt::UserRole).toString().isEmpty())
+        return;
 
     m_competenza = new Competenza(ui->meseCompetenzeCB->currentData(Qt::UserRole).toString(), ui->dirigentiCompetenzeCB->currentData(Qt::UserRole).toInt());
 

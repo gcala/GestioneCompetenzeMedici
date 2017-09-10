@@ -43,6 +43,7 @@ class CalendarManager;
 class CalendarManagerRep;
 class QWidgetAction;
 class Competenza;
+class DatabaseWizard;
 
 class MainWindow : public QMainWindow
 {
@@ -162,6 +163,7 @@ private:
     QFileInfo currentDatabase;
     InsertDBValues *insertDialog;
     PrintDialog *printDialog;
+    DatabaseWizard *databaseWizard;
     TimeCardsReader worker;
     CompetenzeUnitaExporter unitaCompetenzeExporter;
     CompetenzeDirigenteExporter dirigenteCompetenzeExporter;
@@ -173,6 +175,7 @@ private:
     void saveSettings();
     void toggleUnitaEditMode();
     void toggleDirigenteEditMode();
+    void clearWidgets();
     void populateUnitaCB();
     void populateUnitaOrePagate();
     void populateUnitaReperibilita();

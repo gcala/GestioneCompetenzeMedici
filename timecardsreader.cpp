@@ -22,6 +22,7 @@
 #include "timecardsreader.h"
 #include "sqlqueries.h"
 #include "dipendente.h"
+#include "nomiunitadialog.h"
 
 #include <QDate>
 #include <QFile>
@@ -44,11 +45,12 @@ TimeCardsReader::TimeCardsReader(QObject *parent) :
     causaliRMC << "RMC";
     causaliDaValutare << "ECCR" << "RMC" << "GUAR" << "GREP";
     m_timeCardBegin = true;
+    m_nomiDialog = new NomiUnitaDialog;
 }
 
 TimeCardsReader::~TimeCardsReader()
 {
-
+    delete m_nomiDialog;
 }
 
 void TimeCardsReader::setFile(const QString &file)
@@ -98,6 +100,7 @@ void TimeCardsReader::run()
     file.reset();
 
     int currRow = 0;
+    m_nomiDialog->populateUnits();
 
     while(!file.atEnd()) {
         currRow++;
@@ -193,6 +196,13 @@ void TimeCardsReader::run()
             line.remove("(", Qt::CaseInsensitive);
             line.remove("- ", Qt::CaseInsensitive);
             m_dipendente->setUnita(line.trimmed());
+
+            int unId = SqlQueries::unitId(m_dipendente->unita());
+
+            if(unId == -1) {
+                m_nomiDialog->setUnitaLabel(m_dipendente->unita());
+                m_nomiDialog->exec();
+            }
 
             continue;
         } else {

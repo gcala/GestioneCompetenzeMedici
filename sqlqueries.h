@@ -37,13 +37,12 @@ public:
     static void createDoctorsTable();
     static void createUnitsPayedHoursTable();
     static void createUnitsRepTable();
-    static void populateUnitsTable();
-    static void populateUnitsPayedHoursTable();
-    static void populateUnitsRepTable();
-    static void insertUnit(const QString &raggruppamento, const QString &nome_full, const QString &nome_mini, const QString &numero, const QString &altri_nomi);
-    static void editUnit(const QString &id, const QString &raggruppamento, const QString &nome_full, const QString &nome_mini, const QString &numero, const QString &altri_nomi);
+    static void insertUnit(const QString &id, const QString &raggruppamento, const QString &nome_full, const QString &nome_mini, const QString &altri_nomi);
+    static void editUnit(const QString &id, const QString &raggruppamento, const QString &nome_full, const QString &nome_mini, const QString &altri_nomi);
     static bool insertDoctor(const QString &matricola, const QString &nome, const QString &id_unita);
     static void editDoctor(const QString &id, const QString &matricola, const QString &nome, const QString &id_unita);
+    static void insertPayload(const QString &id_unita, const QString &data, const QString &ore);
+    static void insertRep(const QString &id_unita, const QString &data, const QString &feriale, const QString &sabato, const QString &prefestivo, const QString &festivo);
     static void removeUnit(const QString &id);
     static void removeDoctor(const QString &id);
     static void removeTimeCard(const QString &tableName, const QString &doctorId);
@@ -54,6 +53,8 @@ public:
     static int doctorId(const QString &matricola);
     static int unitId(const QString &unit);
     static void buildUnitsMap();
+    static QMap<int, QString> units();
+    static void appendOtherUnitaName(const int id, const QString &nome);
 };
 
 #endif // SQLQUERIES_H

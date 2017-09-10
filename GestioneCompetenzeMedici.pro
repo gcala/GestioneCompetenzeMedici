@@ -40,11 +40,13 @@ SOURCES += \
         printdialog.cpp \
         competenzeunitaexporter.cpp \
         competenzedirigenteexporter.cpp \
-    utilities.cpp
+    utilities.cpp \
+    databasewizard.cpp \
+    sqlitedatabasemanager.cpp \
+    nomiunitadialog.cpp
 
 HEADERS += \
         mainwindow.h \
-        connection.h \
         searchcombobox.h \
         insertdbvalues.h \
         timecardsreader.h \
@@ -60,12 +62,17 @@ HEADERS += \
         printdialog.h \
         competenzeunitaexporter.h \
         competenzedirigenteexporter.h \
-    utilities.h
+    utilities.h \
+    databasewizard.h \
+    sqlitedatabasemanager.h \
+    nomiunitadialog.h
 
 FORMS += \
         mainwindow.ui \
         insertdbvalues.ui \
-        printdialog.ui
+        printdialog.ui \
+    databasewizard.ui \
+    nomiunitadialog.ui
 
 RESOURCES += \
     assets.qrc
