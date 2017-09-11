@@ -781,7 +781,14 @@ void MainWindow::on_actionCaricaPdf_triggered()
 
         QFileInfo fi(pdfFile);
 
-        QString program = "/usr/bin/java";
+        QString program;
+
+#ifdef _WIN32
+        program = "C:\\Windows\\System32\\java.exe";
+#else
+        program = "/usr/bin/java";
+#endif
+
         QStringList arguments;
         arguments << "-jar" << QApplication::applicationDirPath() + QDir::separator() + "tabula.jar";
         arguments << "-n";
