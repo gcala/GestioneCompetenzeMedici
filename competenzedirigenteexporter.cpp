@@ -822,8 +822,8 @@ void CompetenzeDirigenteExporter::printNettoOre(QPainter &painter)
 
     QString text = m_competenza->differenzaOreSenzaDmp();
 
-    if(m_competenza->dmp() != QTime(0,0,0)) {
-        text += " - d.m.p. " + QString::number(m_competenza->dmp().hour()) + ":" + QString::number(m_competenza->dmp().minute()) + " = " + m_competenza->differenzaOre();
+    if(m_competenza->dmp() != 0) {
+        text += " - d.m.p. " + QString::number(m_competenza->dmp()/60) + ":" + QString::number(m_competenza->dmp()%60) + " = " + m_competenza->differenzaOre();
     }
 
     painter.drawText(QRect(3300,10200,3000,150), Qt::AlignLeft | Qt::AlignVCenter, text);

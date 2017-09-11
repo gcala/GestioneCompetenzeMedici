@@ -103,8 +103,8 @@ public:
     void setRep(const QMap<QDate, ValoreRep> &map);
     QMap<int, GuardiaType> guardiaDiurnaMap() const;
     QMap<int, GuardiaType> guardiaNotturnaMap() const;
-    void setDmp(const QTime &time);
-    QTime dmp() const;
+    void setDmp(const int &minutes);
+    int dmp() const;
     QList<QDate> altreAssenzeDates() const;
     void setAltreAssenze(const QList<QDate> &assenze);
     bool isModded() const;
@@ -639,17 +639,14 @@ QMap<QDate, ValoreRep> CompetenzaData::rep() const
     return m_rep;
 }
 
-void CompetenzaData::setDmp(const QTime &time)
+void CompetenzaData::setDmp(const int &minutes)
 {
-    m_dmp = time.hour()*60+time.minute();
+    m_dmp = minutes;
 }
 
-QTime CompetenzaData::dmp() const
+int CompetenzaData::dmp() const
 {
-    if(m_dmp == 0)
-        return QTime(0,0,0);
-
-    return QTime(m_dmp/60,m_dmp%60,0);
+    return m_dmp;
 }
 
 QList<QDate> CompetenzaData::altreAssenzeDates() const
@@ -1532,12 +1529,12 @@ void Competenza::addGuardiaNotturnaDay(int day)
     data->addGuardiaNotturnaDay(day);
 }
 
-void Competenza::setDmp(const QTime &time)
+void Competenza::setDmp(const int &minutes)
 {
-    data->setDmp(time);
+    data->setDmp(minutes);
 }
 
-QTime Competenza::dmp() const
+int Competenza::dmp() const
 {
     return data->dmp();
 }

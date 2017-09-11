@@ -214,7 +214,13 @@ void MainWindow::mostraDifferenzaOre()
 {
     ui->oreDifferenzaLabel->setText(m_competenza->differenzaOre());
     ui->deficitOrarioLabel->setText(m_competenza->deficitOrario());
-    ui->dmpEdit->setTime(m_competenza->dmp());
+    if(m_competenza->dmp() == 0) {
+        ui->dmpHoursEdit->setValue(0);
+        ui->dmpMinsEdit->setValue(0);
+    } else {
+        ui->dmpHoursEdit->setValue(m_competenza->dmp()/60);
+        ui->dmpMinsEdit->setValue(m_competenza->dmp()%60);
+    }
 }
 
 void MainWindow::on_actionNuovoDatabase_triggered()
@@ -852,15 +858,6 @@ void MainWindow::on_restoreCompetenzeButton_clicked()
     ui->restoreCompetenzeButton->setEnabled(false);
 }
 
-void MainWindow::on_dmpEdit_timeChanged(const QTime &time)
-{
-    m_competenza->setDmp(time);
-    mostraDifferenzaOre();
-    elaboraGuardie();
-    elaboraRep();
-    ui->saveCompetenzeButton->setEnabled(m_competenza->isModded());
-}
-
 void MainWindow::on_meseCompetenzeCB_currentIndexChanged(int index)
 {
     Q_UNUSED(index)
@@ -1156,4 +1153,22 @@ void MainWindow::on_actionCaricaCsv_triggered()
         ui->dirigentiTab->setEnabled(false);
         ui->competenzeDirigenteTab->setEnabled(false);
     }
+}
+
+void MainWindow::on_dmpMinsEdit_valueChanged(int arg1)
+{
+    m_competenza->setDmp(ui->dmpHoursEdit->value()*60+arg1);
+    mostraDifferenzaOre();
+    elaboraGuardie();
+    elaboraRep();
+    ui->saveCompetenzeButton->setEnabled(m_competenza->isModded());
+}
+
+void MainWindow::on_dmpHoursEdit_valueChanged(int arg1)
+{
+    m_competenza->setDmp(arg1*60+ui->dmpMinsEdit->value());
+    mostraDifferenzaOre();
+    elaboraGuardie();
+    elaboraRep();
+    ui->saveCompetenzeButton->setEnabled(m_competenza->isModded());
 }

@@ -89,7 +89,6 @@ private slots:
     void on_removeUnitaReperibilitaButton_clicked();
     void on_saveCompetenzeButton_clicked();
     void on_restoreCompetenzeButton_clicked();
-    void on_dmpEdit_timeChanged(const QTime &time);
     void on_meseCompetenzeCB_currentIndexChanged(int index);
     void on_unitaCompetenzeCB_currentIndexChanged(int index);
     void on_dirigentiCompetenzeCB_currentIndexChanged(int index);
@@ -99,10 +98,10 @@ private slots:
     void gnCalendarClicked(const QDate &date);
     void rCalendarClicked(const QDate &date);
     void altreCalendarClicked(const QDate &date);
-
     void on_actionBackupDatabase_triggered();
-
     void on_actionCaricaCsv_triggered();
+    void on_dmpMinsEdit_valueChanged(int arg1);
+    void on_dmpHoursEdit_valueChanged(int arg1);
 
 private:
     Ui::MainWindow *ui;

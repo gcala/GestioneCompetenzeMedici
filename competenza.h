@@ -76,8 +76,8 @@ public:
     void addGuardiaNotturnaDay(int day);
     void setRep(const QMap<QDate, ValoreRep> &map);
     QMap<QDate, ValoreRep> rep() const;
-    void setDmp(const QTime &time);
-    QTime dmp() const;
+    void setDmp(const int &minutes);
+    int dmp() const;
     QList<QDate> altreAssenzeDates() const;
     void setAltreAssenze(const QList<QDate> &assenze);
     bool isModded() const;

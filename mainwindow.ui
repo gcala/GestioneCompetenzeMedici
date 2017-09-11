@@ -2835,11 +2835,23 @@
               </widget>
              </item>
              <item>
-              <widget class="QTimeEdit" name="dmpEdit">
-               <property name="font">
-                <font>
-                 <pointsize>11</pointsize>
-                </font>
+              <widget class="QSpinBox" name="dmpHoursEdit">
+               <property name="maximum">
+                <number>999</number>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_15">
+               <property name="text">
+                <string>:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSpinBox" name="dmpMinsEdit">
+               <property name="maximum">
+                <number>59</number>
                </property>
               </widget>
              </item>
