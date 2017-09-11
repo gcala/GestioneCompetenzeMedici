@@ -22,13 +22,15 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <timecardsreader.h>
-#include <competenzeunitaexporter.h>
-#include <competenzedirigenteexporter.h>
+#include "tabulacsvtimecardsreader.h"
+#include "okularcsvtimecardsreader.h"
+#include "competenzeunitaexporter.h"
+#include "competenzedirigenteexporter.h"
 
 #include <QMainWindow>
 #include <QFileInfo>
 #include <QTime>
+#include <QProcess>
 
 namespace Ui {
 class MainWindow;
@@ -61,6 +63,8 @@ private slots:
     void exported();
     void setTotalRows(int);
     void setCurrentRow(int);
+    void tabulaFinished(int exitCode, QProcess::ExitStatus exitStatus);
+    void tabulaError(QProcess::ProcessError error);
 
     void on_editUnitaSaveButton_clicked();
     void on_editUnitaCancelButton_clicked();
@@ -75,7 +79,7 @@ private slots:
     void on_unitaOrePagateTW_activated(const QModelIndex &index);
     void on_addUnitaOrePagateButton_clicked();
     void on_removeUnitaOrePagateButton_clicked();
-    void on_actionCaricaCartellini_triggered();
+    void on_actionCaricaPdf_triggered();
     void on_actionModificaDirigente_triggered();
     void on_actionAggiungiDirigente_triggered();
     void on_actionRimuoviDirigente_triggered();
@@ -98,6 +102,8 @@ private slots:
 
     void on_actionBackupDatabase_triggered();
 
+    void on_actionCaricaCsv_triggered();
+
 private:
     Ui::MainWindow *ui;
     bool unitaReadOnlyMode;
@@ -114,6 +120,9 @@ private:
     QProgressBar *progressBar;
     QLabel *msgLabel;
     bool m_isScheduledBackup;
+    QProcess *tabulaProcess;
+    QString pdfFile;
+
 
     QMenu *gdCalendarMenu;
     CalendarManager *gdCalendar;
@@ -164,7 +173,8 @@ private:
     InsertDBValues *insertDialog;
     PrintDialog *printDialog;
     DatabaseWizard *databaseWizard;
-    TimeCardsReader worker;
+    TabulaCsvTimeCardsReader tabulaReader;
+    OkularCsvTimeCardsReader okularReader;
     CompetenzeUnitaExporter unitaCompetenzeExporter;
     CompetenzeDirigenteExporter dirigenteCompetenzeExporter;
 

@@ -31,7 +31,7 @@
        <string notr="true">QTabWidget::tab-bar { alignment: center; }</string>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="unitaTab">
        <attribute name="icon">
@@ -3342,7 +3342,8 @@
     </property>
     <addaction name="actionNuovoDatabase"/>
     <addaction name="actionApriDatabase"/>
-    <addaction name="actionCaricaCartellini"/>
+    <addaction name="actionCaricaPdf"/>
+    <addaction name="actionCaricaCsv"/>
     <addaction name="separator"/>
     <addaction name="actionBackupDatabase"/>
     <addaction name="separator"/>
@@ -3387,7 +3388,7 @@
    </attribute>
    <addaction name="actionNuovoDatabase"/>
    <addaction name="actionApriDatabase"/>
-   <addaction name="actionCaricaCartellini"/>
+   <addaction name="actionCaricaPdf"/>
    <addaction name="separator"/>
    <addaction name="actionStampaCompetenzeDirigenti"/>
    <addaction name="actionStampaCompetenzeUnita"/>
@@ -3458,13 +3459,13 @@
     <string>&amp;Configura Gestione Competenze Medici</string>
    </property>
   </action>
-  <action name="actionCaricaCartellini">
+  <action name="actionCaricaPdf">
    <property name="icon">
     <iconset resource="assets.qrc">
-     <normaloff>:/icons/view-pim-news.svg</normaloff>:/icons/view-pim-news.svg</iconset>
+     <normaloff>:/icons/pdflatex.svg</normaloff>:/icons/pdflatex.svg</iconset>
    </property>
    <property name="text">
-    <string>Ca&amp;rica cartellini...</string>
+    <string>Ca&amp;rica cartellini da PDF...</string>
    </property>
   </action>
   <action name="actionModificaUnita">
@@ -3576,6 +3577,18 @@
    </property>
    <property name="toolTip">
     <string>Crea una copia di riserva del database corrente</string>
+   </property>
+  </action>
+  <action name="actionCaricaCsv">
+   <property name="icon">
+    <iconset resource="assets.qrc">
+     <normaloff>:/icons/view-pim-news.svg</normaloff>:/icons/view-pim-news.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Ca&amp;rica cartellini da CSV...</string>
+   </property>
+   <property name="toolTip">
+    <string>Carica cartellini da CSV</string>
    </property>
   </action>
  </widget>

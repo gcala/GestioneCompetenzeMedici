@@ -23,5 +23,6 @@
         <file>icons/document-open.svg</file>
         <file>images/sc_header.jpg</file>
         <file>icons/edit-copy.svg</file>
+        <file>icons/pdflatex.svg</file>
     </qresource>
 </RCC>

@@ -28,7 +28,8 @@ SOURCES += \
         mainwindow.cpp \
         searchcombobox.cpp \
         insertdbvalues.cpp \
-        timecardsreader.cpp \
+        okularcsvtimecardsreader.cpp \
+        tabulacsvtimecardsreader.cpp \
         sqlthread.cpp \
         sqlqueries.cpp \
         dipendente.cpp \
@@ -40,16 +41,17 @@ SOURCES += \
         printdialog.cpp \
         competenzeunitaexporter.cpp \
         competenzedirigenteexporter.cpp \
-    utilities.cpp \
-    databasewizard.cpp \
-    sqlitedatabasemanager.cpp \
-    nomiunitadialog.cpp
+        utilities.cpp \
+        databasewizard.cpp \
+        sqlitedatabasemanager.cpp \
+        nomiunitadialog.cpp
 
 HEADERS += \
         mainwindow.h \
         searchcombobox.h \
         insertdbvalues.h \
-        timecardsreader.h \
+        okularcsvtimecardsreader.h \
+        tabulacsvtimecardsreader.h \
         sqlthread.h \
         sqlqueries.h \
         dipendente.h \
@@ -62,17 +64,17 @@ HEADERS += \
         printdialog.h \
         competenzeunitaexporter.h \
         competenzedirigenteexporter.h \
-    utilities.h \
-    databasewizard.h \
-    sqlitedatabasemanager.h \
-    nomiunitadialog.h
+        utilities.h \
+        databasewizard.h \
+        sqlitedatabasemanager.h \
+        nomiunitadialog.h
 
 FORMS += \
         mainwindow.ui \
         insertdbvalues.ui \
         printdialog.ui \
-    databasewizard.ui \
-    nomiunitadialog.ui
+        databasewizard.ui \
+        nomiunitadialog.ui
 
 RESOURCES += \
     assets.qrc

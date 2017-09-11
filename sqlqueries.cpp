@@ -152,7 +152,7 @@ void SqlQueries::editDoctor(const QString &id,
                   "SET matricola=:matricola,nome=:nome,id_unita=:id_unita "
                   "WHERE id=" + id + ";");
     query.bindValue(":matricola", matricola);
-    query.bindValue(":nome", nome);
+    query.bindValue(":nome", QString(nome).replace("''","'"));
     query.bindValue(":id_unita", id_unita);
 
     if(!query.exec()) {

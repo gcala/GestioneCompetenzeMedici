@@ -19,7 +19,7 @@
  *
  */
 
-#include "timecardsreader.h"
+#include "okularcsvtimecardsreader.h"
 #include "sqlqueries.h"
 #include "dipendente.h"
 #include "nomiunitadialog.h"
@@ -31,7 +31,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 
-TimeCardsReader::TimeCardsReader(QObject *parent) :
+OkularCsvTimeCardsReader::OkularCsvTimeCardsReader(QObject *parent) :
     QThread(parent)
 {
     causaliFerie << "FEAP" << "FEAC" << "F2AP" << "FSPR";
@@ -48,17 +48,17 @@ TimeCardsReader::TimeCardsReader(QObject *parent) :
     m_nomiDialog = new NomiUnitaDialog;
 }
 
-TimeCardsReader::~TimeCardsReader()
+OkularCsvTimeCardsReader::~OkularCsvTimeCardsReader()
 {
     delete m_nomiDialog;
 }
 
-void TimeCardsReader::setFile(const QString &file)
+void OkularCsvTimeCardsReader::setFile(const QString &file)
 {
     fileName = file;
 }
 
-void TimeCardsReader::run()
+void OkularCsvTimeCardsReader::run()
 {
     if(fileName.isEmpty()) {
         qDebug() << "stringa vuota";
@@ -340,7 +340,7 @@ void TimeCardsReader::run()
     emit timeCardsRead();
 }
 
-int TimeCardsReader::mese2Int(const QString &mese)
+int OkularCsvTimeCardsReader::mese2Int(const QString &mese)
 {
     if(mese == "Gennaio")
         return 1;
@@ -368,7 +368,7 @@ int TimeCardsReader::mese2Int(const QString &mese)
     return 11;
 }
 
-int TimeCardsReader::inMinuti(const QString &time)
+int OkularCsvTimeCardsReader::inMinuti(const QString &time)
 {
     if(time.isEmpty())
         return 0;

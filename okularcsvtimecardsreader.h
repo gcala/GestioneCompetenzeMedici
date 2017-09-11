@@ -19,20 +19,20 @@
  *
  */
 
-#ifndef TIMECARDSREADER_H
-#define TIMECARDSREADER_H
+#ifndef OKULARCSVTIMECARDSREADER_H
+#define OKULARCSVTIMECARDSREADER_H
 
 #include <QThread>
 
 class Dipendente;
 class NomiUnitaDialog;
 
-class TimeCardsReader : public QThread
+class OkularCsvTimeCardsReader : public QThread
 {
     Q_OBJECT
 public:
-    TimeCardsReader(QObject *parent = 0);
-    ~TimeCardsReader();
+    OkularCsvTimeCardsReader(QObject *parent = 0);
+    ~OkularCsvTimeCardsReader();
 
     void setFile(const QString &);
 
@@ -60,4 +60,4 @@ private:
       int inMinuti(const QString &time);
 };
 
-#endif // TIMECARDSREADER_H
+#endif // OKULARCSVTIMECARDSREADER_H

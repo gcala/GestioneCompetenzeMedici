@@ -51,6 +51,10 @@ MainWindow::MainWindow(QWidget *parent) :
     statusBar()->addWidget(progressBar);
     progressBar->setVisible(false);
 
+    tabulaProcess = new QProcess;
+    connect(tabulaProcess, SIGNAL(finished(int , QProcess::ExitStatus)), this, SLOT(tabulaFinished(int , QProcess::ExitStatus)));
+    connect(tabulaProcess, SIGNAL(errorOccurred(QProcess::ProcessError)), this, SLOT(tabulaError(QProcess::ProcessError)));
+
     m_loadingTimeCards = false;
 
     ui->restoreCompetenzeButton->setEnabled(false);
@@ -156,9 +160,12 @@ MainWindow::MainWindow(QWidget *parent) :
     toggleDirigenteEditMode();
     loadSettings();
 
-    connect(&worker, SIGNAL(timeCardsRead()), this, SLOT(handleResults()));
-    connect(&worker, SIGNAL(totalRows(int)), this, SLOT(setTotalRows(int)));
-    connect(&worker, SIGNAL(currentRow(int)), this, SLOT(setCurrentRow(int)));
+    connect(&tabulaReader, SIGNAL(timeCardsRead()), this, SLOT(handleResults()));
+    connect(&tabulaReader, SIGNAL(totalRows(int)), this, SLOT(setTotalRows(int)));
+    connect(&tabulaReader, SIGNAL(currentRow(int)), this, SLOT(setCurrentRow(int)));
+    connect(&okularReader, SIGNAL(timeCardsRead()), this, SLOT(handleResults()));
+    connect(&okularReader, SIGNAL(totalRows(int)), this, SLOT(setTotalRows(int)));
+    connect(&okularReader, SIGNAL(currentRow(int)), this, SLOT(setCurrentRow(int)));
     connect(&unitaCompetenzeExporter, SIGNAL(exportFinished()), this, SLOT(exported()));
     connect(&unitaCompetenzeExporter, SIGNAL(totalRows(int)), this, SLOT(setTotalRows(int)));
     connect(&unitaCompetenzeExporter, SIGNAL(currentRow(int)), this, SLOT(setCurrentRow(int)));
@@ -752,23 +759,41 @@ void MainWindow::on_removeUnitaReperibilitaButton_clicked()
 //    populateUnitaReperibilita();
 }
 
-void MainWindow::on_actionCaricaCartellini_triggered()
+void MainWindow::on_actionCaricaPdf_triggered()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Seleziona file cartellini"),
+    pdfFile.clear();
+    pdfFile = QFileDialog::getOpenFileName(this, tr("Seleziona pdf cartellini"),
                                                     currentDatabase.absolutePath().isEmpty() ? QDir::homePath() : currentDatabase.absolutePath(),
-                                                    tr("CSV (*.csv)"));
+                                                    tr("PDF (*.pdf)"));
 
-    // be sure that a valid path was selected
-    if( QFile::exists( fileName ) ) {
-        // leggi cartellini
+    if(pdfFile.isEmpty())
+        return;
+
+    if(QFile::exists(pdfFile)) {
         m_loadingTimeCards = true;
-        worker.setFile(fileName);
-        worker.start();
         progressBar->setVisible(true);
-        msgLabel->setText("Importo i cartellini");
+        progressBar->setMinimum(0);
+        progressBar->setMaximum(0);
+        msgLabel->setText("Converto pdf in csv");
         ui->unitaTab->setEnabled(false);
         ui->dirigentiTab->setEnabled(false);
         ui->competenzeDirigenteTab->setEnabled(false);
+
+        QFileInfo fi(pdfFile);
+
+        QString program = "/usr/bin/java";
+        QStringList arguments;
+        arguments << "-jar" << QApplication::applicationDirPath() + QDir::separator() + "tabula.jar";
+        arguments << "-n";
+        arguments << "-p" << "all";
+        arguments << "-a" << "6.93,2.475,470.0,772.695";
+        arguments << "-c" << "23,32,72,114,155,196,237,277,318,357,395,430,466,501,529,570,597,638,665,704,731";
+        arguments << pdfFile;
+        arguments << "-o" << fi.absolutePath() + QDir::separator() + "cartellini.csv";
+
+        QFile::remove(fi.absolutePath() + QDir::separator() + "cartellini.csv");
+
+        tabulaProcess->start(program, arguments);
     }
 }
 
@@ -1070,5 +1095,58 @@ void MainWindow::needsBackup()
 {
     if(!QFile::exists(backupFileName(""))) {
         backupDatabase("", true);
+    }
+}
+
+void MainWindow::tabulaFinished(int exitCode, QProcess::ExitStatus exitStatus)
+{
+    if(exitStatus == QProcess::CrashExit) {
+        QMessageBox::critical(this, "Errore Tabula", "Si è verificato un errore con Tabula.\n"
+                              "Codice dell'errore: " + QString::number(exitCode), QMessageBox::Ok);
+        handleResults();
+        return;
+    }
+
+    QFileInfo fi(pdfFile);
+
+    // be sure that a valid path was selected
+    if( QFile::exists( fi.absolutePath() + QDir::separator() + "cartellini.csv" ) ) {
+        // leggi cartellini
+        tabulaReader.setFile(fi.absolutePath() + QDir::separator() + "cartellini.csv");
+        tabulaReader.start();
+        msgLabel->setText("Importo i cartellini");
+    } else {
+        handleResults();
+    }
+}
+
+void MainWindow::tabulaError(QProcess::ProcessError error)
+{
+    QMessageBox::critical(0, "Errore generazione file csv", "Si è verificato un errore durante la crezione del file CSV.\n"
+                          "Codice dell'errore: " + QString::number(error), QMessageBox::Ok);
+    handleResults();
+}
+
+void MainWindow::on_actionCaricaCsv_triggered()
+{
+    pdfFile.clear();
+    pdfFile = QFileDialog::getOpenFileName(this, tr("Seleziona file cartellini"),
+                                                        currentDatabase.absolutePath().isEmpty() ? QDir::homePath() : currentDatabase.absolutePath(),
+                                                        tr("CSV (*.csv)"));
+
+    if(pdfFile.isEmpty())
+        return;
+
+    // be sure that a valid path was selected
+    if( QFile::exists( pdfFile ) ) {
+        // leggi cartellini
+        m_loadingTimeCards = true;
+        okularReader.setFile(pdfFile);
+        okularReader.start();
+        progressBar->setVisible(true);
+        msgLabel->setText("Importo i cartellini");
+        ui->unitaTab->setEnabled(false);
+        ui->dirigentiTab->setEnabled(false);
+        ui->competenzeDirigenteTab->setEnabled(false);
     }
 }
