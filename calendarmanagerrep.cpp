@@ -68,6 +68,10 @@ void CalendarManagerRep::paintCell(QPainter *painter, const QRect &rect, const Q
     QCalendarWidget::paintCell(painter, rect, date);
 
     if( m_dates.keys().contains(date) ) {
+        QFont font = painter->font();
+        font.setPixelSize(18);
+        font.setBold(true);
+        painter->setFont(font);
         painter->setPen(m_outlinePen);
         painter->setBrush(m_transparentBrush);
         painter->drawRect(rect.adjusted(0,0,-1,-1));
