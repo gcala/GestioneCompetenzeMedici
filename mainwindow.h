@@ -60,7 +60,7 @@ public:
 
 private slots:
     void handleResults();
-    void exported();
+    void exported(QString file);
     void setTotalRows(int);
     void setCurrentRow(int);
     void tabulaFinished(int exitCode, QProcess::ExitStatus exitStatus);

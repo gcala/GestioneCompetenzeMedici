@@ -182,7 +182,7 @@ void CompetenzeDirigenteExporter::run()
         }
     }
 
-    emit exportFinished();
+    emit exportFinished(m_path + QDir::separator() + fileName);
 }
 
 void CompetenzeDirigenteExporter::printDirigente(QPainter &painter)

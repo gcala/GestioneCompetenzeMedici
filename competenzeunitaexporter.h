@@ -43,7 +43,7 @@ protected:
     void run() override;
 
 signals:
-      void exportFinished();
+      void exportFinished(const QString &file);
       void totalRows(int);
       void currentRow(int);
 

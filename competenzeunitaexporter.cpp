@@ -156,7 +156,7 @@ void CompetenzeUnitaExporter::run()
         isFileStart = false;
     }
 
-    emit exportFinished();
+    emit exportFinished(m_path + QDir::separator() + fileName);
 }
 
 void CompetenzeUnitaExporter::disegnaTabella(QPainter &painter)

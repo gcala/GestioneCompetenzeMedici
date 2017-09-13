@@ -44,7 +44,7 @@ protected:
     void run() override;
 
 signals:
-      void exportFinished();
+      void exportFinished(QString file);
       void totalRows(int);
       void currentRow(int);
 

@@ -166,10 +166,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&okularReader, SIGNAL(timeCardsRead()), this, SLOT(handleResults()));
     connect(&okularReader, SIGNAL(totalRows(int)), this, SLOT(setTotalRows(int)));
     connect(&okularReader, SIGNAL(currentRow(int)), this, SLOT(setCurrentRow(int)));
-    connect(&unitaCompetenzeExporter, SIGNAL(exportFinished()), this, SLOT(exported()));
+    connect(&unitaCompetenzeExporter, SIGNAL(exportFinished(QString)), this, SLOT(exported(QString)));
     connect(&unitaCompetenzeExporter, SIGNAL(totalRows(int)), this, SLOT(setTotalRows(int)));
     connect(&unitaCompetenzeExporter, SIGNAL(currentRow(int)), this, SLOT(setCurrentRow(int)));
-    connect(&dirigenteCompetenzeExporter, SIGNAL(exportFinished()), this, SLOT(exported()));
+    connect(&dirigenteCompetenzeExporter, SIGNAL(exportFinished(QString)), this, SLOT(exported(QString)));
     connect(&dirigenteCompetenzeExporter, SIGNAL(totalRows(int)), this, SLOT(setTotalRows(int)));
     connect(&dirigenteCompetenzeExporter, SIGNAL(currentRow(int)), this, SLOT(setCurrentRow(int)));
 
@@ -824,12 +824,14 @@ void MainWindow::handleResults()
     m_loadingTimeCards = false;
 }
 
-void MainWindow::exported()
+void MainWindow::exported(QString file)
 {
     ui->actionStampaCompetenzeUnita->setEnabled(true);
     ui->actionStampaCompetenzeDirigenti->setEnabled(true);
     progressBar->setVisible(false);
     msgLabel->setText("");
+
+    QDesktopServices::openUrl(QUrl::fromLocalFile(file));
 }
 
 void MainWindow::setTotalRows(int value)
