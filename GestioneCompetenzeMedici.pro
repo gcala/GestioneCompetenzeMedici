@@ -78,3 +78,5 @@ FORMS += \
 
 RESOURCES += \
     assets.qrc
+
+win32: RC_ICONS = logo.ico
