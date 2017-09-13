@@ -791,6 +791,12 @@ void MainWindow::on_actionCaricaPdf_triggered()
         QString program;
 
 #ifdef _WIN32
+        if(!QFile::exists("C:\\ProgramData\\Oracle\\Java\\javapath\\java.exe")) {
+            QMessageBox::critical(this, "Java non trovato", "L'eseguibile java.exe non è stato trovato nel seguente percorso:\n"
+                                  "C:\\ProgramData\\Oracle\\Java\\javapath\\ \n"
+                                  "Non posso generare il file csv.",QMessageBox::Cancel);
+            return;
+        }
         program = "C:\\ProgramData\\Oracle\\Java\\javapath\\java.exe";
 #else
         program = "/usr/bin/java";
