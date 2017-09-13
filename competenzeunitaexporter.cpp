@@ -136,6 +136,7 @@ void CompetenzeUnitaExporter::run()
             }
             printBadge(painter, m_competenza->badgeNumber(),counter);
             printName(painter, m_competenza->name(),counter);
+            printDeficit(painter, m_competenza->deficitOrario(),counter);
             printNotturno(painter, m_competenza->notte(),counter);
             printFestivo(painter, m_competenza->festivo(),counter);
             printRepNumTurni(painter,m_competenza->repCount().split(".").first(),counter);
@@ -561,6 +562,15 @@ void CompetenzeUnitaExporter::printName(QPainter &painter, const QString &text, 
     painter.setPen(Qt::black);
     painter.setFont(badgeFont());
     painter.drawText(QRect(m_gridWidth*2+20, m_gridHeight*m_totalHeaderHeight+(row*m_gridHeight), m_tableWidth-m_gridWidth*20-20, m_gridHeight), Qt::AlignLeft | Qt::AlignBottom, text);
+    painter.restore();
+}
+
+void CompetenzeUnitaExporter::printDeficit(QPainter &painter, const QString &text, int row)
+{
+    painter.save();
+    painter.setPen(Qt::black);
+    painter.setFont(badgeFont());
+    painter.drawText(QRect(m_tableWidth-m_gridWidth*18, m_gridHeight*m_totalHeaderHeight+(row*m_gridHeight), m_gridWidth*2, m_gridHeight), Qt::AlignCenter | Qt::AlignBottom, text == "//" ? "" : text);
     painter.restore();
 }
 

@@ -79,6 +79,7 @@ private:
     void printUnitaNumber(QPainter &painter, const QString &text);
     void printBadge(QPainter &painter, const QString &text, int row);
     void printName(QPainter &painter, const QString &text, int row);
+    void printDeficit(QPainter&painter, const QString &text, int row);
     void printNotturno(QPainter &painter, const QString &text, int row);
     void printFestivo(QPainter &painter, const QString &text, int row);
     void printStrRepartoOrdin(QPainter &painter, const QString &text, int row);
