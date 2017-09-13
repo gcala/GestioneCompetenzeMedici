@@ -790,7 +790,7 @@ void MainWindow::on_actionCaricaPdf_triggered()
         QString program;
 
 #ifdef _WIN32
-        program = "C:\\Windows\\System32\\java.exe";
+        program = "C:\\ProgramData\\Oracle\\Java\\javapath\\java.exe";
 #else
         program = "/usr/bin/java";
 #endif
