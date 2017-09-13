@@ -103,6 +103,8 @@ private slots:
     void on_dmpMinsEdit_valueChanged(int arg1);
     void on_dmpHoursEdit_valueChanged(int arg1);
 
+    void on_actionInformazioni_triggered();
+
 private:
     Ui::MainWindow *ui;
     bool unitaReadOnlyMode;

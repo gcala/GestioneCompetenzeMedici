@@ -24,5 +24,6 @@
         <file>images/sc_header.jpg</file>
         <file>icons/edit-copy.svg</file>
         <file>icons/pdflatex.svg</file>
+        <file>images/logo.png</file>
     </qresource>
 </RCC>

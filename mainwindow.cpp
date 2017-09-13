@@ -30,6 +30,7 @@
 #include "utilities.h"
 #include "databasewizard.h"
 #include "sqlitedatabasemanager.h"
+#include "aboutdialog.h"
 
 #include <QtWidgets>
 #include <QSqlQueryModel>
@@ -1173,4 +1174,10 @@ void MainWindow::on_dmpHoursEdit_valueChanged(int arg1)
     elaboraGuardie();
     elaboraRep();
     ui->saveCompetenzeButton->setEnabled(m_competenza->isModded());
+}
+
+void MainWindow::on_actionInformazioni_triggered()
+{
+    AboutDialog aboutDialog(this);
+    aboutDialog.exec();
 }
