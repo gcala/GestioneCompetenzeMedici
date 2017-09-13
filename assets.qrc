@@ -25,5 +25,6 @@
         <file>icons/edit-copy.svg</file>
         <file>icons/pdflatex.svg</file>
         <file>images/logo.png</file>
+        <file>images/paypal.png</file>
     </qresource>
 </RCC>

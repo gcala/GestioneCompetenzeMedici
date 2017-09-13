@@ -1187,3 +1187,8 @@ void MainWindow::on_actionInformazioni_triggered()
     AboutDialog aboutDialog(this);
     aboutDialog.exec();
 }
+
+void MainWindow::on_actionDonazione_triggered()
+{
+    QDesktopServices::openUrl( QUrl( QLatin1String( "https://paypal.me/GCala" ) ) );
+}

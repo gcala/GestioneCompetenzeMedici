@@ -105,6 +105,8 @@ private slots:
 
     void on_actionInformazioni_triggered();
 
+    void on_actionDonazione_triggered();
+
 private:
     Ui::MainWindow *ui;
     bool unitaReadOnlyMode;

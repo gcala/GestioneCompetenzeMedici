@@ -41,6 +41,8 @@ public slots:
 private slots:
     void on_pushButton_clicked();
 
+    void on_paypalButton_clicked();
+
 private:
     Ui::AboutDialog *ui;
     

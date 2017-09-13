@@ -23,6 +23,9 @@
 #include "aboutdialog.h"
 #include "ui_aboutdialog.h"
 
+#include <QDesktopServices>
+#include <QUrl>
+
 AboutDialog::AboutDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::AboutDialog)
@@ -39,4 +42,9 @@ AboutDialog::~AboutDialog()
 void AboutDialog::on_pushButton_clicked()
 {
     this->close();
+}
+
+void AboutDialog::on_paypalButton_clicked()
+{
+    QDesktopServices::openUrl( QUrl( QLatin1String( "https://paypal.me/GCala" ) ) );
 }
