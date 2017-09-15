@@ -103,13 +103,15 @@ void TabulaCsvTimeCardsReader::run()
     file.reset();
 
     int currRow = 0;
+    QTextStream in(&file);
+    in.setAutoDetectUnicode (true);
 
-    while(!file.atEnd()) {
+    while(!in.atEnd()) {
         currRow++;
         emit currentRow(currRow);
 
         isRestDay = false;
-        QString line = file.readLine();
+        QString line = in.readLine().trimmed();
 
         if(line.startsWith("Gio"))
             continue;
