@@ -311,29 +311,52 @@ void TabulaCsvTimeCardsReader::run()
 
             QString causale = campi.at(14).trimmed();
 
-            // notti
-            if(forseNotte && campi.at(3).trimmed().isEmpty()) {
-                forseNotte = false;
+            int numTimbrature = 0;
+            for(int i = 2; i < 9; i++) {
+                if(!campi.at(i).trimmed().isEmpty())
+                    numTimbrature++;
             }
-            if(forseNotte && !campi.at(2).trimmed().isEmpty()) {
+
+            if(forseNotte && numTimbrature == 0) {
+                m_dipendente->addGuardiaDiurna(QString::number(dataCorrente.addDays(-1).day()));
                 forseNotte = false;
-            }
-            if(campi.at(2).trimmed().isEmpty() && !campi.at(3).trimmed().isEmpty() && forseNotte) {
+            } else if(forseNotte && campi.at(2).trimmed().isEmpty()) {
                 m_dipendente->addGuardiaNotturna(QString::number(dataCorrente.addDays(-1).day()));
                 forseNotte = false;
-            } else {
-                if(!campi.at(2).trimmed().isEmpty() && campi.at(3).trimmed().isEmpty() && causale == "GUAR") {
-                    forseNotte = true;
-                } else if(!campi.at(2).trimmed().isEmpty() && !campi.at(3).trimmed().isEmpty() && !campi.at(4).trimmed().isEmpty() && campi.at(5).trimmed().isEmpty() && causale == "GUAR") {
-                    forseNotte = true;
-                } else if(!campi.at(2).trimmed().isEmpty() && !campi.at(3).trimmed().isEmpty() && !campi.at(4).trimmed().isEmpty() && !campi.at(5).trimmed().isEmpty() && !campi.at(6).trimmed().isEmpty() && campi.at(7).trimmed().isEmpty() && causale == "GUAR") {
-                    forseNotte = true;
-                } else if(!campi.at(2).trimmed().isEmpty() && !campi.at(3).trimmed().isEmpty() && !campi.at(4).trimmed().isEmpty() && !campi.at(5).trimmed().isEmpty() && !campi.at(6).trimmed().isEmpty() && !campi.at(7).trimmed().isEmpty() && !campi.at(8).trimmed().isEmpty() && campi.at(9).trimmed().isEmpty() && causale == "GUAR") {
-                    forseNotte = true;
-                } else if(causale == "GUAR") {
-                    m_dipendente->addGuardiaDiurna(QString::number(dataCorrente.day()));
-                }
             }
+
+            if(forseNotte && !campi.at(2).trimmed().isEmpty()) {
+                m_dipendente->addGuardiaDiurna(QString::number(dataCorrente.addDays(-1).day()));
+                forseNotte = false;
+            }
+
+            if(causale == "GUAR") {
+                forseNotte = true;
+            }
+
+//            // notti
+//            if(forseNotte && campi.at(3).trimmed().isEmpty()) {
+//                forseNotte = false;
+//            }
+//            if(forseNotte && !campi.at(2).trimmed().isEmpty()) {
+//                forseNotte = false;
+//            }
+//            if(campi.at(2).trimmed().isEmpty() && !campi.at(3).trimmed().isEmpty() && forseNotte) {
+//                m_dipendente->addGuardiaNotturna(QString::number(dataCorrente.addDays(-1).day()));
+//                forseNotte = false;
+//            } else {
+//                if(!campi.at(2).trimmed().isEmpty() && campi.at(3).trimmed().isEmpty() && causale == "GUAR") {
+//                    forseNotte = true;
+//                } else if(!campi.at(2).trimmed().isEmpty() && !campi.at(3).trimmed().isEmpty() && !campi.at(4).trimmed().isEmpty() && campi.at(5).trimmed().isEmpty() && causale == "GUAR") {
+//                    forseNotte = true;
+//                } else if(!campi.at(2).trimmed().isEmpty() && !campi.at(3).trimmed().isEmpty() && !campi.at(4).trimmed().isEmpty() && !campi.at(5).trimmed().isEmpty() && !campi.at(6).trimmed().isEmpty() && campi.at(7).trimmed().isEmpty() && causale == "GUAR") {
+//                    forseNotte = true;
+//                } else if(!campi.at(2).trimmed().isEmpty() && !campi.at(3).trimmed().isEmpty() && !campi.at(4).trimmed().isEmpty() && !campi.at(5).trimmed().isEmpty() && !campi.at(6).trimmed().isEmpty() && !campi.at(7).trimmed().isEmpty() && !campi.at(8).trimmed().isEmpty() && campi.at(9).trimmed().isEmpty() && causale == "GUAR") {
+//                    forseNotte = true;
+//                } else if(causale == "GUAR") {
+//                    m_dipendente->addGuardiaDiurna(QString::number(dataCorrente.day()));
+//                }
+//            }
         }
     }
 
