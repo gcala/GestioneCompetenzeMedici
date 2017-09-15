@@ -69,7 +69,7 @@ void CalendarManager::paintCell(QPainter *painter, const QRect &rect, const QDat
     if( m_dates.contains(date) ) {
         painter->setPen(m_outlinePen);
         painter->setBrush(m_transparentBrush);
-        painter->drawRect(rect.adjusted(0,0,-1,-1));
+        painter->drawRect(rect.adjusted(4,4,-5,-5));
     }
 }
 

@@ -74,22 +74,22 @@ void CalendarManagerRep::paintCell(QPainter *painter, const QRect &rect, const Q
         painter->setFont(font);
         painter->setPen(m_outlinePen);
         painter->setBrush(m_transparentBrush);
-        painter->drawRect(rect.adjusted(0,0,-1,-1));
+        painter->drawRect(rect.adjusted(4,4,-5,-5));
         switch(m_dates[date]) {
         case Mezzo:
-            painter->drawText(rect.adjusted(0,0,-1,-1), Qt::AlignRight | Qt::AlignTop,"½");
+            painter->drawText(rect.adjusted(4,4,-5,-5), Qt::AlignRight | Qt::AlignTop,"½");
             break;
         case Uno:
-            painter->drawText(rect.adjusted(0,0,-1,-1), Qt::AlignRight | Qt::AlignTop,"1");
+            painter->drawText(rect.adjusted(4,4,-5,-5), Qt::AlignRight | Qt::AlignTop,"1");
             break;
         case UnoMezzo:
-            painter->drawText(rect.adjusted(0,0,-1,-1), Qt::AlignRight | Qt::AlignTop,"1½");
+            painter->drawText(rect.adjusted(4,4,-5,-5), Qt::AlignRight | Qt::AlignTop,"1½");
             break;
         case Due:
-            painter->drawText(rect.adjusted(0,0,-1,-1), Qt::AlignRight | Qt::AlignTop,"2");
+            painter->drawText(rect.adjusted(4,4,-5,-5), Qt::AlignRight | Qt::AlignTop,"2");
             break;
         default:
-            painter->drawText(rect.adjusted(0,0,-1,-1), Qt::AlignRight | Qt::AlignTop,"2½");
+            painter->drawText(rect.adjusted(4,4,-5,-5), Qt::AlignRight | Qt::AlignTop,"2½");
         }
     }
 }
