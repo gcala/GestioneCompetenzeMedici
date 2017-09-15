@@ -376,6 +376,11 @@ bool SqlQueries::addTimeCard(const QString &tableName, const Dipendente *dipende
     QString modTableName = tableName;
     modTableName.replace("_","m_");
 
+    // se la riga del medico nella tabella delle modifiche esiste già non aggiungiamo nuovamente
+    if(timeCardExists(modTableName, QString::number(docId))) {
+        return true;
+    }
+
     query.prepare("INSERT INTO " + modTableName + " (id_medico) "
                   "VALUES (:id_medico);");
     query.bindValue(":id_medico", QString::number(docId));
