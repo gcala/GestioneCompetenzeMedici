@@ -840,7 +840,8 @@ void MainWindow::exported(QString file)
     progressBar->setVisible(false);
     msgLabel->setText("");
 
-    QDesktopServices::openUrl(QUrl::fromLocalFile(file));
+    if(!file.isEmpty())
+        QDesktopServices::openUrl(QUrl::fromLocalFile(file));
 }
 
 void MainWindow::setTotalRows(int value)
@@ -1004,8 +1005,10 @@ void MainWindow::on_actionStampaCompetenzeDirigenti_triggered()
 
     printDialog->exec();
 
-    if(!printDialog->proceed)
+    if(!printDialog->proceed) {
+        exported(QString());
         return;
+    }
 
     progressBar->setVisible(true);
     msgLabel->setText("Esportazione competenze dirigenti");
@@ -1030,8 +1033,10 @@ void MainWindow::on_actionStampaCompetenzeUnita_triggered()
 
     printDialog->exec();
 
-    if(!printDialog->proceed)
+    if(!printDialog->proceed) {
+        exported(QString());
         return;
+    }
 
     progressBar->setVisible(true);
     msgLabel->setText("Esportazione competenze unità");
