@@ -26,6 +26,7 @@
 
 RenderArea::RenderArea(QWidget *parent)
     : QWidget(parent)
+    , m_diurna(false)
 {
 //    setBackgroundRole(QPalette::Base);
 //    setAutoFillBackground(true);
@@ -44,6 +45,11 @@ QSize RenderArea::sizeHint() const
 void RenderArea::setGuardiaMap(const QMap<int, GuardiaType> &guardiaMap)
 {
     m_guardiaMap = guardiaMap;
+}
+
+void RenderArea::setDiurna(const bool ok)
+{
+    m_diurna = ok;
 }
 
 void RenderArea::paintEvent(QPaintEvent * /* event */)
@@ -70,14 +76,21 @@ void RenderArea::paintEvent(QPaintEvent * /* event */)
         painter.drawText(rect,Qt::AlignCenter | Qt::AlignVCenter,QString::number(i.key()));
         switch (i.value()) {
         case GuardiaType::Sabato:
-            painter.drawText(rect.adjusted(0,0,0,-30),Qt::AlignCenter | Qt::AlignTop,"*");
+            if(m_diurna)
+                painter.drawEllipse(rect.adjusted(8,8,-8,-8));
+            else
+                painter.drawText(rect.adjusted(0,0,0,-30),Qt::AlignCenter | Qt::AlignTop,"*");
             break;
         case GuardiaType::Domenica:
             painter.drawEllipse(rect.adjusted(8,8,-8,-8));
             break;
         case GuardiaType::GrandeFestivita:
-            painter.drawText(rect.adjusted(0,0,0,-30),Qt::AlignCenter | Qt::AlignTop,"*");
-            painter.drawRect(cellSize*(counter%5)+10,cellSize*yCounter+10,cellSize-20,cellSize-20);
+            if(m_diurna)
+                painter.drawEllipse(rect.adjusted(8,8,-8,-8));
+            else {
+                painter.drawText(rect.adjusted(0,0,0,-30),Qt::AlignCenter | Qt::AlignTop,"*");
+                painter.drawRect(cellSize*(counter%5)+10,cellSize*yCounter+10,cellSize-20,cellSize-20);
+            }
             break;
         default:
             break;

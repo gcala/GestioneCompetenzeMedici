@@ -52,6 +52,8 @@ MainWindow::MainWindow(QWidget *parent) :
     statusBar()->addWidget(progressBar);
     progressBar->setVisible(false);
 
+    ui->gdPainterWidget->setDiurna(true);
+
     tabulaProcess = new QProcess;
     connect(tabulaProcess, SIGNAL(finished(int , QProcess::ExitStatus)), this, SLOT(tabulaFinished(int , QProcess::ExitStatus)));
     connect(tabulaProcess, SIGNAL(errorOccurred(QProcess::ProcessError)), this, SLOT(tabulaError(QProcess::ProcessError)));

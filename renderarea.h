@@ -41,6 +41,7 @@ public:
     QSize sizeHint() const override;
 
     void setGuardiaMap(const QMap<int, GuardiaType> &guardiaMap);
+    void setDiurna(const bool ok);
 
 public slots:
 
@@ -49,6 +50,7 @@ protected:
 
 private:
     QMap<int, GuardiaType> m_guardiaMap;
+    bool m_diurna;
 };
 
 #endif // RENDERAREA_H
