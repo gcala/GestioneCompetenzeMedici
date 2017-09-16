@@ -36,9 +36,9 @@
 TabulaCsvTimeCardsReader::TabulaCsvTimeCardsReader(QObject *parent)
     : QThread(parent)
 {
-    causaliFerie << "FEAP" << "FEAC" << "F2AP" << "FSPR" << "RIRA" << "RIAN";
+    causaliFerie << "FEAP" << "FEAC" << "F2AP" << "FSPR";
     causaliMalattia << "MA" << "MAPR" << "MAPG" << "MACS" << "RICO" << "CSMA" << "INFO";
-    causaliCongedi << "PRMP" << "ANA" << "CONV"
+    causaliCongedi << "PRMP" << "ANA" << "CONV" << "RIRA" << "RIAN"
                    << "MAGI" << "DS" << "LUTT"
                    << "MATR" << "104G" << "AAR1" << "AF10"
                    << "AF30" << "AF0" << "MBA3" << "MBAM";
