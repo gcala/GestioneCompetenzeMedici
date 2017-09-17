@@ -52,7 +52,10 @@ private:
     const int m_maxPageWidth;
     const int m_rowHeight;
     const int m_assenzeVOffset;
-    const int m_lineSpacing;
+    const int m_boxVOffset;
+    const int m_boxHeight;
+    const int m_boxSpacing;
+    const int m_riepilogoVOffset;
     QString m_path;
     int m_idUnita;
     QString m_idMese;
@@ -69,6 +72,7 @@ private:
     QFont meseFont();
     QFont bodyFont();
     QFont bodyFontBold();
+    QFont totalsFont();
     QFont sectionFont();
     QString getUnitaName(const QString &id);
     QStringList getDirigentiIDs(const QString &id);

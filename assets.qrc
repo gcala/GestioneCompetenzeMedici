@@ -21,10 +21,10 @@
         <file>icons/list-add-user.svg</file>
         <file>icons/view-bank.svg</file>
         <file>icons/document-open.svg</file>
-        <file>images/sc_header.jpg</file>
         <file>icons/edit-copy.svg</file>
         <file>icons/pdflatex.svg</file>
         <file>images/logo.png</file>
         <file>images/paypal.png</file>
+        <file>images/sc_header.png</file>
     </qresource>
 </RCC>

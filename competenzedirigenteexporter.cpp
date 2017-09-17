@@ -22,6 +22,7 @@
 #include "competenzedirigenteexporter.h"
 #include "sqlqueries.h"
 #include "competenza.h"
+#include "utilities.h"
 
 #include <QDate>
 #include <QFile>
@@ -31,13 +32,17 @@
 #include <QSqlError>
 #include <QPdfWriter>
 #include <QPainter>
+#include <QAbstractTextDocumentLayout>
 
 CompetenzeDirigenteExporter::CompetenzeDirigenteExporter(QObject *parent)
     : QThread(parent)
     , m_maxPageWidth(8850)
-    , m_rowHeight(140)
-    , m_assenzeVOffset(3200)
-    , m_lineSpacing(300)
+    , m_rowHeight(350)
+    , m_assenzeVOffset(2000)
+    , m_boxVOffset(3900)
+    , m_boxHeight(3000)
+    , m_boxSpacing(100)
+    , m_riepilogoVOffset(10100)
 {
     m_idUnita = -1;
     m_idMese = -1;
@@ -198,7 +203,7 @@ void CompetenzeDirigenteExporter::printDirigente(QPainter &painter)
     printMalattia(painter);
     printRmp(painter);
     printRmc(painter);
-    printAltreAssenze(painter);
+//    printAltreAssenze(painter);
     printGuardieDiurne(painter);
     printGuardieNotturne(painter);
     printDistribuzioneOreGuardia(painter);
@@ -218,63 +223,44 @@ void CompetenzeDirigenteExporter::printDirigente(QPainter &painter)
 void CompetenzeDirigenteExporter::disegnaScheletro(QPainter &painter)
 {
     // disegno banner
-    QRectF target(0.0, 0.0, m_maxPageWidth, 2000.0);
-    QImage image(":/images/sc_header.jpg");
+    QRectF target(1300.0, 0.0, m_maxPageWidth-2400, 1000.0);
+    QImage image(":/images/sc_header.png");
     painter.drawImage(target, image);
+
     painter.setPen(Qt::black);
     painter.setFont(bodyFont());
 
+    // riquadro guardie
     painter.save();
-    painter.setPen(QPen(Qt::black, 15, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+    painter.setPen(QPen(Qt::black, 30, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
     painter.setBrush(Qt::NoBrush);
-    painter.drawRect(QRect(0,5250,m_maxPageWidth,2300));
+    painter.drawRect(QRect(0,m_boxVOffset,m_maxPageWidth,m_boxHeight));
     painter.restore();
 
     painter.setFont(sectionFont());
-    painter.drawText(QRect(100,5400,3000,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "Numero Guardie Effettuate:");
-
-    painter.drawText(QRect(0,5700,6000,m_rowHeight), Qt::AlignCenter | Qt::AlignVCenter, "Diurne");
-    painter.drawText(QRect(0,6600,6000,m_rowHeight), Qt::AlignCenter | Qt::AlignVCenter, "Notturne");
+    painter.drawText(QRect(0,m_boxVOffset+m_boxSpacing,m_maxPageWidth,m_rowHeight+30), Qt::AlignCenter | Qt::AlignVCenter, "GUARDIE");
 
     painter.setFont(bodyFont());
-    painter.drawText(QRect(6000,6000,1700,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "Feriali d. .......................");
-    painter.drawText(QRect(6000,6300,1700,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "Festive d. ........................");
-    painter.drawText(QRect(7800,6700,800,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "........................");
-    painter.drawText(QRect(6000,6900,1700,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "Feriali n. ........................");
-    painter.drawText(QRect(6000,7200,1700,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "Festive n. ........................");
-//    painter.drawText(QRect(5700,5800,300,1200), Qt::AlignLeft | Qt::AlignVCenter, "{");
+    painter.drawText(QRect(50,m_boxVOffset+m_boxHeight/3-250,5000,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "diurne");
+    painter.drawText(QRect(2000,m_boxVOffset+m_boxHeight/3+200,2000,m_rowHeight), Qt::AlignCenter | Qt::AlignVCenter, "_____________________________");
+    painter.drawText(QRect(50,m_boxVOffset+m_boxHeight/3*2-100,5000,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "notturne");
 
+    // riquadro reperibilità
     painter.save();
-    painter.setPen(QPen(Qt::black, 15, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+    painter.setPen(QPen(Qt::black, 30, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
     painter.setBrush(Qt::NoBrush);
-    painter.drawRect(QRect(0,7700,m_maxPageWidth,1600));
+    painter.drawRect(QRect(0,m_boxVOffset+m_boxHeight+m_boxSpacing,m_maxPageWidth,m_boxHeight));
     painter.restore();
 
     painter.setFont(sectionFont());
-    painter.drawText(QRect(0,8500,6000,m_rowHeight), Qt::AlignCenter | Qt::AlignVCenter, "Reperibilità");
+    painter.drawText(QRect(0,m_boxVOffset+m_boxHeight+m_boxSpacing*2-40,m_maxPageWidth,m_rowHeight+30+40), Qt::AlignCenter | Qt::AlignVCenter, "REPERIBILITÀ");
 
     painter.setFont(bodyFont());
-    painter.drawText(QRect(6000,7800,1700,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "Feriali d. .......................");
-    painter.drawText(QRect(6000,8100,1700,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "Festive d. ........................");
-    painter.drawText(QRect(7800,8500,800,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "........................");
-    painter.drawText(QRect(6000,8700,1700,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "Feriali n. ........................");
-    painter.drawText(QRect(6000,9000,1700,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "Festive n. ........................");
-//    painter.drawText(QRect(5700,5800,300,1200), Qt::AlignLeft | Qt::AlignVCenter, "{");
+    painter.drawText(QRect(50,m_boxVOffset+m_boxSpacing+m_boxHeight/2-250+m_boxHeight,5000,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "turni");
 
-    painter.setFont(sectionFont());
-    painter.drawText(QRect(0,9500,5000,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "Numero di turni di pronta disponibilità effettuati:");
-    painter.drawText(QRect(0,9800,6200,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "Giorni:");
-    painter.setFont(bodyFont());
-    painter.drawText(QRect(0,10100,3000,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "ore di lavoro dovute......................................................................................................................");
-    painter.drawText(QRect(0,10400,3000,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "ore di lavoro effettuate......................................................................................................................");
-    painter.drawText(QRect(0,10700,6200,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "lavoro straordinario per guardia ore......................................................................................................................");
-    painter.drawText(QRect(0,11000,6200,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "lavoro straordinario in pronta disponibilità ore.....................................................................");
-    painter.drawText(QRect(0,11300,6200,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "lavoro straordinario per altri motivi documentato ore.....................................................................");
-    painter.drawText(QRect(0,11600,2000,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "Rep.....................................................................");
-    painter.drawText(QRect(2100,11600,2000,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "Deficit orario.....................................................................");
-    painter.drawText(QRect(0,11900,2000,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "Notte.....................................................................");
-    painter.drawText(QRect(2100,11900,2000,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "Festivo.....................................................................");
-    painter.drawText(QRect(4200,11900,2000,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "Mensa.....................................................................");
+    painter.setFont(bodyFont());    
+    painter.drawText(QRect(0,m_riepilogoVOffset+(4*m_rowHeight),6200,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "lavoro straordinario per altri motivi documentato ore");
+    painter.drawText(QRect(5200,m_riepilogoVOffset+(6*m_rowHeight),2000,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "Mensa");
 }
 
 QFont CompetenzeDirigenteExporter::numberFont()
@@ -301,9 +287,10 @@ QFont CompetenzeDirigenteExporter::meseFont()
 {
     QFont font;
     font.setStyleStrategy(QFont::PreferAntialias);
-    font.setPixelSize(180);
+    font.setPixelSize(200);
     font.setBold(true);
     font.setFamily("Sans Serif");
+    font.setUnderline(true);
     return font;
 }
 
@@ -311,7 +298,7 @@ QFont CompetenzeDirigenteExporter::bodyFont()
 {
     QFont font;
     font.setStyleStrategy(QFont::PreferAntialias);
-    font.setPixelSize(150);
+    font.setPixelSize(250);
     font.setBold(false);
     font.setFamily("Sans Serif");
     return font;
@@ -319,11 +306,15 @@ QFont CompetenzeDirigenteExporter::bodyFont()
 
 QFont CompetenzeDirigenteExporter::bodyFontBold()
 {
-    QFont font;
-    font.setStyleStrategy(QFont::PreferAntialias);
-    font.setPixelSize(150);
+    QFont font(bodyFont());
     font.setBold(true);
-    font.setFamily("Sans Serif");
+    return font;
+}
+
+QFont CompetenzeDirigenteExporter::totalsFont()
+{
+    QFont font(bodyFontBold());
+    font.setPixelSize(280);
     return font;
 }
 
@@ -331,7 +322,7 @@ QFont CompetenzeDirigenteExporter::sectionFont()
 {
     QFont font;
     font.setStyleStrategy(QFont::PreferAntialias);
-    font.setPixelSize(150);
+    font.setPixelSize(300);
     font.setBold(true);
     font.setUnderline(true);
     font.setFamily("Sans Serif");
@@ -401,7 +392,7 @@ void CompetenzeDirigenteExporter::printMonth(QPainter &painter, const QString &t
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(meseFont());
-    painter.drawText(QRect(0, 2100, m_maxPageWidth,160), Qt::AlignRight | Qt::AlignVCenter, text);
+    painter.drawText(QRect(0, 1100, m_maxPageWidth,220), Qt::AlignRight | Qt::AlignVCenter, text);
     painter.restore();
 }
 
@@ -409,8 +400,8 @@ void CompetenzeDirigenteExporter::printUnitaName(QPainter &painter, const QStrin
 {
     painter.save();
     painter.setPen(Qt::black);
-    painter.setFont(unitaFont());
-    painter.drawText(QRect(650, 2100, 8250,150), Qt::AlignLeft | Qt::AlignVCenter, text);
+    painter.setFont(meseFont());
+    painter.drawText(QRect(650, 1100, 7000,220), Qt::AlignLeft | Qt::AlignVCenter, text);
     painter.restore();
 }
 
@@ -420,8 +411,8 @@ void CompetenzeDirigenteExporter::printUnitaNumber(QPainter &painter, const QStr
     painter.setPen(QPen(Qt::black, 25, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
     painter.setBrush(Qt::NoBrush);
     painter.setFont(numberFont());
-    painter.drawText(QRect(0,2100,600,600), Qt::AlignCenter, text);
-    painter.drawRect(QRect(0,2100,600,600));
+    painter.drawText(QRect(0,1100,600,600), Qt::AlignCenter, text);
+    painter.drawRect(QRect(0,1100,600,600));
     painter.restore();
 }
 
@@ -430,19 +421,22 @@ void CompetenzeDirigenteExporter::printName(QPainter &painter, const QString &te
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(nameFont());
-    painter.drawText(QRect(650, 2600,8250,350), Qt::AlignCenter | Qt::AlignVCenter, text);
+    painter.drawText(QRect(650, 1300,m_maxPageWidth-650,400), Qt::AlignCenter | Qt::AlignVCenter, text);
     painter.restore();
 }
 
 void CompetenzeDirigenteExporter::printGiorniLavorati(QPainter &painter)
 {
-    int vOffset = m_assenzeVOffset+(0*m_lineSpacing);
-    QString text = "Giorni Lavorati:";
+    const int vOffset = m_assenzeVOffset+(0*m_rowHeight);
+    const QString text = "Giorni Lavorati:";
+
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(bodyFont());
+
     QFontMetrics fm(bodyFont());
-    int sectionWidth = fm.width(text) + 25;
+    const int sectionWidth = fm.width(text) + 50;
+
     painter.drawText(QRect(0,vOffset,4000,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, text);
     painter.setFont(bodyFontBold());
     painter.drawText(QRect(sectionWidth,vOffset,m_maxPageWidth-sectionWidth,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, m_competenza->giorniLavorativi() + " - " + m_competenza->assenzeTotali() + " = " + m_competenza->giorniLavorati());
@@ -451,15 +445,22 @@ void CompetenzeDirigenteExporter::printGiorniLavorati(QPainter &painter)
 
 void CompetenzeDirigenteExporter::printFerie(QPainter &painter)
 {
-    int vOffset = m_assenzeVOffset+(1*m_lineSpacing);
-    QString text = "FERIE:";
+    const int vOffset = m_assenzeVOffset+(1*m_rowHeight);
+    const QString text = "FERIE:";
+
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(bodyFont());
+
     QFontMetrics fm(bodyFont());
-    int sectionWidth = fm.width(text) + 25;
-    painter.drawText(QRect(0,vOffset,4000,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, text);
+    const int sectionWidth = fm.width(text) + 50;
+
+    painter.drawText(QRect(0,vOffset,4000,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, text);
     painter.setFont(bodyFontBold());
+
+    QAbstractTextDocumentLayout::PaintContext context;
+    QTextDocument doc;
+    doc.setDefaultFont(bodyFontBold());
 
     QList<QDate> dates = m_competenza->ferieDates();
     QStringList list;
@@ -468,21 +469,34 @@ void CompetenzeDirigenteExporter::printFerie(QPainter &painter)
         list << QString::number(d.day());
     }
 
-    painter.drawText(QRect(sectionWidth,vOffset,m_maxPageWidth-sectionWidth,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, list.join(" - "));
+    doc.setHtml(list.join(" - "));
+    const float ratio = doc.documentLayout()->documentSize().width() / (m_maxPageWidth-sectionWidth);
+    painter.translate(sectionWidth,vOffset+50);
+    if(ratio > 1.0)
+        painter.scale(1.0/ratio,1.0);
+    doc.documentLayout()->draw(&painter, context);
+
     painter.restore();
 }
 
 void CompetenzeDirigenteExporter::printCongedi(QPainter &painter)
 {
-    int vOffset = m_assenzeVOffset+(2*m_lineSpacing);
-    QString text = "C.S.:";
+    const int vOffset = m_assenzeVOffset+(2*m_rowHeight);
+    const QString text = "C.S.:";
+
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(bodyFont());
+
     QFontMetrics fm(bodyFont());
-    int sectionWidth = fm.width(text) + 25;
-    painter.drawText(QRect(0,vOffset,4000,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, text);
+    const int sectionWidth = fm.width(text) + 50;
+
+    painter.drawText(QRect(0,vOffset,4000,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, text);
     painter.setFont(bodyFontBold());
+
+    QAbstractTextDocumentLayout::PaintContext context;
+    QTextDocument doc;
+    doc.setDefaultFont(bodyFontBold());
 
     QList<QDate> dates = m_competenza->congediDates();
     QStringList list;
@@ -491,21 +505,34 @@ void CompetenzeDirigenteExporter::printCongedi(QPainter &painter)
         list << QString::number(d.day());
     }
 
-    painter.drawText(QRect(sectionWidth,vOffset,m_maxPageWidth-sectionWidth,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, list.join(" - "));
+    doc.setHtml(list.join(" - "));
+    const float ratio = doc.documentLayout()->documentSize().width() / (m_maxPageWidth-sectionWidth);
+    painter.translate(sectionWidth,vOffset+50);
+    if(ratio > 1.0)
+        painter.scale(1.0/ratio,1.0);
+    doc.documentLayout()->draw(&painter, context);
+
     painter.restore();
 }
 
 void CompetenzeDirigenteExporter::printMalattia(QPainter &painter)
 {
-    int vOffset = m_assenzeVOffset+(3*m_lineSpacing);
-    QString text = "Malattia:";
+    const int vOffset = m_assenzeVOffset+(3*m_rowHeight);
+    const QString text = "Malattia:";
+
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(bodyFont());
+
     QFontMetrics fm(bodyFont());
-    int sectionWidth = fm.width(text) + 25;
-    painter.drawText(QRect(0,vOffset,4000,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, text);
+    const int sectionWidth = fm.width(text) + 50;
+
+    painter.drawText(QRect(0,vOffset,4000,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, text);
     painter.setFont(bodyFontBold());
+
+    QAbstractTextDocumentLayout::PaintContext context;
+    QTextDocument doc;
+    doc.setDefaultFont(bodyFontBold());
 
     QList<QDate> dates = m_competenza->malattiaDates();
     QStringList list;
@@ -514,21 +541,34 @@ void CompetenzeDirigenteExporter::printMalattia(QPainter &painter)
         list << QString::number(d.day());
     }
 
-    painter.drawText(QRect(sectionWidth,vOffset,m_maxPageWidth-sectionWidth,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, list.join(" - "));
+    doc.setHtml(list.join(" - "));
+    const float ratio = doc.documentLayout()->documentSize().width() / (m_maxPageWidth-sectionWidth);
+    painter.translate(sectionWidth,vOffset+50);
+    if(ratio > 1.0)
+        painter.scale(1.0/ratio,1.0);
+    doc.documentLayout()->draw(&painter, context);
+
     painter.restore();
 }
 
 void CompetenzeDirigenteExporter::printRmp(QPainter &painter)
 {
-    int vOffset = m_assenzeVOffset+(4*m_lineSpacing);
-    QString text = "Recuperi (m.p.):";
+    const int vOffset = m_assenzeVOffset+(4*m_rowHeight);
+    const QString text = "RMP:";
+
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(bodyFont());
+
     QFontMetrics fm(bodyFont());
-    int sectionWidth = fm.width(text) + 25;
-    painter.drawText(QRect(0,vOffset,4000,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, text);
+    const int sectionWidth = fm.width(text) + 50;
+
+    painter.drawText(QRect(0,vOffset,m_maxPageWidth/2-50,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, text);
     painter.setFont(bodyFontBold());
+
+    QAbstractTextDocumentLayout::PaintContext context;
+    QTextDocument doc;
+    doc.setDefaultFont(bodyFontBold());
 
     QList<QDate> dates = m_competenza->rmpDates();
     QStringList list;
@@ -537,21 +577,34 @@ void CompetenzeDirigenteExporter::printRmp(QPainter &painter)
         list << QString::number(d.day());
     }
 
-    painter.drawText(QRect(sectionWidth,vOffset,m_maxPageWidth-sectionWidth,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, list.join(" - "));
+    doc.setHtml(list.join(" - "));
+    const float ratio = doc.documentLayout()->documentSize().width() / (m_maxPageWidth/2-sectionWidth);
+    painter.translate(sectionWidth,vOffset+50);
+    if(ratio > 1.0)
+        painter.scale(1.0/ratio,1.0);
+    doc.documentLayout()->draw(&painter, context);
+
     painter.restore();
 }
 
 void CompetenzeDirigenteExporter::printRmc(QPainter &painter)
 {
-    int vOffset = m_assenzeVOffset+(5*m_lineSpacing);
-    QString text = "Recuperi (m.c.):";
+    const int vOffset = m_assenzeVOffset+(4*m_rowHeight);
+    const QString text = "RMC:";
+
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(bodyFont());
+
     QFontMetrics fm(bodyFont());
-    int sectionWidth = fm.width(text) + 25;
-    painter.drawText(QRect(0,vOffset,4000,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, text);
+    const int sectionWidth = fm.width(text) + 50;
+
+    painter.drawText(QRect(m_maxPageWidth/2,vOffset+50,m_maxPageWidth/2,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, text);
     painter.setFont(bodyFontBold());
+
+    QAbstractTextDocumentLayout::PaintContext context;
+    QTextDocument doc;
+    doc.setDefaultFont(bodyFontBold());
 
     QList<QDate> dates = m_competenza->rmcDates();
     QStringList list;
@@ -560,21 +613,34 @@ void CompetenzeDirigenteExporter::printRmc(QPainter &painter)
         list << QString::number(d.day());
     }
 
-    painter.drawText(QRect(sectionWidth,vOffset,m_maxPageWidth-sectionWidth,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, list.join(" - "));
+    doc.setHtml(list.join(" - "));
+    const float ratio = doc.documentLayout()->documentSize().width() / (m_maxPageWidth/2-sectionWidth);
+    painter.translate(m_maxPageWidth/2+sectionWidth,vOffset+100);
+    if(ratio > 1.0)
+        painter.scale(1.0/ratio,1.0);
+    doc.documentLayout()->draw(&painter, context);
+
     painter.restore();
 }
 
 void CompetenzeDirigenteExporter::printAltreAssenze(QPainter &painter)
 {
-    int vOffset = m_assenzeVOffset+(6*m_lineSpacing);
-    QString text = "Altre assenze:";
+    const int vOffset = m_assenzeVOffset+(6*m_rowHeight);
+    const QString text = "Altre assenze:";
+
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(bodyFont());
+
     QFontMetrics fm(bodyFont());
-    int sectionWidth = fm.width(text) + 25;
+    const int sectionWidth = fm.width(text) + 40;
+
     painter.drawText(QRect(0,vOffset,4000,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, text);
     painter.setFont(bodyFontBold());
+
+    QAbstractTextDocumentLayout::PaintContext context;
+    QTextDocument doc;
+    doc.setDefaultFont(bodyFontBold());
 
     QList<QDate> dates = m_competenza->altreAssenzeDates();
     QStringList list;
@@ -583,239 +649,425 @@ void CompetenzeDirigenteExporter::printAltreAssenze(QPainter &painter)
         list << QString::number(d.day());
     }
 
-    painter.drawText(QRect(sectionWidth,vOffset,m_maxPageWidth-sectionWidth,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, list.join(" - "));
+    doc.setHtml(list.join(" - "));
+    const float ratio = doc.documentLayout()->documentSize().width() / (m_maxPageWidth-sectionWidth);
+    painter.translate(sectionWidth,vOffset+50);
+    if(ratio > 1.0)
+        painter.scale(1.0/ratio,1.0);
+    doc.documentLayout()->draw(&painter, context);
+
     painter.restore();
 }
 
-/*
- void IndexPage::populateReviewIndex(QPainter *painter,
-                                    int &posY,
-                                    int &columnCount,
-                                    const QString &title,
-                                    const QString &page )
-{
-    const int maxColumnHeight = 125;
-    const float columnWidth = 200.0;
-
-    QAbstractTextDocumentLayout::PaintContext context;
-    QTextDocument doc;
-    doc.setDefaultFont(Fonts::specContentFont());
-//	doc.setTextWidth(columnWidth);
-    doc.setHtml("<p style=\"font-family:Sans Serif;font-size:80%;font-weight:bold;color:white\">" + title + "</p>");
-    if((posY + doc.documentLayout()->documentSize().height()) > maxColumnHeight) {
-        if(columnCount != 4) {
-            columnCount++;
-            posY = 0;
-        }
-    }
-
-    float tw = doc.documentLayout()->documentSize().width();
-    float ratio = tw/columnWidth;
-    painter->save();
-    painter->translate(22 + (columnCount-1)*225, posY);
-    if(ratio > 1.0f) {
-        painter->scale(1.0/ratio, 1.0);
-    }
-    doc.documentLayout()->draw(painter, context);
-    painter->restore();
-
-    painter->save();
-    painter->setFont(Fonts::proconsFont());
-    painter->setPen(Qt::gray);
-    painter->drawText((columnCount-1)*225, posY+12, page);
-    painter->restore();
-
-    posY += doc.documentLayout()->documentSize().height()-4;
-}
-*/
-
 void CompetenzeDirigenteExporter::printGuardieDiurne(QPainter &painter)
 {
+    const int cellSize = 500;
+    const int spacing = 80;
+
+    int elementiPerRiga = 7;
+    int numRows = 1;
+
+    if(m_competenza->guardiaDiurnaMap().count() > 14)
+        elementiPerRiga = (m_competenza->guardiaDiurnaMap().count()%2 == 0 ? m_competenza->guardiaDiurnaMap().count()/2 : m_competenza->guardiaDiurnaMap().count()/2+1);
+
+    if(m_competenza->guardiaDiurnaMap().count() > 7)
+        numRows = 2;
+
+    QPixmap pix(cellSize*elementiPerRiga+(elementiPerRiga-1)*spacing,numRows*cellSize + (numRows == 0 ? 0 : spacing));
+    pix.fill(Qt::white);
+    QPainter p(&pix);
+
     QPen pen;
     pen.setColor(Qt::black);
     pen.setWidth(15);
 
-    painter.save();
-
     QFont font = painter.font();
-    font.setPixelSize(140);
+    font.setPixelSize(300);
     font.setBold(true);
-    painter.setFont(font);
-    painter.setPen(pen);
-    painter.setRenderHint(QPainter::Antialiasing, true);
-    painter.setBrush(Qt::NoBrush);
+    p.setFont(font);
+    p.setPen(pen);
+    p.setRenderHint(QPainter::Antialiasing, true);
+    p.setBrush(Qt::NoBrush);
 
-    int cellSize = 300;
     int counter = 0;
-    const int hOffset = (6000 - cellSize*m_competenza->guardiaDiurnaMap().count()) / 2;
+    int row = 0;
+    int column = 0;
+    bool inizio = true;
 
     QMap<int, GuardiaType>::const_iterator i = m_competenza->guardiaDiurnaMap().constBegin();
     while (i != m_competenza->guardiaDiurnaMap().constEnd()) {
-        QRect rect(hOffset+cellSize*counter,6000,cellSize,cellSize);
-        painter.drawText(rect,Qt::AlignCenter | Qt::AlignVCenter,QString::number(i.key()));
-        painter.drawEllipse(rect.adjusted(15,15,-15,-15));
+        if(counter < elementiPerRiga)
+            row = 0;
+        else
+            row = 1;
+
+        p.save();
+        p.translate(column*cellSize,cellSize*row + (row == 0 ? 0 : spacing));
+        if(!inizio)
+            p.translate(spacing*column,0);
+
+        QRect rect(0,0,cellSize,cellSize);
+        p.drawText(rect,Qt::AlignCenter | Qt::AlignVCenter,QString::number(i.key()));
+        p.drawEllipse(rect.adjusted(15,15,-15,-15));
         counter++;
+        if(counter == elementiPerRiga) {
+            inizio = true;
+            column = 0;
+        } else {
+            inizio = false;
+            column++;
+        }
         i++;
+        p.restore();
     }
+
+    const int offset = numRows == 1 ? 350 : 400;
+
+    painter.save();
+    painter.drawPixmap(1200,m_boxVOffset+m_boxHeight/3-offset,pix.width() > 3980 ? pix.scaledToWidth(3980, Qt::SmoothTransformation) : pix);
     painter.restore();
 }
 
 void CompetenzeDirigenteExporter::printGuardieNotturne(QPainter &painter)
 {
+    const int cellSize = 500;
+    const int spacing = 80;
+
+    int elementiPerRiga = 7;
+    int numRows = 1;
+
+    if(m_competenza->guardiaNotturnaMap().count() > 14)
+        elementiPerRiga = (m_competenza->guardiaNotturnaMap().count()%2 == 0 ? m_competenza->guardiaNotturnaMap().count()/2 : m_competenza->guardiaNotturnaMap().count()/2+1);
+
+    if(m_competenza->guardiaNotturnaMap().count() > 7)
+        numRows = 2;
+
+    QPixmap pix(cellSize*elementiPerRiga+(elementiPerRiga-1)*spacing,numRows*cellSize + (numRows == 0 ? 0 : spacing));
+    pix.fill(Qt::white);
+    QPainter p(&pix);
+
     QPen pen;
     pen.setColor(Qt::black);
     pen.setWidth(15);
 
-    painter.save();
-
     QFont font = painter.font();
-    font.setPixelSize(140);
+    font.setPixelSize(300);
     font.setBold(true);
-    painter.setFont(font);
-    painter.setPen(pen);
-    painter.setRenderHint(QPainter::Antialiasing, true);
-    painter.setBrush(Qt::NoBrush);
+    p.setFont(font);
+    p.setPen(pen);
+    p.setRenderHint(QPainter::Antialiasing, true);
+    p.setBrush(Qt::NoBrush);
 
-    int cellSize = 300;
     int counter = 0;
-    const int hOffset = (6000 - cellSize*m_competenza->guardiaNotturnaMap().count()) / 2;
+    int row = 0;
+    int column = 0;
+    bool inizio = true;
 
     QMap<int, GuardiaType>::const_iterator i = m_competenza->guardiaNotturnaMap().constBegin();
     while (i != m_competenza->guardiaNotturnaMap().constEnd()) {
-        QRect rect(hOffset+cellSize*counter,6900,cellSize,cellSize);
-        painter.drawText(rect,Qt::AlignCenter | Qt::AlignVCenter,QString::number(i.key()));
+        if(counter < elementiPerRiga)
+            row = 0;
+        else
+            row = 1;
+
+        p.save();
+        p.translate(column*cellSize,cellSize*row + (row == 0 ? 0 : spacing));
+        if(!inizio)
+            p.translate(spacing*column,0);
+
+        QRect rect(0,0,cellSize,cellSize);
+        p.drawText(rect,Qt::AlignCenter | Qt::AlignBottom,QString::number(i.key()));
         switch (i.value()) {
         case GuardiaType::Sabato:
-            painter.drawText(rect,Qt::AlignHCenter | Qt::AlignTop,"*");
+            p.drawText(rect,Qt::AlignHCenter | Qt::AlignTop,"*");
             break;
         case GuardiaType::Domenica:
-            painter.drawEllipse(rect.adjusted(15,15,-15,-15));
+            p.drawEllipse(rect.adjusted(60,120,-60,0));
             break;
         case GuardiaType::GrandeFestivita:
-            painter.drawText(QRect(hOffset+cellSize*counter-80,6900-80,cellSize+160,cellSize+160),Qt::AlignHCenter | Qt::AlignTop,"*");
-            painter.drawRect(rect.adjusted(25,25,-25,-25));
+            p.drawText(rect,Qt::AlignHCenter | Qt::AlignTop,"*");
+            p.drawRect(rect.adjusted(45,180,-45,-45));
             break;
         default:
             break;
         }
+
         counter++;
+        if(counter == elementiPerRiga) {
+            inizio = true;
+            column = 0;
+        } else {
+            inizio = false;
+            column++;
+        }
         i++;
+        p.restore();
     }
+
+    const int offset = numRows == 1 ? 250 : 450;
+
+    painter.save();
+    painter.drawPixmap(1200,m_boxVOffset+m_boxHeight/3*2-offset,pix.width() > 3980 ? pix.scaledToWidth(3980, Qt::SmoothTransformation) : pix);
     painter.restore();
 }
 
 void CompetenzeDirigenteExporter::printDistribuzioneOreGuardia(QPainter &painter)
 {
     painter.save();
+    painter.setFont(bodyFont());
+    painter.drawText(QRect(5300,m_boxVOffset+m_boxHeight/5-100,1700,m_rowHeight), Qt::AlignRight | Qt::AlignVCenter, "feriali d. ore");
+    painter.drawText(QRect(7050,m_boxVOffset+m_boxHeight/5-100,1300,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "______________________");
+
+    painter.drawText(QRect(5300,m_boxVOffset+m_boxHeight/5*2-150,1700,m_rowHeight), Qt::AlignRight | Qt::AlignVCenter, "festive d. ore");
+    painter.drawText(QRect(7050,m_boxVOffset+m_boxHeight/5*2-150,1300,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "______________________");
+
+    painter.drawText(QRect(5300,m_boxVOffset+m_boxHeight/5*3-100,1700,m_rowHeight), Qt::AlignRight | Qt::AlignVCenter, "feriali n. ore");
+    painter.drawText(QRect(7050,m_boxVOffset+m_boxHeight/5*3-100,1300,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "_______________________");
+
+    painter.drawText(QRect(5300,m_boxVOffset+m_boxHeight/5*4-150,1700,m_rowHeight), Qt::AlignRight | Qt::AlignVCenter, "festive n. ore");
+    painter.drawText(QRect(7050,m_boxVOffset+m_boxHeight/5*4-150,1300,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "_______________________");
+
+    painter.setFont(bodyFontBold());
+    painter.drawText(QRect(7700,m_boxVOffset+m_boxHeight-350,1000,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "T.");
+    painter.drawText(QRect(8050,m_boxVOffset+m_boxHeight-350,800,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "_______________________");
+    painter.restore();
+
+    painter.save();
     painter.setPen(Qt::black);
     painter.setFont(bodyFontBold());
 
-    painter.drawText(QRect(6750,5950,1200,140), Qt::AlignLeft | Qt::AlignVCenter, QString::number(m_competenza->g_d_fer_F()) + " + " + QString::number(m_competenza->g_d_fer_S()) + " + " + QString::number(m_competenza->g_d_fer_D()));
-    painter.drawText(QRect(6750,6250,1200,140), Qt::AlignLeft | Qt::AlignVCenter, QString::number(m_competenza->g_d_fes_F()) + " + " + QString::number(m_competenza->g_d_fes_S()) + " + " + QString::number(m_competenza->g_d_fes_D()));
-    painter.drawText(QRect(6750,6850,1200,140), Qt::AlignLeft | Qt::AlignVCenter, QString::number(m_competenza->g_n_fer_F()) + " + " + QString::number(m_competenza->g_n_fer_S()) + " + " + QString::number(m_competenza->g_n_fer_D()));
-    painter.drawText(QRect(6750,7150,1200,140), Qt::AlignLeft | Qt::AlignVCenter, QString::number(m_competenza->g_n_fes_F()) + " + " + QString::number(m_competenza->g_n_fes_S()) + " + " + QString::number(m_competenza->g_n_fes_D()));
-    painter.drawText(QRect(8000,6650,1200,140), Qt::AlignLeft | Qt::AlignVCenter, QString::number(m_competenza->totOreGuardie()));
+    QStringList list;
+    list << QString::number(m_competenza->g_d_fer_F()) << QString::number(m_competenza->g_d_fer_S()) << QString::number(m_competenza->g_d_fer_D());
+    list.removeAll("0");
+
+    painter.drawText(QRect(7050,m_boxVOffset+m_boxHeight/5-100,1300,m_rowHeight), Qt::AlignCenter | Qt::AlignVCenter, list.join("+"));
+
+    list.clear();
+    list << QString::number(m_competenza->g_d_fes_F()) << QString::number(m_competenza->g_d_fes_S()) << QString::number(m_competenza->g_d_fes_D());
+    list.removeAll("0");
+
+    painter.drawText(QRect(7050,m_boxVOffset+m_boxHeight/5*2-150,1300,m_rowHeight), Qt::AlignCenter | Qt::AlignVCenter, list.join("+"));
+
+    list.clear();
+    list << QString::number(m_competenza->g_n_fer_F()) << QString::number(m_competenza->g_n_fer_S()) << QString::number(m_competenza->g_n_fer_D());
+    list.removeAll("0");
+
+    painter.drawText(QRect(7050,m_boxVOffset+m_boxHeight/5*3-100,1300,m_rowHeight), Qt::AlignCenter | Qt::AlignVCenter, list.join("+"));
+
+    list.clear();
+    list << QString::number(m_competenza->g_n_fes_F()) << QString::number(m_competenza->g_n_fes_S()) << QString::number(m_competenza->g_n_fes_D());
+    list.removeAll("0");
+
+    painter.drawText(QRect(7050,m_boxVOffset+m_boxHeight/5*4-150,1300,m_rowHeight), Qt::AlignCenter | Qt::AlignVCenter, list.join("+"));
+
+    painter.setFont(totalsFont());
+
+    if(m_competenza->totOreGuardie() != 0)
+        painter.drawText(QRect(8050,m_boxVOffset+m_boxHeight-350,800,m_rowHeight), Qt::AlignCenter | Qt::AlignVCenter, QString::number(m_competenza->totOreGuardie()));
+
     painter.restore();
 }
 
 void CompetenzeDirigenteExporter::printDistribuzioneOreReperibilita(QPainter &painter)
 {
     painter.save();
+    painter.setFont(bodyFont());
+    painter.drawText(QRect(5300,m_boxVOffset+m_boxSpacing+m_boxHeight/5-100+m_boxHeight,1700,m_rowHeight), Qt::AlignRight | Qt::AlignVCenter, "feriali d. ore");
+    painter.drawText(QRect(7050,m_boxVOffset+m_boxSpacing+m_boxHeight/5-100+m_boxHeight,1300,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "______________________");
+
+    painter.drawText(QRect(5300,m_boxVOffset+m_boxSpacing+m_boxHeight/5*2-150+m_boxHeight,1700,m_rowHeight), Qt::AlignRight | Qt::AlignVCenter, "festive d. ore");
+    painter.drawText(QRect(7050,m_boxVOffset+m_boxSpacing+m_boxHeight/5*2-150+m_boxHeight,1300,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "______________________");
+
+    painter.drawText(QRect(5300,m_boxVOffset+m_boxSpacing+m_boxHeight/5*3-100+m_boxHeight,1700,m_rowHeight), Qt::AlignRight | Qt::AlignVCenter, "feriali n. ore");
+    painter.drawText(QRect(7050,m_boxVOffset+m_boxSpacing+m_boxHeight/5*3-100+m_boxHeight,1300,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "_______________________");
+
+    painter.drawText(QRect(5300,m_boxVOffset+m_boxSpacing+m_boxHeight/5*4-150+m_boxHeight,1700,m_rowHeight), Qt::AlignRight | Qt::AlignVCenter, "festive n. ore");
+    painter.drawText(QRect(7050,m_boxVOffset+m_boxSpacing+m_boxHeight/5*4-150+m_boxHeight,1300,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "_______________________");
+
+    painter.setFont(bodyFontBold());
+    painter.drawText(QRect(7700,m_boxVOffset+m_boxHeight*2+m_boxSpacing-350,1000,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "T.");
+    painter.drawText(QRect(8050,m_boxVOffset+m_boxHeight*2+m_boxSpacing-350,800,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, "_______________________");
+    painter.restore();
+
+    painter.save();
     painter.setPen(Qt::black);
     painter.setFont(bodyFontBold());
 
-    painter.drawText(QRect(6800,7750,1200,140), Qt::AlignLeft | Qt::AlignVCenter, QString::number(m_competenza->r_d_fer()));
-    painter.drawText(QRect(6800,8050,1200,140), Qt::AlignLeft | Qt::AlignVCenter, QString::number(m_competenza->r_d_fes()));
-    painter.drawText(QRect(6800,8650,1200,140), Qt::AlignLeft | Qt::AlignVCenter, QString::number(m_competenza->r_n_fer()));
-    painter.drawText(QRect(6800,8950,1200,140), Qt::AlignLeft | Qt::AlignVCenter, QString::number(m_competenza->r_n_fes()));
-    painter.drawText(QRect(8000,8450,1200,140), Qt::AlignLeft | Qt::AlignVCenter, m_competenza->oreGrep());
+    if(m_competenza->r_d_fer() != 0)
+        painter.drawText(QRect(7050,m_boxVOffset+m_boxSpacing+m_boxHeight/5-100+m_boxHeight,1300,m_rowHeight), Qt::AlignCenter | Qt::AlignVCenter, Utilities::inOrario(m_competenza->r_d_fer()));
+    if(m_competenza->r_d_fes() != 0)
+        painter.drawText(QRect(7050,m_boxVOffset+m_boxSpacing+m_boxHeight/5*2-150+m_boxHeight,1300,m_rowHeight), Qt::AlignCenter | Qt::AlignVCenter, Utilities::inOrario(m_competenza->r_d_fes()));
+    if(m_competenza->r_n_fer() != 0)
+        painter.drawText(QRect(7050,m_boxVOffset+m_boxSpacing+m_boxHeight/5*3-100+m_boxHeight,1300,m_rowHeight), Qt::AlignCenter | Qt::AlignVCenter, Utilities::inOrario(m_competenza->r_n_fer()));
+    if(m_competenza->r_n_fes() != 0)
+        painter.drawText(QRect(7050,m_boxVOffset+m_boxSpacing+m_boxHeight/5*4-150+m_boxHeight,1300,m_rowHeight), Qt::AlignCenter | Qt::AlignVCenter, Utilities::inOrario(m_competenza->r_n_fes()));
+    painter.setFont(totalsFont());
+    if(m_competenza->oreGrep() != 0)
+        painter.drawText(QRect(8050,m_boxVOffset+m_boxHeight*2+m_boxSpacing-350,800,m_rowHeight), Qt::AlignCenter | Qt::AlignVCenter, m_competenza->oreGrep());
     painter.restore();
 }
 
 void CompetenzeDirigenteExporter::printTurniProntaDisponibilita(QPainter &painter)
 {
+    const int cellSize = 500;
+    const int spacing = 80;
+    const int elementiPerRiga = 7;
+    int numRows;
+    if(m_competenza->rep().count() <= 7)
+        numRows = 1;
+    else if(m_competenza->rep().count() <=14)
+        numRows = 2;
+    else if(m_competenza->rep().count() <=21)
+        numRows = 3;
+    else if(m_competenza->rep().count() <=28)
+        numRows = 4;
+    else
+        numRows = 5;
+
+
+    QPixmap pix(cellSize*elementiPerRiga+(elementiPerRiga-1)*spacing,numRows*cellSize);
+    pix.fill(Qt::white);
+    QPainter p(&pix);
+    bool inizio = true;
+
     QPen pen;
     pen.setColor(Qt::black);
-    pen.setWidth(8);
-
-    painter.save();
+    pen.setWidth(15);
 
     QFont font = painter.font();
-    font.setPixelSize(130);
+    font.setPixelSize(300);
     font.setBold(true);
-    painter.setFont(font);
+
+    p.setFont(font);
+    p.setPen(pen);
+    p.setRenderHint(QPainter::Antialiasing, true);
+    p.setBrush(Qt::NoBrush);
 
     QFont fontApice;
-    fontApice.setPixelSize(100);
+    fontApice.setPixelSize(200);
     fontApice.setBold(false);
 
-    painter.setPen(pen);
-    painter.setRenderHint(QPainter::Antialiasing, true);
-    painter.setBrush(Qt::NoBrush);
-
-    int cellSize = 240;
     int counter = 0;
+    int row = 0;
+    int column = 0;
 
     QMap<QDate, ValoreRep>::const_iterator i = m_competenza->rep().constBegin();
     while (i != m_competenza->rep().constEnd()) {
-        QRect rect(600+cellSize*counter,9750,cellSize,cellSize);
+        if(counter < 7)
+            row = 0;
+        else if(counter < 14)
+            row = 1;
+        else if(counter < 21)
+            row = 2;
+        else if(counter < 28)
+            row = 3;
+        else
+            row = 4;
+
+        if(counter % 7 == 0) {
+            inizio = true;
+            column = 0;
+        }
+
+        p.save();
+        p.translate(column*cellSize,cellSize*row);
+        if(!inizio)
+            p.translate(spacing*column,0);
+
+        QRect rect(0,0,cellSize,cellSize);
         QDate d = i.key();
-        painter.drawText(rect,Qt::AlignCenter | Qt::AlignVCenter,QString::number(d.day()));
+        p.drawText(rect,Qt::AlignCenter | Qt::AlignBottom,QString::number(d.day()));
         switch (i.value()) {
         case ValoreRep::Mezzo: {
-            painter.save();
-            painter.setFont(fontApice);
-            QRect rect2(600+cellSize*counter+30,9725,cellSize,cellSize);
-            painter.drawText(rect2,Qt::AlignRight | Qt::AlignTop,"½");
-            painter.restore();
+            p.setFont(fontApice);
+            p.drawText(rect,Qt::AlignRight | Qt::AlignTop,"½");
             break;}
         case ValoreRep::Uno:
             break;
         case ValoreRep::UnoMezzo:
-            painter.drawLine(rect.x()+8,rect.y()+rect.height()-8,rect.x()+rect.width()-8,rect.y()+rect.height()-8);
+            p.drawLine(rect.x()+8,rect.y()+rect.height()-8,rect.x()+rect.width()-8,rect.y()+rect.height()-8);
             break;
         case ValoreRep::Due:
-            painter.drawEllipse(rect.adjusted(25,25,-25,-25));
+            p.drawEllipse(rect.adjusted(60,120,-60,0));
             break;
         case ValoreRep::DueMezzo: {
-            painter.save();
-            painter.setFont(fontApice);
-            painter.drawEllipse(rect.adjusted(25,25,-25,-25));
-            QRect rect2(600+cellSize*counter+30,9725,cellSize,cellSize);
-            painter.drawText(rect2,Qt::AlignRight | Qt::AlignTop,"½");
-            painter.restore();
+            p.setFont(fontApice);
+            p.drawEllipse(rect.adjusted(60,120,-60,0));
+            p.drawText(rect,Qt::AlignRight | Qt::AlignTop,"½");
             break;}
         default:
             break;
         }
         counter++;
         i++;
+        inizio = false;
+        column++;
+        p.restore();
     }
+
+    int offset = 0;
+    switch (numRows) {
+    case 1:
+        offset = 400;
+        break;
+    case 2:
+        offset = 550;
+        break;
+    case 3:
+        offset = 800;
+        break;
+    default:
+        offset = 1100;
+        break;
+    }
+
+    painter.save();
+    painter.drawPixmap(1200,m_boxVOffset+m_boxSpacing+m_boxHeight/2-offset+m_boxHeight,pix);
     painter.restore();
 }
 
 void CompetenzeDirigenteExporter::printOreLavoroDovute(QPainter &painter)
 {
+    const int vOffset = m_riepilogoVOffset+(0*m_rowHeight);
+    const QString text = "Ore di lavoro dovute";
+
     painter.save();
     painter.setPen(Qt::black);
-    painter.setFont(bodyFontBold());
 
-    painter.drawText(QRect(2000,10050,6200,150), Qt::AlignLeft | Qt::AlignVCenter, m_competenza->oreDovute());
+    painter.setFont(bodyFont());
+    painter.drawText(QRect(0,vOffset,3000,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, text);
+
+    QFontMetrics fm(bodyFont());
+    const int sectionWidth = fm.width(text) + 100;
+
+    painter.setFont(bodyFontBold());
+    painter.drawText(QRect(0+sectionWidth,vOffset,6200,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, m_competenza->oreDovute());
     painter.restore();
 }
 
 void CompetenzeDirigenteExporter::printOreLavoroEffettuate(QPainter &painter)
 {
+    const int vOffset = m_riepilogoVOffset+(1*m_rowHeight);
+    const QString text = "Ore di lavoro effettuate";
+
     painter.save();
     painter.setPen(Qt::black);
-    painter.setFont(bodyFontBold());
 
-    painter.drawText(QRect(2000,10350,6200,150), Qt::AlignLeft | Qt::AlignVCenter, m_competenza->oreEffettuate());
+    painter.setFont(bodyFont());
+    painter.drawText(QRect(0,vOffset,3000,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, text);
+
+    QFontMetrics fm(bodyFont());
+    const int sectionWidth = fm.width(text) + 100;
+
+    painter.setFont(bodyFontBold());
+    painter.drawText(QRect(0+sectionWidth,vOffset,6200,m_rowHeight), Qt::AlignBottom | Qt::AlignVCenter, m_competenza->oreEffettuate());
     painter.restore();
 }
 
 void CompetenzeDirigenteExporter::printNettoOre(QPainter &painter)
 {
+    const int vOffset = m_riepilogoVOffset+(0.5*m_rowHeight);
+
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(bodyFontBold());
@@ -826,66 +1078,119 @@ void CompetenzeDirigenteExporter::printNettoOre(QPainter &painter)
         text += " - d.m.p. " + QString::number(m_competenza->dmp()/60) + ":" + QString::number(m_competenza->dmp()%60) + " = " + m_competenza->differenzaOre();
     }
 
-    painter.drawText(QRect(3300,10200,3000,150), Qt::AlignLeft | Qt::AlignVCenter, text);
+    painter.drawText(QRect(4100,vOffset,5000,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, text);
     painter.restore();
 }
 
 void CompetenzeDirigenteExporter::printOreStraordinarioGuardie(QPainter &painter)
 {
+    const int vOffset = m_riepilogoVOffset+(2*m_rowHeight);
+    const QString text = "Lavoro straordinario per guardia ore";
+
     painter.save();
     painter.setPen(Qt::black);
-    painter.setFont(bodyFontBold());
 
-    painter.drawText(QRect(3000,10650,6200,150), Qt::AlignLeft | Qt::AlignVCenter, m_competenza->oreStraordinarioGuardie());
+    painter.setFont(bodyFont());
+    painter.drawText(QRect(0,vOffset,6200,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, text);
+
+    QFontMetrics fm(bodyFont());
+    const int sectionWidth = fm.width(text) + 100;
+
+    painter.setFont(bodyFontBold());
+    painter.drawText(QRect(0+sectionWidth,vOffset,6200,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, m_competenza->oreStraordinarioGuardie());
     painter.restore();
 }
 
 void CompetenzeDirigenteExporter::printOreProntaDisponibilita(QPainter &painter)
 {
+    const int vOffset = m_riepilogoVOffset+(3*m_rowHeight);
+    const QString text = "Lavoro straordinario in pronta disponibilità ore";
+
     painter.save();
     painter.setPen(Qt::black);
-    painter.setFont(bodyFontBold());
 
-    painter.drawText(QRect(3600,10950,6200,150), Qt::AlignLeft | Qt::AlignVCenter, QString::number(m_competenza->oreProntaDisp()));
+    painter.drawText(QRect(0,vOffset,6200,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, text);
+
+    QFontMetrics fm(bodyFont());
+    const int sectionWidth = fm.width(text) + 100;
+
+    painter.setFont(bodyFontBold());
+    painter.drawText(QRect(0+sectionWidth,vOffset,6200,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, QString::number(m_competenza->oreProntaDisp()));
     painter.restore();
 }
 
 void CompetenzeDirigenteExporter::printRep(QPainter &painter)
 {
+    const int vOffset = m_riepilogoVOffset+(5*m_rowHeight);
+    const QString text = "Rep";
+
     painter.save();
     painter.setPen(Qt::black);
-    painter.setFont(bodyFontBold());
 
-    painter.drawText(QRect(600,11550,6200,150), Qt::AlignLeft | Qt::AlignVCenter, m_competenza->repCount());
+    painter.setFont(bodyFont());
+    painter.drawText(QRect(0,vOffset,2000,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, text);
+
+    QFontMetrics fm(bodyFont());
+    const int sectionWidth = fm.width("Rep") + 100;
+
+    painter.setFont(bodyFontBold());
+    painter.drawText(QRect(0+sectionWidth,vOffset,6200,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, m_competenza->repCount());
     painter.restore();
 }
 
 void CompetenzeDirigenteExporter::printDeficit(QPainter &painter)
 {
+    const int vOffset = m_riepilogoVOffset+(5*m_rowHeight);
+    const QString text = "Deficit orario";
+
     painter.save();
     painter.setPen(Qt::black);
-    painter.setFont(bodyFontBold());
 
-    painter.drawText(QRect(3180,11550,6200,150), Qt::AlignLeft | Qt::AlignVCenter, m_competenza->deficitOrario());
+    painter.setFont(bodyFont());
+    painter.drawText(QRect(2100,vOffset,2000,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, text);
+
+    QFontMetrics fm(bodyFont());
+    const int sectionWidth = fm.width(text) + 100;
+
+    painter.setFont(bodyFontBold());
+    painter.drawText(QRect(2100 + sectionWidth,vOffset,6200,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, m_competenza->deficitOrario());
     painter.restore();
 }
 
 void CompetenzeDirigenteExporter::printNotte(QPainter &painter)
 {
+    const int vOffset = m_riepilogoVOffset+(6*m_rowHeight);
+    const QString text = "Notte";
+
     painter.save();
     painter.setPen(Qt::black);
-    painter.setFont(bodyFontBold());
 
-    painter.drawText(QRect(600,11850,6200,150), Qt::AlignLeft | Qt::AlignVCenter, m_competenza->notte());
+    painter.setFont(bodyFont());
+    painter.drawText(QRect(0,vOffset,2000,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, text);
+
+    QFontMetrics fm(bodyFont());
+    const int sectionWidth = fm.width(text) + 100;
+
+    painter.setFont(bodyFontBold());
+    painter.drawText(QRect(0+sectionWidth,vOffset,6200,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, m_competenza->notte());
     painter.restore();
 }
 
 void CompetenzeDirigenteExporter::printFestivo(QPainter &painter)
 {
+    const int vOffset = m_riepilogoVOffset+(6*m_rowHeight);
+    const QString text = "Festivo";
+
     painter.save();
     painter.setPen(Qt::black);
-    painter.setFont(bodyFontBold());
 
-    painter.drawText(QRect(3180,11850,6200,150), Qt::AlignLeft | Qt::AlignVCenter, m_competenza->festivo());
+    painter.setFont(bodyFont());
+    painter.drawText(QRect(2100,vOffset,2000,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, text);
+
+    QFontMetrics fm(bodyFont());
+    const int sectionWidth = fm.width(text) + 100;
+
+    painter.setFont(bodyFontBold());
+    painter.drawText(QRect(2100+sectionWidth,vOffset,6200,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, m_competenza->festivo());
     painter.restore();
 }
