@@ -492,7 +492,7 @@ QStringList CompetenzeUnitaExporter::getDirigentiIDs(const QString &id)
 {
     QStringList l;
     QSqlQuery query;
-    query.prepare("SELECT id_medico FROM " + m_idMese + " WHERE id_unita='" + id + "';");
+    query.prepare("SELECT " + m_idMese + ".id_medico,medici.nome FROM " + m_idMese + " LEFT JOIN medici ON " + m_idMese + ".id_medico=medici.id WHERE " + m_idMese + ".id_unita='" + id + "' ORDER BY medici.nome;");
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
