@@ -453,10 +453,13 @@ void MainWindow::populateMeseCompetenzeCB()
     timeCards.sort(Qt::CaseInsensitive);
 
     ui->meseCompetenzeCB->clear();
-    foreach (QString s, timeCards) {
-        QString ss = s.split("_").last();
-        ui->meseCompetenzeCB->addItem(QDate::longMonthName(s.right(2).toInt(),QDate::StandaloneFormat) + " " + ss.left(4), s);
-        printDialog->addMese(QDate::longMonthName(s.right(2).toInt(),QDate::StandaloneFormat) + " " + ss.left(4), s);
+    QStringList::const_iterator i = timeCards.constEnd();
+
+    while(i != timeCards.constBegin()) {
+        --i;
+        QString ss = (*i).split("_").last();
+        ui->meseCompetenzeCB->addItem(QDate::longMonthName((*i).right(2).toInt(),QDate::StandaloneFormat) + " " + ss.left(4), *i);
+        printDialog->addMese(QDate::longMonthName((*i).right(2).toInt(),QDate::StandaloneFormat) + " " + ss.left(4), *i);
     }
 }
 
