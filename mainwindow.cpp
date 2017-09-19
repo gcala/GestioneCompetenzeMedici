@@ -215,6 +215,12 @@ MainWindow::~MainWindow()
 
 void MainWindow::mostraDifferenzaOre()
 {
+    if(m_competenza->differenzaOre().startsWith("-"))
+        ui->oreDifferenzaLabel->setStyleSheet("color:red;");
+    else if(m_competenza->differenzaOre() == "0:00")
+        ui->oreDifferenzaLabel->setStyleSheet("");
+    else
+        ui->oreDifferenzaLabel->setStyleSheet("color:green;");
     ui->oreDifferenzaLabel->setText(m_competenza->differenzaOre());
     ui->deficitOrarioLabel->setText(m_competenza->deficitOrario());
     if(m_competenza->dmp() == 0) {
