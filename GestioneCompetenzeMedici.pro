@@ -45,7 +45,9 @@ SOURCES += \
         databasewizard.cpp \
         sqlitedatabasemanager.cpp \
         nomiunitadialog.cpp \
-        aboutdialog.cpp
+        aboutdialog.cpp \
+        configdialog.cpp \
+        settingsitem.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -69,7 +71,9 @@ HEADERS += \
         databasewizard.h \
         sqlitedatabasemanager.h \
         nomiunitadialog.h \
-        aboutdialog.h
+        aboutdialog.h \
+        configdialog.h \
+        settingsitem.h
 
 FORMS += \
         mainwindow.ui \
@@ -77,7 +81,9 @@ FORMS += \
         printdialog.ui \
         databasewizard.ui \
         nomiunitadialog.ui \
-        aboutdialog.ui
+        aboutdialog.ui \
+        configdialog.ui \
+        settingsitem.ui
 
 RESOURCES += \
     assets.qrc

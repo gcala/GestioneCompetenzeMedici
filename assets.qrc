@@ -26,5 +26,8 @@
         <file>images/logo.png</file>
         <file>images/paypal.png</file>
         <file>images/sc_header.png</file>
+        <file>images/user-none.png</file>
+        <file>icons/stock_folder.svg</file>
+        <file>icons/dialog-ok-apply.svg</file>
     </qresource>
 </RCC>

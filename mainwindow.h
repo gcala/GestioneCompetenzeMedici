@@ -107,6 +107,8 @@ private slots:
 
     void on_actionDonazione_triggered();
 
+    void on_actionConfigura_triggered();
+
 private:
     Ui::MainWindow *ui;
     bool unitaReadOnlyMode;
@@ -125,7 +127,9 @@ private:
     bool m_isScheduledBackup;
     QProcess *tabulaProcess;
     QString pdfFile;
-
+    QString m_photosPath;
+    QString m_javaPath;
+    QString m_tabulaPath;
 
     QMenu *gdCalendarMenu;
     CalendarManager *gdCalendar;

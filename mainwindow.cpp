@@ -31,6 +31,7 @@
 #include "databasewizard.h"
 #include "sqlitedatabasemanager.h"
 #include "aboutdialog.h"
+#include "configdialog.h"
 
 #include <QtWidgets>
 #include <QSqlQueryModel>
@@ -666,6 +667,13 @@ void MainWindow::loadSettings()
     QSettings settings;
     currentDatabase.setFile(settings.value("lastDatabasePath", "").toString());
     printDialog->setPath(settings.value("exportPath", QDir::homePath()).toString());
+    m_photosPath = settings.value("photosPath", "").toString();
+    m_tabulaPath = settings.value("tabulaPath", QApplication::applicationDirPath() + QDir::separator() + "tabula.jar").toString();
+#ifdef _WIN32
+    m_javaPath = settings.value("javaPath", "C:\\ProgramData\\Oracle\\Java\\javapath\\java.exe").toString();
+#else
+    m_javaPath = settings.value("javaPath", "/usr/bin/java").toString();
+#endif
 }
 
 void MainWindow::saveSettings()
@@ -673,6 +681,9 @@ void MainWindow::saveSettings()
     QSettings settings;
     settings.setValue("lastDatabasePath", currentDatabase.absoluteFilePath());
     settings.setValue("exportPath", printDialog->path());
+    settings.setValue("photosPath", m_photosPath);
+    settings.setValue("tabulaPath", m_tabulaPath);
+    settings.setValue("javaPath", m_javaPath);
 }
 
 void MainWindow::on_unitaComboBox_currentIndexChanged(int index)
@@ -731,6 +742,18 @@ void MainWindow::on_dirigentiComboBox_currentIndexChanged(int index)
     }
 
     ui->dirigentiUnitaComboBox->setCurrentText(id_unita + " - " + ui->dirigenteUnitaLE->text());
+
+    const QString path = "/home/gcala/Progetti/C++/GestioneCompetenzeMedici/appunti/Foto/";
+    if(QFile::exists(path + "F" + QString::number(ui->dirigenteMatricolaSB->value()).rightJustified(6, '0') + ".jpg")) {
+        QPixmap pix(path + "F" + QString::number(ui->dirigenteMatricolaSB->value()).rightJustified(6, '0') + ".jpg");
+        if(pix.width() > pix.height())
+            pix = pix.scaledToWidth(180);
+        else
+            pix = pix.scaledToHeight(180);
+        ui->photoLabel->setPixmap(pix);
+    } else {
+        ui->photoLabel->setPixmap(QPixmap(":/images/user-none.png"));
+    }
 }
 
 void MainWindow::on_unitaOrePagateTW_activated(const QModelIndex &index)
@@ -799,22 +822,8 @@ void MainWindow::on_actionCaricaPdf_triggered()
 
         QFileInfo fi(pdfFile);
 
-        QString program;
-
-#ifdef _WIN32
-        if(!QFile::exists("C:\\ProgramData\\Oracle\\Java\\javapath\\java.exe")) {
-            QMessageBox::critical(this, "Java non trovato", "L'eseguibile java.exe non è stato trovato nel seguente percorso:\n"
-                                  "C:\\ProgramData\\Oracle\\Java\\javapath\\ \n"
-                                  "Non posso generare il file csv.",QMessageBox::Cancel);
-            return;
-        }
-        program = "C:\\ProgramData\\Oracle\\Java\\javapath\\java.exe";
-#else
-        program = "/usr/bin/java";
-#endif
-
         QStringList arguments;
-        arguments << "-jar" << QApplication::applicationDirPath() + QDir::separator() + "tabula.jar";
+        arguments << "-jar" << m_tabulaPath;
         arguments << "-n";
         arguments << "-p" << "all";
         arguments << "-a" << "6.93,2.475,470.0,772.695";
@@ -824,7 +833,7 @@ void MainWindow::on_actionCaricaPdf_triggered()
 
         QFile::remove(fi.absolutePath() + QDir::separator() + "cartellini.csv");
 
-        tabulaProcess->start(program, arguments);
+        tabulaProcess->start(m_javaPath, arguments);
     }
 }
 
@@ -1207,4 +1216,12 @@ void MainWindow::on_actionInformazioni_triggered()
 void MainWindow::on_actionDonazione_triggered()
 {
     QDesktopServices::openUrl( QUrl( QLatin1String( "https://paypal.me/GCala" ) ) );
+}
+
+void MainWindow::on_actionConfigura_triggered()
+{
+    ConfigDialog config;
+    config.exec();
+
+    loadSettings();
 }
