@@ -2953,6 +2953,12 @@
              </item>
              <item>
               <widget class="QLabel" name="oreStraordinarioGuardieLabel">
+               <property name="minimumSize">
+                <size>
+                 <width>50</width>
+                 <height>0</height>
+                </size>
+               </property>
                <property name="font">
                 <font>
                  <pointsize>11</pointsize>
@@ -2998,6 +3004,12 @@
              </item>
              <item>
               <widget class="QLabel" name="oreStraordinarioRepLabel">
+               <property name="minimumSize">
+                <size>
+                 <width>50</width>
+                 <height>0</height>
+                </size>
+               </property>
                <property name="font">
                 <font>
                  <pointsize>11</pointsize>
@@ -3086,6 +3098,12 @@
              </item>
              <item>
               <widget class="QLabel" name="repLabel">
+               <property name="minimumSize">
+                <size>
+                 <width>50</width>
+                 <height>0</height>
+                </size>
+               </property>
                <property name="font">
                 <font>
                  <pointsize>11</pointsize>
@@ -3131,6 +3149,12 @@
              </item>
              <item>
               <widget class="QLabel" name="deficitOrarioLabel">
+               <property name="minimumSize">
+                <size>
+                 <width>50</width>
+                 <height>0</height>
+                </size>
+               </property>
                <property name="font">
                 <font>
                  <pointsize>11</pointsize>
@@ -3176,6 +3200,12 @@
              </item>
              <item>
               <widget class="QLabel" name="notteLabel">
+               <property name="minimumSize">
+                <size>
+                 <width>50</width>
+                 <height>0</height>
+                </size>
+               </property>
                <property name="font">
                 <font>
                  <pointsize>11</pointsize>
@@ -3221,6 +3251,12 @@
              </item>
              <item>
               <widget class="QLabel" name="festivoLabel">
+               <property name="minimumSize">
+                <size>
+                 <width>50</width>
+                 <height>0</height>
+                </size>
+               </property>
                <property name="font">
                 <font>
                  <pointsize>11</pointsize>
