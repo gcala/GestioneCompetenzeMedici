@@ -2695,6 +2695,12 @@
              </item>
              <item>
               <widget class="QLabel" name="orarioGiornalieroLabel">
+               <property name="minimumSize">
+                <size>
+                 <width>30</width>
+                 <height>0</height>
+                </size>
+               </property>
                <property name="font">
                 <font>
                  <pointsize>11</pointsize>
@@ -2742,6 +2748,12 @@
              </item>
              <item>
               <widget class="QLabel" name="oreDovuteLabel">
+               <property name="minimumSize">
+                <size>
+                 <width>50</width>
+                 <height>0</height>
+                </size>
+               </property>
                <property name="font">
                 <font>
                  <pointsize>11</pointsize>
@@ -2789,6 +2801,12 @@
              </item>
              <item>
               <widget class="QLabel" name="oreEffettuateLabel">
+               <property name="minimumSize">
+                <size>
+                 <width>50</width>
+                 <height>0</height>
+                </size>
+               </property>
                <property name="font">
                 <font>
                  <pointsize>11</pointsize>
