@@ -21,6 +21,7 @@
 
 #include "calendarmanager.h"
 
+#include <algorithm>
 #include <QPainter>
 #include <QAbstractItemView>
 
@@ -79,6 +80,8 @@ void CalendarManager::dataSelezionata(const QDate &date)
         m_dates.removeOne(date);
     else
         m_dates.append(date);
+
+    std::sort(m_dates.begin(),m_dates.end());
 
     QAbstractItemView *view = this->findChild<QAbstractItemView*>();
     if(view){
