@@ -31,7 +31,7 @@
        <string notr="true">QTabWidget::tab-bar { alignment: center; }</string>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="unitaTab">
        <attribute name="icon">
@@ -3597,7 +3597,7 @@
      <normaloff>:/icons/view-pim-news.svg</normaloff>:/icons/view-pim-news.svg</iconset>
    </property>
    <property name="text">
-    <string>Ca&amp;rica cartellini da CSV...</string>
+    <string>Car&amp;ica cartellini da CSV...</string>
    </property>
    <property name="toolTip">
     <string>Carica cartellini da CSV</string>

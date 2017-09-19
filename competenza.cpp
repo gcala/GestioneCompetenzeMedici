@@ -1329,8 +1329,22 @@ void CompetenzaData::getOrePagate()
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
         return;
     }
+    QMap<QDate, int> map;
     while(query.next()) {
-        m_orePagate = query.value(0).toInt();
+        QStringList meseAnno = query.value(1).toString().split(".");
+        QDate date(meseAnno.at(1).toInt(),meseAnno.at(0).toInt(),1);
+        map[date] = query.value(0).toInt();
+    }
+
+    QMapIterator<QDate, int> i(map);
+    i.toBack();
+    while (i.hasPrevious()) {
+        i.previous();
+        QDate currDate(m_dipendente->anno(),m_dipendente->mese(),1);
+        if(i.key() <= currDate) {
+            m_orePagate = i.value();
+            break;
+        }
     }
 }
 

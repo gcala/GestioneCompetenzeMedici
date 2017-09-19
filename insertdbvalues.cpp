@@ -46,15 +46,17 @@ InsertDBValues::~InsertDBValues()
 
 void InsertDBValues::unitaAddOreSetup(const QString &unitaId)
 {
+    qDebug() << unitaId;
     currentOp = AddOre;
     ui->dateEdit->setDate(QDate::currentDate());
     ui->oreEdit->setValue(0);
     ui->notteWidget->setVisible(false);
     ui->oreWidget->setVisible(true);
     tableName = "unita_ore_pagate";
+    idName = "id_unita";
     currentId = unitaId;
     ui->saveButton->setText("Salva");
-    ui->msgLabel->setText("Inserire variazione Ore");
+    ui->msgLabel->setText("Inserire Ore di Straordinario Pagate");
 }
 
 void InsertDBValues::unitaRemoveOreSetup(const QString &id)

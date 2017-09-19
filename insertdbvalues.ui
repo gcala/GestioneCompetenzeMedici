@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Inserimento Nuovo Dato</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_4">
    <item>
@@ -94,7 +94,11 @@
          </widget>
         </item>
         <item>
-         <widget class="QSpinBox" name="oreEdit"/>
+         <widget class="QSpinBox" name="oreEdit">
+          <property name="maximum">
+           <number>8</number>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
