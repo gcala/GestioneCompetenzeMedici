@@ -61,8 +61,9 @@ void SqlQueries::createUnitsPayedHoursTable()
     query.prepare("CREATE TABLE unita_ore_pagate "
                   "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
                   "id_unita INTEGER,"
-                  "data TEXT DEFAULT (01.2017),"
-                  "ore INTEGER NOT NULL DEFAULT (0));");
+                  "data TEXT DEFAULT (08.2017),"
+                  "ore_tot INTEGER NOT NULL DEFAULT (8),"
+                  "ore_pagate INTEGER NOT NULL DEFAULT (0));");
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
@@ -160,14 +161,15 @@ void SqlQueries::editDoctor(const QString &id,
     }
 }
 
-void SqlQueries::insertPayload(const QString &id_unita, const QString &data, const QString &ore)
+void SqlQueries::insertPayload(const QString &id_unita, const QString &data, const QString &ore_tot, const QString &ore_pagate)
 {
     QSqlQuery query;
-    query.prepare("INSERT INTO unita_ore_pagate (id_unita,data,ore) "
-                  "VALUES (:id_unita,:data,:ore);");
+    query.prepare("INSERT INTO unita_ore_pagate (id_unita,data,ore_tot,ore_pagate) "
+                  "VALUES (:id_unita,:data,:ore_tot,:ore_pagate);");
     query.bindValue(":id_unita", id_unita);
     query.bindValue(":data", data);
-    query.bindValue(":ore", ore);
+    query.bindValue(":ore_tot", ore_tot);
+    query.bindValue(":ore_pagate", ore_pagate);
 
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();

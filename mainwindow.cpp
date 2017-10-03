@@ -338,13 +338,14 @@ void MainWindow::populateUnitaCB()
 
 void MainWindow::populateUnitaOrePagate()
 {
-    unitaOrePagateModel->setQuery("SELECT id,data,ore FROM unita_ore_pagate WHERE id_unita=" + ui->unitaComboBox->currentData(Qt::UserRole).toString() + ";");
+    unitaOrePagateModel->setQuery("SELECT id,data,ore_tot,ore_pagate FROM unita_ore_pagate WHERE id_unita=" + ui->unitaComboBox->currentData(Qt::UserRole).toString() + ";");
     if(unitaOrePagateModel->lastError().isValid()) {
         qDebug() << "ERROR: " << unitaOrePagateModel->query().lastQuery() << " : " << unitaOrePagateModel->lastError();
     }
 
     unitaOrePagateModel->setHeaderData(1, Qt::Horizontal, QObject::tr("Da Mese"));
-    unitaOrePagateModel->setHeaderData(2, Qt::Horizontal, QObject::tr("Ore pagate"));
+    unitaOrePagateModel->setHeaderData(2, Qt::Horizontal, QObject::tr("Ore totali"));
+    unitaOrePagateModel->setHeaderData(3, Qt::Horizontal, QObject::tr("Ore pagate"));
     ui->unitaOrePagateTW->hideColumn(0);
     ui->removeUnitaOrePagateButton->setEnabled(false);
 }

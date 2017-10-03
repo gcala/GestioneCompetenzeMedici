@@ -41,14 +41,10 @@ public:
 
     void unitaAddOreSetup(const QString &unitaId);
     void unitaRemoveOreSetup(const QString &id);
-    void unitaAddNotteSetup(const QString &unitaId);
-    void unitaRemoveNotteSetup(const QString &id);
-    void dirigenteAddNotteSetup(const QString &unitaId);
-    void dirigenteRemoveNotteSetup(const QString &id);
 
 private slots:
-    void on_cancelButton_clicked();
-    void on_saveButton_clicked();
+    void on_unitaCancel_clicked();
+    void on_unitaSave_clicked();
 
 private:
     Ui::InsertDBValues *ui;

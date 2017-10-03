@@ -21,6 +21,7 @@
 
 #include "insertdbvalues.h"
 #include "ui_insertdbvalues.h"
+#include "sqlqueries.h"
 
 #include <QtWidgets>
 #include <QSqlQuery>
@@ -32,11 +33,7 @@ InsertDBValues::InsertDBValues(QWidget *parent):
 {
     ui->setupUi(this);
 
-    ui->oreEdit->setFixedWidth(ui->dateEdit->width());
-    ui->notteCB->setFixedWidth(ui->dateEdit->width());
-
-    ui->notteCB->insertItem(0, "NO", 0);
-    ui->notteCB->insertItem(1, "SI", 1);
+    ui->unitaData->setFixedWidth(ui->unitaData->width());
 }
 
 InsertDBValues::~InsertDBValues()
@@ -46,148 +43,60 @@ InsertDBValues::~InsertDBValues()
 
 void InsertDBValues::unitaAddOreSetup(const QString &unitaId)
 {
-    qDebug() << unitaId;
     currentOp = AddOre;
-    ui->dateEdit->setDate(QDate::currentDate());
-    ui->oreEdit->setValue(0);
-    ui->notteWidget->setVisible(false);
-    ui->oreWidget->setVisible(true);
+    ui->stackedWidget->setCurrentIndex(0);
+    ui->unitaData->setDate(QDate::currentDate());
+    ui->unitaOrePagate->setValue(0);
+    ui->unitaOreTot->setValue(8);
     tableName = "unita_ore_pagate";
     idName = "id_unita";
     currentId = unitaId;
-    ui->saveButton->setText("Salva");
-    ui->msgLabel->setText("Inserire Ore di Straordinario Pagate");
+    ui->unitaSave->setText("Salva");
+    ui->unitaMsg->setText("Inserire Ore di Straordinario Pagate");
 }
 
 void InsertDBValues::unitaRemoveOreSetup(const QString &id)
 {
     currentOp = RemoveOre;
-    ui->notteWidget->setVisible(false);
-    ui->oreWidget->setVisible(true);
-    ui->saveButton->setText("Elimina");
-    ui->msgLabel->setText("Sicuri di voler eliminare il seguente dato?");
+    ui->stackedWidget->setCurrentIndex(0);
+    ui->unitaSave->setText("Elimina");
+    ui->unitaMsg->setText("Sicuri di voler eliminare il seguente dato?");
     currentId = id;
     tableName = "unita_ore_pagate";
     QSqlQuery query;
-    query.prepare("SELECT ore,data FROM " + tableName + " WHERE id=" + currentId + ";");
+    query.prepare("SELECT ore_pagate,ore_tot,data FROM " + tableName + " WHERE id=" + currentId + ";");
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
         return;
     }
 
     while(query.next()) {
-        ui->dateEdit->setDate(QDate::fromString(query.value(1).toString(), "MM.yyyy"));
-        ui->oreEdit->setValue(query.value(0).toInt());
+        ui->unitaData->setDate(QDate::fromString(query.value(2).toString(), "MM.yyyy"));
+        ui->unitaOrePagate->setValue(query.value(0).toInt());
+        ui->unitaOreTot->setValue(query.value(1).toInt());
     }
 }
 
-void InsertDBValues::unitaAddNotteSetup(const QString &unitaId)
-{
-    currentOp = AddNotte;
-    ui->dateEdit->setDate(QDate::currentDate());
-    ui->notteWidget->setVisible(true);
-    ui->oreWidget->setVisible(false);
-    tableName = "unita_notte";
-    idName = "id_unita";
-    currentId = unitaId;
-    ui->saveButton->setText("Salva");
-    ui->msgLabel->setText("Inserire variazione Notte?");
-}
-
-void InsertDBValues::unitaRemoveNotteSetup(const QString &id)
-{
-    currentOp = RemoveNotte;
-    ui->notteWidget->setVisible(true);
-    ui->oreWidget->setVisible(false);
-    currentId = id;
-    tableName = "unita_notte";
-    idName = "id_unita";
-    ui->saveButton->setText("Elimina");
-    ui->msgLabel->setText("Sicuri di voler eliminare il seguente dato?");
-    QSqlQuery query;
-    query.prepare("SELECT notte,data FROM " + tableName + " WHERE id=" + currentId + ";");
-    if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
-        return;
-    }
-
-    while(query.next()) {
-        ui->dateEdit->setDate(QDate::fromString(query.value(1).toString(), "MM.yyyy"));
-        ui->notteCB->setCurrentText(query.value(0).toString());
-        ui->notteCB->show();
-    }
-}
-
-void InsertDBValues::dirigenteAddNotteSetup(const QString &unitaId)
-{
-    currentOp = AddNotte;
-    ui->dateEdit->setDate(QDate::currentDate());
-    ui->notteWidget->setVisible(true);
-    ui->oreWidget->setVisible(false);
-    tableName = "medici_notte";
-    idName = "id_medico";
-    currentId = unitaId;
-    ui->saveButton->setText("Salva");
-    ui->msgLabel->setText("Inserire variazione Notte?");
-}
-
-void InsertDBValues::dirigenteRemoveNotteSetup(const QString &id)
-{
-    currentOp = RemoveNotte;
-    ui->notteWidget->setVisible(true);
-    ui->oreWidget->setVisible(false);
-    currentId = id;
-    tableName = "medici_notte";
-    idName = "id_medico";
-    ui->saveButton->setText("Elimina");
-    ui->msgLabel->setText("Sicuri di voler eliminare il seguente dato?");
-    QSqlQuery query;
-    query.prepare("SELECT notte,data FROM " + tableName + " WHERE id=" + currentId + ";");
-    if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
-        return;
-    }
-
-    while(query.next()) {
-        ui->dateEdit->setDate(QDate::fromString(query.value(1).toString(), "MM.yyyy"));
-        ui->notteCB->setCurrentText(query.value(0).toString());
-        ui->notteCB->show();
-    }
-}
-
-void InsertDBValues::on_cancelButton_clicked()
+void InsertDBValues::on_unitaCancel_clicked()
 {
     this->close();
 }
 
-void InsertDBValues::on_saveButton_clicked()
+void InsertDBValues::on_unitaSave_clicked()
 {
-    if(!ui->dateEdit->date().isValid())
+    if(!ui->unitaData->date().isValid())
         return;
-
     QSqlQuery query;
 
     switch(currentOp) {
     case AddOre:
-        query.prepare("INSERT INTO " + tableName + " (" + idName + ",ore,data) "
-                      "VALUES (:" + idName + ",:ore,:data);");
-        query.bindValue(":" + idName, currentId);
-        query.bindValue(":ore", ui->oreEdit->value());
-        query.bindValue(":data", ui->dateEdit->date().toString("MM.yyyy"));
+        SqlQueries::insertPayload(idName,
+                                  ui->unitaData->date().toString("MM.yyyy"),
+                                  QString::number(ui->unitaOreTot->value()),
+                                  QString::number(ui->unitaOrePagate->value()));
         break;
-    case AddNotte:
-        query.prepare("INSERT INTO " + tableName + " (" + idName + ",notte,data) "
-                      "VALUES (:" + idName + ",:notte,:data);");
-        query.bindValue(":" + idName, currentId);
-        query.bindValue(":notte", ui->notteCB->currentText());
-        query.bindValue(":data", ui->dateEdit->date().toString("MM.yyyy"));
+    default:
         break;
-    default: // RemoveNotte
-        query.prepare("DELETE FROM " + tableName + " WHERE id=" + currentId + ";");
-    }
-
-    if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
 
     this->close();

@@ -157,6 +157,7 @@ private:
     int m_id;
     int m_unitaId;
     int m_orePagate;
+    int m_oreTot;
     Dipendente *m_dipendente;
     QMap<int, GuardiaType> m_guardiaNotturnaMap;
     QMap<int, GuardiaType> m_guardiaDiurnaMap;
@@ -203,6 +204,7 @@ void CompetenzaData::buildDipendente()
     m_defaultDmp = 0;
     m_unitaId = -1;
     m_orePagate = 0;
+    m_oreTot = 0;
     m_defaultGDDates.clear();
     m_defaultGNDates.clear();
     m_defaultRep.clear();
@@ -818,12 +820,12 @@ QString CompetenzaData::notte() const
     QMap<int, GuardiaType>::const_iterator i = m_guardiaNotturnaMap.constBegin();
     while (i != m_guardiaNotturnaMap.constEnd()) {
         if(i.value() != GuardiaType::GrandeFestivita)
-            tot += 8 - m_orePagate;
+            tot += m_oreTot - m_orePagate;
         i++;
     }
 
     // somma eventuali grandi festività non pagate
-    tot += (grFestCount() - numGrFestPagabili()) * (8 - m_orePagate);
+    tot += (grFestCount() - numGrFestPagabili()) * (m_oreTot - m_orePagate);
 
     return tot == 0 ? "//" : QString::number(tot);
 }
@@ -1324,25 +1326,29 @@ void CompetenzaData::calcOreGuardia()
 void CompetenzaData::getOrePagate()
 {
     QSqlQuery query;
-    query.prepare("SELECT ore,data FROM unita_ore_pagate WHERE id_unita=" + QString::number(m_unitaId) + ";");
+    query.prepare("SELECT data,ore_tot,ore_pagate FROM unita_ore_pagate WHERE id_unita=" + QString::number(m_unitaId) + ";");
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
         return;
     }
-    QMap<QDate, int> map;
+    QMap<QDate, QPair<int,int> > map;
     while(query.next()) {
-        QStringList meseAnno = query.value(1).toString().split(".");
+        QStringList meseAnno = query.value(0).toString().split(".");
         QDate date(meseAnno.at(1).toInt(),meseAnno.at(0).toInt(),1);
-        map[date] = query.value(0).toInt();
+        QPair<int, int> vals;
+        vals.first = query.value(1).toInt();
+        vals.second = query.value(1).toInt();
+        map[date] = vals;
     }
 
-    QMapIterator<QDate, int> i(map);
+    QMapIterator<QDate, QPair<int,int> > i(map);
     i.toBack();
     while (i.hasPrevious()) {
         i.previous();
         QDate currDate(m_dipendente->anno(),m_dipendente->mese(),1);
         if(i.key() <= currDate) {
-            m_orePagate = i.value();
+            m_oreTot = i.value().first;
+            m_orePagate = i.value().second;
             break;
         }
     }

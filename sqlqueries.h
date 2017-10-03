@@ -41,7 +41,7 @@ public:
     static void editUnit(const QString &id, const QString &raggruppamento, const QString &nome_full, const QString &nome_mini, const QString &altri_nomi);
     static bool insertDoctor(const QString &matricola, const QString &nome, const QString &id_unita);
     static void editDoctor(const QString &id, const QString &matricola, const QString &nome, const QString &id_unita);
-    static void insertPayload(const QString &id_unita, const QString &data, const QString &ore);
+    static void insertPayload(const QString &id_unita, const QString &data, const QString &ore_tot, const QString &ore_pagate);
     static void insertRep(const QString &id_unita, const QString &data, const QString &feriale, const QString &sabato, const QString &prefestivo, const QString &festivo);
     static void removeUnit(const QString &id);
     static void removeDoctor(const QString &id);

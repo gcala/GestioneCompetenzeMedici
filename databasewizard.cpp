@@ -183,12 +183,12 @@ bool DatabaseWizard::insertPayloadFromFile(const QString &file)
         if(line.trimmed().isEmpty())
             continue;
         QStringList list = line.split("|");
-        if(list.size() != 3) {
+        if(list.size() != 4) {
             qDebug() << "ERRORE alla riga" << line;
             continue;
         }
 
-        SqlQueries::insertPayload(list.at(0), list.at(1), list.at(2));
+        SqlQueries::insertPayload(list.at(0), list.at(1), list.at(2), list.at(3));
     }
 
     f.close();
