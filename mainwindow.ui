@@ -31,7 +31,7 @@
        <string notr="true">QTabWidget::tab-bar { alignment: center; }</string>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="unitaTab">
        <attribute name="icon">
@@ -2966,6 +2966,8 @@
                <property name="font">
                 <font>
                  <pointsize>11</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
                 </font>
                </property>
                <property name="text">
