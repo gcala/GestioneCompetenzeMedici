@@ -149,6 +149,7 @@ public:
     int r_n_fes();
 
     QString oreStraordinarioGuardie() const;
+    void rimuoviAltreAssenzeDoppie();
 
 private:
     const int m_arrotondamento;
@@ -361,6 +362,7 @@ void CompetenzaData::buildDipendente()
                 m_modded = true;
             }
         }
+        rimuoviAltreAssenzeDoppie();
         m_defaultAltreAssenze = m_altreAssenze;
 
         m_unitaId = query.value(25).toInt();       // id unità
@@ -1127,6 +1129,49 @@ QString CompetenzaData::oreStraordinarioGuardie() const
         text = "//";
 
     return text;
+}
+
+void CompetenzaData::rimuoviAltreAssenzeDoppie()
+{
+    QStringList altre;
+
+    QMap<QString, QPair<QStringList, int> >::const_iterator i = m_dipendente->altreAssenze().constBegin();
+    while(i != m_dipendente->altreAssenze().constEnd()) {
+        altre << i.value().first;
+        i++;
+    }
+
+    for(QString s : m_altreAssenze) {
+        if(m_dipendente->ferie().contains(s)) {
+            m_altreAssenze.removeOne(s);
+            continue;
+        }
+
+        if(m_dipendente->congedi().contains(s)) {
+            m_altreAssenze.removeOne(s);
+            continue;
+        }
+
+        if(m_dipendente->malattia().contains(s)) {
+            m_altreAssenze.removeOne(s);
+            continue;
+        }
+
+        if(m_dipendente->rmc().contains(s)) {
+            m_altreAssenze.removeOne(s);
+            continue;
+        }
+
+        if(m_dipendente->rmp().contains(s)) {
+            m_altreAssenze.removeOne(s);
+            continue;
+        }
+
+        if(altre.contains(s)) {
+            m_altreAssenze.removeOne(s);
+            continue;
+        }
+    }
 }
 
 GuardiaType CompetenzaData::tipoGuardia(const QString &giorno)
