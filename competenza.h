@@ -54,6 +54,7 @@ public:
     QString oreEffettuate();
     int oreProntaDisp();
     QString differenzaOre();
+    int differenzaMin() const;
     QString differenzaOreSenzaDmp();
     QString deficitOrario();
     int minutiAltreAssenze() const;

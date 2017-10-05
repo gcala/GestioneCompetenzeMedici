@@ -222,8 +222,10 @@ void MainWindow::mostraDifferenzaOre()
         ui->oreDifferenzaLabel->setStyleSheet("");
     else
         ui->oreDifferenzaLabel->setStyleSheet("color:green;");
+
     ui->oreDifferenzaLabel->setText(m_competenza->differenzaOre());
     ui->deficitOrarioLabel->setText(m_competenza->deficitOrario());
+
     if(m_competenza->dmp() == 0) {
         ui->dmpHoursEdit->setValue(0);
         ui->dmpMinsEdit->setValue(0);
@@ -892,7 +894,13 @@ void MainWindow::on_restoreCompetenzeButton_clicked()
 void MainWindow::on_meseCompetenzeCB_currentIndexChanged(int index)
 {
     Q_UNUSED(index)
+    int docIndex = ui->dirigentiCompetenzeCB->currentIndex();
+    int unitaIndex = ui->unitaCompetenzeCB->currentIndex();
     populateUnitaCompetenzeCB();
+    ui->unitaCompetenzeCB->setCurrentIndex(unitaIndex);
+    ui->unitaCompetenzeCB->show();
+    ui->dirigentiCompetenzeCB->setCurrentIndex(docIndex);
+    ui->dirigentiCompetenzeCB->show();
 }
 
 void MainWindow::on_unitaCompetenzeCB_currentIndexChanged(int index)
@@ -925,6 +933,9 @@ void MainWindow::on_dirigentiCompetenzeCB_currentIndexChanged(int index)
 
 void MainWindow::populateCompetenzeTab()
 {
+    disconnect(ui->dmpHoursEdit, SIGNAL(valueChanged(int)), 0, 0);
+    disconnect(ui->dmpMinsEdit, SIGNAL(valueChanged(int)), 0, 0);
+
     ferieCalendar->setDateRange(m_competenza->dataIniziale(), m_competenza->dataFinale());
     congediCalendar->setDateRange(m_competenza->dataIniziale(), m_competenza->dataFinale());
     malattiaCalendar->setDateRange(m_competenza->dataIniziale(), m_competenza->dataFinale());
@@ -972,6 +983,8 @@ void MainWindow::populateCompetenzeTab()
     mostraDifferenzaOre();
     elaboraGuardie();
     elaboraRep();
+    connect(ui->dmpHoursEdit, SIGNAL(valueChanged(int)), this, SLOT(minutiCambiati(int)));
+    connect(ui->dmpMinsEdit, SIGNAL(valueChanged(int)), this, SLOT(oreCambiate(int)));
 }
 
 void MainWindow::elaboraGuardie()
@@ -1190,18 +1203,36 @@ void MainWindow::on_actionCaricaCsv_triggered()
     }
 }
 
-void MainWindow::on_dmpMinsEdit_valueChanged(int arg1)
+//void MainWindow::on_dmpMinsEdit_valueChanged(int arg1)
+//{
+//    m_competenza->setDmp(ui->dmpHoursEdit->value()*60+arg1);
+//    mostraDifferenzaOre();
+//    elaboraGuardie();
+//    elaboraRep();
+//    ui->saveCompetenzeButton->setEnabled(m_competenza->isModded());
+//}
+
+//void MainWindow::on_dmpHoursEdit_valueChanged(int arg1)
+//{
+//    m_competenza->setDmp(arg1*60+ui->dmpMinsEdit->value());
+//    mostraDifferenzaOre();
+//    elaboraGuardie();
+//    elaboraRep();
+//    ui->saveCompetenzeButton->setEnabled(m_competenza->isModded());
+//}
+
+void MainWindow::oreCambiate(int mins)
 {
-    m_competenza->setDmp(ui->dmpHoursEdit->value()*60+arg1);
+    m_competenza->setDmp(ui->dmpHoursEdit->value()*60+mins);
     mostraDifferenzaOre();
     elaboraGuardie();
     elaboraRep();
     ui->saveCompetenzeButton->setEnabled(m_competenza->isModded());
 }
 
-void MainWindow::on_dmpHoursEdit_valueChanged(int arg1)
+void MainWindow::minutiCambiati(int ore)
 {
-    m_competenza->setDmp(arg1*60+ui->dmpMinsEdit->value());
+    m_competenza->setDmp(ore*60+ui->dmpMinsEdit->value());
     mostraDifferenzaOre();
     elaboraGuardie();
     elaboraRep();

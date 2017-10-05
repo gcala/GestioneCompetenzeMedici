@@ -56,6 +56,7 @@ public:
         m_g_n_fes_D = 0;
         m_totOreGuardie = 0;
         m_dmp = 0;
+        m_dmp_calcolato = 0;
         m_defaultDmp = 0;
         m_modded = false;
         m_unitaId = -1;
@@ -182,6 +183,7 @@ private:
     int m_g_n_fes_D;
     int m_totOreGuardie;
     int m_dmp;
+    int m_dmp_calcolato;
     int m_defaultDmp;
     QStringList m_altreAssenze;
     QStringList m_defaultAltreAssenze;
@@ -202,7 +204,7 @@ private:
 void CompetenzaData::buildDipendente()
 {
     m_dipendente->resetProperties();
-    m_defaultDmp = 0;
+    m_defaultDmp = -1;
     m_unitaId = -1;
     m_orePagate = 0;
     m_oreTot = 0;
@@ -240,6 +242,7 @@ void CompetenzaData::buildDipendente()
                   + m_modTableName + ".guardie_notturne,"
                   + m_modTableName + ".turni_reperibilita,"
                   + m_modTableName + ".dmp,"
+                  + m_modTableName + ".dmp_calcolato,"
                   + m_modTableName + ".altre_assenze,"
                   + m_tableName + ".id_unita "
                   + "FROM " + m_tableName + " LEFT JOIN medici ON medici.id=" + m_tableName + ".id_medico "
@@ -350,12 +353,14 @@ void CompetenzaData::buildDipendente()
         m_defaultRep = m_rep;
 
         m_dmp = query.value(23).toInt();       // dmp
-        if(m_dmp > 0)
+        if(m_dmp >= 0)
             m_modded = true;
         m_defaultDmp = m_dmp;
 
-        if(!query.value(24).toString().trimmed().isEmpty()) {        // altre assenze
-            foreach (QString f, query.value(24).toString().split(",")) {
+        m_dmp_calcolato = query.value(24).toInt();      // dmp_calcolato
+
+        if(!query.value(25).toString().trimmed().isEmpty()) {        // altre assenze
+            foreach (QString f, query.value(25).toString().split(",")) {
                 if(f == "0")
                     continue;
                 m_altreAssenze << f;
@@ -365,7 +370,7 @@ void CompetenzaData::buildDipendente()
         rimuoviAltreAssenzeDoppie();
         m_defaultAltreAssenze = m_altreAssenze;
 
-        m_unitaId = query.value(25).toInt();       // id unità
+        m_unitaId = query.value(26).toInt();       // id unità
         if(m_unitaId < 0) {
             qDebug() << Q_FUNC_INFO << "ERROR :: unità non trovata";
         }
@@ -491,13 +496,19 @@ int CompetenzaData::differenzaMin() const
            + m_dipendente->minutiGrep()
            + m_dipendente->minutiGuar()
            /*+ minutiAltreAssenze()*/
-           - m_dmp
+           - dmp()
            - (m_dipendente->minutiGiornalieri() * giorniLavorati().toInt());
 }
 
 QString CompetenzaData::deficitOrario()
 {
-    int val = m_dipendente->minutiFatti() + m_dipendente->minutiEccr() + m_dipendente->minutiGrep() + m_dipendente->minutiGuar() /*+ minutiAltreAssenze()*/ - m_dmp - (m_dipendente->minutiGiornalieri() * giorniLavorati().toInt());
+    int val = m_dipendente->minutiFatti()
+            + m_dipendente->minutiEccr()
+            + m_dipendente->minutiGrep()
+            + m_dipendente->minutiGuar() /*+ minutiAltreAssenze()*/
+            - dmp()
+            - (m_dipendente->minutiGiornalieri() * giorniLavorati().toInt());
+
     if( val < 0)
         return inOrario(abs(val));
 
@@ -650,7 +661,9 @@ void CompetenzaData::setDmp(const int &minutes)
 
 int CompetenzaData::dmp() const
 {
-    return m_dmp;
+    if(m_dmp >= 0)
+        return m_dmp;
+    return m_dmp_calcolato;
 }
 
 QList<QDate> CompetenzaData::altreAssenzeDates() const
@@ -781,7 +794,7 @@ void CompetenzaData::resetMods()
     query.bindValue(":guardie_diurne", QString());
     query.bindValue(":guardie_notturne", QString());
     query.bindValue(":turni_reperibilita", QString());
-    query.bindValue(":dmp", 0);
+    query.bindValue(":dmp", -1);
     query.bindValue(":altre_assenze", QString());
 
     if(!query.exec()) {
@@ -1492,6 +1505,11 @@ int Competenza::oreProntaDisp()
 QString Competenza::differenzaOre()
 {
     return data->differenzaOre();
+}
+
+int Competenza::differenzaMin() const
+{
+    return data->differenzaMin();
 }
 
 QString Competenza::differenzaOreSenzaDmp()

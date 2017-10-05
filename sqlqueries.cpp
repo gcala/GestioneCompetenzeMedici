@@ -21,6 +21,7 @@
 
 #include "sqlqueries.h"
 #include "dipendente.h"
+#include "competenza.h"
 
 #include <QSqlQuery>
 #include <QSqlError>
@@ -259,7 +260,8 @@ bool SqlQueries::createTimeCardsTable(const QString &tableName)
                   "guardie_diurne TEXT DEFAULT '',"
                   "guardie_notturne TEXT DEFAULT '',"
                   "turni_reperibilita TEXT DEFAULT '',"
-                  "dmp INTEGER DEFAULT (0),"
+                  "dmp INTEGER DEFAULT (-1),"
+                  "dmp_calcolato INTEGER DEFAULT (0),"
                   "altre_assenze TEXT DEFAULT '');");
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
@@ -375,17 +377,38 @@ bool SqlQueries::addTimeCard(const QString &tableName, const Dipendente *dipende
         return false;
     }
 
+    int diffMinuti = 0;
+
+    QDate d(dipendente->anno(),dipendente->mese(),1);
+
+    QString modTablePrevMonth = "tcm_" + QString::number(d.addDays(-1).year()) + QString::number(d.addDays(-1).month()).rightJustified(2, '0');
+    if(tableExists(modTablePrevMonth)) {
+        if(timeCardExists(modTablePrevMonth, QString::number(docId))) {
+            Competenza comp(modTablePrevMonth.replace("tcm", "tc"),docId);
+            diffMinuti = comp.differenzaMin();
+        }
+    }
+
+    if(diffMinuti >= 0)
+        diffMinuti = 0;
+    diffMinuti = abs(diffMinuti);
+
     QString modTableName = tableName;
     modTableName.replace("_","m_");
 
     // se la riga del medico nella tabella delle modifiche esiste già non aggiungiamo nuovamente
     if(timeCardExists(modTableName, QString::number(docId))) {
+        query.prepare("UPDATE " + modTableName + " "
+                      "SET dmp_calcolato=:dmp_calcolato "
+                      "WHERE id_medico=" + QString::number(docId) + ";");
+        query.bindValue(":dmp_calcolato", diffMinuti);
         return true;
     }
 
-    query.prepare("INSERT INTO " + modTableName + " (id_medico) "
-                  "VALUES (:id_medico);");
-    query.bindValue(":id_medico", QString::number(docId));
+    query.prepare("INSERT INTO " + modTableName + " (id_medico,dmp_calcolato) "
+                  "VALUES (:id_medico,:dmp_calcolato);");
+    query.bindValue(":id_medico", docId);
+    query.bindValue(":dmp_calcolato", diffMinuti);
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
         return false;
