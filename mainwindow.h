@@ -100,8 +100,6 @@ private slots:
     void altreCalendarClicked(const QDate &date);
     void on_actionBackupDatabase_triggered();
     void on_actionCaricaCsv_triggered();
-//    void on_dmpMinsEdit_valueChanged(int arg1);
-//    void on_dmpHoursEdit_valueChanged(int arg1);
     void minutiCambiati(int mins);
     void oreCambiate(int ore);
 

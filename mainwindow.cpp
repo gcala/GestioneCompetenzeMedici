@@ -1203,24 +1203,6 @@ void MainWindow::on_actionCaricaCsv_triggered()
     }
 }
 
-//void MainWindow::on_dmpMinsEdit_valueChanged(int arg1)
-//{
-//    m_competenza->setDmp(ui->dmpHoursEdit->value()*60+arg1);
-//    mostraDifferenzaOre();
-//    elaboraGuardie();
-//    elaboraRep();
-//    ui->saveCompetenzeButton->setEnabled(m_competenza->isModded());
-//}
-
-//void MainWindow::on_dmpHoursEdit_valueChanged(int arg1)
-//{
-//    m_competenza->setDmp(arg1*60+ui->dmpMinsEdit->value());
-//    mostraDifferenzaOre();
-//    elaboraGuardie();
-//    elaboraRep();
-//    ui->saveCompetenzeButton->setEnabled(m_competenza->isModded());
-//}
-
 void MainWindow::oreCambiate(int mins)
 {
     m_competenza->setDmp(ui->dmpHoursEdit->value()*60+mins);
