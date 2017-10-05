@@ -897,9 +897,9 @@ void MainWindow::on_meseCompetenzeCB_currentIndexChanged(int index)
     int docIndex = ui->dirigentiCompetenzeCB->currentIndex();
     int unitaIndex = ui->unitaCompetenzeCB->currentIndex();
     populateUnitaCompetenzeCB();
-    ui->unitaCompetenzeCB->setCurrentIndex(unitaIndex);
+    ui->unitaCompetenzeCB->setCurrentIndex(unitaIndex < 0 ? 0 : unitaIndex);
     ui->unitaCompetenzeCB->show();
-    ui->dirigentiCompetenzeCB->setCurrentIndex(docIndex);
+    ui->dirigentiCompetenzeCB->setCurrentIndex(docIndex < 0 ? 0 : docIndex);
     ui->dirigentiCompetenzeCB->show();
 }
 
