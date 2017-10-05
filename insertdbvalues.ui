@@ -100,7 +100,7 @@
            <item>
             <widget class="QSpinBox" name="unitaOreTot">
              <property name="maximum">
-              <number>8</number>
+              <number>12</number>
              </property>
             </widget>
            </item>
@@ -127,7 +127,7 @@
            <item>
             <widget class="QSpinBox" name="unitaOrePagate">
              <property name="maximum">
-              <number>8</number>
+              <number>12</number>
              </property>
             </widget>
            </item>
@@ -206,8 +206,6 @@
     </widget>
    </item>
   </layout>
-  <zorder>stackedWidget</zorder>
-  <zorder>unitaMsg</zorder>
  </widget>
  <resources>
   <include location="assets.qrc"/>
