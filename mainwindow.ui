@@ -3495,8 +3495,15 @@
     <addaction name="actionStampaCompetenzeDirigenti"/>
     <addaction name="actionStampaCompetenzeUnita"/>
    </widget>
+   <widget class="QMenu" name="menuStrumenti">
+    <property name="title">
+     <string>Strum&amp;enti</string>
+    </property>
+    <addaction name="actionRicalcolaDeficit"/>
+   </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Stampa"/>
+   <addaction name="menuStrumenti"/>
    <addaction name="menu_Impostazioni"/>
    <addaction name="menu_Aiuto"/>
   </widget>
@@ -3710,6 +3717,15 @@
    </property>
    <property name="toolTip">
     <string>Carica cartellini da CSV</string>
+   </property>
+  </action>
+  <action name="actionRicalcolaDeficit">
+   <property name="icon">
+    <iconset resource="assets.qrc">
+     <normaloff>:/icons/view-refresh.svg</normaloff>:/icons/view-refresh.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Ricalcola deficit...</string>
    </property>
   </action>
  </widget>

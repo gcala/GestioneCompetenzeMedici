@@ -1239,3 +1239,8 @@ void MainWindow::on_actionConfigura_triggered()
 
     loadSettings();
 }
+
+void MainWindow::on_actionRicalcolaDeficit_triggered()
+{
+
+}

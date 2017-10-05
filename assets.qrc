@@ -29,5 +29,6 @@
         <file>images/user-none.png</file>
         <file>icons/stock_folder.svg</file>
         <file>icons/dialog-ok-apply.svg</file>
+        <file>icons/view-refresh.svg</file>
     </qresource>
 </RCC>

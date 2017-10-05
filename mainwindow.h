@@ -109,6 +109,8 @@ private slots:
 
     void on_actionConfigura_triggered();
 
+    void on_actionRicalcolaDeficit_triggered();
+
 private:
     Ui::MainWindow *ui;
     bool unitaReadOnlyMode;
