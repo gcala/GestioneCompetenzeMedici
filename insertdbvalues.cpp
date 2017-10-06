@@ -86,11 +86,10 @@ void InsertDBValues::on_unitaSave_clicked()
 {
     if(!ui->unitaData->date().isValid())
         return;
-    QSqlQuery query;
 
     switch(currentOp) {
     case AddOre:
-        SqlQueries::insertPayload(idName,
+        SqlQueries::insertPayload(currentId,
                                   ui->unitaData->date().toString("MM.yyyy"),
                                   QString::number(ui->unitaOreTot->value()),
                                   QString::number(ui->unitaOrePagate->value()));
