@@ -33,7 +33,7 @@ public:
     CompetenzaData(const QString &tableName, const int id) :
         m_tableName(tableName),
         m_id(id),
-        m_arrotondamento(50)
+        m_arrotondamento(45)
     {
         if(m_tableName.isEmpty()) {
             qDebug() << Q_FUNC_INFO << "ERROR :: la stringa tableName è vuota";
@@ -491,7 +491,6 @@ QString CompetenzaData::oreEffettuate()
 
 int CompetenzaData::oreProntaDisp()
 {
-//    return m_dipendente->minutiGrep() % 60 <= m_arrotondamento ? QString::number(m_dipendente->minutiGrep() / 60) : QString::number(m_dipendente->minutiGrep() / 60 + 1);
     if(m_dipendente->minutiGrep() == 0)
         return 0;
 
