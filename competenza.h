@@ -46,6 +46,8 @@ public:
     QString name() const;
     QDate dataIniziale() const;
     QDate dataFinale() const;
+    QString modTableName() const;
+    int doctorId();
     QString giorniLavorati() const;
     QString giorniLavorativi() const;
     QString assenzeTotali() const;
@@ -57,8 +59,8 @@ public:
     int differenzaMin() const;
     QString differenzaOreSenzaDmp();
     QString deficitOrario();
-    int minutiAltreAssenze() const;
-    QString oreAltreAssenze();
+    int minutiAltreCausali() const;
+    QString oreAltreCausali();
     QString ferieCount() const;
     QList<QDate> ferieDates() const;
     QString congediCount() const;
@@ -84,7 +86,6 @@ public:
     bool isModded() const;
     bool isRestorable() const;
     void saveMods();
-    void resetMods();
     int orePagate() const;
     QString notte() const;
     QString festivo() const;
@@ -121,6 +122,11 @@ public:
     int r_n_fes();
 
     QString oreStraordinarioGuardie() const;
+    bool isGuardieDiurneModded() const;
+    bool isGuardieNotturneModded() const;
+    bool isReperibilitaModded() const;
+    bool isDmpModded() const;
+    bool isAltreModded() const;
 
 signals:
 

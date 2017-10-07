@@ -32,6 +32,7 @@
 #include "sqlitedatabasemanager.h"
 #include "aboutdialog.h"
 #include "configdialog.h"
+#include "resetdialog.h"
 
 #include <QtWidgets>
 #include <QSqlQueryModel>
@@ -878,17 +879,30 @@ void MainWindow::setCurrentRow(int value)
 void MainWindow::on_saveCompetenzeButton_clicked()
 {
     ui->saveCompetenzeButton->setEnabled(false);
-    ui->restoreCompetenzeButton->setEnabled(m_competenza->isRestorable());
     m_competenza->saveMods();
+
+    // per aggiornare la situazione cambiare l'indice corrente e torniamo subito dopo su quello originale
+    int idx = ui->dirigentiCompetenzeCB->currentIndex();
+    ui->dirigentiCompetenzeCB->setCurrentIndex(-1);
+    ui->dirigentiCompetenzeCB->setCurrentIndex(idx);
+    ui->dirigentiCompetenzeCB->show();
+
+    ui->restoreCompetenzeButton->setEnabled(m_competenza->isRestorable());
 }
 
 void MainWindow::on_restoreCompetenzeButton_clicked()
 {
-    //TODO chiedi conferma
-    m_competenza->resetMods();
-    populateCompetenzeTab();
+//    ResetDialog *resetDialog = new ResetDialog(m_competenza->modTableName(), m_competenza->doctorId(), this);
+    ResetDialog *resetDialog = new ResetDialog(m_competenza, this);
+    resetDialog->exec();
+    // per aggiornare la situazione cambiare l'indice corrente e torniamo subito dopo su quello originale
+    int idx = ui->dirigentiCompetenzeCB->currentIndex();
+    ui->dirigentiCompetenzeCB->setCurrentIndex(-1);
+    ui->dirigentiCompetenzeCB->setCurrentIndex(idx);
+    ui->dirigentiCompetenzeCB->show();
+
     ui->saveCompetenzeButton->setEnabled(false);
-    ui->restoreCompetenzeButton->setEnabled(false);
+    ui->restoreCompetenzeButton->setEnabled(m_competenza->isRestorable());
 }
 
 void MainWindow::on_meseCompetenzeCB_currentIndexChanged(int index)

@@ -346,13 +346,13 @@ bool SqlQueries::addTimeCard(const QString &tableName, const Dipendente *dipende
     query.bindValue(":rmp", dipendente->rmp().join(","));
     query.bindValue(":rmc", dipendente->rmc().join(","));
 
-    QString altreAssenze = "";
-    QMap<QString, QPair<QStringList, int> >::const_iterator i = dipendente->altreAssenze().constBegin();
-    while (i != dipendente->altreAssenze().constEnd()) {
-        altreAssenze += i.key() + "," + i.value().first.join("~") + "," + QString::number(i.value().second) + ";";
+    QString altreCausali = "";
+    QMap<QString, QPair<QStringList, int> >::const_iterator i = dipendente->altreCausali().constBegin();
+    while (i != dipendente->altreCausali().constEnd()) {
+        altreCausali += i.key() + "," + i.value().first.join("~") + "," + QString::number(i.value().second) + ";";
         ++i;
     }
-    query.bindValue(":altre_assenze", altreAssenze);
+    query.bindValue(":altre_assenze", altreCausali);
 
     query.bindValue(":guardie_diurne", dipendente->guardieDiurne().join(","));
     query.bindValue(":guardie_notturne", dipendente->guardieNotturne().join(","));
@@ -502,4 +502,47 @@ void SqlQueries::appendOtherUnitaName(const int id, const QString &nome)
     }
 
     buildUnitsMap();
+}
+
+void SqlQueries::resetAll(const QString &tableName, const int &id)
+{
+    QSqlQuery query;
+    query.prepare("UPDATE " + tableName + " " +
+                  "SET guardie_diurne=:guardie_diurne,guardie_notturne=:guardie_notturne,turni_reperibilita=:turni_reperibilita,dmp=:dmp,altre_assenze=:altre_assenze "
+                  "WHERE id_medico=" + QString::number(id) + ";");
+    query.bindValue(":guardie_diurne", QString());
+    query.bindValue(":guardie_notturne", QString());
+    query.bindValue(":turni_reperibilita", QString());
+    query.bindValue(":dmp", -1);
+    query.bindValue(":altre_assenze", QString());
+
+    if(!query.exec()) {
+        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
+}
+
+void SqlQueries::resetStringValue(const QString &tableName, const QString &columnName, const int &id)
+{
+    QSqlQuery query;
+    query.prepare("UPDATE " + tableName + " " +
+                  "SET " + columnName + "=:" + columnName + " " +
+                  "WHERE id_medico=" + QString::number(id) + ";");
+    query.bindValue(":" + columnName, QString());
+
+    if(!query.exec()) {
+        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
+}
+
+void SqlQueries::resetIntValue(const QString &tableName, const QString &columnName, const int &id)
+{
+    QSqlQuery query;
+    query.prepare("UPDATE " + tableName + " " +
+                  "SET " + columnName + "=:" + columnName + " " +
+                  "WHERE id_medico=" + QString::number(id) + ";");
+    query.bindValue(":" + columnName, -1);
+
+    if(!query.exec()) {
+        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
 }

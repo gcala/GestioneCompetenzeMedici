@@ -47,7 +47,8 @@ SOURCES += \
         nomiunitadialog.cpp \
         aboutdialog.cpp \
         configdialog.cpp \
-        settingsitem.cpp
+        settingsitem.cpp \
+    resetdialog.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -73,7 +74,8 @@ HEADERS += \
         nomiunitadialog.h \
         aboutdialog.h \
         configdialog.h \
-        settingsitem.h
+        settingsitem.h \
+    resetdialog.h
 
 FORMS += \
         mainwindow.ui \
@@ -83,7 +85,8 @@ FORMS += \
         nomiunitadialog.ui \
         aboutdialog.ui \
         configdialog.ui \
-        settingsitem.ui
+        settingsitem.ui \
+    resetdialog.ui
 
 RESOURCES += \
     assets.qrc

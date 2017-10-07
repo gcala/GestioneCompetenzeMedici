@@ -174,7 +174,7 @@ void TabulaCsvTimeCardsReader::run()
             m_dipendente->setAnno(anno);
             m_dipendente->setMese(mese);
 
-            line = line.replace(matricola,"");
+            line = line.replace(matricola,"").trimmed();
 
             QStringList sl = line.split("AOSC");
             m_dipendente->setNome(sl.at(0).trimmed());
@@ -303,7 +303,7 @@ void TabulaCsvTimeCardsReader::run()
                         if(!campi.at(2).trimmed().isEmpty() || !campi.at(3).trimmed().isEmpty())
                             m_dipendente->addMinutiFatti(inMinuti(campi.at(i+1).trimmed()));
                         else
-                            m_dipendente->addAltraAssenza(causale, QString::number(dataCorrente.day()), inMinuti(campi.at(i+1).trimmed()));
+                            m_dipendente->addAltraCausale(causale, QString::number(dataCorrente.day()), inMinuti(campi.at(i+1).trimmed()));
                     }
                 }
             }

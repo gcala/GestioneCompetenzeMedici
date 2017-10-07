@@ -21,6 +21,7 @@
 
 #include "competenza.h"
 #include "dipendente.h"
+#include "sqlqueries.h"
 
 #include <QSqlQuery>
 #include <QSqlError>
@@ -59,6 +60,11 @@ public:
         m_dmp_calcolato = 0;
         m_defaultDmp = 0;
         m_modded = false;
+        m_gdiurneModded = false;
+        m_gnotturneModded = false;
+        m_repModded = false;
+        m_dmpModded = false;
+        m_altreModded = false;
         m_unitaId = -1;
         m_orePagate = 0;
 
@@ -75,6 +81,8 @@ public:
     QString name() const;
     QDate dataIniziale() const;
     QDate dataFinale() const;
+    QString modTableName() const;
+    int doctorId();
     QString giorniLavorati() const;
     QString giorniLavorativi() const;
     QString assenzeTotali() const;
@@ -86,8 +94,8 @@ public:
     QString differenzaOreSenzaDmp();
     int differenzaMin() const;
     QString deficitOrario();
-    int minutiAltreAssenze() const;
-    QString oreAltreAssenze();
+    int minutiAltreCausali() const;
+    QString oreAltreCausali();
     QString ferieCount() const;
     QList<QDate> ferieDates() const;
     QString congediCount() const;
@@ -111,7 +119,6 @@ public:
     bool isModded() const;
     bool isRestorable() const;
     void saveMods();
-    void resetMods();
     void addGuardiaDiurnaDay(int day);
     void addGuardiaNotturnaDay(int day);
     int orePagate() const;
@@ -151,6 +158,11 @@ public:
 
     QString oreStraordinarioGuardie() const;
     void rimuoviAltreAssenzeDoppie();
+    bool isGuardieDiurneModded() const;
+    bool isGuardieNotturneModded() const;
+    bool isReperibilitaModded() const;
+    bool isDmpModded() const;
+    bool isAltreModded() const;
 
 private:
     const int m_arrotondamento;
@@ -188,6 +200,11 @@ private:
     QStringList m_altreAssenze;
     QStringList m_defaultAltreAssenze;
     bool m_modded;
+    bool m_gdiurneModded;
+    bool m_gnotturneModded;
+    bool m_repModded;
+    bool m_dmpModded;
+    bool m_altreModded;
 
     void buildDipendente();
     QString inOrario(int min);
@@ -289,7 +306,7 @@ void CompetenzaData::buildDipendente()
             foreach (QString f, query.value(10).toString().split(";")) { // altre assenze
                 if(!f.isEmpty()) {
                     QStringList assenze = f.split(",");
-                    m_dipendente->addAltraAssenza(assenze.at(0),assenze.at(1),assenze.at(2).toInt());
+                    m_dipendente->addAltraCausale(assenze.at(0),assenze.at(1),assenze.at(2).toInt());
                 }
             }
         }
@@ -301,6 +318,7 @@ void CompetenzaData::buildDipendente()
                 m_dipendente->addGuardiaDiurna(f);
                 addGuardiaDiurnaDay(f.toInt());
                 m_modded = true;
+                m_gdiurneModded = true;
             }
         } else if(!query.value(11).toString().trimmed().isEmpty()) {
             foreach (QString f, query.value(11).toString().split(",")) { // guardie diurne
@@ -317,6 +335,7 @@ void CompetenzaData::buildDipendente()
                 m_dipendente->addGuardiaNotturna(f);
                 addGuardiaNotturnaDay(f.toInt());
                 m_modded = true;
+                m_gnotturneModded = true;
             }
         } else if(!query.value(12).toString().trimmed().isEmpty()) {
             foreach (QString f, query.value(12).toString().split(",")) { // guardie notturne
@@ -348,13 +367,16 @@ void CompetenzaData::buildDipendente()
                     continue;
                 m_rep[QDate(m_dipendente->anno(), m_dipendente->mese(), f.split(",").first().toInt())] = static_cast<ValoreRep>(f.split(",").last().toInt());
                 m_modded = true;
+                m_repModded = true;
             }
         }
         m_defaultRep = m_rep;
 
         m_dmp = query.value(23).toInt();       // dmp
-        if(m_dmp >= 0)
+        if(m_dmp >= 0) {
             m_modded = true;
+            m_dmpModded = true;
+        }
         m_defaultDmp = m_dmp;
 
         m_dmp_calcolato = query.value(24).toInt();      // dmp_calcolato
@@ -365,6 +387,7 @@ void CompetenzaData::buildDipendente()
                     continue;
                 m_altreAssenze << f;
                 m_modded = true;
+                m_altreModded = true;
             }
         }
         rimuoviAltreAssenzeDoppie();
@@ -414,6 +437,16 @@ QDate CompetenzaData::dataFinale() const
     return QDate(m_dipendente->anno(), m_dipendente->mese(), QDate(m_dipendente->anno(), m_dipendente->mese(), 1).daysInMonth());
 }
 
+QString CompetenzaData::modTableName() const
+{
+    return m_modTableName;
+}
+
+int CompetenzaData::doctorId()
+{
+    return m_id;
+}
+
 QString CompetenzaData::giorniLavorati() const
 {
     return QString::number(QDate(m_dipendente->anno(), m_dipendente->mese(), 1).daysInMonth()
@@ -422,7 +455,7 @@ QString CompetenzaData::giorniLavorati() const
             - m_dipendente->ferie().count()
             - m_dipendente->congedi().count()
             - m_dipendente->malattia().count()
-            - m_dipendente->altreAssenzeCount()
+            - m_dipendente->altreCausaliCount()
             - m_altreAssenze.count());
 }
 
@@ -437,7 +470,7 @@ QString CompetenzaData::assenzeTotali() const
             + m_dipendente->ferie().count()
             + m_dipendente->congedi().count()
             + m_dipendente->malattia().count()
-            + m_dipendente->altreAssenzeCount()
+            + m_dipendente->altreCausaliCount()
             + m_altreAssenze.count());
 }
 
@@ -515,10 +548,10 @@ QString CompetenzaData::deficitOrario()
     return "//";
 }
 
-int CompetenzaData::minutiAltreAssenze() const
+int CompetenzaData::minutiAltreCausali() const
 {
      int countMinuti = 0;
-     QMap<QString, QPair<QStringList, int> > map = m_dipendente->altreAssenze();
+     QMap<QString, QPair<QStringList, int> > map = m_dipendente->altreCausali();
      QMap<QString, QPair<QStringList, int>>::const_iterator i = map.constBegin();
      while (i != map.constEnd()) {
          countMinuti += i.value().second;
@@ -527,9 +560,9 @@ int CompetenzaData::minutiAltreAssenze() const
      return countMinuti;
 }
 
-QString CompetenzaData::oreAltreAssenze()
+QString CompetenzaData::oreAltreCausali()
 {
-    return inOrario(minutiAltreAssenze());
+    return inOrario(minutiAltreCausali());
 }
 
 QString CompetenzaData::ferieCount() const
@@ -783,25 +816,6 @@ void CompetenzaData::saveMods()
     }
 
     m_modded = true;
-}
-
-void CompetenzaData::resetMods()
-{
-    QSqlQuery query;
-    query.prepare("UPDATE " + m_modTableName + " " +
-                  "SET guardie_diurne=:guardie_diurne,guardie_notturne=:guardie_notturne,turni_reperibilita=:turni_reperibilita,dmp=:dmp,altre_assenze=:altre_assenze "
-                  "WHERE id_medico=" + QString::number(m_id) + ";");
-    query.bindValue(":guardie_diurne", QString());
-    query.bindValue(":guardie_notturne", QString());
-    query.bindValue(":turni_reperibilita", QString());
-    query.bindValue(":dmp", -1);
-    query.bindValue(":altre_assenze", QString());
-
-    if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
-    }
-
-    buildDipendente();
 }
 
 void CompetenzaData::addGuardiaDiurnaDay(int day)
@@ -1144,12 +1158,38 @@ QString CompetenzaData::oreStraordinarioGuardie() const
     return text;
 }
 
+bool CompetenzaData::isGuardieDiurneModded() const
+{
+//    return (m_modded || (m_guardiaDiurnaMap != m_defaultGDDates));
+    return m_gdiurneModded;
+}
+
+bool CompetenzaData::isGuardieNotturneModded() const
+{
+    return m_gnotturneModded;
+}
+
+bool CompetenzaData::isReperibilitaModded() const
+{
+    return m_repModded;
+}
+
+bool CompetenzaData::isDmpModded() const
+{
+    return m_dmpModded;
+}
+
+bool CompetenzaData::isAltreModded() const
+{
+    return m_altreModded;
+}
+
 void CompetenzaData::rimuoviAltreAssenzeDoppie()
 {
     QStringList altre;
 
-    QMap<QString, QPair<QStringList, int> >::const_iterator i = m_dipendente->altreAssenze().constBegin();
-    while(i != m_dipendente->altreAssenze().constEnd()) {
+    QMap<QString, QPair<QStringList, int> >::const_iterator i = m_dipendente->altreCausali().constBegin();
+    while(i != m_dipendente->altreCausali().constEnd()) {
         altre << i.value().first;
         i++;
     }
@@ -1229,24 +1269,6 @@ RepType CompetenzaData::tipoReperibilita(const int giorno, const int tipo)
     }
 
     return value;
-
-//    if(m_grandiFestivita.contains(dataCorrente)) {
-//        if(tipo == 0)
-//            return RepType::FesNot;
-//        return RepType::FesDiu;
-//    } else if(dataCorrente.addDays(1).dayOfWeek() == 1) {
-//        if(tipo == 0)
-//            return RepType::FesNot;
-//        return RepType::FesDiu;
-//    } else if(dataCorrente.addDays(1).dayOfWeek() == 7) {
-//        if(tipo == 0)
-//            return RepType::FerNot;
-//        return RepType::FerDiu;
-//    }
-
-//    if(tipo == 0)
-//        return RepType::FerNot;
-//    return RepType::FerDiu;
 }
 
 void CompetenzaData::caricaGrandiFestivita(int anno)
@@ -1467,6 +1489,16 @@ QDate Competenza::dataFinale() const
     return data->dataFinale();
 }
 
+QString Competenza::modTableName() const
+{
+    return data->modTableName();
+}
+
+int Competenza::doctorId()
+{
+    return data->doctorId();
+}
+
 QString Competenza::giorniLavorati() const
 {
     return data->giorniLavorati();
@@ -1522,14 +1554,14 @@ QString Competenza::deficitOrario()
     return data->deficitOrario();
 }
 
-int Competenza::minutiAltreAssenze() const
+int Competenza::minutiAltreCausali() const
 {
-    return data->minutiAltreAssenze();
+    return data->minutiAltreCausali();
 }
 
-QString Competenza::oreAltreAssenze()
+QString Competenza::oreAltreCausali()
 {
-    return data->oreAltreAssenze();
+    return data->oreAltreCausali();
 }
 
 QString Competenza::ferieCount() const
@@ -1655,11 +1687,6 @@ bool Competenza::isRestorable() const
 void Competenza::saveMods()
 {
     data->saveMods();
-}
-
-void Competenza::resetMods()
-{
-    data->resetMods();
 }
 
 int Competenza::orePagate() const
@@ -1825,4 +1852,29 @@ int Competenza::r_n_fes()
 QString Competenza::oreStraordinarioGuardie() const
 {
     return data->oreStraordinarioGuardie();
+}
+
+bool Competenza::isGuardieDiurneModded() const
+{
+    return data->isGuardieDiurneModded();
+}
+
+bool Competenza::isGuardieNotturneModded() const
+{
+    return data->isGuardieNotturneModded();
+}
+
+bool Competenza::isReperibilitaModded() const
+{
+    return data->isReperibilitaModded();
+}
+
+bool Competenza::isDmpModded() const
+{
+    return data->isDmpModded();
+}
+
+bool Competenza::isAltreModded() const
+{
+    return data->isAltreModded();
 }

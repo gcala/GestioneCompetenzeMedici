@@ -60,9 +60,9 @@ public:
     void addCongedo(QString date);
     QStringList malattia() const;
     void addMalattia(QString date);
-    QMap<QString, QPair<QStringList, int> > altreAssenze() const;
-    int altreAssenzeCount() const;
-    void addAltraAssenza(QString causale, QString date, int minuti);
+    QMap<QString, QPair<QStringList, int> > altreCausali() const;
+    int altreCausaliCount() const;
+    void addAltraCausale(QString causale, QString date, int minuti);
     int minutiFatti() const;
     void addMinutiFatti(int minuti);
     int minutiCongedi() const;
@@ -96,7 +96,7 @@ private:
     QStringList m_ferie;
     QStringList m_congedi;
     QStringList m_malattia;
-    QMap<QString, QPair<QStringList, int> > m_altreAssenze;
+    QMap<QString, QPair<QStringList, int> > m_altreCausali;
     int m_minutiFatti;
     int m_minutiCongedi;
     int m_minutiGiornalieri;
@@ -249,17 +249,17 @@ void DipendenteData::addMalattia(QString date)
     m_malattia.append(date);
 }
 
-QMap<QString, QPair<QStringList, int> > DipendenteData::altreAssenze() const
+QMap<QString, QPair<QStringList, int> > DipendenteData::altreCausali() const
 {
-    return m_altreAssenze;
+    return m_altreCausali;
 }
 
-int DipendenteData::altreAssenzeCount() const
+int DipendenteData::altreCausaliCount() const
 {
     int count = 0;
 
-    QMap<QString, QPair<QStringList, int> >::const_iterator i = m_altreAssenze.constBegin();
-    while(i != m_altreAssenze.constEnd()) {
+    QMap<QString, QPair<QStringList, int> >::const_iterator i = m_altreCausali.constBegin();
+    while(i != m_altreCausali.constEnd()) {
         count += i.value().first.count();
         i++;
     }
@@ -267,18 +267,18 @@ int DipendenteData::altreAssenzeCount() const
     return count;
 }
 
-void DipendenteData::addAltraAssenza(QString causale, QString date, int minuti)
+void DipendenteData::addAltraCausale(QString causale, QString date, int minuti)
 {
-    if(m_altreAssenze.keys().contains(causale)) {
-        QPair<QStringList, int> value = m_altreAssenze[causale];
+    if(m_altreCausali.keys().contains(causale)) {
+        QPair<QStringList, int> value = m_altreCausali[causale];
         value.first << date.split("~");
         value.second += minuti;
-        m_altreAssenze[causale] = value;
+        m_altreCausali[causale] = value;
     } else {
         QPair<QStringList, int> value;
         value.first << date.split("~");
         value.second = minuti;
-        m_altreAssenze[causale] = value;
+        m_altreCausali[causale] = value;
     }
 }
 
@@ -370,7 +370,7 @@ void DipendenteData::resetProperties()
     m_grep.clear();
     m_rmc.clear();
     m_rmp.clear();
-    m_altreAssenze.clear();
+    m_altreCausali.clear();
 }
 
 Dipendente::Dipendente(QObject *parent) : QObject(parent), data(new DipendenteData)
@@ -535,19 +535,19 @@ void Dipendente::addMalattia(QString date)
     data->addMalattia(date);
 }
 
-QMap<QString, QPair<QStringList, int> > Dipendente::altreAssenze() const
+QMap<QString, QPair<QStringList, int> > Dipendente::altreCausali() const
 {
-    return data->altreAssenze();
+    return data->altreCausali();
 }
 
-int Dipendente::altreAssenzeCount() const
+int Dipendente::altreCausaliCount() const
 {
-    return data->altreAssenzeCount();
+    return data->altreCausaliCount();
 }
 
-void Dipendente::addAltraAssenza(QString causale, QString date, int minuti)
+void Dipendente::addAltraCausale(QString causale, QString date, int minuti)
 {
-    data->addAltraAssenza(causale, date, minuti);
+    data->addAltraCausale(causale, date, minuti);
 }
 
 int Dipendente::minutiFatti() const

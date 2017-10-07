@@ -46,7 +46,7 @@ class Dipendente : public QObject
     Q_PROPERTY( QStringList ferie READ ferie )
     Q_PROPERTY( QStringList congedi READ congedi )
     Q_PROPERTY( QStringList malattia READ malattia )
-    Q_PROPERTY( QMap<QString, QPair<QStringList, int> > altreAssenze READ altreAssenze )
+    Q_PROPERTY( QMap<QString, QPair<QStringList, int> > altreCausali READ altreCausali )
     Q_PROPERTY( int minutiFatti READ minutiFatti WRITE addMinutiFatti )
     Q_PROPERTY( int minutiCongedi READ minutiCongedi WRITE addMinutiCongedo )
     Q_PROPERTY( int minutiGiornalieri READ minutiGiornalieri WRITE setMinutiGiornalieri )
@@ -89,9 +89,9 @@ public:
     void addCongedo(QString date);
     QStringList malattia() const;
     void addMalattia(QString date);
-    QMap<QString, QPair<QStringList, int> > altreAssenze() const;
-    void addAltraAssenza(QString causale, QString date, int minuti);
-    int altreAssenzeCount() const;
+    QMap<QString, QPair<QStringList, int> > altreCausali() const;
+    void addAltraCausale(QString causale, QString date, int minuti);
+    int altreCausaliCount() const;
     int minutiFatti() const;
     void addMinutiFatti(int minuti);
     int minutiCongedi() const;

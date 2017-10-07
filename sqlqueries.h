@@ -55,6 +55,9 @@ public:
     static void buildUnitsMap();
     static QMap<int, QString> units();
     static void appendOtherUnitaName(const int id, const QString &nome);
+    static void resetAll(const QString &tableName, const int &id);
+    static void resetStringValue(const QString &tableName, const QString &columnName, const int &id);
+    static void resetIntValue(const QString &tableName, const QString &columnName, const int &id);
 };
 
 #endif // SQLQUERIES_H
