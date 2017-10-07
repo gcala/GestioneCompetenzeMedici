@@ -237,7 +237,7 @@ bool SqlQueries::createTimeCardsTable(const QString &tableName)
                   "malattia TEXT DEFAULT '',"
                   "rmp TEXT DEFAULT '',"
                   "rmc TEXT DEFAULT '',"
-                  "altre_assenze TEXT DEFAULT '',"
+                  "altre_causali TEXT DEFAULT '',"
                   "guardie_diurne TEXT DEFAULT '',"
                   "guardie_notturne TEXT DEFAULT '',"
                   "grep TEXT DEFAULT '',"
@@ -262,7 +262,8 @@ bool SqlQueries::createTimeCardsTable(const QString &tableName)
                   "turni_reperibilita TEXT DEFAULT '',"
                   "dmp INTEGER DEFAULT (-1),"
                   "dmp_calcolato INTEGER DEFAULT (0),"
-                  "altre_assenze TEXT DEFAULT '');");
+                  "altre_assenze TEXT DEFAULT '',"
+                  "commento TEXT DEFAULT '');");
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
         return false;
@@ -332,8 +333,8 @@ bool SqlQueries::addTimeCard(const QString &tableName, const Dipendente *dipende
         removeTimeCard(tableName, QString::number(docId));
     }
 
-    query.prepare("INSERT INTO " + tableName + " (id_medico, id_unita, anno, mese, riposi, minuti_giornalieri, ferie, congedi, malattia, rmp, rmc, altre_assenze, guardie_diurne, guardie_notturne, grep, congedi_minuti, eccr_minuti, grep_minuti, guar_minuti, rmc_minuti, minuti_fatti) "
-                  "VALUES (:id_medico, :id_unita, :anno, :mese, :riposi, :minuti_giornalieri, :ferie, :congedi, :malattia, :rmp, :rmc, :altre_assenze, :guardie_diurne, :guardie_notturne, :grep, :congedi_minuti, :eccr_minuti, :grep_minuti, :guar_minuti, :rmc_minuti, :minuti_fatti);");
+    query.prepare("INSERT INTO " + tableName + " (id_medico, id_unita, anno, mese, riposi, minuti_giornalieri, ferie, congedi, malattia, rmp, rmc, altre_causali, guardie_diurne, guardie_notturne, grep, congedi_minuti, eccr_minuti, grep_minuti, guar_minuti, rmc_minuti, minuti_fatti) "
+                  "VALUES (:id_medico, :id_unita, :anno, :mese, :riposi, :minuti_giornalieri, :ferie, :congedi, :malattia, :rmp, :rmc, :altre_causali, :guardie_diurne, :guardie_notturne, :grep, :congedi_minuti, :eccr_minuti, :grep_minuti, :guar_minuti, :rmc_minuti, :minuti_fatti);");
     query.bindValue(":id_medico", QString::number(docId));
     query.bindValue(":id_unita", unId);
     query.bindValue(":anno", dipendente->anno());
@@ -352,7 +353,7 @@ bool SqlQueries::addTimeCard(const QString &tableName, const Dipendente *dipende
         altreCausali += i.key() + "," + i.value().first.join("~") + "," + QString::number(i.value().second) + ";";
         ++i;
     }
-    query.bindValue(":altre_assenze", altreCausali);
+    query.bindValue(":altre_causali", altreCausali);
 
     query.bindValue(":guardie_diurne", dipendente->guardieDiurne().join(","));
     query.bindValue(":guardie_notturne", dipendente->guardieNotturne().join(","));

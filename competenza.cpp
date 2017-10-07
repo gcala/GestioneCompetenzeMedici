@@ -245,7 +245,7 @@ void CompetenzaData::buildDipendente()
                   + m_tableName + ".malattia,"
                   + m_tableName + ".rmp,"
                   + m_tableName + ".rmc,"
-                  + m_tableName + ".altre_assenze,"
+                  + m_tableName + ".altre_causali,"
                   + m_tableName + ".guardie_diurne,"
                   + m_tableName + ".guardie_notturne,"
                   + m_tableName + ".grep,"
@@ -303,7 +303,7 @@ void CompetenzaData::buildDipendente()
             }
         }
         if(!query.value(10).toString().trimmed().isEmpty()) {
-            foreach (QString f, query.value(10).toString().split(";")) { // altre assenze
+            foreach (QString f, query.value(10).toString().split(";")) { // altre causali
                 if(!f.isEmpty()) {
                     QStringList assenze = f.split(",");
                     m_dipendente->addAltraCausale(assenze.at(0),assenze.at(1),assenze.at(2).toInt());
@@ -527,7 +527,6 @@ int CompetenzaData::differenzaMin() const
            + m_dipendente->minutiEccr()
            + m_dipendente->minutiGrep()
            + m_dipendente->minutiGuar()
-           /*+ minutiAltreAssenze()*/
            - dmp()
            - (m_dipendente->minutiGiornalieri() * giorniLavorati().toInt());
 }
@@ -537,7 +536,7 @@ QString CompetenzaData::deficitOrario()
     int val = m_dipendente->minutiFatti()
             + m_dipendente->minutiEccr()
             + m_dipendente->minutiGrep()
-            + m_dipendente->minutiGuar() /*+ minutiAltreAssenze()*/
+            + m_dipendente->minutiGuar()
             - dmp()
             - (m_dipendente->minutiGiornalieri() * giorniLavorati().toInt());
 
@@ -1185,11 +1184,11 @@ bool CompetenzaData::isAltreModded() const
 
 void CompetenzaData::rimuoviAltreAssenzeDoppie()
 {
-    QStringList altre;
+    QStringList altreCausali;
 
     QMap<QString, QPair<QStringList, int> >::const_iterator i = m_dipendente->altreCausali().constBegin();
     while(i != m_dipendente->altreCausali().constEnd()) {
-        altre << i.value().first;
+        altreCausali << i.value().first;
         i++;
     }
 
@@ -1219,7 +1218,7 @@ void CompetenzaData::rimuoviAltreAssenzeDoppie()
             continue;
         }
 
-        if(altre.contains(s)) {
+        if(altreCausali.contains(s)) {
             m_altreAssenze.removeOne(s);
             continue;
         }
