@@ -111,6 +111,8 @@ private slots:
 
     void on_actionRicalcolaDeficit_triggered();
 
+    void on_noteLine_textEdited(const QString &arg1);
+
 private:
     Ui::MainWindow *ui;
     bool unitaReadOnlyMode;

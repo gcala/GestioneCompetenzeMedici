@@ -81,6 +81,8 @@ public:
     QMap<QDate, ValoreRep> rep() const;
     void setDmp(const int &minutes);
     int dmp() const;
+    void setNote(const QString &note);
+    QString note() const;
     QList<QDate> altreAssenzeDates() const;
     void setAltreAssenze(const QList<QDate> &assenze);
     bool isModded() const;
@@ -127,6 +129,7 @@ public:
     bool isReperibilitaModded() const;
     bool isDmpModded() const;
     bool isAltreModded() const;
+    bool isNoteModded() const;
 
 signals:
 

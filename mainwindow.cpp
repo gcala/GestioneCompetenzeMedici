@@ -994,6 +994,8 @@ void MainWindow::populateCompetenzeTab()
 
     ui->oreStraordinarioRepLabel->setText(QString::number(m_competenza->oreProntaDisp()));
 
+    ui->noteLine->setText(m_competenza->note());
+
     mostraDifferenzaOre();
     elaboraGuardie();
     elaboraRep();
@@ -1257,4 +1259,10 @@ void MainWindow::on_actionConfigura_triggered()
 void MainWindow::on_actionRicalcolaDeficit_triggered()
 {
 
+}
+
+void MainWindow::on_noteLine_textEdited(const QString &arg1)
+{
+    m_competenza->setNote(ui->noteLine->text().trimmed());
+    ui->saveCompetenzeButton->setEnabled(m_competenza->isModded());
 }

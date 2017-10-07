@@ -66,6 +66,10 @@ void ResetDialog::on_restoreButton_clicked()
         if(ui->altreCB->isChecked()) {
             SqlQueries::resetStringValue(m_tableName, "altre_assenze", m_id);
         }
+
+        if(ui->noteCB->isChecked()) {
+            SqlQueries::resetStringValue(m_tableName, "nota", m_id);
+        }
     }
 
     close();
@@ -81,6 +85,7 @@ void ResetDialog::on_tuttoCB_toggled(bool checked)
         ui->repCB->setEnabled(false);
         ui->dmpCB->setEnabled(false);
         ui->altreCB->setEnabled(false);
+        ui->noteCB->setEnabled(false);
     }
 }
 
@@ -91,4 +96,5 @@ void ResetDialog::enableItems()
     ui->repCB->setEnabled(m_competenza->isReperibilitaModded());
     ui->dmpCB->setEnabled(m_competenza->isDmpModded());
     ui->altreCB->setEnabled(m_competenza->isAltreModded());
+    ui->noteCB->setEnabled(m_competenza->isNoteModded());
 }

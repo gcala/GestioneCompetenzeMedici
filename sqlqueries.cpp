@@ -263,7 +263,7 @@ bool SqlQueries::createTimeCardsTable(const QString &tableName)
                   "dmp INTEGER DEFAULT (-1),"
                   "dmp_calcolato INTEGER DEFAULT (0),"
                   "altre_assenze TEXT DEFAULT '',"
-                  "commento TEXT DEFAULT '');");
+                  "nota TEXT DEFAULT '');");
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
         return false;
@@ -509,13 +509,15 @@ void SqlQueries::resetAll(const QString &tableName, const int &id)
 {
     QSqlQuery query;
     query.prepare("UPDATE " + tableName + " " +
-                  "SET guardie_diurne=:guardie_diurne,guardie_notturne=:guardie_notturne,turni_reperibilita=:turni_reperibilita,dmp=:dmp,altre_assenze=:altre_assenze "
+                  "SET guardie_diurne=:guardie_diurne,guardie_notturne=:guardie_notturne,"
+                  "turni_reperibilita=:turni_reperibilita,dmp=:dmp,altre_assenze=:altre_assenze,nota=:nota "
                   "WHERE id_medico=" + QString::number(id) + ";");
     query.bindValue(":guardie_diurne", QString());
     query.bindValue(":guardie_notturne", QString());
     query.bindValue(":turni_reperibilita", QString());
     query.bindValue(":dmp", -1);
     query.bindValue(":altre_assenze", QString());
+    query.bindValue(":nota", QString());
 
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();

@@ -59,11 +59,14 @@ public:
         m_dmp = 0;
         m_dmp_calcolato = 0;
         m_defaultDmp = 0;
+        m_note.clear();
+        m_defaultNote.clear();
         m_modded = false;
         m_gdiurneModded = false;
         m_gnotturneModded = false;
         m_repModded = false;
         m_dmpModded = false;
+        m_noteModded = false;
         m_altreModded = false;
         m_unitaId = -1;
         m_orePagate = 0;
@@ -114,6 +117,8 @@ public:
     QMap<int, GuardiaType> guardiaNotturnaMap() const;
     void setDmp(const int &minutes);
     int dmp() const;
+    void setNote(const QString &note);
+    QString note() const;
     QList<QDate> altreAssenzeDates() const;
     void setAltreAssenze(const QList<QDate> &assenze);
     bool isModded() const;
@@ -163,6 +168,7 @@ public:
     bool isReperibilitaModded() const;
     bool isDmpModded() const;
     bool isAltreModded() const;
+    bool isNoteModded() const;
 
 private:
     const int m_arrotondamento;
@@ -197,6 +203,8 @@ private:
     int m_dmp;
     int m_dmp_calcolato;
     int m_defaultDmp;
+    QString m_note;
+    QString m_defaultNote;
     QStringList m_altreAssenze;
     QStringList m_defaultAltreAssenze;
     bool m_modded;
@@ -205,6 +213,7 @@ private:
     bool m_repModded;
     bool m_dmpModded;
     bool m_altreModded;
+    bool m_noteModded;
 
     void buildDipendente();
     QString inOrario(int min);
@@ -222,6 +231,7 @@ void CompetenzaData::buildDipendente()
 {
     m_dipendente->resetProperties();
     m_defaultDmp = -1;
+    m_defaultNote.clear();
     m_unitaId = -1;
     m_orePagate = 0;
     m_oreTot = 0;
@@ -261,7 +271,8 @@ void CompetenzaData::buildDipendente()
                   + m_modTableName + ".dmp,"
                   + m_modTableName + ".dmp_calcolato,"
                   + m_modTableName + ".altre_assenze,"
-                  + m_tableName + ".id_unita "
+                  + m_tableName + ".id_unita,"
+                  + m_modTableName + ".nota "
                   + "FROM " + m_tableName + " LEFT JOIN medici ON medici.id=" + m_tableName + ".id_medico "
                   + "LEFT JOIN unita ON unita.id=" + m_tableName + ".id_unita "
                   + "LEFT JOIN " + m_modTableName + " ON " + m_modTableName + ".id_medico=" + m_tableName + ".id_medico "
@@ -397,6 +408,13 @@ void CompetenzaData::buildDipendente()
         if(m_unitaId < 0) {
             qDebug() << Q_FUNC_INFO << "ERROR :: unità non trovata";
         }
+
+        m_note = query.value(27).toString();       // nota
+        if(!m_note.isEmpty()) {
+            m_modded = true;
+            m_noteModded = true;
+        }
+        m_defaultNote = m_note;
     }
 
     getOrePagate();
@@ -697,6 +715,16 @@ int CompetenzaData::dmp() const
     return m_dmp_calcolato;
 }
 
+void CompetenzaData::setNote(const QString &note)
+{
+    m_note = note;
+}
+
+QString CompetenzaData::note() const
+{
+    return m_note;
+}
+
 QList<QDate> CompetenzaData::altreAssenzeDates() const
 {
     QList<QDate> dates;
@@ -722,7 +750,8 @@ bool CompetenzaData::isModded() const
             m_guardiaDiurnaMap != m_defaultGDDates ||
             m_guardiaNotturnaMap != m_defaultGNDates ||
             m_rep != m_defaultRep ||
-            m_altreAssenze != m_defaultAltreAssenze);
+            m_altreAssenze != m_defaultAltreAssenze ||
+            m_note != m_defaultNote);
 }
 
 bool CompetenzaData::isRestorable() const
@@ -733,6 +762,17 @@ bool CompetenzaData::isRestorable() const
 void CompetenzaData::saveMods()
 {
     QSqlQuery query;
+
+    if(m_defaultNote != m_note) {
+        query.prepare("UPDATE " + m_modTableName + " " +
+                      "SET nota=:nota "
+                      "WHERE id_medico=" + QString::number(m_id) + ";");
+        query.bindValue(":nota", m_note);
+
+        if(!query.exec()) {
+            qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        }
+    }
 
     if(m_defaultDmp != m_dmp) {
         query.prepare("UPDATE " + m_modTableName + " " +
@@ -1175,6 +1215,11 @@ bool CompetenzaData::isReperibilitaModded() const
 bool CompetenzaData::isDmpModded() const
 {
     return m_dmpModded;
+}
+
+bool CompetenzaData::isNoteModded() const
+{
+    return m_noteModded;
 }
 
 bool CompetenzaData::isAltreModded() const
@@ -1652,6 +1697,16 @@ int Competenza::dmp() const
     return data->dmp();
 }
 
+void Competenza::setNote(const QString &note)
+{
+    data->setNote(note);
+}
+
+QString Competenza::note() const
+{
+    return data->note();
+}
+
 void Competenza::setRep(const QMap<QDate, ValoreRep> &map)
 {
     data->setRep(map);
@@ -1875,4 +1930,9 @@ bool Competenza::isDmpModded() const
 bool Competenza::isAltreModded() const
 {
     return data->isAltreModded();
+}
+
+bool Competenza::isNoteModded() const
+{
+    return data->isNoteModded();
 }
