@@ -2908,7 +2908,7 @@
              <item>
               <widget class="QSpinBox" name="dmpHoursEdit">
                <property name="maximum">
-                <number>999</number>
+                <number>9999</number>
                </property>
               </widget>
              </item>
@@ -3725,7 +3725,7 @@
      <normaloff>:/icons/view-refresh.svg</normaloff>:/icons/view-refresh.svg</iconset>
    </property>
    <property name="text">
-    <string>Ricalcola deficit...</string>
+    <string>&amp;Ricalcola deficit...</string>
    </property>
   </action>
  </widget>
