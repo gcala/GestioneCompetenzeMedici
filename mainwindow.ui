@@ -3496,12 +3496,6 @@
     <addaction name="separator"/>
     <addaction name="actionInformazioni"/>
    </widget>
-   <widget class="QMenu" name="menu_Impostazioni">
-    <property name="title">
-     <string>&amp;Impostazioni</string>
-    </property>
-    <addaction name="actionConfigura"/>
-   </widget>
    <widget class="QMenu" name="menu_Stampa">
     <property name="title">
      <string>Sta&amp;mpa</string>
@@ -3514,11 +3508,12 @@
      <string>Strum&amp;enti</string>
     </property>
     <addaction name="actionRicalcolaDeficit"/>
+    <addaction name="separator"/>
+    <addaction name="actionConfigura"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Stampa"/>
    <addaction name="menuStrumenti"/>
-   <addaction name="menu_Impostazioni"/>
    <addaction name="menu_Aiuto"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
