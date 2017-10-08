@@ -156,9 +156,11 @@ void TabulaCsvTimeCardsReader::run()
             continue;
         }
 
-        QRegExp matRx("^\\d{3,}");
+        QRegExp matRx("^\\d+");
+        QString temp = line;
+        temp.replace(",", "");
 
-        if (matRx.indexIn(line) != -1) {
+        if (matRx.indexIn(line) != -1 && temp.contains("AOSC")) {
             QString matricola;
             // riga con matricola;
             line = line.replace(",", "");
@@ -174,7 +176,7 @@ void TabulaCsvTimeCardsReader::run()
             m_dipendente->setAnno(anno);
             m_dipendente->setMese(mese);
 
-            line = line.replace(matricola,"").trimmed();
+            line.replace(matricola,"").trimmed();
 
             QStringList sl = line.split("AOSC");
             m_dipendente->setNome(sl.at(0).trimmed());
@@ -232,6 +234,11 @@ void TabulaCsvTimeCardsReader::run()
             }
 
             m_dipendente->addMinutiFatti(inMinuti(campi.at(10).trimmed()));
+
+            if(campi.at(2).trimmed().isEmpty() && campi.at(3).trimmed().isEmpty() &&
+               campi.at(10).trimmed().isEmpty() && campi.at(14).trimmed().isEmpty() && !isRestDay) {
+                m_dipendente->addScoperto(QString::number(dataCorrente.day()));
+            }
 
             // cerchiamo ore giornaliere da fare
             if(m_dipendente->minutiGiornalieri() == 0) {

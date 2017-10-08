@@ -37,7 +37,7 @@ public:
 
     void setPath(const QString &path);
     void setUnita(int id);
-    void setMese(QString id);
+    void setTable(QString tableName);
     void setDirigente(int id);
 
 protected:
@@ -58,7 +58,7 @@ private:
     const int m_riepilogoVOffset;
     QString m_path;
     int m_idUnita;
-    QString m_idMese;
+    QString m_tableName;
     QString m_unitaName;
     QString m_mese;
     int m_idDirigente;

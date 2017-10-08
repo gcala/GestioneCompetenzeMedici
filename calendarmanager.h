@@ -51,6 +51,9 @@ public:
     QList<QDate> getDates() const;
     void setDates(const QList<QDate> &dates);
 
+    QList<QDate> getScopertiDates() const;
+    void setScopertiDates(const QList<QDate> &dates);
+
 protected:
     virtual void paintCell(QPainter *painter, const QRect &rect, const QDate &date) const;
 
@@ -64,6 +67,7 @@ private:
     QPen m_outlinePen;
     QBrush m_transparentBrush;
     QList<QDate> m_dates;
+    QList<QDate> m_scoperti;
 };
 
 #endif // CALENDARMANAGER_H 

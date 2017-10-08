@@ -246,7 +246,8 @@ bool SqlQueries::createTimeCardsTable(const QString &tableName)
                   "grep_minuti INTEGER DEFAULT (0),"
                   "guar_minuti INTEGER DEFAULT (0),"
                   "rmc_minuti INTEGER DEFAULT (0),"
-                  "minuti_fatti INTEGER DEFAULT (0));");
+                  "minuti_fatti INTEGER DEFAULT (0),"
+                  "scoperti TEXT DEFAULT '');");
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
         return false;
@@ -333,8 +334,8 @@ bool SqlQueries::addTimeCard(const QString &tableName, const Dipendente *dipende
         removeTimeCard(tableName, QString::number(docId));
     }
 
-    query.prepare("INSERT INTO " + tableName + " (id_medico, id_unita, anno, mese, riposi, minuti_giornalieri, ferie, congedi, malattia, rmp, rmc, altre_causali, guardie_diurne, guardie_notturne, grep, congedi_minuti, eccr_minuti, grep_minuti, guar_minuti, rmc_minuti, minuti_fatti) "
-                  "VALUES (:id_medico, :id_unita, :anno, :mese, :riposi, :minuti_giornalieri, :ferie, :congedi, :malattia, :rmp, :rmc, :altre_causali, :guardie_diurne, :guardie_notturne, :grep, :congedi_minuti, :eccr_minuti, :grep_minuti, :guar_minuti, :rmc_minuti, :minuti_fatti);");
+    query.prepare("INSERT INTO " + tableName + " (id_medico, id_unita, anno, mese, riposi, minuti_giornalieri, ferie, congedi, malattia, rmp, rmc, altre_causali, guardie_diurne, guardie_notturne, grep, congedi_minuti, eccr_minuti, grep_minuti, guar_minuti, rmc_minuti, minuti_fatti, scoperti) "
+                  "VALUES (:id_medico, :id_unita, :anno, :mese, :riposi, :minuti_giornalieri, :ferie, :congedi, :malattia, :rmp, :rmc, :altre_causali, :guardie_diurne, :guardie_notturne, :grep, :congedi_minuti, :eccr_minuti, :grep_minuti, :guar_minuti, :rmc_minuti, :minuti_fatti, :scoperti);");
     query.bindValue(":id_medico", QString::number(docId));
     query.bindValue(":id_unita", unId);
     query.bindValue(":anno", dipendente->anno());
@@ -372,6 +373,7 @@ bool SqlQueries::addTimeCard(const QString &tableName, const Dipendente *dipende
     query.bindValue(":guar_minuti", dipendente->minutiGuar());
     query.bindValue(":rmc_minuti", dipendente->minutiRmc());
     query.bindValue(":minuti_fatti", dipendente->minutiFatti());
+    query.bindValue(":scoperti", dipendente->scoperti().join(","));
 
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
@@ -548,4 +550,51 @@ void SqlQueries::resetIntValue(const QString &tableName, const QString &columnNa
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
+}
+
+QStringList SqlQueries::timecardsList()
+{
+    QStringList tables;
+
+    QSqlQuery query;
+    query.prepare("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;");
+    if(!query.exec()) {
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
+    while(query.next()) {
+        if(query.value(0).toString().contains("tc_"))
+            tables << query.value(0).toString();
+    }
+
+    return tables;
+}
+
+int SqlQueries::numDoctorsInTimecard(const QString &timecard)
+{
+    int count = 0;
+    QSqlQuery queryCount;
+    queryCount.prepare("SELECT COUNT(*) FROM " + timecard + ";");
+    if(!queryCount.exec()) {
+        qDebug() << "ERROR: " << queryCount.lastQuery() << " : " << queryCount.lastError();
+    }
+    while(queryCount.next()) {
+        count = queryCount.value(0).toInt();
+    }
+
+    return count;
+}
+
+int SqlQueries::numDoctorsFromUnitInTimecard(const QString &timecard, const int &unitId)
+{
+    int count = 0;
+    QSqlQuery query;
+    query.prepare("SELECT COUNT(*) FROM " + timecard + " WHERE id_unita='" + QString::number(unitId) + "';");
+    if(!query.exec()) {
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
+    while(query.next()) {
+        count = query.value(0).toInt();
+    }
+
+    return count;
 }

@@ -63,6 +63,7 @@ public:
     QString oreAltreCausali();
     QString ferieCount() const;
     QList<QDate> ferieDates() const;
+    QList<QDate> scopertiDates() const;
     QString congediCount() const;
     QList<QDate> congediDates() const;
     QString malattiaCount() const;
@@ -80,6 +81,7 @@ public:
     void setRep(const QMap<QDate, ValoreRep> &map);
     QMap<QDate, ValoreRep> rep() const;
     void setDmp(const int &minutes);
+    void setDmpCalcolato(const int &minutes);
     int dmp() const;
     void setNote(const QString &note);
     QString note() const;

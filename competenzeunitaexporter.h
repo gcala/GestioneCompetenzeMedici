@@ -24,7 +24,6 @@
 
 #include <QThread>
 
-class Dipendente;
 class QPainter;
 class Competenza;
 

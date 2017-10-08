@@ -45,7 +45,7 @@ CompetenzeDirigenteExporter::CompetenzeDirigenteExporter(QObject *parent)
     , m_riepilogoVOffset(10100)
 {
     m_idUnita = -1;
-    m_idMese = -1;
+    m_tableName.clear();
     m_idDirigente = -1;
 }
 
@@ -64,9 +64,9 @@ void CompetenzeDirigenteExporter::setUnita(int id)
     m_idUnita = id;
 }
 
-void CompetenzeDirigenteExporter::setMese(QString id)
+void CompetenzeDirigenteExporter::setTable(QString tableName)
 {
-    m_idMese = id;
+    m_tableName = tableName;
 }
 
 void CompetenzeDirigenteExporter::setDirigente(int id)
@@ -77,7 +77,7 @@ void CompetenzeDirigenteExporter::setDirigente(int id)
 void CompetenzeDirigenteExporter::run()
 {
     QStringList unitaIdList;
-    const QString s = m_idMese.split("_").last();
+    const QString s = m_tableName.split("_").last();
     m_mese = QDate::longMonthName(s.right(2).toInt(), QDate::StandaloneFormat) + " " + s.left(4);
     QString fileName = "Competenze_" + QString(m_mese).replace(" ","_");
     QString dipName;
@@ -111,7 +111,7 @@ void CompetenzeDirigenteExporter::run()
 
             // recupero numero totale medici di m_idUnita in mese
             QSqlQuery queryCount;
-            queryCount.prepare("SELECT COUNT(*) FROM " + m_idMese + " WHERE id_unita='" + QString::number(m_idUnita) + "';");
+            queryCount.prepare("SELECT COUNT(*) FROM " + m_tableName + " WHERE id_unita='" + QString::number(m_idUnita) + "';");
             if(!queryCount.exec()) {
                 qDebug() << "ERROR: " << queryCount.lastQuery() << " : " << queryCount.lastError();
             }
@@ -122,11 +122,11 @@ void CompetenzeDirigenteExporter::run()
             emit totalRows(rowCount);
         } else {
             // stampo tutti medici di tutte unità
-            unitaIdList << getUnitaIDs(m_idMese);
+            unitaIdList << getUnitaIDs(m_tableName);
 
             // recupero numero totale medici in mese
             QSqlQuery queryCount;
-            queryCount.prepare("SELECT COUNT(*) FROM " + m_idMese + ";");
+            queryCount.prepare("SELECT COUNT(*) FROM " + m_tableName + ";");
             if(!queryCount.exec()) {
                 qDebug() << "ERROR: " << queryCount.lastQuery() << " : " << queryCount.lastError();
             }
@@ -156,7 +156,7 @@ void CompetenzeDirigenteExporter::run()
         currRow++;
         emit currentRow(currRow);
         QSqlQuery query;
-        query.prepare("SELECT id_unita FROM " + m_idMese + " WHERE id_medico='" + QString::number(m_idDirigente) + "';");
+        query.prepare("SELECT id_unita FROM " + m_tableName + " WHERE id_medico='" + QString::number(m_idDirigente) + "';");
         if(!query.exec()) {
             qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
         }
@@ -165,7 +165,7 @@ void CompetenzeDirigenteExporter::run()
         }
 
         m_unitaName = getUnitaName(QString::number(m_idUnita));
-        m_competenza = new Competenza(m_idMese,m_idDirigente);
+        m_competenza = new Competenza(m_tableName,m_idDirigente);
 
         // stampo un singolo report
         printDirigente(painter);
@@ -180,7 +180,7 @@ void CompetenzeDirigenteExporter::run()
                 emit currentRow(currRow);
                 if(!isFileStart)
                     writer.newPage();
-                m_competenza = new Competenza(m_idMese,dirigenteId.toInt());
+                m_competenza = new Competenza(m_tableName,dirigenteId.toInt());
                 printDirigente(painter);
                 isFileStart = false;
             }
@@ -359,7 +359,7 @@ QStringList CompetenzeDirigenteExporter::getDirigentiIDs(const QString &id)
 {
     QStringList l;
     QSqlQuery query;
-    query.prepare("SELECT id_medico FROM " + m_idMese + " WHERE id_unita='" + id + "';");
+    query.prepare("SELECT id_medico FROM " + m_tableName + " WHERE id_unita='" + id + "';");
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }

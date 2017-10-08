@@ -58,6 +58,9 @@ public:
     static void resetAll(const QString &tableName, const int &id);
     static void resetStringValue(const QString &tableName, const QString &columnName, const int &id);
     static void resetIntValue(const QString &tableName, const QString &columnName, const int &id);
+    static QStringList timecardsList();
+    static int numDoctorsFromUnitInTimecard(const QString &timecard, const int &unitId);
+    static int numDoctorsInTimecard(const QString &timecard);
 };
 
 #endif // SQLQUERIES_H

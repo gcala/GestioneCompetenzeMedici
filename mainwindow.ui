@@ -3529,6 +3529,7 @@
    <addaction name="separator"/>
    <addaction name="actionStampaCompetenzeDirigenti"/>
    <addaction name="actionStampaCompetenzeUnita"/>
+   <addaction name="actionRicalcolaDeficit"/>
    <addaction name="separator"/>
    <addaction name="actionConfigura"/>
   </widget>
@@ -3735,6 +3736,9 @@
    </property>
    <property name="text">
     <string>&amp;Ricalcola deficit...</string>
+   </property>
+   <property name="toolTip">
+    <string>Ricalcola deficit a partire da un dato mese</string>
    </property>
   </action>
  </widget>

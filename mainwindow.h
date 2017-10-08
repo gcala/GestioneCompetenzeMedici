@@ -26,6 +26,7 @@
 #include "okularcsvtimecardsreader.h"
 #include "competenzeunitaexporter.h"
 #include "competenzedirigenteexporter.h"
+#include "dmpcompute.h"
 
 #include <QMainWindow>
 #include <QFileInfo>
@@ -61,6 +62,7 @@ public:
 private slots:
     void handleResults();
     void exported(QString file);
+    void computed();
     void setTotalRows(int);
     void setCurrentRow(int);
     void tabulaFinished(int exitCode, QProcess::ExitStatus exitStatus);
@@ -102,15 +104,10 @@ private slots:
     void on_actionCaricaCsv_triggered();
     void minutiCambiati(int mins);
     void oreCambiate(int ore);
-
     void on_actionInformazioni_triggered();
-
     void on_actionDonazione_triggered();
-
     void on_actionConfigura_triggered();
-
     void on_actionRicalcolaDeficit_triggered();
-
     void on_noteLine_textEdited(const QString &arg1);
 
 private:
@@ -188,6 +185,7 @@ private:
     OkularCsvTimeCardsReader okularReader;
     CompetenzeUnitaExporter unitaCompetenzeExporter;
     CompetenzeDirigenteExporter dirigenteCompetenzeExporter;
+    DmpCompute dmpCompute;
 
     QString backupFileName(const QString &time) const;
     void backupDatabase(const QString &time, bool quiet);

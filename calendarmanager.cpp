@@ -63,6 +63,16 @@ void CalendarManager::setDates(const QList<QDate> &dates)
     m_dates = dates;
 }
 
+QList<QDate> CalendarManager::getScopertiDates() const
+{
+    return m_scoperti;
+}
+
+void CalendarManager::setScopertiDates(const QList<QDate> &dates)
+{
+    m_scoperti = dates;
+}
+
 void CalendarManager::paintCell(QPainter *painter, const QRect &rect, const QDate &date) const
 {
     QCalendarWidget::paintCell(painter, rect, date);
@@ -71,6 +81,13 @@ void CalendarManager::paintCell(QPainter *painter, const QRect &rect, const QDat
         painter->setPen(m_outlinePen);
         painter->setBrush(m_transparentBrush);
         painter->drawRect(rect.adjusted(4,4,-5,-5));
+    }
+
+    if( m_scoperti.contains(date) ) {
+        painter->save();
+        painter->setPen(m_outlinePen);
+        painter->drawText(rect.adjusted(6,6,-7,-7), Qt::AlignRight | Qt::AlignTop,"A");
+        painter->restore();
     }
 }
 

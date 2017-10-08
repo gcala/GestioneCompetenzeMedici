@@ -101,6 +101,7 @@ public:
     QString oreAltreCausali();
     QString ferieCount() const;
     QList<QDate> ferieDates() const;
+    QList<QDate> scopertiDates() const;
     QString congediCount() const;
     QList<QDate> congediDates() const;
     QString malattiaCount() const;
@@ -116,6 +117,7 @@ public:
     QMap<int, GuardiaType> guardiaDiurnaMap() const;
     QMap<int, GuardiaType> guardiaNotturnaMap() const;
     void setDmp(const int &minutes);
+    void setDmpCalcolato(const int &minutes);
     int dmp() const;
     void setNote(const QString &note);
     QString note() const;
@@ -272,7 +274,8 @@ void CompetenzaData::buildDipendente()
                   + m_modTableName + ".dmp_calcolato,"
                   + m_modTableName + ".altre_assenze,"
                   + m_tableName + ".id_unita,"
-                  + m_modTableName + ".nota "
+                  + m_modTableName + ".nota,"
+                  + m_tableName + ".scoperti "
                   + "FROM " + m_tableName + " LEFT JOIN medici ON medici.id=" + m_tableName + ".id_medico "
                   + "LEFT JOIN unita ON unita.id=" + m_tableName + ".id_unita "
                   + "LEFT JOIN " + m_modTableName + " ON " + m_modTableName + ".id_medico=" + m_tableName + ".id_medico "
@@ -415,6 +418,12 @@ void CompetenzaData::buildDipendente()
             m_noteModded = true;
         }
         m_defaultNote = m_note;
+
+        if(!query.value(28).toString().trimmed().isEmpty()) {
+            foreach (QString f, query.value(28).toString().split(",")) { // scoperti
+                m_dipendente->addScoperto(f);
+            }
+        }
     }
 
     getOrePagate();
@@ -597,6 +606,17 @@ QList<QDate> CompetenzaData::ferieDates() const
     return dates;
 }
 
+QList<QDate> CompetenzaData::scopertiDates() const
+{
+    QList<QDate> dates;
+    foreach (QString s, m_dipendente->scoperti()) {
+        QDate date(m_dipendente->anno(), m_dipendente->mese(), s.toInt());
+        dates << date;
+    }
+
+    return dates;
+}
+
 QString CompetenzaData::congediCount() const
 {
     return QString::number(m_dipendente->congedi().count());
@@ -708,6 +728,11 @@ void CompetenzaData::setDmp(const int &minutes)
     m_dmp = minutes;
 }
 
+void CompetenzaData::setDmpCalcolato(const int &minutes)
+{
+    m_dmp_calcolato = minutes;
+}
+
 int CompetenzaData::dmp() const
 {
     if(m_dmp >= 0)
@@ -763,6 +788,18 @@ void CompetenzaData::saveMods()
 {
     QSqlQuery query;
 
+    // salva dmp calcolato
+    if(m_dmp_calcolato >= 0) {
+        query.prepare("UPDATE " + m_modTableName + " " +
+                      "SET dmp_calcolato=:dmp_calcolato "
+                      "WHERE id_medico=" + QString::number(m_id) + ";");
+        query.bindValue(":dmp_calcolato", m_dmp_calcolato);
+
+        if(!query.exec()) {
+            qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        }
+    }
+
     if(m_defaultNote != m_note) {
         query.prepare("UPDATE " + m_modTableName + " " +
                       "SET nota=:nota "
@@ -775,6 +812,8 @@ void CompetenzaData::saveMods()
     }
 
     if(m_defaultDmp != m_dmp) {
+        if(m_dmp == 0)
+            m_dmp = -1;
         query.prepare("UPDATE " + m_modTableName + " " +
                       "SET dmp=:dmp "
                       "WHERE id_medico=" + QString::number(m_id) + ";");
@@ -1617,6 +1656,11 @@ QList<QDate> Competenza::ferieDates() const
     return data->ferieDates();
 }
 
+QList<QDate> Competenza::scopertiDates() const
+{
+    return data->scopertiDates();
+}
+
 QString Competenza::congediCount() const
 {
     return data->congediCount();
@@ -1690,6 +1734,11 @@ void Competenza::addGuardiaNotturnaDay(int day)
 void Competenza::setDmp(const int &minutes)
 {
     data->setDmp(minutes);
+}
+
+void Competenza::setDmpCalcolato(const int &minutes)
+{
+    data->setDmpCalcolato(minutes);
 }
 
 int Competenza::dmp() const

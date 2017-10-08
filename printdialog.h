@@ -36,13 +36,15 @@ public:
     explicit PrintDialog(QWidget *parent = 0);
     ~PrintDialog();
 
+    enum ToolOps { PrintUnits, PrintDoctors, CalcDpm };
+    Q_ENUM(ToolOps)
+
     void addUnita(const QString &unita, const QVariant &id);
     void addMese(const QString &mese, const QVariant &id);
     void addDirigente(const QString &dirigente, const QVariant &id);
     void clearUnita();
     void clearMese();
     void clearDirigente();
-    void mostraDirigenti(bool ok);
     QString currentMeseData() const;
     int currentUnitaData() const;
     int currentDirigenteData() const;
@@ -52,6 +54,8 @@ public:
     bool proceed;
     QString path() const;
     void setPath(const QString &path);
+    void setCurrentOp(const ToolOps &op);
+    ToolOps currentOp() const;
 
 private slots:
     void on_cancelButton_clicked();
@@ -62,6 +66,7 @@ private slots:
 
 private:
     Ui::PrintDialog *ui;
+    ToolOps m_currOp;
 };
 
 #endif // PRINTDIALOG_H

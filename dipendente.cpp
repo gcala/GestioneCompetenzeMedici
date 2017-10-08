@@ -56,6 +56,8 @@ public:
     void addRmc(QString date);
     QStringList ferie() const;
     void addFerie(QString date);
+    QStringList scoperti() const;
+    void addScoperto(QString date);
     QStringList congedi() const;
     void addCongedo(QString date);
     QStringList malattia() const;
@@ -94,6 +96,7 @@ private:
     QStringList m_rmp;
     QStringList m_rmc;
     QStringList m_ferie;
+    QStringList m_scoperti;
     QStringList m_congedi;
     QStringList m_malattia;
     QMap<QString, QPair<QStringList, int> > m_altreCausali;
@@ -227,6 +230,16 @@ QStringList DipendenteData::ferie() const
 void DipendenteData::addFerie(QString date)
 {
     m_ferie.append(date);
+}
+
+QStringList DipendenteData::scoperti() const
+{
+    return m_scoperti;
+}
+
+void DipendenteData::addScoperto(QString date)
+{
+    m_scoperti.append(date);
 }
 
 QStringList DipendenteData::congedi() const
@@ -513,6 +526,16 @@ QStringList Dipendente::ferie() const
 void Dipendente::addFerie(QString date)
 {
     data->addFerie(date);
+}
+
+QStringList Dipendente::scoperti() const
+{
+    return data->scoperti();
+}
+
+void Dipendente::addScoperto(QString date)
+{
+    data->addScoperto(date);
 }
 
 QStringList Dipendente::congedi() const

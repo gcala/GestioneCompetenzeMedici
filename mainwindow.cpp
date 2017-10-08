@@ -177,6 +177,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&dirigenteCompetenzeExporter, SIGNAL(exportFinished(QString)), this, SLOT(exported(QString)));
     connect(&dirigenteCompetenzeExporter, SIGNAL(totalRows(int)), this, SLOT(setTotalRows(int)));
     connect(&dirigenteCompetenzeExporter, SIGNAL(currentRow(int)), this, SLOT(setCurrentRow(int)));
+    connect(&dmpCompute, SIGNAL(computeFinished()), this, SLOT(computed()));
+    connect(&dmpCompute, SIGNAL(currentItem(int)), this, SLOT(setCurrentRow(int)));
+    connect(&dmpCompute, SIGNAL(totalItems(int)), this, SLOT(setTotalRows(int)));
 
     ui->tabWidget->setCurrentIndex(0);
     ui->tabWidget->show();
@@ -866,6 +869,13 @@ void MainWindow::exported(QString file)
         QDesktopServices::openUrl(QUrl::fromLocalFile(file));
 }
 
+void MainWindow::computed()
+{
+    ui->actionRicalcolaDeficit->setEnabled(true);
+    progressBar->setVisible(false);
+    msgLabel->setText("");
+}
+
 void MainWindow::setTotalRows(int value)
 {
     progressBar->setMaximum(value);
@@ -987,6 +997,7 @@ void MainWindow::populateCompetenzeTab()
         ui->altreLabel->setStyleSheet("color: black;");
     ui->altreLabel->setText(QString::number(m_competenza->altreAssenzeDates().count()));
     altreCalendar->setDates(m_competenza->altreAssenzeDates());
+    altreCalendar->setScopertiDates(m_competenza->scopertiDates());
 
     ui->orarioGiornalieroLabel->setText(m_competenza->orarioGiornaliero());
     ui->oreDovuteLabel->setText(m_competenza->oreDovute());
@@ -999,8 +1010,8 @@ void MainWindow::populateCompetenzeTab()
     mostraDifferenzaOre();
     elaboraGuardie();
     elaboraRep();
-    connect(ui->dmpHoursEdit, SIGNAL(valueChanged(int)), this, SLOT(minutiCambiati(int)));
-    connect(ui->dmpMinsEdit, SIGNAL(valueChanged(int)), this, SLOT(oreCambiate(int)));
+    connect(ui->dmpHoursEdit, SIGNAL(valueChanged(int)), this, SLOT(oreCambiate(int)));
+    connect(ui->dmpMinsEdit, SIGNAL(valueChanged(int)), this, SLOT(minutiCambiati(int)));
 }
 
 void MainWindow::elaboraGuardie()
@@ -1042,8 +1053,7 @@ void MainWindow::elaboraRep()
 void MainWindow::on_actionStampaCompetenzeDirigenti_triggered()
 {
     ui->actionStampaCompetenzeDirigenti->setEnabled(false);
-
-    printDialog->mostraDirigenti(true);
+    printDialog->setCurrentOp(PrintDialog::ToolOps::PrintDoctors);
 
     if(ui->tabWidget->currentIndex() == 2) {
         printDialog->setCurrentMese(ui->meseCompetenzeCB->currentIndex());
@@ -1062,7 +1072,7 @@ void MainWindow::on_actionStampaCompetenzeDirigenti_triggered()
     msgLabel->setText("Esportazione competenze dirigenti");
 
     dirigenteCompetenzeExporter.setPath(printDialog->path());
-    dirigenteCompetenzeExporter.setMese(printDialog->currentMeseData());
+    dirigenteCompetenzeExporter.setTable(printDialog->currentMeseData());
     dirigenteCompetenzeExporter.setUnita(printDialog->currentUnitaData());
     dirigenteCompetenzeExporter.setDirigente(printDialog->currentDirigenteData());
     dirigenteCompetenzeExporter.start();
@@ -1071,11 +1081,10 @@ void MainWindow::on_actionStampaCompetenzeDirigenti_triggered()
 void MainWindow::on_actionStampaCompetenzeUnita_triggered()
 {
     ui->actionStampaCompetenzeUnita->setEnabled(false);
-
-    printDialog->mostraDirigenti(false);
+    printDialog->setCurrentOp(PrintDialog::ToolOps::PrintUnits);
 
     if(ui->tabWidget->currentIndex() == 2) {
-        printDialog->setCurrentMese(ui->meseCompetenzeCB->currentIndex() + 1);
+        printDialog->setCurrentMese(ui->meseCompetenzeCB->currentIndex());
         printDialog->setCurrentUnita(ui->unitaCompetenzeCB->currentIndex() + 1);
     }
 
@@ -1219,7 +1228,7 @@ void MainWindow::on_actionCaricaCsv_triggered()
     }
 }
 
-void MainWindow::oreCambiate(int mins)
+void MainWindow::minutiCambiati(int mins)
 {
     m_competenza->setDmp(ui->dmpHoursEdit->value()*60+mins);
     mostraDifferenzaOre();
@@ -1228,7 +1237,7 @@ void MainWindow::oreCambiate(int mins)
     ui->saveCompetenzeButton->setEnabled(m_competenza->isModded());
 }
 
-void MainWindow::minutiCambiati(int ore)
+void MainWindow::oreCambiate(int ore)
 {
     m_competenza->setDmp(ore*60+ui->dmpMinsEdit->value());
     mostraDifferenzaOre();
@@ -1258,7 +1267,29 @@ void MainWindow::on_actionConfigura_triggered()
 
 void MainWindow::on_actionRicalcolaDeficit_triggered()
 {
+    ui->actionRicalcolaDeficit->setEnabled(false);
+    printDialog->setCurrentOp(PrintDialog::ToolOps::CalcDpm);
 
+    if(ui->tabWidget->currentIndex() == 2) {
+        printDialog->setCurrentMese(ui->meseCompetenzeCB->currentIndex());
+        printDialog->setCurrentUnita(ui->unitaCompetenzeCB->currentIndex() + 1);
+        printDialog->setCurrentDirigente(ui->dirigentiCompetenzeCB->currentIndex() + 1);
+    }
+
+    printDialog->exec();
+
+    if(!printDialog->proceed) {
+        computed();
+        return;
+    }
+
+    progressBar->setVisible(true);
+    msgLabel->setText("Ricalcolo deficit...");
+
+    dmpCompute.setTable(printDialog->currentMeseData());
+    dmpCompute.setUnita(printDialog->currentUnitaData());
+    dmpCompute.setDirigente(printDialog->currentDirigenteData());
+    dmpCompute.start();
 }
 
 void MainWindow::on_noteLine_textEdited(const QString &arg1)

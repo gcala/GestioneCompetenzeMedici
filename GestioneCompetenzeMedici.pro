@@ -48,7 +48,8 @@ SOURCES += \
         aboutdialog.cpp \
         configdialog.cpp \
         settingsitem.cpp \
-    resetdialog.cpp
+    resetdialog.cpp \
+    dmpcompute.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -75,7 +76,8 @@ HEADERS += \
         aboutdialog.h \
         configdialog.h \
         settingsitem.h \
-    resetdialog.h
+    resetdialog.h \
+    dmpcompute.h
 
 FORMS += \
         mainwindow.ui \

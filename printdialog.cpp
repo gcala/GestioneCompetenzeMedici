@@ -22,6 +22,7 @@
 #include "printdialog.h"
 #include "ui_printdialog.h"
 
+#include <QtWidgets>
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QFileDialog>
@@ -69,13 +70,6 @@ void PrintDialog::clearDirigente()
     ui->dirigenteCB->clear();
 }
 
-void PrintDialog::mostraDirigenti(bool ok)
-{
-    proceed = false;
-    ui->dirigenteCB->setVisible(ok);
-    ui->dirigenteLabel->setVisible(ok);
-}
-
 QString PrintDialog::currentMeseData() const
 {
     return ui->meseCB->currentData().toString();
@@ -116,6 +110,47 @@ void PrintDialog::setPath(const QString &path)
     ui->path->setText(path);
 }
 
+void PrintDialog::setCurrentOp(const PrintDialog::ToolOps &op)
+{
+    m_currOp = op;
+    proceed = false;
+
+    switch (m_currOp) {
+    case PrintUnits:
+        ui->titleLabel->setText("Genera competenze Unità Operativa");
+        setWindowTitle("Stampa competenze");
+        ui->saveButton->setText("Genera PDF");
+        ui->destWidget->setVisible(true);
+        ui->dirigenteCB->setVisible(false);
+        ui->dirigenteLabel->setVisible(false);
+        adjustSize();
+        break;
+    case PrintDoctors:
+        ui->titleLabel->setText("Genera competenze Dirigenti");
+        setWindowTitle("Stampa competenze");
+        ui->saveButton->setText("Genera PDF");
+        ui->destWidget->setVisible(true);
+        ui->dirigenteCB->setVisible(true);
+        ui->dirigenteLabel->setVisible(true);
+        adjustSize();
+        break;
+    default:
+        ui->titleLabel->setText("Ricalcola Deficit");
+        setWindowTitle("Ricalcola Deficit");
+        ui->saveButton->setText("Ricalcola");
+        ui->destWidget->setVisible(false);
+        ui->dirigenteCB->setVisible(true);
+        ui->dirigenteLabel->setVisible(true);
+        adjustSize();
+        break;
+    }
+}
+
+PrintDialog::ToolOps PrintDialog::currentOp() const
+{
+    return m_currOp;
+}
+
 void PrintDialog::on_cancelButton_clicked()
 {
     proceed = false;
@@ -150,7 +185,7 @@ void PrintDialog::on_unitaCB_currentIndexChanged(int index)
                   "ON " + ui->meseCB->currentData(Qt::UserRole).toString() + ".id_medico=medici.id "
                   + whereClause + "  ORDER BY medici.nome;");
     if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
         return;
     }
 
@@ -177,7 +212,7 @@ void PrintDialog::on_meseCB_currentIndexChanged(int index)
                   "LEFT JOIN unita "
                   "ON " + ui->meseCB->currentData(Qt::UserRole).toString() + ".id_unita=unita.id ORDER BY length(unita.id), unita.id;");
     if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
         return;
     }
 
