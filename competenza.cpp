@@ -1499,7 +1499,7 @@ void CompetenzaData::getOrePagate()
         QDate date(meseAnno.at(1).toInt(),meseAnno.at(0).toInt(),1);
         QPair<int, int> vals;
         vals.first = query.value(1).toInt();
-        vals.second = query.value(1).toInt();
+        vals.second = query.value(2).toInt();
         map[date] = vals;
     }
 
