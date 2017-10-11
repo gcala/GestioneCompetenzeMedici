@@ -57,12 +57,19 @@ protected:
 
 private slots:
     void dataSelezionata(const QDate &date);
+    void noSelected();
+    void mezzoSelected();
+    void unoSelected();
+    void unomezzoSelected();
+    void dueSelected();
+    void duemezzoSelected();
 
 signals:
     void datesChanged();
 
 private:
     QMap<QDate, ValoreRep> m_dates;
+    QDate m_selectedDate;
 
     QPen m_outlinePen;
     QBrush m_transparentBrush;
