@@ -50,6 +50,12 @@ protected:
 
 private:
     QMap<QDate, ValoreRep> m_repMap;
+    QList<QDate> m_grandiFestivita;
+    int year;
+
+    void calcolaFeste();
+    void caricaGrandiFestivita(int anno);
+    void caricaPasqua(int anno);
 };
 
 #endif // RENDERAREAREP_H
