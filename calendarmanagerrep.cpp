@@ -107,33 +107,12 @@ void CalendarManagerRep::dataSelezionata(const QDate &date)
     menu.addAction("2½",this, SLOT(duemezzoSelected()));
     menu.exec(QCursor::pos());
 
-//    if(m_dates.keys().contains(date)) {
-//        switch(m_dates[date]) {
-//        case Mezzo:
-//            m_dates[date] = Uno;
-//            break;
-//        case Uno:
-//            m_dates[date] = UnoMezzo;
-//            break;
-//        case UnoMezzo:
-//            m_dates[date] = Due;
-//            break;
-//        case Due:
-//            m_dates[date] = DueMezzo;
-//            break;
-//        default:
-//            m_dates.remove(date);
-//        }
-//    } else {
-//        m_dates[date] = Mezzo;
-//    }
+    QAbstractItemView *view = this->findChild<QAbstractItemView*>();
+    if(view){
+        view->viewport()->update();
+    } else update(); // fallback
 
-//    QAbstractItemView *view = this->findChild<QAbstractItemView*>();
-//    if(view){
-//        view->viewport()->update();
-//    } else update(); // fallback
-
-        //    emit datesChanged();
+    emit datesChanged();
 }
 
 void CalendarManagerRep::noSelected()
