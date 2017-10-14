@@ -598,3 +598,347 @@ int SqlQueries::numDoctorsFromUnitInTimecard(const QString &timecard, const int 
 
     return count;
 }
+
+QVariantList SqlQueries::getDoctorTimecard(const QString &tableName, const QString &modTableName, const int &dipendendeId)
+{
+    QVariantList result;
+
+    QSqlQuery query;
+    query.prepare("SELECT medici.nome,"
+                  "medici.matricola,"
+                  "unita.nome_full,"
+                  + tableName + ".riposi,"
+                  + tableName + ".minuti_giornalieri,"
+                  + tableName + ".ferie,"
+                  + tableName + ".congedi,"
+                  + tableName + ".malattia,"
+                  + tableName + ".rmp,"
+                  + tableName + ".rmc,"
+                  + tableName + ".altre_causali,"
+                  + tableName + ".guardie_diurne,"
+                  + tableName + ".guardie_notturne,"
+                  + tableName + ".grep,"
+                  + tableName + ".congedi_minuti,"
+                  + tableName + ".eccr_minuti,"
+                  + tableName + ".grep_minuti,"
+                  + tableName + ".guar_minuti,"
+                  + tableName + ".rmc_minuti,"
+                  + tableName + ".minuti_fatti,"
+                  + modTableName + ".guardie_diurne,"
+                  + modTableName + ".guardie_notturne,"
+                  + modTableName + ".turni_reperibilita,"
+                  + modTableName + ".dmp,"
+                  + modTableName + ".dmp_calcolato,"
+                  + modTableName + ".altre_assenze,"
+                  + tableName + ".id_unita,"
+                  + modTableName + ".nota,"
+                  + tableName + ".scoperti "
+                  + "FROM " + tableName + " LEFT JOIN medici ON medici.id=" + tableName + ".id_medico "
+                  + "LEFT JOIN unita ON unita.id=" + tableName + ".id_unita "
+                  + "LEFT JOIN " + modTableName + " ON " + modTableName + ".id_medico=" + tableName + ".id_medico "
+                  + "WHERE " + tableName + ".id_medico=" + QString::number(dipendendeId) + ";");
+    if(!query.exec()) {
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        return result;
+    }
+
+    while(query.next()) {
+        result.clear();
+        result << query.value(0);  // nome
+        result << query.value(1);  // matricola
+        result << query.value(2);  // unità
+        result << query.value(3);  // riposi
+        result << query.value(4);  // orario giornaliero
+        result << query.value(5);  // ferie
+        result << query.value(6);  // congedi
+        result << query.value(7);  // malattia
+        result << query.value(8);  // rmp
+        result << query.value(9);  // rmc
+        result << query.value(10); // altre causali
+        result << query.value(11); // guardie diurne
+        result << query.value(12); // guardie notturne
+        result << query.value(13); // grep
+        result << query.value(14); // minuti di congedi
+        result << query.value(15); // minuti di eccr
+        result << query.value(16); // minuti di grep
+        result << query.value(17); // minuti di guar
+        result << query.value(18); // minuti di rmc
+        result << query.value(19); // minuti fatti
+        result << query.value(20); // guardie diurne mod
+        result << query.value(21); // guardie notturne mod
+        result << query.value(22); // turni reperibilità
+        result << query.value(23); // dmp
+        result << query.value(24); // dmp calcolato
+        result << query.value(25); // altre assenze
+        result << query.value(26); // id unità
+        result << query.value(27); // nota
+        result << query.value(28); // scoperti
+    }
+
+    return result;
+}
+
+void SqlQueries::saveMod(const QString &tableName, const QString &columnName, const int &id, QVariant value)
+{
+    QSqlQuery query;
+    query.prepare("UPDATE " + tableName + " " +
+                  "SET " + columnName + "=:" + columnName + " " +
+                  "WHERE id_medico=" + QString::number(id) + ";");
+    query.bindValue(":" + columnName, value);
+
+    if(!query.exec()) {
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
+}
+
+QMap<QDate, QPair<int, int> > SqlQueries::getOrePagateFromUnit(const int &unitaId)
+{
+    QMap<QDate, QPair<int,int> > map;
+    QSqlQuery query;
+    query.prepare("SELECT data,ore_tot,ore_pagate FROM unita_ore_pagate WHERE id_unita=" + QString::number(unitaId) + ";");
+    if(!query.exec()) {
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        return map;
+    }
+    while(query.next()) {
+        QStringList meseAnno = query.value(0).toString().split(".");
+        QDate date(meseAnno.at(1).toInt(),meseAnno.at(0).toInt(),1);
+        QPair<int, int> vals;
+        vals.first = query.value(1).toInt();
+        vals.second = query.value(2).toInt();
+        map[date] = vals;
+    }
+    return map;
+}
+
+QPair<int, QString> SqlQueries::getMatricolaNome(const int &doctorId)
+{
+    QPair<int, QString> result;
+
+    QSqlQuery query;
+    query.prepare("SELECT matricola,nome FROM medici WHERE id='" + QString::number(doctorId) + "';");
+    if(!query.exec()) {
+        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
+    while(query.next()) {
+        result.first = query.value(0).toInt();
+        result.second = query.value(1).toString();
+    }
+
+    return result;
+}
+
+QString SqlQueries::getUnitaNomeBreve(const int &id)
+{
+    QString nome;
+
+    QSqlQuery query;
+    query.prepare("SELECT nome_mini FROM unita WHERE id='" + QString::number(id) + "';");
+    if(!query.exec()) {
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
+    while(query.next()) {
+        nome = query.value(0).toString();
+    }
+
+    return nome;
+}
+
+QVector<int> SqlQueries::getUnitaIdsInTimecard(const QString &timecard)
+{
+    QVector<int> ids;
+    QSqlQuery query;
+    query.prepare("SELECT id_unita FROM " + timecard + " ORDER BY length(id_unita), id_unita;");
+    if(!query.exec()) {
+        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
+    while(query.next()) {
+        ids << query.value(0).toInt();
+    }
+
+    return ids;
+}
+
+int SqlQueries::getDoctorUnitaIdFromTimecard(const QString &timecard, const int &doctorId)
+{
+    int id = -1;
+    QSqlQuery query;
+    query.prepare("SELECT id_unita FROM " + timecard + " WHERE id_medico='" + QString::number(doctorId) + "';");
+    if(!query.exec()) {
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
+    while(query.next()) {
+        id = query.value(0).toInt();
+    }
+
+    return id;
+}
+
+QString SqlQueries::getUnitaNomeCompleto(const int &id)
+{
+    QString nome;
+
+    QSqlQuery query;
+    query.prepare("SELECT nome_full FROM unita WHERE id='" + QString::number(id) + "';");
+    if(!query.exec()) {
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
+    while(query.next()) {
+        nome = query.value(0).toString();
+    }
+
+    return nome;
+}
+
+QVector<int> SqlQueries::getDoctorsIdsFromUnitInTimecard(const QString &timecard, const int &unitId)
+{
+    QVector<int> ids;
+    QSqlQuery query;
+    query.prepare("SELECT id_medico FROM " + timecard + " WHERE id_unita='" + QString::number(unitId) + "';");
+    if(!query.exec()) {
+        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
+    while(query.next()) {
+        ids << query.value(0).toInt();
+    }
+
+    return ids;
+}
+
+QVariantList SqlQueries::getOrePagateFromId(const int &id)
+{
+    QVariantList result;
+    QSqlQuery query;
+    query.prepare("SELECT data,ore_tot,ore_pagate FROM unita_ore_pagate WHERE id=" + QString::number(id) + ";");
+    if(!query.exec()) {
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        return result;
+    }
+    while(query.next()) {
+        result.clear();
+        result << query.value(0);
+        result << query.value(1);
+        result << query.value(2);
+    }
+    return result;
+}
+
+QStringList SqlQueries::getTuttiMatricoleNomi()
+{
+    QStringList result;
+
+    QSqlQuery query;
+    query.prepare("SELECT id,matricola,nome FROM medici;");
+    if(!query.exec()) {
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
+    while(query.next()) {
+        result << query.value(0).toString() + "~" + query.value(1).toString() + "~" + query.value(2).toString();
+    }
+
+    return result;
+}
+
+void SqlQueries::setUnitaOrePagateModel(QSqlQueryModel *model, const int &idUnita)
+{
+    model->setQuery("SELECT id,data,ore_tot,ore_pagate FROM unita_ore_pagate WHERE id_unita=" + QString::number(idUnita) + ";");
+    if(model->lastError().isValid()) {
+        qDebug() << "ERROR: " << model->query().lastQuery() << " : " << model->lastError();
+    }
+}
+
+void SqlQueries::setUnitaReperibilitaModel(QSqlQueryModel *model, const int &idUnita)
+{
+    model->setQuery("SELECT * FROM unita_reperibilita WHERE id_unita=" + QString::number(idUnita) + ";");
+    if(model->lastError().isValid()) {
+        qDebug() << "ERROR: " << model->query().lastQuery() << " : " << model->lastError();
+    }
+}
+
+QStringList SqlQueries::getUnitaDataFromTimecard(const QString &timecard)
+{
+    QStringList result;
+    QSqlQuery query;
+    query.prepare("SELECT " + timecard + ".id_unita,unita.nome_full,unita.id "
+                  "FROM " + timecard + " "
+                  "LEFT JOIN unita "
+                  "ON " + timecard + ".id_unita=unita.id ORDER BY length(unita.id), unita.id;");
+    if(!query.exec()) {
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        return result;
+    }
+
+    while(query.next()) {
+        result << query.value(0).toString() + "~" + query.value(1).toString() + "~" + query.value(2).toString();
+    }
+
+    return result;
+}
+
+QStringList SqlQueries::getDoctorDataFromUnitaInTimecard(const QString &timecard, const int &idUnita)
+{
+    QStringList result;
+    QString whereClause;
+
+    if(idUnita != -1)
+        whereClause = "WHERE " + timecard + ".id_unita=" + QString::number(idUnita);
+
+    QSqlQuery query;
+    query.prepare("SELECT medici.id,medici.matricola,medici.nome "
+                  "FROM medici "
+                  "LEFT JOIN " + timecard + " "
+                  "ON " + timecard + ".id_medico=medici.id "
+                  + whereClause + "  ORDER BY medici.nome;");
+    if(!query.exec()) {
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        return result;
+    }
+
+    while(query.next()) {
+        result << query.value(0).toString() + "~" + query.value(1).toString() + "~" + query.value(2).toString();
+    }
+
+    return result;
+}
+
+QVariantList SqlQueries::getUnitaDataById(const int &idUnita)
+{
+    QVariantList result;
+    QSqlQuery query;
+    query.prepare("SELECT * FROM unita WHERE id=" + QString::number(idUnita) + ";");
+    if(!query.exec()) {
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        return result;
+    }
+    while(query.next()) {
+        result.clear();
+        result << query.value(0);
+        result << query.value(1);
+        result << query.value(2);
+        result << query.value(3);
+        result << query.value(4);
+    }
+
+    return result;
+}
+
+QVariantList SqlQueries::getDoctorDataById(const int &idDoctor)
+{
+    QVariantList result;
+    QSqlQuery query;
+    query.prepare("SELECT * FROM medici WHERE id=" + QString::number(idDoctor) + ";");
+    if(!query.exec()) {
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        return result;
+    }
+    while(query.next()) {
+        result.clear();
+        result << query.value(0);
+        result << query.value(1);
+        result << query.value(2);
+        result << query.value(3);
+    }
+
+    return result;
+}
+

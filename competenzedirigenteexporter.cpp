@@ -28,8 +28,6 @@
 #include <QFile>
 #include <QDir>
 #include <QDebug>
-#include <QSqlQuery>
-#include <QSqlError>
 #include <QPdfWriter>
 #include <QPainter>
 #include <QAbstractTextDocumentLayout>
@@ -76,7 +74,7 @@ void CompetenzeDirigenteExporter::setDirigente(int id)
 
 void CompetenzeDirigenteExporter::run()
 {
-    QStringList unitaIdList;
+    QVector<int> unitaIdList;
     const QString s = m_tableName.split("_").last();
     m_mese = QDate::longMonthName(s.right(2).toInt(), QDate::StandaloneFormat) + " " + s.left(4);
     QString fileName = "Competenze_" + QString(m_mese).replace(" ","_");
@@ -87,52 +85,25 @@ void CompetenzeDirigenteExporter::run()
     if(m_idDirigente != -1) {
         emit totalRows(rowCount);
         // stampo un singolo report
-        QSqlQuery query;
-        query.prepare("SELECT matricola,nome FROM medici WHERE id='" + QString::number(m_idDirigente) + "';");
-        if(!query.exec()) {
-            qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
-        }
-        while(query.next()) {
-            dipName = query.value(0).toString() + " - " + query.value(1).toString();
-            fileName += "_" + query.value(0).toString() + "_" + query.value(1).toString();
-        }
+        const QPair<int, QString> values = SqlQueries::getMatricolaNome(m_idDirigente);
+        dipName = QString::number(values.first) + " - " + values.second;
+        fileName += "_" + QString::number(values.first) + "_" + values.second;
     } else {
         if(m_idUnita != -1) {
             // stampo tutti i medici di una singola unità
-            unitaIdList << QString::number(m_idUnita);
-            QSqlQuery query;
-            query.prepare("SELECT id,nome_mini FROM unita WHERE id='" + QString::number(m_idUnita) + "';");
-            if(!query.exec()) {
-                qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
-            }
-            while(query.next()) {
-                fileName += "_" + query.value(0).toString() + "_" + query.value(1).toString();
-            }
+            unitaIdList << m_idUnita;
+            fileName += "_" + QString::number(m_idUnita) + "_" + SqlQueries::getUnitaNomeBreve(m_idUnita);
 
-            // recupero numero totale medici di m_idUnita in mese
-            QSqlQuery queryCount;
-            queryCount.prepare("SELECT COUNT(*) FROM " + m_tableName + " WHERE id_unita='" + QString::number(m_idUnita) + "';");
-            if(!queryCount.exec()) {
-                qDebug() << "ERROR: " << queryCount.lastQuery() << " : " << queryCount.lastError();
-            }
-            while(queryCount.next()) {
-                rowCount = queryCount.value(0).toInt();
-            }
+            // recupero numero totale medici di data unita nel cartellino del mese
+            rowCount = SqlQueries::numDoctorsFromUnitInTimecard(m_tableName, m_idUnita);
 
             emit totalRows(rowCount);
         } else {
             // stampo tutti medici di tutte unità
-            unitaIdList << getUnitaIDs(m_tableName);
+            unitaIdList << SqlQueries::getUnitaIdsInTimecard(m_tableName);
 
-            // recupero numero totale medici in mese
-            QSqlQuery queryCount;
-            queryCount.prepare("SELECT COUNT(*) FROM " + m_tableName + ";");
-            if(!queryCount.exec()) {
-                qDebug() << "ERROR: " << queryCount.lastQuery() << " : " << queryCount.lastError();
-            }
-            while(queryCount.next()) {
-                rowCount = queryCount.value(0).toInt();
-            }
+            // recupero numero totale medici nel cartellino del mese
+            rowCount = SqlQueries::numDoctorsInTimecard(m_tableName);
 
             emit totalRows(rowCount);
         }
@@ -155,32 +126,25 @@ void CompetenzeDirigenteExporter::run()
     if(m_idDirigente != -1) {
         currRow++;
         emit currentRow(currRow);
-        QSqlQuery query;
-        query.prepare("SELECT id_unita FROM " + m_tableName + " WHERE id_medico='" + QString::number(m_idDirigente) + "';");
-        if(!query.exec()) {
-            qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
-        }
-        while(query.next()) {
-            m_idUnita = query.value(0).toInt();
-        }
+        m_idUnita = SqlQueries::getDoctorUnitaIdFromTimecard(m_tableName, m_idDirigente);
 
-        m_unitaName = getUnitaName(QString::number(m_idUnita));
+        m_unitaName = SqlQueries::getUnitaNomeCompleto(m_idUnita);
         m_competenza = new Competenza(m_tableName,m_idDirigente);
 
         // stampo un singolo report
         printDirigente(painter);
     } else {
-        foreach (QString unitaId, unitaIdList) {
-            m_unitaName = getUnitaName(unitaId);
-            m_idUnita = unitaId.toInt();
-            QStringList dirigentiIdList = getDirigentiIDs(unitaId);
+        foreach (int unitaId, unitaIdList) {
+            m_unitaName = SqlQueries::getUnitaNomeCompleto(unitaId);
+            m_idUnita = unitaId;
+            QVector<int> dirigentiIdList = SqlQueries::getDoctorsIdsFromUnitInTimecard(m_tableName, unitaId);
 
-            foreach (QString dirigenteId, dirigentiIdList) {
+            foreach (int dirigenteId, dirigentiIdList) {
                 currRow++;
                 emit currentRow(currRow);
                 if(!isFileStart)
                     writer.newPage();
-                m_competenza = new Competenza(m_tableName,dirigenteId.toInt());
+                m_competenza = new Competenza(m_tableName,dirigenteId);
                 printDirigente(painter);
                 isFileStart = false;
             }
@@ -337,54 +301,6 @@ QFont CompetenzeDirigenteExporter::nameFont()
     font.setBold(true);
     font.setFamily("Sans Serif");
     return font;
-}
-
-
-QString CompetenzeDirigenteExporter::getUnitaName(const QString &id)
-{
-    QString s;
-    QSqlQuery query;
-    query.prepare("SELECT nome_full FROM unita WHERE id='" + id + "';");
-    if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
-    }
-    while(query.next()) {
-        s = query.value(0).toString();
-    }
-
-    return s;
-}
-
-QStringList CompetenzeDirigenteExporter::getDirigentiIDs(const QString &id)
-{
-    QStringList l;
-    QSqlQuery query;
-    query.prepare("SELECT id_medico FROM " + m_tableName + " WHERE id_unita='" + id + "';");
-    if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
-    }
-    while(query.next()) {
-        l << query.value(0).toString();
-    }
-
-    l.removeDuplicates();
-    return l;
-}
-
-QStringList CompetenzeDirigenteExporter::getUnitaIDs(const QString &id)
-{
-    QStringList l;
-    QSqlQuery query;
-    query.prepare("SELECT id_unita FROM " + id + " ORDER BY length(id_unita), id_unita;");
-    if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
-    }
-    while(query.next()) {
-        l << query.value(0).toString();
-    }
-
-    l.removeDuplicates();
-    return l;
 }
 
 void CompetenzeDirigenteExporter::printMonth(QPainter &painter, const QString &text)

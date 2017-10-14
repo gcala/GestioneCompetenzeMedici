@@ -37,8 +37,6 @@
 #include <QtWidgets>
 #include <QSqlQueryModel>
 #include <QDebug>
-#include <QSqlError>
-#include <QSqlQuery>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -344,10 +342,7 @@ void MainWindow::populateUnitaCB()
 
 void MainWindow::populateUnitaOrePagate()
 {
-    unitaOrePagateModel->setQuery("SELECT id,data,ore_tot,ore_pagate FROM unita_ore_pagate WHERE id_unita=" + ui->unitaComboBox->currentData(Qt::UserRole).toString() + ";");
-    if(unitaOrePagateModel->lastError().isValid()) {
-        qDebug() << "ERROR: " << unitaOrePagateModel->query().lastQuery() << " : " << unitaOrePagateModel->lastError();
-    }
+    SqlQueries::setUnitaOrePagateModel(unitaOrePagateModel, ui->unitaComboBox->currentData(Qt::UserRole).toInt());
 
     unitaOrePagateModel->setHeaderData(1, Qt::Horizontal, QObject::tr("Da Mese"));
     unitaOrePagateModel->setHeaderData(2, Qt::Horizontal, QObject::tr("Ore totali"));
@@ -358,10 +353,7 @@ void MainWindow::populateUnitaOrePagate()
 
 void MainWindow::populateUnitaReperibilita()
 {
-    unitaReperibilitaModel->setQuery("SELECT * FROM unita_reperibilita WHERE id_unita=" + ui->unitaComboBox->currentData(Qt::UserRole).toString() + ";");
-    if(unitaReperibilitaModel->lastError().isValid()) {
-        qDebug() << "ERROR: " << unitaReperibilitaModel->query().lastQuery() << " : " << unitaReperibilitaModel->lastError();
-    }
+    SqlQueries::setUnitaReperibilitaModel(unitaReperibilitaModel, ui->unitaComboBox->currentData(Qt::UserRole).toInt());
 
     unitaReperibilitaModel->setHeaderData(2, Qt::Horizontal, QObject::tr("Da Mese"));
     unitaReperibilitaModel->setHeaderData(3, Qt::Horizontal, QObject::tr("Feriale"));
@@ -376,13 +368,10 @@ void MainWindow::populateUnitaReperibilita()
 void MainWindow::populateDirigentiCB()
 {
     ui->dirigentiComboBox->clear();
-    QSqlQuery query;
-    query.prepare("SELECT id,matricola,nome,id_unita FROM medici;");
-    if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
-    }
-    while(query.next()) {
-        ui->dirigentiComboBox->addItem(query.value(1).toString() + " - " + query.value(2).toString(), query.value(0));
+    QStringList query = SqlQueries::getTuttiMatricoleNomi();
+    for(QString s : query) {
+        QStringList l = s.split("~");
+        ui->dirigentiComboBox->addItem(l.at(1) + " - " + l.at(2), l.at(0));
     }
 
     ui->dirigenteTB->setEnabled(ui->dirigentiComboBox->count() > 0 ? true : false);
@@ -451,20 +440,8 @@ void MainWindow::populateMeseCompetenzeCB()
 {
     ui->meseCompetenzeCB->clear();
     printDialog->clearMese();
-    QSqlQuery query;
-    query.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'tc\\_%' ESCAPE '\\';");
-    if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
-        return;
-    }
 
-    QStringList timeCards;
-
-    while(query.next()) {
-        timeCards <<  query.value(0).toString();
-    }
-
-    timeCards.sort(Qt::CaseInsensitive);
+    const QStringList timeCards = SqlQueries::timecardsList();
 
     ui->meseCompetenzeCB->clear();
     QStringList::const_iterator i = timeCards.constEnd();
@@ -484,22 +461,15 @@ void MainWindow::populateUnitaCompetenzeCB()
     if(ui->meseCompetenzeCB->currentData(Qt::UserRole).toString().isEmpty())
         return;
 
-    QSqlQuery query;
-    query.prepare("SELECT " + ui->meseCompetenzeCB->currentData(Qt::UserRole).toString() + ".id_unita,unita.nome_full,unita.id "
-                  "FROM " + ui->meseCompetenzeCB->currentData(Qt::UserRole).toString() + " "
-                  "LEFT JOIN unita "
-                  "ON " + ui->meseCompetenzeCB->currentData(Qt::UserRole).toString() + ".id_unita=unita.id ORDER BY length(unita.id), unita.id;");
-    if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
-        return;
-    }
+    QStringList query = SqlQueries::getUnitaDataFromTimecard(ui->meseCompetenzeCB->currentData(Qt::UserRole).toString());
 
     QStringList list;
 
-    while(query.next()) {
-        if(!list.contains(query.value(1).toString())) {
-            ui->unitaCompetenzeCB->addItem(query.value(2).toString() + " - " + query.value(1).toString(), query.value(0).toString());
-            list << query.value(1).toString();
+    for(QString s : query) {
+        QStringList l = s.split("~");
+        if(!list.contains(l.at(1))) {
+            ui->unitaCompetenzeCB->addItem(l.at(2) + " - " + l.at(1), l.at(0));
+            list << l.at(1);
         }
     }
 }
@@ -511,19 +481,11 @@ void MainWindow::populateDirigentiCompetenzeCB()
     if(ui->unitaCompetenzeCB->currentData(Qt::UserRole).toString().isEmpty())
         return;
 
-    QSqlQuery query;
-    query.prepare("SELECT medici.id,medici.matricola,medici.nome "
-                  "FROM medici "
-                  "LEFT JOIN " + ui->meseCompetenzeCB->currentData(Qt::UserRole).toString() + " "
-                  "ON " + ui->meseCompetenzeCB->currentData(Qt::UserRole).toString() + ".id_medico=medici.id "
-                  "WHERE " + ui->meseCompetenzeCB->currentData(Qt::UserRole).toString() + ".id_unita=" + ui->unitaCompetenzeCB->currentData(Qt::UserRole).toString() + "  ORDER BY medici.nome;");
-    if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
-        return;
-    }
+    QStringList query = SqlQueries::getDoctorDataFromUnitaInTimecard(ui->meseCompetenzeCB->currentData(Qt::UserRole).toString(), ui->unitaCompetenzeCB->currentData(Qt::UserRole).toInt());
 
-    while(query.next()) {
-        ui->dirigentiCompetenzeCB->addItem(query.value(1).toString() + " - " + query.value(2).toString(), query.value(0).toString());
+    for(QString s : query) {
+        QStringList l = s.split("~");
+        ui->dirigentiCompetenzeCB->addItem(l.at(1) + " - " + l.at(2), l.at(0));
     }
 }
 
@@ -700,17 +662,14 @@ void MainWindow::on_unitaComboBox_currentIndexChanged(int index)
     if(ui->unitaComboBox->currentData(Qt::UserRole).toString().isEmpty())
         return;
 
-    QSqlQuery query;
-    query.prepare("SELECT * FROM unita WHERE id=" + ui->unitaComboBox->currentData(Qt::UserRole).toString() + ";");
-    if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
-    }
-    while(query.next()) {
-        ui->unitaNomeLE->setText(query.value(2).toString());
-        ui->unitaBreveLE->setText(query.value(3).toString());
-        ui->raggrLE->setText(query.value(1).toString());
-        ui->unitaNumLE->setText(query.value(0).toString());
-        ui->otherNamesLE->setText(query.value(4).toString());
+    const QVariantList query = SqlQueries::getUnitaDataById(ui->unitaComboBox->currentData(Qt::UserRole).toInt());
+
+    if(!query.isEmpty() && query.size() == 5 ) {
+        ui->unitaNomeLE->setText(query.at(2).toString());
+        ui->unitaBreveLE->setText(query.at(3).toString());
+        ui->raggrLE->setText(query.at(1).toString());
+        ui->unitaNumLE->setText(query.at(0).toString());
+        ui->otherNamesLE->setText(query.at(4).toString());
     }
 
     populateUnitaOrePagate();
@@ -724,31 +683,20 @@ void MainWindow::on_dirigentiComboBox_currentIndexChanged(int index)
     if(ui->dirigentiComboBox->currentData(Qt::UserRole).toString().isEmpty())
         return;
 
-    QSqlQuery query;
-    query.prepare("SELECT * FROM medici WHERE id=" + ui->dirigentiComboBox->currentData(Qt::UserRole).toString() + ";");
-    if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
-    }
+    const QVariantList query = SqlQueries::getDoctorDataById(ui->dirigentiComboBox->currentData(Qt::UserRole).toInt());
 
-    QString id_unita;
+    int idUnita;
 
-    while(query.next()) {
-        ui->dirigenteNomeLE->setText(query.value(2).toString());
-        ui->dirigenteMatricolaSB->setValue(query.value(1).toInt());
-        id_unita = query.value(3).toString();
+    if(!query.isEmpty() && query.size() == 4 ) {
+        ui->dirigenteNomeLE->setText(query.at(2).toString());
+        ui->dirigenteMatricolaSB->setValue(query.at(1).toInt());
+        idUnita = query.at(3).toInt();
     }
 
     // recupero nome completo da id
-    query.prepare("SELECT nome_full FROM unita WHERE id=" + id_unita + ";");
-    if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
-    }
+    ui->dirigenteUnitaLE->setText(SqlQueries::getUnitaNomeCompleto(idUnita));
 
-    while(query.next()) {
-        ui->dirigenteUnitaLE->setText(query.value(0).toString());
-    }
-
-    ui->dirigentiUnitaComboBox->setCurrentText(id_unita + " - " + ui->dirigenteUnitaLE->text());
+    ui->dirigentiUnitaComboBox->setCurrentText(QString::number(idUnita) + " - " + ui->dirigenteUnitaLE->text());
 
     const QString path = "/home/gcala/Progetti/C++/GestioneCompetenzeMedici/appunti/Foto/";
     if(QFile::exists(path + "F" + QString::number(ui->dirigenteMatricolaSB->value()).rightJustified(6, '0') + ".jpg")) {
@@ -785,7 +733,7 @@ void MainWindow::on_addUnitaOrePagateButton_clicked()
 void MainWindow::on_removeUnitaOrePagateButton_clicked()
 {
     const QAbstractItemModel * model = ui->unitaOrePagateTW->currentIndex().model();
-    QString id = model->data(model->index(ui->unitaOrePagateTW->currentIndex().row(), 0), Qt::DisplayRole).toString();
+    int id = model->data(model->index(ui->unitaOrePagateTW->currentIndex().row(), 0), Qt::DisplayRole).toInt();
     insertDialog->unitaRemoveOreSetup(id);
     insertDialog->exec();
     populateUnitaOrePagate();

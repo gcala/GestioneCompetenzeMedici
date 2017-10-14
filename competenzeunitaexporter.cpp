@@ -27,8 +27,6 @@
 #include <QFile>
 #include <QDir>
 #include <QDebug>
-#include <QSqlQuery>
-#include <QSqlError>
 #include <QPdfWriter>
 #include <QPainter>
 
@@ -45,7 +43,7 @@ CompetenzeUnitaExporter::CompetenzeUnitaExporter(QObject *parent)
     , m_tableHeight(m_gridHeight*m_totalHeaderHeight+m_gridHeight*m_totalRows)
 {
     m_idUnita = -1;
-    m_idMese = -1;
+    m_timecard.clear();
 }
 
 CompetenzeUnitaExporter::~CompetenzeUnitaExporter()
@@ -63,30 +61,23 @@ void CompetenzeUnitaExporter::setUnita(int id)
     m_idUnita = id;
 }
 
-void CompetenzeUnitaExporter::setMese(QString id)
+void CompetenzeUnitaExporter::setMese(const QString &timecard)
 {
-    m_idMese = id;
+    m_timecard = timecard;
 }
 
 void CompetenzeUnitaExporter::run()
 {
-    QStringList unitaIdList;
-    const QString s = m_idMese.split("_").last();
+    QVector<int> unitaIdList;
+    const QString s = m_timecard.split("_").last();
     QString mese = QDate::longMonthName(s.right(2).toInt(), QDate::StandaloneFormat) + " " + s.left(4);
     QString fileName = "Competenze_" + QString(mese).replace(" ","_");
 
     if(m_idUnita != -1) {
-        unitaIdList << QString::number(m_idUnita);
-        QSqlQuery query;
-        query.prepare("SELECT id,nome_mini FROM unita WHERE id='" + QString::number(m_idUnita) + "';");
-        if(!query.exec()) {
-            qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
-        }
-        while(query.next()) {
-            fileName += "_" + query.value(0).toString() + "_" + query.value(1).toString();
-        }
+        unitaIdList << m_idUnita;
+        fileName += "_" + QString::number(m_idUnita) + "_" + SqlQueries::getUnitaNomeBreve(m_idUnita);
     } else {
-        unitaIdList << getUnitaIDs(m_idMese);
+        unitaIdList << SqlQueries::getUnitaIdsInTimecard(m_timecard);
     }
 
     emit totalRows(unitaIdList.count());
@@ -106,7 +97,7 @@ void CompetenzeUnitaExporter::run()
 
     int currRow = 0;
 
-    foreach (QString unitaId, unitaIdList) {
+    foreach (int unitaId, unitaIdList) {
         currRow++;
         emit currentRow(currRow);
         if(!isFileStart)
@@ -114,18 +105,18 @@ void CompetenzeUnitaExporter::run()
 
         disegnaTabella(painter);
 
-        QString unitaName = getUnitaName(unitaId);
+        QString unitaName = SqlQueries::getUnitaNomeCompleto(unitaId);
 
         printMonth(painter, mese);
         printUnitaName(painter, unitaName);
         printUnitaNumber(painter, unitaId);
 
-        QStringList dirigentiIdList = getDirigentiIDs(unitaId);
+        QVector<int> dirigentiIdList = SqlQueries::getDoctorsIdsFromUnitInTimecard(m_timecard, unitaId);
 
         int counter = 0;
 
-        foreach (QString dirigenteId, dirigentiIdList) {
-            m_competenza = new Competenza(m_idMese,dirigenteId.toInt());
+        foreach (int dirigenteId, dirigentiIdList) {
+            m_competenza = new Competenza(m_timecard,dirigenteId);
             if(counter != 0 && (counter%m_totalRows) == 0) {
                 counter = 0;
                 writer.newPage();
@@ -250,7 +241,6 @@ void CompetenzeUnitaExporter::disegnaTabella(QPainter &painter)
     painter.setFont(headerFont());
     painter.drawText(QRect(m_tableWidth-m_gridWidth*3, m_gridHeight, m_gridWidth*1, m_gridHeight*m_secondHeaderHeight), Qt::AlignCenter | Qt::TextWordWrap, "Guard. Nott.");
     painter.restore();
-
     // Grande Festività Notturna
     painter.save();
     painter.setPen(Qt::black);
@@ -473,53 +463,6 @@ QFont CompetenzeUnitaExporter::headerLightFont()
     return font;
 }
 
-QString CompetenzeUnitaExporter::getUnitaName(const QString &id)
-{
-    QString s;
-    QSqlQuery query;
-    query.prepare("SELECT nome_full FROM unita WHERE id='" + id + "';");
-    if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
-    }
-    while(query.next()) {
-        s = query.value(0).toString();
-    }
-
-    return s;
-}
-
-QStringList CompetenzeUnitaExporter::getDirigentiIDs(const QString &id)
-{
-    QStringList l;
-    QSqlQuery query;
-    query.prepare("SELECT " + m_idMese + ".id_medico,medici.nome FROM " + m_idMese + " LEFT JOIN medici ON " + m_idMese + ".id_medico=medici.id WHERE " + m_idMese + ".id_unita='" + id + "' ORDER BY medici.nome;");
-    if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
-    }
-    while(query.next()) {
-        l << query.value(0).toString();
-    }
-
-    l.removeDuplicates();
-    return l;
-}
-
-QStringList CompetenzeUnitaExporter::getUnitaIDs(const QString &id)
-{
-    QStringList l;
-    QSqlQuery query;
-    query.prepare("SELECT id_unita FROM " + id + " ORDER BY length(id_unita), id_unita;");
-    if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
-    }
-    while(query.next()) {
-        l << query.value(0).toString();
-    }
-
-    l.removeDuplicates();
-    return l;
-}
-
 void CompetenzeUnitaExporter::printMonth(QPainter &painter, const QString &text)
 {
     painter.save();
@@ -538,12 +481,12 @@ void CompetenzeUnitaExporter::printUnitaName(QPainter &painter, const QString &t
     painter.restore();
 }
 
-void CompetenzeUnitaExporter::printUnitaNumber(QPainter &painter, const QString &text)
+void CompetenzeUnitaExporter::printUnitaNumber(QPainter &painter, const int &id)
 {
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(numberFont());
-    painter.drawText(QRect(0, m_gridHeight, m_gridWidth*2, m_gridHeight*m_secondHeaderHeight), Qt::AlignCenter, text);
+    painter.drawText(QRect(0, m_gridHeight, m_gridWidth*2, m_gridHeight*m_secondHeaderHeight), Qt::AlignCenter, QString::number(id));
     painter.restore();
 }
 

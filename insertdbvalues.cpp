@@ -24,8 +24,6 @@
 #include "sqlqueries.h"
 
 #include <QtWidgets>
-#include <QSqlQuery>
-#include <QSqlError>
 
 InsertDBValues::InsertDBValues(QWidget *parent):
     QDialog(parent),
@@ -55,7 +53,7 @@ void InsertDBValues::unitaAddOreSetup(const QString &unitaId)
     ui->unitaMsg->setText("Inserire Ore di Straordinario Pagate");
 }
 
-void InsertDBValues::unitaRemoveOreSetup(const QString &id)
+void InsertDBValues::unitaRemoveOreSetup(const int &id)
 {
     currentOp = RemoveOre;
     ui->stackedWidget->setCurrentIndex(0);
@@ -63,18 +61,16 @@ void InsertDBValues::unitaRemoveOreSetup(const QString &id)
     ui->unitaMsg->setText("Sicuri di voler eliminare il seguente dato?");
     currentId = id;
     tableName = "unita_ore_pagate";
-    QSqlQuery query;
-    query.prepare("SELECT ore_pagate,ore_tot,data FROM " + tableName + " WHERE id=" + currentId + ";");
-    if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    QVariantList query = SqlQueries::getOrePagateFromId(id);
+
+    if(query.isEmpty()) {
+        qDebug() << Q_FUNC_INFO << ":: ERRORE :: ore pagate non trovate";
         return;
     }
 
-    while(query.next()) {
-        ui->unitaData->setDate(QDate::fromString(query.value(2).toString(), "MM.yyyy"));
-        ui->unitaOrePagate->setValue(query.value(0).toInt());
-        ui->unitaOreTot->setValue(query.value(1).toInt());
-    }
+    ui->unitaData->setDate(QDate::fromString(query.at(0).toString(), "MM.yyyy"));
+    ui->unitaOreTot->setValue(query.at(1).toInt());
+    ui->unitaOrePagate->setValue(query.at(2).toInt());
 }
 
 void InsertDBValues::on_unitaCancel_clicked()

@@ -36,7 +36,7 @@ public:
 
     void setPath(const QString &path);
     void setUnita(int id);
-    void setMese(QString id);
+    void setMese(const QString &timecard);
 
 protected:
     void run() override;
@@ -49,7 +49,7 @@ signals:
 private:
     QString m_path;
     int m_idUnita;
-    QString m_idMese;
+    QString m_timecard;
     Competenza *m_competenza;
 
     const int m_firstHeaderHeight;
@@ -69,13 +69,10 @@ private:
     QFont headerFont();
     QFont headerLightFont();
     QFont badgeFont();
-    QString getUnitaName(const QString &id);
-    QStringList getDirigentiIDs(const QString &id);
-    QStringList getUnitaIDs(const QString &id);
 
     void printMonth(QPainter &painter, const QString &text);
     void printUnitaName(QPainter &painter, const QString &text);
-    void printUnitaNumber(QPainter &painter, const QString &text);
+    void printUnitaNumber(QPainter &painter, const int &id);
     void printBadge(QPainter &painter, const QString &text, int row);
     void printName(QPainter &painter, const QString &text, int row);
     void printDeficit(QPainter&painter, const QString &text, int row);

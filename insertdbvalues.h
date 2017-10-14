@@ -40,7 +40,7 @@ public:
     Q_ENUM(Operation)
 
     void unitaAddOreSetup(const QString &unitaId);
-    void unitaRemoveOreSetup(const QString &id);
+    void unitaRemoveOreSetup(const int &id);
 
 private slots:
     void on_unitaCancel_clicked();

@@ -23,6 +23,8 @@
 #define SQLQUERIES_H
 
 #include <QString>
+#include <QVariantList>
+#include <QSqlQueryModel>
 
 class Dipendente;
 
@@ -61,6 +63,23 @@ public:
     static QStringList timecardsList();
     static int numDoctorsFromUnitInTimecard(const QString &timecard, const int &unitId);
     static int numDoctorsInTimecard(const QString &timecard);
+    static QVariantList getDoctorTimecard(const QString &tableName, const QString &modTableName, const int &dipendendeId);
+    static void saveMod(const QString &tableName, const QString &columnName, const int &id, QVariant value);
+    static QMap<QDate, QPair<int,int> > getOrePagateFromUnit(const int &unitaId);
+    static QPair<int, QString> getMatricolaNome(const int &doctorId);
+    static QString getUnitaNomeBreve(const int &id);
+    static QVector<int> getUnitaIdsInTimecard(const QString &timecard);
+    static int getDoctorUnitaIdFromTimecard(const QString &timecard, const int &doctorId);
+    static QString getUnitaNomeCompleto(const int &id);
+    static QVector<int> getDoctorsIdsFromUnitInTimecard(const QString &timecard, const int &unitId);
+    static QVariantList getOrePagateFromId(const int &unitaId);
+    static QStringList getTuttiMatricoleNomi();
+    static void setUnitaOrePagateModel(QSqlQueryModel *model, const int &idUnita);
+    static void setUnitaReperibilitaModel(QSqlQueryModel *model, const int &idUnita);
+    static QStringList getUnitaDataFromTimecard(const QString &timecard);
+    static QStringList getDoctorDataFromUnitaInTimecard(const QString &timecard, const int &idUnita);
+    static QVariantList getUnitaDataById(const int &idUnita);
+    static QVariantList getDoctorDataById(const int &idDoctor);
 };
 
 #endif // SQLQUERIES_H

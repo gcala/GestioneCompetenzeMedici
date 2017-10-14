@@ -28,8 +28,6 @@
 #include <QFile>
 #include <QDir>
 #include <QDebug>
-#include <QSqlQuery>
-#include <QSqlError>
 #include <QMessageBox>
 #include <QApplication>
 

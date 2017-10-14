@@ -21,10 +21,9 @@
 
 #include "printdialog.h"
 #include "ui_printdialog.h"
+#include "sqlqueries.h"
 
 #include <QtWidgets>
-#include <QSqlQuery>
-#include <QSqlError>
 #include <QFileDialog>
 #include <QDebug>
 
@@ -173,27 +172,12 @@ void PrintDialog::on_unitaCB_currentIndexChanged(int index)
     ui->dirigenteCB->clear();
     ui->dirigenteCB->addItem("Tutti", -1);
 
-    QString whereClause;
+    QStringList query = SqlQueries::getDoctorDataFromUnitaInTimecard(ui->meseCB->currentData(Qt::UserRole).toString(), ui->unitaCB->currentData(Qt::UserRole).toInt());
 
-    if(ui->unitaCB->currentData(Qt::UserRole).toInt() != -1)
-        whereClause = "WHERE " + ui->meseCB->currentData(Qt::UserRole).toString() + ".id_unita=" + ui->unitaCB->currentData(Qt::UserRole).toString();
-
-    QSqlQuery query;
-    query.prepare("SELECT medici.id,medici.matricola,medici.nome "
-                  "FROM " + ui->meseCB->currentData(Qt::UserRole).toString() + " " +
-                  "LEFT JOIN medici " +
-                  "ON " + ui->meseCB->currentData(Qt::UserRole).toString() + ".id_medico=medici.id "
-                  + whereClause + "  ORDER BY medici.nome;");
-    if(!query.exec()) {
-        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
-        return;
+    for(QString s : query) {
+        QStringList l = s.split("~");
+        ui->dirigenteCB->addItem(l.at(1) + " - " + l.at(2), l.at(0));
     }
-
-    while(query.next()) {
-        ui->dirigenteCB->addItem(query.value(1).toString() + " - " + query.value(2).toString(), query.value(0).toString());
-    }
-
-//    ui->dirigenteCB->show();
 }
 
 void PrintDialog::on_meseCB_currentIndexChanged(int index)
@@ -206,22 +190,15 @@ void PrintDialog::on_meseCB_currentIndexChanged(int index)
     if(ui->meseCB->currentData(Qt::UserRole).toString().isEmpty())
         return;
 
-    QSqlQuery query;
-    query.prepare("SELECT " + ui->meseCB->currentData(Qt::UserRole).toString() + ".id_unita,unita.nome_full,unita.id "
-                  "FROM " + ui->meseCB->currentData(Qt::UserRole).toString() + " "
-                  "LEFT JOIN unita "
-                  "ON " + ui->meseCB->currentData(Qt::UserRole).toString() + ".id_unita=unita.id ORDER BY length(unita.id), unita.id;");
-    if(!query.exec()) {
-        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
-        return;
-    }
+    QStringList query = SqlQueries::getUnitaDataFromTimecard(ui->meseCB->currentData(Qt::UserRole).toString());
 
     QStringList list;
 
-    while(query.next()) {
-        if(!list.contains(query.value(1).toString())) {
-            ui->unitaCB->addItem(query.value(2).toString() + " - " + query.value(1).toString(), query.value(0).toString());
-            list << query.value(1).toString();
+    for(QString s : query) {
+        QStringList l = s.split("~");
+        if(!list.contains(l.at(1))) {
+            ui->unitaCB->addItem(l.at(2) + " - " + l.at(1), l.at(0));
+            list << l.at(1);
         }
     }
 }

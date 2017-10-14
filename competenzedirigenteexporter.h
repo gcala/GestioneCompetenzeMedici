@@ -74,9 +74,6 @@ private:
     QFont bodyFontBold();
     QFont totalsFont();
     QFont sectionFont();
-    QString getUnitaName(const QString &id);
-    QStringList getDirigentiIDs(const QString &id);
-    QStringList getUnitaIDs(const QString &id);
 
     void printMonth(QPainter &painter, const QString &text);
     void printUnitaName(QPainter &painter, const QString &text);

@@ -23,8 +23,6 @@
 #include "dipendente.h"
 #include "sqlqueries.h"
 
-#include <QSqlQuery>
-#include <QSqlError>
 #include <QDebug>
 
 class CompetenzaData : public QSharedData
@@ -246,183 +244,154 @@ void CompetenzaData::buildDipendente()
     m_altreAssenze.clear();
     m_defaultAltreAssenze.clear();
 
-    QSqlQuery query;
-    query.prepare("SELECT medici.nome,"
-                  "medici.matricola,"
-                  "unita.nome_full,"
-                  + m_tableName + ".riposi,"
-                  + m_tableName + ".minuti_giornalieri,"
-                  + m_tableName + ".ferie,"
-                  + m_tableName + ".congedi,"
-                  + m_tableName + ".malattia,"
-                  + m_tableName + ".rmp,"
-                  + m_tableName + ".rmc,"
-                  + m_tableName + ".altre_causali,"
-                  + m_tableName + ".guardie_diurne,"
-                  + m_tableName + ".guardie_notturne,"
-                  + m_tableName + ".grep,"
-                  + m_tableName + ".congedi_minuti,"
-                  + m_tableName + ".eccr_minuti,"
-                  + m_tableName + ".grep_minuti,"
-                  + m_tableName + ".guar_minuti,"
-                  + m_tableName + ".rmc_minuti,"
-                  + m_tableName + ".minuti_fatti,"
-                  + m_modTableName + ".guardie_diurne,"
-                  + m_modTableName + ".guardie_notturne,"
-                  + m_modTableName + ".turni_reperibilita,"
-                  + m_modTableName + ".dmp,"
-                  + m_modTableName + ".dmp_calcolato,"
-                  + m_modTableName + ".altre_assenze,"
-                  + m_tableName + ".id_unita,"
-                  + m_modTableName + ".nota,"
-                  + m_tableName + ".scoperti "
-                  + "FROM " + m_tableName + " LEFT JOIN medici ON medici.id=" + m_tableName + ".id_medico "
-                  + "LEFT JOIN unita ON unita.id=" + m_tableName + ".id_unita "
-                  + "LEFT JOIN " + m_modTableName + " ON " + m_modTableName + ".id_medico=" + m_tableName + ".id_medico "
-                  + "WHERE " + m_tableName + ".id_medico=" + QString::number(m_id) + ";");
-    if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    const QVariantList query = SqlQueries::getDoctorTimecard(m_tableName, m_modTableName, m_id);
+
+    if(query.isEmpty()) {
+        qDebug() << Q_FUNC_INFO << ":: ERRORE :: Risultato query vuoto";
         return;
     }
 
-    while(query.next()) {
-        m_dipendente->setNome(query.value(0).toString());           // nome
-        m_dipendente->setMatricola(query.value(1).toString());      // matricola
-        m_dipendente->setUnita(query.value(2).toString());          // unità
-        m_dipendente->addRiposi(query.value(3).toInt());            // riposi
-        m_dipendente->setMinutiGiornalieri(query.value(4).toInt()); // orario giornaliero
-        if(!query.value(5).toString().trimmed().isEmpty()) {
-            foreach (QString f, query.value(5).toString().split(",")) { // ferie
-                m_dipendente->addFerie(f);
-            }
-        }
-        if(!query.value(6).toString().trimmed().isEmpty()) {
-            foreach (QString f, query.value(6).toString().split(",")) { // congedi
-                m_dipendente->addCongedo(f);
-            }
-        }
-        if(!query.value(7).toString().trimmed().isEmpty()) {
-            foreach (QString f, query.value(7).toString().split(",")) { // malattia
-                m_dipendente->addMalattia(f);
-            }
-        }
-        if(!query.value(8).toString().trimmed().isEmpty()) {
-            foreach (QString f, query.value(8).toString().split(",")) { // rmp
-                m_dipendente->addRmp(f);
-            }
-        }
-        if(!query.value(9).toString().trimmed().isEmpty()) {
-            foreach (QString f, query.value(9).toString().split(",")) {  // rmc
-                m_dipendente->addRmc(f);
-            }
-        }
-        if(!query.value(10).toString().trimmed().isEmpty()) {
-            foreach (QString f, query.value(10).toString().split(";")) { // altre causali
-                if(!f.isEmpty()) {
-                    QStringList assenze = f.split(",");
-                    m_dipendente->addAltraCausale(assenze.at(0),assenze.at(1),assenze.at(2).toInt());
-                }
-            }
-        }
+    if(query.size() != 29) {
+        qDebug() << Q_FUNC_INFO << ":: ERRORE :: dimensione query non corretta";
+        return;
+    }
 
-        if(!query.value(20).toString().trimmed().isEmpty()) {
-            foreach (QString f, query.value(20).toString().split(",")) { // guardie diurne mod
-                if(f == "0")
-                    continue;
-                m_dipendente->addGuardiaDiurna(f);
-                addGuardiaDiurnaDay(f.toInt());
-                m_modded = true;
-                m_gdiurneModded = true;
-            }
-        } else if(!query.value(11).toString().trimmed().isEmpty()) {
-            foreach (QString f, query.value(11).toString().split(",")) { // guardie diurne
-                m_dipendente->addGuardiaDiurna(f);
-                addGuardiaDiurnaDay(f.toInt());
+    m_dipendente->setNome(query.at(0).toString());           // nome
+    m_dipendente->setMatricola(query.at(1).toString());      // matricola
+    m_dipendente->setUnita(query.at(2).toString());          // unità
+    m_dipendente->addRiposi(query.at(3).toInt());            // riposi
+    m_dipendente->setMinutiGiornalieri(query.at(4).toInt()); // orario giornaliero
+    if(!query.at(5).toString().trimmed().isEmpty()) {
+        foreach (QString f, query.at(5).toString().split(",")) { // ferie
+            m_dipendente->addFerie(f);
+        }
+    }
+    if(!query.at(6).toString().trimmed().isEmpty()) {
+        foreach (QString f, query.at(6).toString().split(",")) { // congedi
+            m_dipendente->addCongedo(f);
+        }
+    }
+    if(!query.at(7).toString().trimmed().isEmpty()) {
+        foreach (QString f, query.at(7).toString().split(",")) { // malattia
+            m_dipendente->addMalattia(f);
+        }
+    }
+    if(!query.at(8).toString().trimmed().isEmpty()) {
+        foreach (QString f, query.at(8).toString().split(",")) { // rmp
+            m_dipendente->addRmp(f);
+        }
+    }
+    if(!query.at(9).toString().trimmed().isEmpty()) {
+        foreach (QString f, query.at(9).toString().split(",")) {  // rmc
+            m_dipendente->addRmc(f);
+        }
+    }
+    if(!query.at(10).toString().trimmed().isEmpty()) {
+        foreach (QString f, query.at(10).toString().split(";")) { // altre causali
+            if(!f.isEmpty()) {
+                QStringList assenze = f.split(",");
+                m_dipendente->addAltraCausale(assenze.at(0),assenze.at(1),assenze.at(2).toInt());
             }
         }
-        m_defaultGDDates = m_guardiaDiurnaMap;
+    }
 
-        if(!query.value(21).toString().trimmed().isEmpty()) {
-            foreach (QString f, query.value(21).toString().split(",")) { // guardie notturne mod
-                if(f == "0")
-                    continue;
-                m_dipendente->addGuardiaNotturna(f);
-                addGuardiaNotturnaDay(f.toInt());
-                m_modded = true;
-                m_gnotturneModded = true;
-            }
-        } else if(!query.value(12).toString().trimmed().isEmpty()) {
-            foreach (QString f, query.value(12).toString().split(",")) { // guardie notturne
-                m_dipendente->addGuardiaNotturna(f);
-                addGuardiaNotturnaDay(f.toInt());
-            }
-        }
-        m_defaultGNDates = m_guardiaNotturnaMap;
-
-        if(!query.value(13).toString().trimmed().isEmpty()) {
-            foreach (QString f, query.value(13).toString().split(";")) { // grep
-                QStringList fields = f.split(",");
-                if(fields.count() != 3)
-                    continue;
-                m_dipendente->addGrep(fields.at(0).toInt(), fields.at(1).toInt(), fields.at(2).toInt());
-            }
-        }
-
-        m_dipendente->addMinutiCongedo(query.value(14).toInt());     // minuti di congedi
-        m_dipendente->addMinutiEccr(query.value(15).toInt());        // minuti di eccr
-        m_dipendente->addMinutiGrep(query.value(16).toInt());        // minuti di grep
-        m_dipendente->addMinutiGuar(query.value(17).toInt());        // minuti di guar
-        m_dipendente->addMinutiRmc(query.value(18).toInt());         // minuti di rmc
-        m_dipendente->addMinutiFatti(query.value(19).toInt());       // minuti fatti
-
-        if(!query.value(22).toString().trimmed().isEmpty()) {        // turni reperibilita
-            foreach (QString f, query.value(22).toString().split(";")) {
-                if(f == "0,0")
-                    continue;
-                m_rep[QDate(m_dipendente->anno(), m_dipendente->mese(), f.split(",").first().toInt())] = static_cast<ValoreRep>(f.split(",").last().toInt());
-                m_modded = true;
-                m_repModded = true;
-            }
-        }
-        m_defaultRep = m_rep;
-
-        m_dmp = query.value(23).toInt();       // dmp
-        if(m_dmp >= 0) {
+    if(!query.at(20).toString().trimmed().isEmpty()) {
+        foreach (QString f, query.at(20).toString().split(",")) { // guardie diurne mod
+            if(f == "0")
+                continue;
+            m_dipendente->addGuardiaDiurna(f);
+            addGuardiaDiurnaDay(f.toInt());
             m_modded = true;
-            m_dmpModded = true;
+            m_gdiurneModded = true;
         }
-        m_defaultDmp = m_dmp;
-
-        m_dmp_calcolato = query.value(24).toInt();      // dmp_calcolato
-
-        if(!query.value(25).toString().trimmed().isEmpty()) {        // altre assenze
-            foreach (QString f, query.value(25).toString().split(",")) {
-                if(f == "0")
-                    continue;
-                m_altreAssenze << f;
-                m_modded = true;
-                m_altreModded = true;
-            }
+    } else if(!query.at(11).toString().trimmed().isEmpty()) {
+        foreach (QString f, query.at(11).toString().split(",")) { // guardie diurne
+            m_dipendente->addGuardiaDiurna(f);
+            addGuardiaDiurnaDay(f.toInt());
         }
-        rimuoviAltreAssenzeDoppie();
-        m_defaultAltreAssenze = m_altreAssenze;
+    }
+    m_defaultGDDates = m_guardiaDiurnaMap;
 
-        m_unitaId = query.value(26).toInt();       // id unità
-        if(m_unitaId < 0) {
-            qDebug() << Q_FUNC_INFO << "ERROR :: unità non trovata";
-        }
-
-        m_note = query.value(27).toString();       // nota
-        if(!m_note.isEmpty()) {
+    if(!query.at(21).toString().trimmed().isEmpty()) {
+        foreach (QString f, query.at(21).toString().split(",")) { // guardie notturne mod
+            if(f == "0")
+                continue;
+            m_dipendente->addGuardiaNotturna(f);
+            addGuardiaNotturnaDay(f.toInt());
             m_modded = true;
-            m_noteModded = true;
+            m_gnotturneModded = true;
         }
-        m_defaultNote = m_note;
+    } else if(!query.at(12).toString().trimmed().isEmpty()) {
+        foreach (QString f, query.at(12).toString().split(",")) { // guardie notturne
+            m_dipendente->addGuardiaNotturna(f);
+            addGuardiaNotturnaDay(f.toInt());
+        }
+    }
+    m_defaultGNDates = m_guardiaNotturnaMap;
 
-        if(!query.value(28).toString().trimmed().isEmpty()) {
-            foreach (QString f, query.value(28).toString().split(",")) { // scoperti
-                m_dipendente->addScoperto(f);
-            }
+    if(!query.at(13).toString().trimmed().isEmpty()) {
+        foreach (QString f, query.at(13).toString().split(";")) { // grep
+            QStringList fields = f.split(",");
+            if(fields.count() != 3)
+                continue;
+            m_dipendente->addGrep(fields.at(0).toInt(), fields.at(1).toInt(), fields.at(2).toInt());
+        }
+    }
+
+    m_dipendente->addMinutiCongedo(query.at(14).toInt());     // minuti di congedi
+    m_dipendente->addMinutiEccr(query.at(15).toInt());        // minuti di eccr
+    m_dipendente->addMinutiGrep(query.at(16).toInt());        // minuti di grep
+    m_dipendente->addMinutiGuar(query.at(17).toInt());        // minuti di guar
+    m_dipendente->addMinutiRmc(query.at(18).toInt());         // minuti di rmc
+    m_dipendente->addMinutiFatti(query.at(19).toInt());       // minuti fatti
+
+    if(!query.at(22).toString().trimmed().isEmpty()) {        // turni reperibilita
+        foreach (QString f, query.at(22).toString().split(";")) {
+            if(f == "0,0")
+                continue;
+            m_rep[QDate(m_dipendente->anno(), m_dipendente->mese(), f.split(",").first().toInt())] = static_cast<ValoreRep>(f.split(",").last().toInt());
+            m_modded = true;
+            m_repModded = true;
+        }
+    }
+    m_defaultRep = m_rep;
+
+    m_dmp = query.at(23).toInt();       // dmp
+    if(m_dmp >= 0) {
+        m_modded = true;
+        m_dmpModded = true;
+    }
+    m_defaultDmp = m_dmp;
+
+    m_dmp_calcolato = query.at(24).toInt();      // dmp_calcolato
+
+    if(!query.at(25).toString().trimmed().isEmpty()) {        // altre assenze
+        foreach (QString f, query.at(25).toString().split(",")) {
+            if(f == "0")
+                continue;
+            m_altreAssenze << f;
+            m_modded = true;
+            m_altreModded = true;
+        }
+    }
+    rimuoviAltreAssenzeDoppie();
+    m_defaultAltreAssenze = m_altreAssenze;
+
+    m_unitaId = query.at(26).toInt();       // id unità
+    if(m_unitaId < 0) {
+        qDebug() << Q_FUNC_INFO << "ERROR :: unità non trovata";
+    }
+
+    m_note = query.at(27).toString();       // nota
+    if(!m_note.isEmpty()) {
+        m_modded = true;
+        m_noteModded = true;
+    }
+    m_defaultNote = m_note;
+
+    if(!query.at(28).toString().trimmed().isEmpty()) {
+        foreach (QString f, query.at(28).toString().split(",")) { // scoperti
+            m_dipendente->addScoperto(f);
         }
     }
 
@@ -786,42 +755,19 @@ bool CompetenzaData::isRestorable() const
 
 void CompetenzaData::saveMods()
 {
-    QSqlQuery query;
-
     // salva dmp calcolato
     if(m_dmp_calcolato >= 0) {
-        query.prepare("UPDATE " + m_modTableName + " " +
-                      "SET dmp_calcolato=:dmp_calcolato "
-                      "WHERE id_medico=" + QString::number(m_id) + ";");
-        query.bindValue(":dmp_calcolato", m_dmp_calcolato);
-
-        if(!query.exec()) {
-            qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
-        }
+        SqlQueries::saveMod(m_modTableName, "dmp_calcolato", m_id, m_dmp_calcolato);
     }
 
     if(m_defaultNote != m_note) {
-        query.prepare("UPDATE " + m_modTableName + " " +
-                      "SET nota=:nota "
-                      "WHERE id_medico=" + QString::number(m_id) + ";");
-        query.bindValue(":nota", m_note);
-
-        if(!query.exec()) {
-            qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
-        }
+        SqlQueries::saveMod(m_modTableName, "nota", m_id, m_note);
     }
 
     if(m_defaultDmp != m_dmp) {
         if(m_dmp == 0)
             m_dmp = -1;
-        query.prepare("UPDATE " + m_modTableName + " " +
-                      "SET dmp=:dmp "
-                      "WHERE id_medico=" + QString::number(m_id) + ";");
-        query.bindValue(":dmp", m_dmp);
-
-        if(!query.exec()) {
-            qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
-        }
+        SqlQueries::saveMod(m_modTableName, "dmp", m_id, m_dmp);
     }
 
     if(m_defaultGDDates != m_guardiaDiurnaMap) {
@@ -831,14 +777,7 @@ void CompetenzaData::saveMods()
         }
         if(list.count() == 0)
             list << "0";
-        query.prepare("UPDATE " + m_modTableName + " " +
-                      "SET guardie_diurne=:guardie_diurne "
-                      "WHERE id_medico=" + QString::number(m_id) + ";");
-        query.bindValue(":guardie_diurne", list.join(","));
-
-        if(!query.exec()) {
-            qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
-        }
+        SqlQueries::saveMod(m_modTableName, "guardie_diurne", m_id, list.join(","));
     }
 
     if(m_defaultGNDates != m_guardiaNotturnaMap) {
@@ -848,27 +787,13 @@ void CompetenzaData::saveMods()
         }
         if(list.count() == 0)
             list << "0";
-        query.prepare("UPDATE " + m_modTableName + " " +
-                      "SET guardie_notturne=:guardie_notturne "
-                      "WHERE id_medico=" + QString::number(m_id) + ";");
-        query.bindValue(":guardie_notturne", list.join(","));
-
-        if(!query.exec()) {
-            qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
-        }
+        SqlQueries::saveMod(m_modTableName, "guardie_notturne", m_id, list.join(","));
     }
 
     if(m_defaultAltreAssenze != m_altreAssenze) {
         if(m_altreAssenze.count() == 0)
             m_altreAssenze << "0";
-        query.prepare("UPDATE " + m_modTableName + " " +
-                      "SET altre_assenze=:altre_assenze "
-                      "WHERE id_medico=" + QString::number(m_id) + ";");
-        query.bindValue(":altre_assenze", m_altreAssenze.join(","));
-
-        if(!query.exec()) {
-            qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
-        }
+        SqlQueries::saveMod(m_modTableName, "altre_assenze", m_id, m_altreAssenze.join(","));
     }
 
     if(m_defaultRep != m_rep) {
@@ -881,15 +806,7 @@ void CompetenzaData::saveMods()
         }
         if(temp.count() == 0)
             temp << "0,0";
-
-        query.prepare("UPDATE " + m_modTableName + " " +
-                      "SET turni_reperibilita=:turni_reperibilita "
-                      "WHERE id_medico=" + QString::number(m_id) + ";");
-        query.bindValue(":turni_reperibilita", temp.join(";"));
-
-        if(!query.exec()) {
-            qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
-        }
+        SqlQueries::saveMod(m_modTableName, "turni_reperibilita", m_id, temp.join(";"));
     }
 
     m_modded = true;
@@ -1487,21 +1404,7 @@ void CompetenzaData::calcOreGuardia()
 
 void CompetenzaData::getOrePagate()
 {
-    QSqlQuery query;
-    query.prepare("SELECT data,ore_tot,ore_pagate FROM unita_ore_pagate WHERE id_unita=" + QString::number(m_unitaId) + ";");
-    if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
-        return;
-    }
-    QMap<QDate, QPair<int,int> > map;
-    while(query.next()) {
-        QStringList meseAnno = query.value(0).toString().split(".");
-        QDate date(meseAnno.at(1).toInt(),meseAnno.at(0).toInt(),1);
-        QPair<int, int> vals;
-        vals.first = query.value(1).toInt();
-        vals.second = query.value(2).toInt();
-        map[date] = vals;
-    }
+    const QMap<QDate, QPair<int,int> > map = SqlQueries::getOrePagateFromUnit(m_unitaId);
 
     QMapIterator<QDate, QPair<int,int> > i(map);
     i.toBack();
