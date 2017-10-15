@@ -3475,6 +3475,7 @@
     <property name="title">
      <string>&amp;File</string>
     </property>
+    <addaction name="actionConnettiDbRemoto"/>
     <addaction name="actionNuovoDatabase"/>
     <addaction name="actionApriDatabase"/>
     <addaction name="actionCaricaPdf"/>
@@ -3523,6 +3524,7 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionConnettiDbRemoto"/>
    <addaction name="actionNuovoDatabase"/>
    <addaction name="actionApriDatabase"/>
    <addaction name="actionCaricaPdf"/>
@@ -3739,6 +3741,18 @@
    </property>
    <property name="toolTip">
     <string>Ricalcola deficit a partire da un dato mese</string>
+   </property>
+  </action>
+  <action name="actionConnettiDbRemoto">
+   <property name="icon">
+    <iconset resource="assets.qrc">
+     <normaloff>:/icons/network-connect.svg</normaloff>:/icons/network-connect.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Connetti a database remoto</string>
+   </property>
+   <property name="toolTip">
+    <string>Connetti ad un database remoto</string>
    </property>
   </action>
  </widget>

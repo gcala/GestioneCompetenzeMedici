@@ -1,22 +1,58 @@
 #include "databasewizard.h"
 #include "ui_databasewizard.h"
-#include "sqlitedatabasemanager.h"
+#include "sqldatabasemanager.h"
 #include "sqlqueries.h"
 
 #include <QtWidgets>
 #include <QDebug>
 
-DatabaseWizard::DatabaseWizard(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::DatabaseWizard)
+DatabaseWizard::DatabaseWizard(int page, QWidget *parent)
+    : m_startPage(page)
+    , QDialog(parent)
+    , ui(new Ui::DatabaseWizard)
 {
     ui->setupUi(this);
     ui->createButton->setEnabled(false);
+    ui->remoteDbSave->setEnabled(false);
+    ui->stackedWidget->setCurrentIndex(m_startPage);
+    m_openDb = false;
+    m_canceled = true;
+    m_revealPass = false;
 }
 
 DatabaseWizard::~DatabaseWizard()
 {
     delete ui;
+}
+
+bool DatabaseWizard::openDb() const
+{
+    return m_openDb;
+}
+
+bool DatabaseWizard::canceled() const
+{
+    return m_canceled;
+}
+
+QString DatabaseWizard::host() const
+{
+    return ui->hostLine->text().trimmed();
+}
+
+QString DatabaseWizard::database() const
+{
+    return ui->dbLine->text().trimmed();
+}
+
+QString DatabaseWizard::user() const
+{
+    return ui->userLine->text().trimmed();
+}
+
+QString DatabaseWizard::password() const
+{
+    return ui->passLine->text().trimmed();
 }
 
 void DatabaseWizard::on_destBrowse_clicked()
@@ -72,14 +108,10 @@ void DatabaseWizard::on_repsBrowse_clicked()
     }
 }
 
-void DatabaseWizard::on_cancelButton_clicked()
+void DatabaseWizard::on_cancelNewButton_clicked()
 {
-    ui->dbName->clear();
-    ui->dbDest->clear();
-    ui->unitsCSV->clear();
-    ui->payloadCSV->clear();
-    ui->repsCSV->clear();
-    this->close();
+    m_canceled = true;
+    close();
 }
 
 void DatabaseWizard::on_createButton_clicked()
@@ -109,7 +141,7 @@ void DatabaseWizard::on_createButton_clicked()
     }
 
     qDebug() << "Creo un nuovo database" << file;
-    if(!The::dbManager()->createConnection(file))
+    if(!The::dbManager()->createLocalConnection(file))
         return;
 
     SqlQueries::createUnitsTable();
@@ -122,7 +154,7 @@ void DatabaseWizard::on_createButton_clicked()
         insertRepsFromFile(ui->repsCSV->text());
     }
 
-    on_cancelButton_clicked();
+    close();
 }
 
 void DatabaseWizard::on_dbName_textChanged(const QString &arg1)
@@ -220,4 +252,88 @@ bool DatabaseWizard::insertRepsFromFile(const QString &file)
 
     f.close();
     return true;
+}
+
+void DatabaseWizard::on_openLocalDbButton_clicked()
+{
+    m_openDb = true;
+    m_canceled = false;
+    close();
+}
+
+void DatabaseWizard::on_openRemoteDbButton_clicked()
+{
+    ui->stackedWidget->setCurrentIndex(1);
+}
+
+
+void DatabaseWizard::on_hostLine_textChanged(const QString &arg1)
+{
+    if(!arg1.trimmed().isEmpty() && !ui->dbLine->text().trimmed().isEmpty() && !ui->userLine->text().trimmed().isEmpty() && !ui->passLine->text().trimmed().isEmpty()) {
+        ui->remoteDbSave->setEnabled(true);
+    } else {
+        ui->remoteDbSave->setEnabled(false);
+    }
+}
+
+void DatabaseWizard::on_dbLine_textChanged(const QString &arg1)
+{
+    if(!arg1.trimmed().isEmpty() && !ui->hostLine->text().trimmed().isEmpty() && !ui->userLine->text().trimmed().isEmpty() && !ui->passLine->text().trimmed().isEmpty()) {
+        ui->remoteDbSave->setEnabled(true);
+    } else {
+        ui->remoteDbSave->setEnabled(false);
+    }
+}
+
+void DatabaseWizard::on_userLine_textChanged(const QString &arg1)
+{
+    if(!arg1.trimmed().isEmpty() && !ui->hostLine->text().trimmed().isEmpty() && !ui->dbLine->text().trimmed().isEmpty() && !ui->passLine->text().trimmed().isEmpty()) {
+        ui->remoteDbSave->setEnabled(true);
+    } else {
+        ui->remoteDbSave->setEnabled(false);
+    }
+}
+
+void DatabaseWizard::on_passLine_textChanged(const QString &arg1)
+{
+    if(!arg1.trimmed().isEmpty() && !ui->hostLine->text().trimmed().isEmpty() && !ui->userLine->text().trimmed().isEmpty() && !ui->dbLine->text().trimmed().isEmpty()) {
+        ui->remoteDbSave->setEnabled(true);
+    } else {
+        ui->remoteDbSave->setEnabled(false);
+    }
+}
+
+void DatabaseWizard::on_remoteDbCancel_clicked()
+{
+    m_canceled = true;
+    close();
+}
+
+void DatabaseWizard::on_remoteDbBack_clicked()
+{
+    ui->stackedWidget->setCurrentIndex(m_startPage);
+}
+
+void DatabaseWizard::on_remoteDbSave_clicked()
+{
+    m_canceled = false;
+    close();
+}
+
+void DatabaseWizard::on_cancelOpenButton_clicked()
+{
+    m_canceled = true;
+    close();
+}
+
+void DatabaseWizard::on_revealButton_clicked()
+{
+    m_revealPass = !m_revealPass;
+    if(m_revealPass) {
+        ui->revealButton->setIcon(QIcon(":/icons/password-show-on.svg"));
+        ui->passLine->setEchoMode(QLineEdit::Normal);
+    } else {
+        ui->revealButton->setIcon(QIcon(":/icons/password-show-off.svg"));
+        ui->passLine->setEchoMode(QLineEdit::Password);
+    }
 }

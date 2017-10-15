@@ -29,10 +29,11 @@
 #include "competenza.h"
 #include "utilities.h"
 #include "databasewizard.h"
-#include "sqlitedatabasemanager.h"
+#include "sqldatabasemanager.h"
 #include "aboutdialog.h"
 #include "configdialog.h"
 #include "resetdialog.h"
+#include "logindialog.h"
 
 #include <QtWidgets>
 #include <QSqlQueryModel>
@@ -142,13 +143,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     insertDialog = new InsertDBValues(this);
     printDialog = new PrintDialog(this);
-    databaseWizard = new DatabaseWizard(this);
 
     unitaOrePagateModel = new QSqlQueryModel;
     ui->unitaOrePagateTW->setModel(unitaOrePagateModel);
 
-    unitaReperibilitaModel = new QSqlQueryModel;
-    ui->unitaReperibilitaTW->setModel(unitaReperibilitaModel);
+//    unitaReperibilitaModel = new QSqlQueryModel;
+//    ui->unitaReperibilitaTW->setModel(unitaReperibilitaModel);
 
     ui->unitaTB->setDefaultAction(ui->actionModificaUnita);
     ui->unitaTB->addAction(ui->actionAggiungiUnita);
@@ -184,27 +184,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->unitaComboBox->setCurrentIndex(0);
     ui->dirigentiComboBox->setCurrentIndex(0);
 
-    if(currentDatabase.fileName().isEmpty()) {
-        QMessageBox::warning(this, "Nessun Database", "Nessun database configurato (primo avvio?)\nUsare il menu File per aprire un database esistente \no per crearne uno nuovo.");
-        ui->unitaTB->setEnabled(false);
-        ui->dirigenteTB->setEnabled(false);
-        ui->actionBackupDatabase->setEnabled(false);
-        return;
-    }
-
-    if(!currentDatabase.exists()) {
-        QMessageBox::warning(this, "Il database non esiste", "L'ultimo file database usato non è stato trovato:\n" + currentDatabase.absoluteFilePath());
-        ui->unitaTB->setEnabled(false);
-        ui->dirigenteTB->setEnabled(false);
-        ui->actionBackupDatabase->setEnabled(false);
-        return;
-    }
-
-    needsBackup();
-    connectToDatabase();
-    populateUnitaCB();
-    populateDirigentiCB();
-    populateMeseCompetenzeCB();
+    QTimer::singleShot(500, this, SLOT(delayedSetup()));
 }
 
 MainWindow::~MainWindow()
@@ -212,8 +192,34 @@ MainWindow::~MainWindow()
     saveSettings();
     delete insertDialog;
     delete printDialog;
-    delete databaseWizard;
     delete ui;
+}
+
+void MainWindow::askDbUserPassword()
+{
+    LoginDialog login(m_host, m_dbName, this);
+    login.exec();
+
+    if(login.canceled()) {
+        return;
+    }
+
+    connectToRemoteDatabase(login.username(), login.password());
+}
+
+void MainWindow::connectToRemoteDatabase(const QString &user, const QString &pass)
+{
+    if(!The::dbManager()->createRemoteConnection(m_host, m_dbName, user, pass)) {
+        setWindowTitle("Gestione Competenze Medici");
+        return;
+    }
+    m_driver = "QMYSQL";
+    setWindowTitle("Gestione Competenze Medici - " + m_host);
+
+//    clearWidgets();
+    populateUnitaCB();
+    populateDirigentiCB();
+    populateMeseCompetenzeCB();
 }
 
 void MainWindow::mostraDifferenzaOre()
@@ -239,7 +245,14 @@ void MainWindow::mostraDifferenzaOre()
 
 void MainWindow::on_actionNuovoDatabase_triggered()
 {
+    DatabaseWizard *databaseWizard = new DatabaseWizard(2, this);
     databaseWizard->exec();
+
+    if(databaseWizard->canceled()) {
+        delete databaseWizard;
+        return;
+    }
+
     currentDatabase.setFile(The::dbManager()->currentDatabase());
 
     clearWidgets();
@@ -247,6 +260,8 @@ void MainWindow::on_actionNuovoDatabase_triggered()
     populateDirigentiCB();
     populateMeseCompetenzeCB();
     ui->actionBackupDatabase->setEnabled(true);
+
+    delete databaseWizard;
 }
 
 void MainWindow::toggleUnitaEditMode()
@@ -295,7 +310,7 @@ void MainWindow::clearWidgets()
     ui->raggrLE->clear();
     ui->unitaNumLE->clear();
     unitaOrePagateModel->clear();
-    unitaReperibilitaModel->clear();
+//    unitaReperibilitaModel->clear();
     ui->dirigentiComboBox->clear();
     ui->dirigenteNomeLE->clear();
     ui->dirigenteMatricolaSB->clear();
@@ -424,9 +439,9 @@ void MainWindow::restoreDirigenteValues()
     ui->dirigentiUnitaComboBox->show();
 }
 
-void MainWindow::connectToDatabase()
+void MainWindow::connectToLocalDatabase()
 {
-    if(!The::dbManager()->createConnection(currentDatabase.absoluteFilePath())) {
+    if(!The::dbManager()->createLocalConnection(currentDatabase.absoluteFilePath())) {
         setWindowTitle("Gestione Competenze Medici");
         return;
     }
@@ -434,6 +449,10 @@ void MainWindow::connectToDatabase()
     QFileInfo fi(The::dbManager()->currentDatabase());
 
     setWindowTitle("Gestione Competenze Medici - " + fi.completeBaseName());
+
+    populateUnitaCB();
+    populateDirigentiCB();
+    populateMeseCompetenzeCB();
 }
 
 void MainWindow::populateMeseCompetenzeCB()
@@ -614,26 +633,53 @@ void MainWindow::on_actionRimuoviDirigente_triggered()
 
 void MainWindow::on_actionApriDatabase_triggered()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Seleziona file database"),
-                                                    currentDatabase.absolutePath().isEmpty() ? QDir::homePath() : currentDatabase.absolutePath(),
-                                                    tr("Database (*.db)"));
+    DatabaseWizard *databaseWizard = new DatabaseWizard(0, this);
+    databaseWizard->exec();
 
-    // be sure that a valid path was selected
-    if( QFile::exists( fileName ) ) {
-        currentDatabase.setFile(fileName);
-        needsBackup();
-        connectToDatabase();
-        clearWidgets();
-        populateUnitaCB();
-        populateDirigentiCB();
-        populateMeseCompetenzeCB();
-        ui->actionBackupDatabase->setEnabled(true);
+    if(databaseWizard->canceled()) {
+        delete databaseWizard;
+        return;
     }
+
+    if(databaseWizard->openDb()) {
+        QString fileName = QFileDialog::getOpenFileName(this, tr("Seleziona file database"),
+                                                        currentDatabase.absolutePath().isEmpty() ? QDir::homePath() : currentDatabase.absolutePath(),
+                                                        tr("Database (*.db)"));
+
+        // be sure that a valid path was selected
+        if( QFile::exists( fileName ) ) {
+            currentDatabase.setFile(fileName);
+            m_driver = "QSQLITE";
+            saveSettings();
+            needsBackup();
+            connectToLocalDatabase();
+//            clearWidgets();
+            populateUnitaCB();
+            populateDirigentiCB();
+            populateMeseCompetenzeCB();
+            ui->actionBackupDatabase->setEnabled(true);
+        }
+        return;
+    }
+
+    // ultima opzione: apri database remoto
+    // salviamo innanzitutto host e database
+    m_host = databaseWizard->host();
+    m_dbName = databaseWizard->database();
+    m_driver = "QMYSQL";
+    saveSettings();
+
+    connectToRemoteDatabase(databaseWizard->user(), databaseWizard->password());
+
+    delete databaseWizard;
 }
 
 void MainWindow::loadSettings()
 {
     QSettings settings;
+    m_driver = settings.value("lastDriver", "QSQLITE").toString();
+    m_host = settings.value("host", "").toString();
+    m_dbName = settings.value("dbName", "").toString();
     currentDatabase.setFile(settings.value("lastDatabasePath", "").toString());
     printDialog->setPath(settings.value("exportPath", QDir::homePath()).toString());
     m_photosPath = settings.value("photosPath", "").toString();
@@ -653,6 +699,10 @@ void MainWindow::saveSettings()
     settings.setValue("photosPath", m_photosPath);
     settings.setValue("tabulaPath", m_tabulaPath);
     settings.setValue("javaPath", m_javaPath);
+    settings.setValue("lastDriver", m_driver);
+    settings.setValue("host", m_host);
+    settings.setValue("dbName", m_dbName);
+
 }
 
 void MainWindow::on_unitaComboBox_currentIndexChanged(int index)
@@ -673,7 +723,7 @@ void MainWindow::on_unitaComboBox_currentIndexChanged(int index)
     }
 
     populateUnitaOrePagate();
-    populateUnitaReperibilita();
+//    populateUnitaReperibilita();
 }
 
 void MainWindow::on_dirigentiComboBox_currentIndexChanged(int index)
@@ -1244,4 +1294,52 @@ void MainWindow::on_noteLine_textEdited(const QString &arg1)
 {
     m_competenza->setNote(ui->noteLine->text().trimmed());
     ui->saveCompetenzeButton->setEnabled(m_competenza->isModded());
+}
+
+void MainWindow::on_actionConnettiDbRemoto_triggered()
+{
+    if(m_host.isEmpty() || m_dbName.isEmpty()) {
+        QMessageBox::critical(this, "Errore Connessione", "I parametri per la connessione remota non sono corretti.\n"
+                              "Aprire Impostazioni e configurare host e nome database.", QMessageBox::Cancel);
+        return;
+    }
+
+    askDbUserPassword();
+}
+
+void MainWindow::delayedSetup()
+{
+    if(m_driver == "QMYSQL") {
+        if(m_host.isEmpty() || m_dbName.isEmpty()) {
+            QMessageBox::warning(this, "Database non configurato",
+                                 "Nessun database remoto configurato.\nAprire Impostazioni e indicare Host e Nome Database");
+            ui->unitaTB->setEnabled(false);
+            ui->dirigenteTB->setEnabled(false);
+            ui->actionBackupDatabase->setEnabled(false);
+            return;
+        }
+        askDbUserPassword();
+        return;
+    }
+
+    if(m_driver == "QSQLITE") {
+        if(currentDatabase.fileName().isEmpty()) {
+            QMessageBox::warning(this, "Nessun Database", "Nessun database configurato (primo avvio?)\nUsare il menu File per aprire un database esistente \no per crearne uno nuovo.");
+            ui->unitaTB->setEnabled(false);
+            ui->dirigenteTB->setEnabled(false);
+            ui->actionBackupDatabase->setEnabled(false);
+            return;
+        }
+
+        if(!currentDatabase.exists()) {
+            QMessageBox::warning(this, "Il database non esiste", "L'ultimo file database usato non è stato trovato:\n" + currentDatabase.absoluteFilePath());
+            ui->unitaTB->setEnabled(false);
+            ui->dirigenteTB->setEnabled(false);
+            ui->actionBackupDatabase->setEnabled(false);
+            return;
+        }
+
+        needsBackup();
+        connectToLocalDatabase();
+    }
 }

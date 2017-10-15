@@ -247,7 +247,7 @@ void CompetenzaData::buildDipendente()
     const QVariantList query = SqlQueries::getDoctorTimecard(m_tableName, m_modTableName, m_id);
 
     if(query.isEmpty()) {
-        qDebug() << Q_FUNC_INFO << ":: ERRORE :: Risultato query vuoto";
+//        qDebug() << Q_FUNC_INFO << ":: ERRORE :: Risultato query vuoto";
         return;
     }
 

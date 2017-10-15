@@ -43,13 +43,14 @@ SOURCES += \
         competenzedirigenteexporter.cpp \
         utilities.cpp \
         databasewizard.cpp \
-        sqlitedatabasemanager.cpp \
         nomiunitadialog.cpp \
         aboutdialog.cpp \
         configdialog.cpp \
         settingsitem.cpp \
     resetdialog.cpp \
-    dmpcompute.cpp
+    dmpcompute.cpp \
+    logindialog.cpp \
+    sqldatabasemanager.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -71,13 +72,14 @@ HEADERS += \
         competenzedirigenteexporter.h \
         utilities.h \
         databasewizard.h \
-        sqlitedatabasemanager.h \
         nomiunitadialog.h \
         aboutdialog.h \
         configdialog.h \
         settingsitem.h \
     resetdialog.h \
-    dmpcompute.h
+    dmpcompute.h \
+    logindialog.h \
+    sqldatabasemanager.h
 
 FORMS += \
         mainwindow.ui \
@@ -88,7 +90,8 @@ FORMS += \
         aboutdialog.ui \
         configdialog.ui \
         settingsitem.ui \
-    resetdialog.ui
+    resetdialog.ui \
+    logindialog.ui
 
 RESOURCES += \
     assets.qrc

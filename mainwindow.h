@@ -46,7 +46,6 @@ class CalendarManager;
 class CalendarManagerRep;
 class QWidgetAction;
 class Competenza;
-class DatabaseWizard;
 
 class MainWindow : public QMainWindow
 {
@@ -67,6 +66,7 @@ private slots:
     void setCurrentRow(int);
     void tabulaFinished(int exitCode, QProcess::ExitStatus exitStatus);
     void tabulaError(QProcess::ProcessError error);
+    void delayedSetup();
 
     void on_editUnitaSaveButton_clicked();
     void on_editUnitaCancelButton_clicked();
@@ -109,6 +109,7 @@ private slots:
     void on_actionConfigura_triggered();
     void on_actionRicalcolaDeficit_triggered();
     void on_noteLine_textEdited(const QString &arg1);
+    void on_actionConnettiDbRemoto_triggered();
 
 private:
     Ui::MainWindow *ui;
@@ -131,6 +132,9 @@ private:
     QString m_photosPath;
     QString m_javaPath;
     QString m_tabulaPath;
+    QString m_driver;
+    QString m_host;
+    QString m_dbName;
 
     QMenu *gdCalendarMenu;
     CalendarManager *gdCalendar;
@@ -180,7 +184,6 @@ private:
     QFileInfo currentDatabase;
     InsertDBValues *insertDialog;
     PrintDialog *printDialog;
-    DatabaseWizard *databaseWizard;
     TabulaCsvTimeCardsReader tabulaReader;
     OkularCsvTimeCardsReader okularReader;
     CompetenzeUnitaExporter unitaCompetenzeExporter;
@@ -204,7 +207,9 @@ private:
     void saveCurrentDirigenteValues();
     void restoreUnitaValues();
     void restoreDirigenteValues();
-    void connectToDatabase();
+    void connectToLocalDatabase();
+    void connectToRemoteDatabase(const QString &user, const QString &pass);
+    void askDbUserPassword();
 
     void createUnitsTable();
     void createUnitsNightTable();

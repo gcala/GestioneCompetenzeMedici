@@ -30,5 +30,9 @@
         <file>icons/stock_folder.svg</file>
         <file>icons/dialog-ok-apply.svg</file>
         <file>icons/view-refresh.svg</file>
+        <file>icons/draw-arrow-back.svg</file>
+        <file>icons/network-connect.svg</file>
+        <file>icons/password-show-off.svg</file>
+        <file>icons/password-show-on.svg</file>
     </qresource>
 </RCC>

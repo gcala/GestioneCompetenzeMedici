@@ -14,8 +14,10 @@ class SQLiteDatabaseManager : public QObject
     Q_OBJECT
 public:
     friend SQLiteDatabaseManager* The::dbManager();
-    static bool createConnection(const QString &fileName);
+    static bool createLocalConnection(const QString &fileName);
+    static bool createRemoteConnection(const QString &host, const QString &dbName, const QString &user, const QString &pass);
     QString currentDatabase() const;
+    QString driverName() const;
 
 signals:
 
@@ -24,6 +26,7 @@ public slots:
 private:
     SQLiteDatabaseManager();
     QString m_currentDatabase;
+    static void closeCurrentConnection();
 };
 
 #endif // SQLITEDATABASEMANAGER_H

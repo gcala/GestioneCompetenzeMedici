@@ -22,6 +22,7 @@
 #include "sqlqueries.h"
 #include "dipendente.h"
 #include "competenza.h"
+#include "sqldatabasemanager.h"
 
 #include <QSqlQuery>
 #include <QSqlError>
@@ -32,12 +33,26 @@ QMap<int, QStringList> SqlQueries::m_unitsMap;
 void SqlQueries::createUnitsTable()
 {
     QSqlQuery query;
-    query.prepare("CREATE TABLE unita "
-                  "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
-                  "raggruppamento TEXT,"
-                  "nome_full TEXT,"
-                  "nome_mini TEXT,"
-                  "altri_nomi TEXT);");
+    if(The::dbManager()->driverName() == "QSQLITE") {
+        query.prepare("CREATE TABLE unita "
+                      "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+                      "raggruppamento TEXT,"
+                      "nome_full TEXT,"
+                      "nome_mini TEXT,"
+                      "altri_nomi TEXT);");
+    } else if(The::dbManager()->driverName() == "QMYSQL") {
+        query.prepare("CREATE TABLE unita "
+                      "(id INT NOT NULL AUTO_INCREMENT,"
+                      "raggruppamento varchar(10) NULL,"
+                      "nome_full varchar(50) NULL,"
+                      "nome_mini varchar(20) NULL,"
+                      "altri_nomi varchar(1000) NULL,"
+                      "PRIMARY KEY (id));");
+    } else {
+        qDebug() << Q_FUNC_INFO << "Nessun database configurato. Esco";
+        return;
+    }
+
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
@@ -46,11 +61,24 @@ void SqlQueries::createUnitsTable()
 void SqlQueries::createDoctorsTable()
 {
     QSqlQuery query;
-    query.prepare("CREATE TABLE medici "
-                  "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
-                  "matricola INTEGER,"
-                  "nome TEXT,"
-                  "id_unita INTEGER);");
+    if(The::dbManager()->driverName() == "QSQLITE") {
+        query.prepare("CREATE TABLE medici "
+                      "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+                      "matricola INTEGER,"
+                      "nome TEXT,"
+                      "id_unita INTEGER);");
+    } else if(The::dbManager()->driverName() == "QMYSQL") {
+        query.prepare("CREATE TABLE competenze.medici "
+                      "(id INT NOT NULL AUTO_INCREMENT,"
+                      "matricola INT NULL,"
+                      "nome varchar(50),"
+                      "id_unita INT NULL,"
+                      "PRIMARY KEY (id));");
+    } else {
+        qDebug() << Q_FUNC_INFO << "Nessun database configurato. Esco";
+        return;
+    }
+
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
@@ -59,12 +87,26 @@ void SqlQueries::createDoctorsTable()
 void SqlQueries::createUnitsPayedHoursTable()
 {
     QSqlQuery query;
-    query.prepare("CREATE TABLE unita_ore_pagate "
-                  "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
-                  "id_unita INTEGER,"
-                  "data TEXT DEFAULT (08.2017),"
-                  "ore_tot INTEGER NOT NULL DEFAULT (8),"
-                  "ore_pagate INTEGER NOT NULL DEFAULT (0));");
+    if(The::dbManager()->driverName() == "QSQLITE") {
+        query.prepare("CREATE TABLE unita_ore_pagate "
+                      "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+                      "id_unita INTEGER,"
+                      "data TEXT DEFAULT (08.2017),"
+                      "ore_tot INTEGER NOT NULL DEFAULT (8),"
+                      "ore_pagate INTEGER NOT NULL DEFAULT (0));");
+    } else if(The::dbManager()->driverName() == "QMYSQL") {
+        query.prepare("CREATE TABLE unita_ore_pagate "
+                      "(id INT NOT NULL AUTO_INCREMENT,"
+                      "id_unita INT NULL,"
+                      "data varchar(10) DEFAULT 08.2017 NOT NULL,"
+                      "ore_tot INT DEFAULT 8 NOT NULL,"
+                      "ore_pagate INT DEFAULT 0 NOT NULL,"
+                      "PRIMARY KEY (id));");
+    } else {
+        qDebug() << Q_FUNC_INFO << "Nessun database configurato. Esco";
+        return;
+    }
+
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
@@ -73,14 +115,30 @@ void SqlQueries::createUnitsPayedHoursTable()
 void SqlQueries::createUnitsRepTable()
 {
     QSqlQuery query;
-    query.prepare("CREATE TABLE unita_reperibilita "
-                  "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
-                  "id_unita INTEGER NOT NULL,"
-                  "data TEXT NOT NULL DEFAULT (01.2017),"
-                  "feriale REAL NOT NULL DEFAULT (0.0),"
-                  "sabato REAL NOT NULL DEFAULT (0.0),"
-                  "prefestivo REAL NOT NULL DEFAULT (0.0),"
-                  "festivo REAL NOT NULL DEFAULT (0.0));");
+    if(The::dbManager()->driverName() == "QSQLITE") {
+        query.prepare("CREATE TABLE unita_reperibilita "
+                      "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+                      "id_unita INTEGER NOT NULL,"
+                      "data TEXT NOT NULL DEFAULT (01.2017),"
+                      "feriale REAL NOT NULL DEFAULT (0.0),"
+                      "sabato REAL NOT NULL DEFAULT (0.0),"
+                      "prefestivo REAL NOT NULL DEFAULT (0.0),"
+                      "festivo REAL NOT NULL DEFAULT (0.0));");
+    } else if(The::dbManager()->driverName() == "QMYSQL") {
+        query.prepare("CREATE TABLE unita_reperibilita "
+                      "(id INT NOT NULL AUTO_INCREMENT,"
+                      "id_unita INT NULL,"
+                      "data varchar(10) DEFAULT 01.2017 NOT NULL,"
+                      "feriale FLOAT DEFAULT 0.0 NOT NULL,"
+                      "sabato FLOAT DEFAULT 0.0 NOT NULL,"
+                      "prefestivo FLOAT DEFAULT 0.0 NOT NULL,"
+                      "festivo FLOAT DEFAULT 0.0 NOT NULL,"
+                      "PRIMARY KEY (id));");
+    } else {
+        qDebug() << Q_FUNC_INFO << "Nessun database configurato. Esco";
+        return;
+    }
+
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
@@ -224,30 +282,62 @@ void SqlQueries::removeTimeCard(const QString &tableName, const QString &doctorI
 bool SqlQueries::createTimeCardsTable(const QString &tableName)
 {
     QSqlQuery query;
-    query.prepare("CREATE TABLE " + tableName + " "
-                  "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
-                  "id_medico INTEGER NOT NULL,"
-                  "id_unita INTEGER NOT NULL,"
-                  "anno INTEGER NOT NULL,"
-                  "mese INTEGER NOT NULL,"
-                  "riposi INTEGER NOT NULL,"
-                  "minuti_giornalieri INTEGER NOT NULL,"
-                  "ferie TEXT DEFAULT '',"
-                  "congedi TEXT DEFAULT '',"
-                  "malattia TEXT DEFAULT '',"
-                  "rmp TEXT DEFAULT '',"
-                  "rmc TEXT DEFAULT '',"
-                  "altre_causali TEXT DEFAULT '',"
-                  "guardie_diurne TEXT DEFAULT '',"
-                  "guardie_notturne TEXT DEFAULT '',"
-                  "grep TEXT DEFAULT '',"
-                  "congedi_minuti INTEGER DEFAULT (0),"
-                  "eccr_minuti INTEGER DEFAULT (0),"
-                  "grep_minuti INTEGER DEFAULT (0),"
-                  "guar_minuti INTEGER DEFAULT (0),"
-                  "rmc_minuti INTEGER DEFAULT (0),"
-                  "minuti_fatti INTEGER DEFAULT (0),"
-                  "scoperti TEXT DEFAULT '');");
+    if(The::dbManager()->driverName() == "QSQLITE") {
+        query.prepare("CREATE TABLE " + tableName + " "
+                      "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+                      "id_medico INTEGER NOT NULL,"
+                      "id_unita INTEGER NOT NULL,"
+                      "anno INTEGER NOT NULL,"
+                      "mese INTEGER NOT NULL,"
+                      "riposi INTEGER NOT NULL,"
+                      "minuti_giornalieri INTEGER NOT NULL,"
+                      "ferie TEXT DEFAULT '',"
+                      "congedi TEXT DEFAULT '',"
+                      "malattia TEXT DEFAULT '',"
+                      "rmp TEXT DEFAULT '',"
+                      "rmc TEXT DEFAULT '',"
+                      "altre_causali TEXT DEFAULT '',"
+                      "guardie_diurne TEXT DEFAULT '',"
+                      "guardie_notturne TEXT DEFAULT '',"
+                      "grep TEXT DEFAULT '',"
+                      "congedi_minuti INTEGER DEFAULT (0),"
+                      "eccr_minuti INTEGER DEFAULT (0),"
+                      "grep_minuti INTEGER DEFAULT (0),"
+                      "guar_minuti INTEGER DEFAULT (0),"
+                      "rmc_minuti INTEGER DEFAULT (0),"
+                      "minuti_fatti INTEGER DEFAULT (0),"
+                      "scoperti TEXT DEFAULT '');");
+    } else if(The::dbManager()->driverName() == "QMYSQL") {
+        query.prepare("CREATE TABLE " + tableName + " "
+                      "(id INT NOT NULL AUTO_INCREMENT,"
+                      "id_medico INT NOT NULL,"
+                      "id_unita INT NOT NULL,"
+                      "anno INT NOT NULL,"
+                      "mese INT NOT NULL,"
+                      "riposi INT NOT NULL,"
+                      "minuti_giornalieri INT NOT NULL,"
+                      "ferie varchar(100) DEFAULT '',"
+                      "congedi varchar(100) DEFAULT '',"
+                      "malattia varchar(100) DEFAULT '',"
+                      "rmp varchar(100) DEFAULT '',"
+                      "rmc varchar(100) DEFAULT '',"
+                      "altre_causali varchar(500) DEFAULT '',"
+                      "guardie_diurne varchar(100) DEFAULT '',"
+                      "guardie_notturne varchar(100) DEFAULT '',"
+                      "grep varchar(100) DEFAULT '',"
+                      "congedi_minuti INT DEFAULT 0,"
+                      "eccr_minuti INT DEFAULT 0,"
+                      "grep_minuti INT DEFAULT 0,"
+                      "guar_minuti INT DEFAULT 0,"
+                      "rmc_minuti INT DEFAULT 0,"
+                      "minuti_fatti INT DEFAULT 0,"
+                      "scoperti varchar(100) DEFAULT '',"
+                      "PRIMARY KEY (id));");
+    } else {
+        qDebug() << Q_FUNC_INFO << "Nessun database configurato. Esco";
+        return false;
+    }
+
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
         return false;
@@ -255,16 +345,34 @@ bool SqlQueries::createTimeCardsTable(const QString &tableName)
 
     QString modTableName = tableName;
 
-    query.prepare("CREATE TABLE " + modTableName.replace("_","m_") + " "
-                  "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
-                  "id_medico INTEGER NOT NULL,"
-                  "guardie_diurne TEXT DEFAULT '',"
-                  "guardie_notturne TEXT DEFAULT '',"
-                  "turni_reperibilita TEXT DEFAULT '',"
-                  "dmp INTEGER DEFAULT (-1),"
-                  "dmp_calcolato INTEGER DEFAULT (0),"
-                  "altre_assenze TEXT DEFAULT '',"
-                  "nota TEXT DEFAULT '');");
+    if(The::dbManager()->driverName() == "QSQLITE") {
+        query.prepare("CREATE TABLE " + modTableName.replace("_","m_") + " "
+                      "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+                      "id_medico INTEGER NOT NULL,"
+                      "guardie_diurne TEXT DEFAULT '',"
+                      "guardie_notturne TEXT DEFAULT '',"
+                      "turni_reperibilita TEXT DEFAULT '',"
+                      "dmp INTEGER DEFAULT (-1),"
+                      "dmp_calcolato INTEGER DEFAULT (0),"
+                      "altre_assenze TEXT DEFAULT '',"
+                      "nota TEXT DEFAULT '');");
+    } else if(The::dbManager()->driverName() == "QMYSQL") {
+        query.prepare("CREATE TABLE " + modTableName.replace("_","m_") + " "
+                      "(id INT NOT NULL AUTO_INCREMENT,"
+                      "id_medico INT NOT NULL,"
+                      "guardie_diurne varchar(100) DEFAULT '',"
+                      "guardie_notturne varchar(100) DEFAULT '',"
+                      "turni_reperibilita varchar(100) DEFAULT '',"
+                      "dmp INT DEFAULT -1,"
+                      "dmp_calcolato INT DEFAULT 0,"
+                      "altre_assenze varchar(100) DEFAULT '',"
+                      "nota varchar(255) DEFAULT '',"
+                      "PRIMARY KEY (id));");
+    } else {
+        qDebug() << Q_FUNC_INFO << "Nessun database configurato. Esco";
+        return false;
+    }
+
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
         return false;
@@ -277,7 +385,15 @@ bool SqlQueries::tableExists(const QString &tableName)
 {
     int count = 0;
     QSqlQuery query;
-    query.prepare("SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='" + tableName + "';");
+    if(The::dbManager()->driverName() == "QSQLITE") {
+        query.prepare("SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='" + tableName + "';");
+    } else if(The::dbManager()->driverName() == "QMYSQL") {
+        query.prepare("SELECT count(*) FROM information_schema.TABLES WHERE (TABLE_SCHEMA = 'competenze') AND (TABLE_NAME = '" + tableName + "');");
+    } else {
+        qDebug() << Q_FUNC_INFO << "Nessun database configurato. Esco";
+        return false;
+    }
+
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
@@ -557,7 +673,15 @@ QStringList SqlQueries::timecardsList()
     QStringList tables;
 
     QSqlQuery query;
-    query.prepare("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;");
+    if(The::dbManager()->driverName() == "QSQLITE") {
+        query.prepare("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;");
+    } else if(The::dbManager()->driverName() == "QMYSQL") {
+        query.prepare("SELECT table_name FROM information_schema.tables where table_schema='competenze' ORDER BY table_name;");
+    } else {
+        qDebug() << Q_FUNC_INFO << "Nessun database configurato. Esco";
+        return tables;
+    }
+
     if(!query.exec()) {
         qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
