@@ -86,11 +86,8 @@ void CalendarManagerRep::paintCell(QPainter *painter, const QRect &rect, const Q
         case UnoMezzo:
             painter->drawText(rect.adjusted(4,4,-5,-5), Qt::AlignRight | Qt::AlignTop,"1½");
             break;
-        case Due:
-            painter->drawText(rect.adjusted(4,4,-5,-5), Qt::AlignRight | Qt::AlignTop,"2");
-            break;
         default:
-            painter->drawText(rect.adjusted(4,4,-5,-5), Qt::AlignRight | Qt::AlignTop,"2½");
+            painter->drawText(rect.adjusted(4,4,-5,-5), Qt::AlignRight | Qt::AlignTop,"2");
         }
     }
 }
@@ -139,9 +136,4 @@ void CalendarManagerRep::unomezzoSelected()
 void CalendarManagerRep::dueSelected()
 {
     m_dates[m_selectedDate] = Due;
-}
-
-void CalendarManagerRep::duemezzoSelected()
-{
-    m_dates[m_selectedDate] = DueMezzo;
 }

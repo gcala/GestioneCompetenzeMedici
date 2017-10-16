@@ -62,7 +62,6 @@ private slots:
     void unoSelected();
     void unomezzoSelected();
     void dueSelected();
-    void duemezzoSelected();
 
 signals:
     void datesChanged();
