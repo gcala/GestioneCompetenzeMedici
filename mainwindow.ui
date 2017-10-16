@@ -3017,7 +3017,12 @@
                <property name="font">
                 <font>
                  <pointsize>11</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
                 </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">color: blue;</string>
                </property>
                <property name="text">
                 <string/>
@@ -3068,7 +3073,12 @@
                <property name="font">
                 <font>
                  <pointsize>11</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
                 </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">color: blue;</string>
                </property>
                <property name="text">
                 <string/>
@@ -3113,7 +3123,12 @@
                <property name="font">
                 <font>
                  <pointsize>11</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
                 </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">color: blue;</string>
                </property>
                <property name="text">
                 <string/>
@@ -3162,7 +3177,12 @@
                <property name="font">
                 <font>
                  <pointsize>11</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
                 </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">color: blue;</string>
                </property>
                <property name="text">
                 <string/>
@@ -3213,7 +3233,12 @@
                <property name="font">
                 <font>
                  <pointsize>11</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
                 </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">color: blue;</string>
                </property>
                <property name="text">
                 <string/>
@@ -3264,7 +3289,12 @@
                <property name="font">
                 <font>
                  <pointsize>11</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
                 </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">color: blue;</string>
                </property>
                <property name="text">
                 <string/>
@@ -3315,7 +3345,12 @@
                <property name="font">
                 <font>
                  <pointsize>11</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
                 </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">color: blue;</string>
                </property>
                <property name="text">
                 <string/>
@@ -3360,7 +3395,12 @@
                <property name="font">
                 <font>
                  <pointsize>11</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
                 </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">color: blue;</string>
                </property>
                <property name="text">
                 <string/>
@@ -3749,7 +3789,7 @@
      <normaloff>:/icons/network-connect.svg</normaloff>:/icons/network-connect.svg</iconset>
    </property>
    <property name="text">
-    <string>Connetti a database remoto</string>
+    <string>C&amp;onnetti a database remoto</string>
    </property>
    <property name="toolTip">
     <string>Connetti ad un database remoto</string>
