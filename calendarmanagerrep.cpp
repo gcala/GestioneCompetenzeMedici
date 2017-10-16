@@ -104,7 +104,6 @@ void CalendarManagerRep::dataSelezionata(const QDate &date)
     menu.addAction("1",this, SLOT(unoSelected()));
     menu.addAction("1½",this, SLOT(unomezzoSelected()));
     menu.addAction("2",this, SLOT(dueSelected()));
-    menu.addAction("2½",this, SLOT(duemezzoSelected()));
     menu.exec(QCursor::pos());
 
     QAbstractItemView *view = this->findChild<QAbstractItemView*>();
