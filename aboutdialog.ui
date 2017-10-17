@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>573</width>
-    <height>306</height>
+    <width>630</width>
+    <height>302</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -49,6 +49,7 @@
         <widget class="QLabel" name="label_4">
          <property name="font">
           <font>
+           <pointsize>10</pointsize>
            <weight>75</weight>
            <bold>true</bold>
           </font>
@@ -83,6 +84,7 @@
       <widget class="QLabel" name="label_6">
        <property name="font">
         <font>
+         <pointsize>10</pointsize>
          <italic>true</italic>
         </font>
        </property>
@@ -98,6 +100,7 @@
       <widget class="QLabel" name="label_7">
        <property name="font">
         <font>
+         <pointsize>10</pointsize>
          <underline>true</underline>
         </font>
        </property>
@@ -113,6 +116,11 @@
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
         <widget class="QLabel" name="label_8">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
          <property name="text">
           <string>Giuseppe Calà</string>
          </property>
@@ -132,6 +140,11 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
          <property name="text">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;mailto:jiveaxe@gmail.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0057ae;&quot;&gt;giuseppe.cala@mailbox.org&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
@@ -143,6 +156,7 @@
       <widget class="QLabel" name="label_9">
        <property name="font">
         <font>
+         <pointsize>10</pointsize>
          <underline>true</underline>
         </font>
        </property>
@@ -156,6 +170,11 @@
      </item>
      <item>
       <widget class="QLabel" name="label_10">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>GPL3+</string>
        </property>
@@ -244,6 +263,11 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Chiudi</string>
        </property>

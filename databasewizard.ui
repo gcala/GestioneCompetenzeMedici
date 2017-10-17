@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>592</width>
-    <height>373</height>
+    <width>600</width>
+    <height>376</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <item row="0" column="0">
     <widget class="QStackedWidget" name="stackedWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="openDbPage">
       <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -43,6 +43,11 @@
        </item>
        <item>
         <widget class="QLabel" name="label_9">
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
          <property name="text">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Scegliere se lavorare con un &lt;span style=&quot; font-weight:600;&quot;&gt;database locale&lt;/span&gt; (sul computer in uso) &lt;span style=&quot; font-weight:600;&quot;&gt;o&lt;/span&gt; uno &lt;span style=&quot; font-weight:600;&quot;&gt;remoto&lt;/span&gt;. In quest'ultimo caso sarà necessario fornire alcuni dati.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
@@ -100,6 +105,12 @@
              <height>0</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <family>Segoe UI</family>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>Apri database locale</string>
            </property>
@@ -142,6 +153,12 @@
              <height>0</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <family>Segoe UI</family>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>Apri database remoto</string>
            </property>
@@ -169,6 +186,11 @@
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
           <widget class="QPushButton" name="cancelOpenButton">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>&amp;Annulla</string>
            </property>
@@ -234,6 +256,11 @@
         <layout class="QGridLayout" name="gridLayout_4">
          <item row="0" column="0">
           <widget class="QLabel" name="label_11">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>Host:</string>
            </property>
@@ -243,10 +270,21 @@
           </widget>
          </item>
          <item row="0" column="1" colspan="2">
-          <widget class="QLineEdit" name="hostLine"/>
+          <widget class="QLineEdit" name="hostLine">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+          </widget>
          </item>
          <item row="1" column="0">
           <widget class="QLabel" name="label_12">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>Nome database:</string>
            </property>
@@ -256,10 +294,21 @@
           </widget>
          </item>
          <item row="1" column="1" colspan="2">
-          <widget class="QLineEdit" name="dbLine"/>
+          <widget class="QLineEdit" name="dbLine">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+          </widget>
          </item>
          <item row="2" column="0">
           <widget class="QLabel" name="label_13">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>Nome utente:</string>
            </property>
@@ -269,10 +318,21 @@
           </widget>
          </item>
          <item row="2" column="1" colspan="2">
-          <widget class="QLineEdit" name="userLine"/>
+          <widget class="QLineEdit" name="userLine">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+          </widget>
          </item>
          <item row="3" column="0">
           <widget class="QLabel" name="label_14">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>Password:</string>
            </property>
@@ -283,6 +343,11 @@
          </item>
          <item row="3" column="1">
           <widget class="QLineEdit" name="passLine">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
            <property name="echoMode">
             <enum>QLineEdit::Password</enum>
            </property>
@@ -321,6 +386,11 @@
         <layout class="QHBoxLayout" name="horizontalLayout_3">
          <item>
           <widget class="QPushButton" name="remoteDbCancel">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>&amp;Annulla</string>
            </property>
@@ -345,6 +415,11 @@
          </item>
          <item>
           <widget class="QPushButton" name="remoteDbBack">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>&amp;Indietro</string>
            </property>
@@ -356,6 +431,11 @@
          </item>
          <item>
           <widget class="QPushButton" name="remoteDbSave">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>&amp;Salva</string>
            </property>
@@ -393,6 +473,11 @@
        </item>
        <item>
         <widget class="QLabel" name="label_2">
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
          <property name="text">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Selezionare &lt;span style=&quot; font-weight:600;&quot;&gt;nome&lt;/span&gt; e &lt;span style=&quot; font-weight:600;&quot;&gt;destinazione&lt;/span&gt; del nuovo database.&lt;br/&gt;È possibile inizializzare il database scegliendo i relativi file csv riguardo nomi delle unità, ore pagate e reperibilità.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
@@ -405,6 +490,11 @@
         <layout class="QGridLayout" name="gridLayout">
          <item row="0" column="0">
           <widget class="QLabel" name="label_3">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>Nome:</string>
            </property>
@@ -414,10 +504,21 @@
           </widget>
          </item>
          <item row="0" column="1" colspan="2">
-          <widget class="QLineEdit" name="dbName"/>
+          <widget class="QLineEdit" name="dbName">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+          </widget>
          </item>
          <item row="1" column="0">
           <widget class="QLabel" name="label_4">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>Destinazione:</string>
            </property>
@@ -428,6 +529,11 @@
          </item>
          <item row="1" column="1">
           <widget class="QLineEdit" name="dbDest">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
            <property name="readOnly">
             <bool>true</bool>
            </property>
@@ -435,6 +541,11 @@
          </item>
          <item row="1" column="2">
           <widget class="QPushButton" name="destBrowse">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string/>
            </property>
@@ -446,6 +557,11 @@
          </item>
          <item row="2" column="0">
           <widget class="QLabel" name="label_5">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>File Unità:</string>
            </property>
@@ -456,6 +572,11 @@
          </item>
          <item row="2" column="1">
           <widget class="QLineEdit" name="unitsCSV">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
            <property name="readOnly">
             <bool>true</bool>
            </property>
@@ -463,6 +584,11 @@
          </item>
          <item row="2" column="2">
           <widget class="QPushButton" name="unitsBrowse">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string/>
            </property>
@@ -474,6 +600,11 @@
          </item>
          <item row="3" column="0">
           <widget class="QLabel" name="label_6">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>File ore pagate:</string>
            </property>
@@ -484,6 +615,11 @@
          </item>
          <item row="3" column="1">
           <widget class="QLineEdit" name="payloadCSV">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
            <property name="readOnly">
             <bool>true</bool>
            </property>
@@ -491,6 +627,11 @@
          </item>
          <item row="3" column="2">
           <widget class="QPushButton" name="payloadBrowse">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string/>
            </property>
@@ -502,6 +643,11 @@
          </item>
          <item row="4" column="0">
           <widget class="QLabel" name="label_7">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>File reperibilità:</string>
            </property>
@@ -512,6 +658,11 @@
          </item>
          <item row="4" column="1">
           <widget class="QLineEdit" name="repsCSV">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
            <property name="readOnly">
             <bool>true</bool>
            </property>
@@ -519,6 +670,11 @@
          </item>
          <item row="4" column="2">
           <widget class="QPushButton" name="repsBrowse">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string/>
            </property>
@@ -547,6 +703,11 @@
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
           <widget class="QPushButton" name="cancelNewButton">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>&amp;Annulla</string>
            </property>
@@ -571,6 +732,11 @@
          </item>
          <item>
           <widget class="QPushButton" name="createButton">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>&amp;Crea</string>
            </property>

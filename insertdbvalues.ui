@@ -25,6 +25,7 @@
         <widget class="QLabel" name="unitaMsg">
          <property name="font">
           <font>
+           <pointsize>12</pointsize>
            <weight>75</weight>
            <bold>true</bold>
           </font>
@@ -58,6 +59,7 @@
             <widget class="QLabel" name="label_4">
              <property name="font">
               <font>
+               <pointsize>12</pointsize>
                <weight>75</weight>
                <bold>true</bold>
               </font>
@@ -72,6 +74,11 @@
            </item>
            <item>
             <widget class="QDateEdit" name="unitaData">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
              <property name="displayFormat">
               <string>MM/yyyy</string>
              </property>
@@ -85,6 +92,7 @@
             <widget class="QLabel" name="label_5">
              <property name="font">
               <font>
+               <pointsize>12</pointsize>
                <weight>75</weight>
                <bold>true</bold>
               </font>
@@ -99,6 +107,11 @@
            </item>
            <item>
             <widget class="QSpinBox" name="unitaOreTot">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
              <property name="maximum">
               <number>12</number>
              </property>
@@ -112,6 +125,7 @@
             <widget class="QLabel" name="label_6">
              <property name="font">
               <font>
+               <pointsize>12</pointsize>
                <weight>75</weight>
                <bold>true</bold>
               </font>
@@ -126,6 +140,11 @@
            </item>
            <item>
             <widget class="QSpinBox" name="unitaOrePagate">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
              <property name="maximum">
               <number>12</number>
              </property>
@@ -165,6 +184,11 @@
         <layout class="QHBoxLayout" name="horizontalLayout_3">
          <item>
           <widget class="QPushButton" name="unitaCancel">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>&amp;Annulla</string>
            </property>
@@ -189,6 +213,11 @@
          </item>
          <item>
           <widget class="QPushButton" name="unitaSave">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>&amp;Salva</string>
            </property>

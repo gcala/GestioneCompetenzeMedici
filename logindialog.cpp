@@ -27,7 +27,7 @@ bool LoginDialog::canceled() const
 
 QString LoginDialog::username() const
 {
-    return ui->userLine->text().trimmed();
+    return ui->userLine->text().trimmed().toLower();
 }
 
 QString LoginDialog::password() const

@@ -33,6 +33,11 @@
    </item>
    <item>
     <widget class="QCheckBox" name="tuttoCB">
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
      <property name="text">
       <string>Tutto</string>
      </property>
@@ -40,6 +45,11 @@
    </item>
    <item>
     <widget class="QCheckBox" name="gdiurneCB">
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
      <property name="text">
       <string>Guardie diurne</string>
      </property>
@@ -47,6 +57,11 @@
    </item>
    <item>
     <widget class="QCheckBox" name="gnotturneCB">
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
      <property name="text">
       <string>Guardie notturne</string>
      </property>
@@ -54,6 +69,11 @@
    </item>
    <item>
     <widget class="QCheckBox" name="repCB">
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
      <property name="text">
       <string>Reperibilità</string>
      </property>
@@ -61,6 +81,11 @@
    </item>
    <item>
     <widget class="QCheckBox" name="dmpCB">
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
      <property name="text">
       <string>Deficit mese precedente</string>
      </property>
@@ -68,6 +93,11 @@
    </item>
    <item>
     <widget class="QCheckBox" name="altreCB">
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
      <property name="text">
       <string>Altre assenze</string>
      </property>
@@ -75,6 +105,11 @@
    </item>
    <item>
     <widget class="QCheckBox" name="noteCB">
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
      <property name="text">
       <string>Nota</string>
      </property>
@@ -97,6 +132,11 @@
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QPushButton" name="cancelButton">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Annulla</string>
        </property>
@@ -121,6 +161,11 @@
      </item>
      <item>
       <widget class="QPushButton" name="restoreButton">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Ripristina</string>
        </property>
