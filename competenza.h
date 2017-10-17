@@ -105,6 +105,7 @@ public:
     int numOreRepFesENot();
     int numOreRepFesONot();
     int numOreRepOrd();
+    QString residuoOreNonPagate();
 
     int g_d_fer_F() const;
     int g_d_fer_S() const;

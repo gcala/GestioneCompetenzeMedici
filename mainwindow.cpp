@@ -1001,13 +1001,14 @@ void MainWindow::populateCompetenzeTab()
     ui->oreDovuteLabel->setText(m_competenza->oreDovute());
     ui->oreEffettuateLabel->setText(m_competenza->oreEffettuate());
 
-    ui->oreStraordinarioRepLabel->setText(QString::number(m_competenza->oreProntaDisp()));
+    ui->oreStraordinarioRepLabel->setText(m_competenza->oreProntaDisp() > 0 ? QString::number(m_competenza->oreProntaDisp()) : "//");
 
     ui->noteLine->setText(m_competenza->note());
 
     mostraDifferenzaOre();
     elaboraGuardie();
     elaboraRep();
+    ui->residuoLabel->setText(m_competenza->residuoOreNonPagate());
     connect(ui->dmpHoursEdit, SIGNAL(valueChanged(int)), this, SLOT(oreCambiate(int)));
     connect(ui->dmpMinsEdit, SIGNAL(valueChanged(int)), this, SLOT(minutiCambiati(int)));
 }

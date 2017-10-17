@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1323</width>
-    <height>777</height>
+    <height>779</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -3131,6 +3131,68 @@
              </item>
              <item>
               <widget class="QLabel" name="oreStraordinarioAltriMotiviLabel">
+               <property name="minimumSize">
+                <size>
+                 <width>50</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>11</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">color: blue;</string>
+               </property>
+               <property name="text">
+                <string>//</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_62">
+               <property name="minimumSize">
+                <size>
+                 <width>20</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="font">
+                <font/>
+               </property>
+               <property name="text">
+                <string>|</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_65">
+               <property name="font">
+                <font>
+                 <pointsize>11</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="text">
+                <string>Residuo:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="residuoLabel">
+               <property name="minimumSize">
+                <size>
+                 <width>50</width>
+                 <height>0</height>
+                </size>
+               </property>
                <property name="font">
                 <font>
                  <pointsize>11</pointsize>
@@ -3403,6 +3465,12 @@
              </item>
              <item>
               <widget class="QLabel" name="mensaLabel">
+               <property name="minimumSize">
+                <size>
+                 <width>50</width>
+                 <height>0</height>
+                </size>
+               </property>
                <property name="font">
                 <font>
                  <pointsize>11</pointsize>
@@ -3414,7 +3482,7 @@
                 <string notr="true">color: blue;</string>
                </property>
                <property name="text">
-                <string/>
+                <string>//</string>
                </property>
               </widget>
              </item>
@@ -3537,7 +3605,7 @@
      <x>0</x>
      <y>0</y>
      <width>1323</width>
-     <height>26</height>
+     <height>34</height>
     </rect>
    </property>
    <property name="font">

@@ -141,6 +141,7 @@ public:
     int numOreRepFesENot();
     int numOreRepFesONot();
     int numOreRepOrd();
+    QString residuoOreNonPagate();
 
     int g_d_fer_F() const;
     int g_d_fer_S() const;
@@ -1022,6 +1023,24 @@ int CompetenzaData::numOreRepOrd()
     return ore;
 }
 
+QString CompetenzaData::residuoOreNonPagate()
+{
+    int oreStrGuaPagate;
+
+    if(numOreGuarPagabili() == 0 && numGrFestPagabili() == 0)
+        oreStrGuaPagate = 0;
+    else {
+        oreStrGuaPagate = numGrFestPagabili() * 12 + numOreGuarPagabili();
+    }
+
+    const int totMinPagati = oreStrGuaPagate*60 + oreProntaDisp()*60;
+
+    if(differenzaMin() - totMinPagati > 0)
+        return inOrario(differenzaMin() - totMinPagati);
+
+    return "//";
+}
+
 int CompetenzaData::g_d_fer_F() const
 {
     return m_g_d_fer_F;
@@ -1771,6 +1790,11 @@ int Competenza::numOreRepFesONot()
 int Competenza::numOreRepOrd()
 {
     return data->numOreRepOrd();
+}
+
+QString Competenza::residuoOreNonPagate()
+{
+    return data->residuoOreNonPagate();
 }
 
 int Competenza::g_d_fer_F() const
