@@ -918,7 +918,12 @@ QVector<int> SqlQueries::getDoctorsIdsFromUnitInTimecard(const QString &timecard
 {
     QVector<int> ids;
     QSqlQuery query;
-    query.prepare("SELECT id_medico FROM " + timecard + " WHERE id_unita='" + QString::number(unitId) + "';");
+    query.prepare("SELECT " + timecard + ".id_medico,medici.nome "
+                  "FROM " + timecard + " "
+                  "LEFT JOIN medici ON "
+                  + timecard + ".id_medico=medici.id "
+                  "WHERE " + timecard + ".id_unita='" + QString::number(unitId) + "' "
+                  "ORDER BY medici.nome;");
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
