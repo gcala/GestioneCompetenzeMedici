@@ -988,10 +988,11 @@ int CompetenzaData::numOreGuarOrd() const
 
 int CompetenzaData::numOreRepFesENot()
 {
-    if(r_n_fes() >=  oreProntaDisp())
+    int ore = r_n_fes() % 60 <= m_arrotondamento ? r_n_fes() / 60 :r_n_fes() / 60 + 1;
+    if(ore >=  oreProntaDisp())
         return  oreProntaDisp();
 
-    return r_n_fes();
+    return ore;
 }
 
 int CompetenzaData::numOreRepFesONot()
@@ -1000,10 +1001,11 @@ int CompetenzaData::numOreRepFesONot()
     if(restoOre <= 0)
         return 0;
 
-    if((r_n_fer() + r_d_fes()) >= restoOre)
+    int ore = (r_n_fer() + r_d_fes()) % 60 <= m_arrotondamento ? (r_n_fer() + r_d_fes()) / 60 :(r_n_fer() + r_d_fes()) / 60 + 1;
+    if(ore >= restoOre)
         return restoOre;
 
-    return r_n_fer() + r_d_fes();
+    return ore;
 }
 
 int CompetenzaData::numOreRepOrd()
@@ -1012,10 +1014,12 @@ int CompetenzaData::numOreRepOrd()
     if(restoOre <= 0)
         return 0;
 
-    if(r_d_fer() >= restoOre)
+    int ore = r_d_fer() % 60 <= m_arrotondamento ? r_d_fer() / 60 :r_d_fer() / 60 + 1;
+
+    if(ore >= restoOre)
         return restoOre;
 
-    return r_d_fer();
+    return ore;
 }
 
 int CompetenzaData::g_d_fer_F() const
