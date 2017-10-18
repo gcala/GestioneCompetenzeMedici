@@ -877,7 +877,8 @@ QVector<int> SqlQueries::getUnitaIdsInTimecard(const QString &timecard)
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
     while(query.next()) {
-        ids << query.value(0).toInt();
+        if(!ids.contains(query.value(0).toInt()))
+            ids << query.value(0).toInt();
     }
 
     return ids;
