@@ -838,6 +838,10 @@ void MainWindow::on_actionCaricaPdf_triggered()
 
         QFile::remove(fi.absolutePath() + QDir::separator() + "cartellini.csv");
 
+        m_currentMeseCompetenzeIndex = ui->meseCompetenzeCB->currentIndex();
+        m_currentUnitaCompetenzeIndex = ui->unitaCompetenzeCB->currentIndex();
+        m_currentDirigenteCompetenzeIndex = ui->dirigentiCompetenzeCB->currentIndex();
+
         tabulaProcess->start(m_javaPath, arguments);
     }
 }
@@ -854,6 +858,9 @@ void MainWindow::handleResults()
 
     populateMeseCompetenzeCB();
     m_loadingTimeCards = false;
+    ui->meseCompetenzeCB->setCurrentIndex(m_currentMeseCompetenzeIndex);
+    ui->unitaCompetenzeCB->setCurrentIndex(m_currentUnitaCompetenzeIndex);
+    ui->dirigentiCompetenzeCB->setCurrentIndex(m_currentDirigenteCompetenzeIndex);
 }
 
 void MainWindow::exported(QString file)
@@ -1216,6 +1223,10 @@ void MainWindow::on_actionCaricaCsv_triggered()
     // be sure that a valid path was selected
     if( QFile::exists( pdfFile ) ) {
         // leggi cartellini
+        m_currentMeseCompetenzeIndex = ui->meseCompetenzeCB->currentIndex();
+        m_currentUnitaCompetenzeIndex = ui->unitaCompetenzeCB->currentIndex();
+        m_currentDirigenteCompetenzeIndex = ui->dirigentiCompetenzeCB->currentIndex();
+
         m_loadingTimeCards = true;
         okularReader.setFile(pdfFile);
         okularReader.start();
