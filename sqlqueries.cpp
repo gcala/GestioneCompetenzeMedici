@@ -37,16 +37,16 @@ void SqlQueries::createUnitsTable()
         query.prepare("CREATE TABLE unita "
                       "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
                       "raggruppamento TEXT,"
-                      "nome_full TEXT,"
-                      "nome_mini TEXT,"
-                      "altri_nomi TEXT);");
+                      "nome TEXT,"
+                      "breve TEXT,"
+                      "pseudo TEXT);");
     } else if(The::dbManager()->driverName() == "QMYSQL") {
         query.prepare("CREATE TABLE unita "
                       "(id INT NOT NULL AUTO_INCREMENT,"
                       "raggruppamento varchar(10) NULL,"
-                      "nome_full varchar(50) NULL,"
-                      "nome_mini varchar(20) NULL,"
-                      "altri_nomi varchar(1000) NULL,"
+                      "nome varchar(128) NULL,"
+                      "breve varchar(32) NULL,"
+                      "pseudo varchar(512) NULL,"
                       "PRIMARY KEY (id));");
     } else {
         qDebug() << Q_FUNC_INFO << "Nessun database configurato. Esco";
@@ -146,18 +146,18 @@ void SqlQueries::createUnitsRepTable()
 
 void SqlQueries::insertUnit(const QString &id,
                             const QString &raggruppamento,
-                            const QString &nome_full,
-                            const QString &nome_mini,
-                            const QString &altri_nomi)
+                            const QString &nome,
+                            const QString &breve,
+                            const QString &pseudo)
 {
     QSqlQuery query;
-    query.prepare("INSERT INTO unita (id,raggruppamento,nome_full,nome_mini,altri_nomi) "
-                  "VALUES (:id,:raggruppamento, :nome_full, :nome_mini, :altri_nomi);");
+    query.prepare("INSERT INTO unita (id,raggruppamento,nome,breve,pseudo) "
+                  "VALUES (:id,:raggruppamento, :nome, :breve, :pseudo);");
     query.bindValue(":id", id);
     query.bindValue(":raggruppamento", raggruppamento);
-    query.bindValue(":nome_full", nome_full);
-    query.bindValue(":nome_mini", nome_mini);
-    query.bindValue(":altri_nomi", altri_nomi);
+    query.bindValue(":nome", nome);
+    query.bindValue(":breve", breve);
+    query.bindValue(":pseudo", pseudo);
 
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
@@ -166,18 +166,18 @@ void SqlQueries::insertUnit(const QString &id,
 
 void SqlQueries::editUnit(const QString &id,
                           const QString &raggruppamento,
-                          const QString &nome_full,
-                          const QString &nome_mini,
-                          const QString &altri_nomi)
+                          const QString &nome,
+                          const QString &breve,
+                          const QString &pseudo)
 {
     QSqlQuery query;
     query.prepare("UPDATE unita "
-                  "SET raggruppamento=:raggruppamento,nome_full=:nome_full,nome_mini=:nome_mini,altri_nomi=:altri_nomi "
+                  "SET raggruppamento=:raggruppamento,nome=:nome,breve=:breve,pseudo=:pseudo "
                   "WHERE id=" + id + ";");
     query.bindValue(":raggruppamento", raggruppamento);
-    query.bindValue(":nome_full", nome_full);
-    query.bindValue(":nome_mini", nome_mini);
-    query.bindValue(":altri_nomi", altri_nomi);
+    query.bindValue(":nome", nome);
+    query.bindValue(":breve", breve);
+    query.bindValue(":pseudo", pseudo);
 
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
@@ -316,22 +316,22 @@ bool SqlQueries::createTimeCardsTable(const QString &tableName)
                       "mese INT NOT NULL,"
                       "riposi INT NOT NULL,"
                       "minuti_giornalieri INT NOT NULL,"
-                      "ferie varchar(100) DEFAULT '',"
-                      "congedi varchar(100) DEFAULT '',"
-                      "malattia varchar(100) DEFAULT '',"
-                      "rmp varchar(100) DEFAULT '',"
-                      "rmc varchar(100) DEFAULT '',"
-                      "altre_causali varchar(500) DEFAULT '',"
-                      "guardie_diurne varchar(100) DEFAULT '',"
-                      "guardie_notturne varchar(100) DEFAULT '',"
-                      "grep varchar(100) DEFAULT '',"
+                      "ferie varchar(128) DEFAULT '',"
+                      "congedi varchar(128) DEFAULT '',"
+                      "malattia varchar(128) DEFAULT '',"
+                      "rmp varchar(128) DEFAULT '',"
+                      "rmc varchar(128) DEFAULT '',"
+                      "altre_causali varchar(400) DEFAULT '',"
+                      "guardie_diurne varchar(256) DEFAULT '',"
+                      "guardie_notturne varchar(128) DEFAULT '',"
+                      "grep varchar(512) DEFAULT '',"
                       "congedi_minuti INT DEFAULT 0,"
                       "eccr_minuti INT DEFAULT 0,"
                       "grep_minuti INT DEFAULT 0,"
                       "guar_minuti INT DEFAULT 0,"
                       "rmc_minuti INT DEFAULT 0,"
                       "minuti_fatti INT DEFAULT 0,"
-                      "scoperti varchar(100) DEFAULT '',"
+                      "scoperti varchar(128) DEFAULT '',"
                       "PRIMARY KEY (id));");
     } else {
         qDebug() << Q_FUNC_INFO << "Nessun database configurato. Esco";
@@ -355,18 +355,22 @@ bool SqlQueries::createTimeCardsTable(const QString &tableName)
                       "dmp INTEGER DEFAULT (-1),"
                       "dmp_calcolato INTEGER DEFAULT (0),"
                       "altre_assenze TEXT DEFAULT '',"
-                      "nota TEXT DEFAULT '');");
+                      "nota TEXT DEFAULT '',"
+                      "altro_str TEXT DEFAULT '',"
+                      "mensa TEXT DEFAULT '');");
     } else if(The::dbManager()->driverName() == "QMYSQL") {
         query.prepare("CREATE TABLE " + modTableName.replace("_","m_") + " "
                       "(id INT NOT NULL AUTO_INCREMENT,"
                       "id_medico INT NOT NULL,"
-                      "guardie_diurne varchar(100) DEFAULT '',"
-                      "guardie_notturne varchar(100) DEFAULT '',"
-                      "turni_reperibilita varchar(100) DEFAULT '',"
+                      "guardie_diurne varchar(256) DEFAULT '',"
+                      "guardie_notturne varchar(128) DEFAULT '',"
+                      "turni_reperibilita varchar(128) DEFAULT '',"
                       "dmp INT DEFAULT -1,"
                       "dmp_calcolato INT DEFAULT 0,"
-                      "altre_assenze varchar(100) DEFAULT '',"
-                      "nota varchar(255) DEFAULT '',"
+                      "altre_assenze varchar(128) DEFAULT '',"
+                      "nota varchar(512) DEFAULT '',"
+                      "altro_str varchar(128) DEFAULT '',"
+                      "mensa varchar(128) DEFAULT '',"
                       "PRIMARY KEY (id));");
     } else {
         qDebug() << Q_FUNC_INFO << "Nessun database configurato. Esco";
@@ -568,7 +572,7 @@ void SqlQueries::buildUnitsMap()
 {
     m_unitsMap.clear();
     QSqlQuery query;
-    query.prepare("SELECT id,altri_nomi FROM unita;");
+    query.prepare("SELECT id,pseudo FROM unita;");
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
@@ -583,7 +587,7 @@ QMap<int, QString> SqlQueries::units()
     QMap<int, QString> unita;
 
     QSqlQuery query;
-    query.prepare("SELECT id,nome_full FROM unita;");
+    query.prepare("SELECT id,nome FROM unita;");
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
@@ -597,7 +601,7 @@ QMap<int, QString> SqlQueries::units()
 void SqlQueries::appendOtherUnitaName(const int id, const QString &nome)
 {
     QSqlQuery query;
-    query.prepare("SELECT altri_nomi FROM unita WHERE id=" + QString::number(id) + ";");
+    query.prepare("SELECT pseudo FROM unita WHERE id=" + QString::number(id) + ";");
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
         return;
@@ -612,9 +616,9 @@ void SqlQueries::appendOtherUnitaName(const int id, const QString &nome)
     nomi += ";" + nome;
 
     query.prepare("UPDATE unita "
-                  "SET altri_nomi=:altri_nomi "
+                  "SET pseudo=:pseudo "
                   "WHERE id=" + QString::number(id) + ";");
-    query.bindValue(":altri_nomi", nomi);
+    query.bindValue(":pseudo", nomi);
 
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
@@ -730,7 +734,7 @@ QVariantList SqlQueries::getDoctorTimecard(const QString &tableName, const QStri
     QSqlQuery query;
     query.prepare("SELECT medici.nome,"
                   "medici.matricola,"
-                  "unita.nome_full,"
+                  "unita.nome,"
                   + tableName + ".riposi,"
                   + tableName + ".minuti_giornalieri,"
                   + tableName + ".ferie,"
@@ -857,7 +861,7 @@ QString SqlQueries::getUnitaNomeBreve(const int &id)
     QString nome;
 
     QSqlQuery query;
-    query.prepare("SELECT nome_mini FROM unita WHERE id='" + QString::number(id) + "';");
+    query.prepare("SELECT breve FROM unita WHERE id='" + QString::number(id) + "';");
     if(!query.exec()) {
         qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
@@ -904,7 +908,7 @@ QString SqlQueries::getUnitaNomeCompleto(const int &id)
     QString nome;
 
     QSqlQuery query;
-    query.prepare("SELECT nome_full FROM unita WHERE id='" + QString::number(id) + "';");
+    query.prepare("SELECT nome FROM unita WHERE id='" + QString::number(id) + "';");
     if(!query.exec()) {
         qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
@@ -989,7 +993,7 @@ QStringList SqlQueries::getUnitaDataFromTimecard(const QString &timecard)
 {
     QStringList result;
     QSqlQuery query;
-    query.prepare("SELECT " + timecard + ".id_unita,unita.nome_full,unita.id "
+    query.prepare("SELECT " + timecard + ".id_unita,unita.nome,unita.id "
                   "FROM " + timecard + " "
                   "LEFT JOIN unita "
                   "ON " + timecard + ".id_unita=unita.id ORDER BY length(unita.id), unita.id;");

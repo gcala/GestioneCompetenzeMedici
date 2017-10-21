@@ -135,6 +135,9 @@ private:
     QString m_driver;
     QString m_host;
     QString m_dbName;
+    int m_currentMeseCompetenzeIndex;
+    int m_currentUnitaCompetenzeIndex;
+    int m_currentDirigenteCompetenzeIndex;
 
     QMenu *gdCalendarMenu;
     CalendarManager *gdCalendar;

@@ -39,8 +39,8 @@ public:
     static void createDoctorsTable();
     static void createUnitsPayedHoursTable();
     static void createUnitsRepTable();
-    static void insertUnit(const QString &id, const QString &raggruppamento, const QString &nome_full, const QString &nome_mini, const QString &altri_nomi);
-    static void editUnit(const QString &id, const QString &raggruppamento, const QString &nome_full, const QString &nome_mini, const QString &altri_nomi);
+    static void insertUnit(const QString &id, const QString &raggruppamento, const QString &nome, const QString &breve, const QString &pseudo);
+    static void editUnit(const QString &id, const QString &raggruppamento, const QString &nome, const QString &breve, const QString &pseudo);
     static bool insertDoctor(const QString &matricola, const QString &nome, const QString &id_unita);
     static void editDoctor(const QString &id, const QString &matricola, const QString &nome, const QString &id_unita);
     static void insertPayload(const QString &id_unita, const QString &data, const QString &ore_tot, const QString &ore_pagate);
