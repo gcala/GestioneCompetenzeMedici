@@ -30,7 +30,6 @@ SOURCES += \
         insertdbvalues.cpp \
         okularcsvtimecardsreader.cpp \
         tabulacsvtimecardsreader.cpp \
-        sqlthread.cpp \
         sqlqueries.cpp \
         dipendente.cpp \
         calendarmanager.cpp \
@@ -58,7 +57,6 @@ HEADERS += \
         insertdbvalues.h \
         okularcsvtimecardsreader.h \
         tabulacsvtimecardsreader.h \
-        sqlthread.h \
         sqlqueries.h \
         dipendente.h \
         calendarmanager.h \
