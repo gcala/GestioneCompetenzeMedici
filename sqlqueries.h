@@ -48,6 +48,7 @@ public:
     static void removeUnit(const QString &id);
     static void removeDoctor(const QString &id);
     static void removeTimeCard(const QString &tableName, const QString &doctorId);
+    static void resetTimeCard(const QString &tableName, const int &doctorId);
     static bool createTimeCardsTable(const QString &tableName);
     static bool tableExists(const QString &tableName);
     static bool timeCardExists(const QString &tableName, const QString &doctorId);
@@ -57,7 +58,7 @@ public:
     static void buildUnitsMap();
     static QMap<int, QString> units();
     static void appendOtherUnitaName(const int id, const QString &nome);
-    static void resetAll(const QString &tableName, const int &id);
+    static void resetAllDoctorMods(const QString &tableName, const int &id);
     static void resetStringValue(const QString &tableName, const QString &columnName, const int &id);
     static void resetIntValue(const QString &tableName, const QString &columnName, const int &id);
     static QStringList timecardsList();

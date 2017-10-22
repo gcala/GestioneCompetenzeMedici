@@ -279,6 +279,40 @@ void SqlQueries::removeTimeCard(const QString &tableName, const QString &doctorI
     }
 }
 
+void SqlQueries::resetTimeCard(const QString &tableName, const int &doctorId)
+{
+    QSqlQuery query;
+    query.prepare("UPDATE " + tableName + " " +
+                  "SET riposi=:riposi,minuti_giornalieri=:minuti_giornalieri,"
+                  "ferie=:ferie,congedi=:congedi,malattia=:malattia,rmp=:rmp,"
+                  "rmc=:rmc,altre_causali=:altre_causali,guardie_diurne=:guardie_diurne,guardie_notturne=:guardie_notturne,"
+                  "grep=:grep,congedi_minuti=:congedi_minuti,eccr_minuti=:eccr_minuti,grep_minuti=:grep_minuti,"
+                  "guar_minuti=:guar_minuti,rmc_minuti=:rmc_minuti,minuti_fatti=:minuti_fatti,scoperti=:scoperti "
+                  "WHERE id_medico=" + QString::number(doctorId) + ";");
+    query.bindValue(":riposi", 0);
+    query.bindValue(":minuti_giornalieri", 0);
+    query.bindValue(":ferie", QString());
+    query.bindValue(":congedi", QString());
+    query.bindValue(":malattia", QString());
+    query.bindValue(":rmp", QString());
+    query.bindValue(":rmc", QString());
+    query.bindValue(":altre_causali", QString());
+    query.bindValue(":guardie_diurne", QString());
+    query.bindValue(":guardie_notturne", QString());
+    query.bindValue(":grep", QString());
+    query.bindValue(":congedi_minuti", 0);
+    query.bindValue(":eccr_minuti", 0);
+    query.bindValue(":grep_minuti", 0);
+    query.bindValue(":guar_minuti", 0);
+    query.bindValue(":rmc_minuti", 0);
+    query.bindValue(":minuti_fatti", 0);
+    query.bindValue(":scoperti", QString());
+
+    if(!query.exec()) {
+        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
+}
+
 bool SqlQueries::createTimeCardsTable(const QString &tableName)
 {
     QSqlQuery query;
@@ -451,15 +485,24 @@ bool SqlQueries::addTimeCard(const QString &tableName, const Dipendente *dipende
 
     if(timeCardExists(tableName, QString::number(docId))) {
 //        qDebug() << "---> RIMUOVO " << dipendente->nome() << "da" << tableName;
-        removeTimeCard(tableName, QString::number(docId));
+//        removeTimeCard(tableName, QString::number(docId));
+        resetTimeCard(tableName, docId);
+        query.prepare("UPDATE " + tableName + " " +
+                      "SET riposi=:riposi,minuti_giornalieri=:minuti_giornalieri,"
+                      "ferie=:ferie,congedi=:congedi,malattia=:malattia,rmp=:rmp,"
+                      "rmc=:rmc,altre_causali=:altre_causali,guardie_diurne=:guardie_diurne,guardie_notturne=:guardie_notturne,"
+                      "grep=:grep,congedi_minuti=:congedi_minuti,eccr_minuti=:eccr_minuti,grep_minuti=:grep_minuti,"
+                      "guar_minuti=:guar_minuti,rmc_minuti=:rmc_minuti,minuti_fatti=:minuti_fatti,scoperti=:scoperti "
+                      "WHERE id_medico=" + QString::number(docId) + ";");
+    } else {
+        query.prepare("INSERT INTO " + tableName + " (id_medico, id_unita, anno, mese, riposi, minuti_giornalieri, ferie, congedi, malattia, rmp, rmc, altre_causali, guardie_diurne, guardie_notturne, grep, congedi_minuti, eccr_minuti, grep_minuti, guar_minuti, rmc_minuti, minuti_fatti, scoperti) "
+                      "VALUES (:id_medico, :id_unita, :anno, :mese, :riposi, :minuti_giornalieri, :ferie, :congedi, :malattia, :rmp, :rmc, :altre_causali, :guardie_diurne, :guardie_notturne, :grep, :congedi_minuti, :eccr_minuti, :grep_minuti, :guar_minuti, :rmc_minuti, :minuti_fatti, :scoperti);");
+        query.bindValue(":id_medico", QString::number(docId));
+        query.bindValue(":id_unita", unId);
+        query.bindValue(":anno", dipendente->anno());
+        query.bindValue(":mese", dipendente->mese());
     }
 
-    query.prepare("INSERT INTO " + tableName + " (id_medico, id_unita, anno, mese, riposi, minuti_giornalieri, ferie, congedi, malattia, rmp, rmc, altre_causali, guardie_diurne, guardie_notturne, grep, congedi_minuti, eccr_minuti, grep_minuti, guar_minuti, rmc_minuti, minuti_fatti, scoperti) "
-                  "VALUES (:id_medico, :id_unita, :anno, :mese, :riposi, :minuti_giornalieri, :ferie, :congedi, :malattia, :rmp, :rmc, :altre_causali, :guardie_diurne, :guardie_notturne, :grep, :congedi_minuti, :eccr_minuti, :grep_minuti, :guar_minuti, :rmc_minuti, :minuti_fatti, :scoperti);");
-    query.bindValue(":id_medico", QString::number(docId));
-    query.bindValue(":id_unita", unId);
-    query.bindValue(":anno", dipendente->anno());
-    query.bindValue(":mese", dipendente->mese());
     query.bindValue(":riposi", dipendente->riposi());
     query.bindValue(":minuti_giornalieri", dipendente->minutiGiornalieri());
     query.bindValue(":ferie", dipendente->ferie().join(","));
@@ -627,12 +670,13 @@ void SqlQueries::appendOtherUnitaName(const int id, const QString &nome)
     buildUnitsMap();
 }
 
-void SqlQueries::resetAll(const QString &tableName, const int &id)
+void SqlQueries::resetAllDoctorMods(const QString &tableName, const int &id)
 {
     QSqlQuery query;
     query.prepare("UPDATE " + tableName + " " +
                   "SET guardie_diurne=:guardie_diurne,guardie_notturne=:guardie_notturne,"
-                  "turni_reperibilita=:turni_reperibilita,dmp=:dmp,altre_assenze=:altre_assenze,nota=:nota "
+                  "turni_reperibilita=:turni_reperibilita,dmp=:dmp,altre_assenze=:altre_assenze,nota=:nota,"
+                  "altro_str=:altro_str,mensa=:mensa "
                   "WHERE id_medico=" + QString::number(id) + ";");
     query.bindValue(":guardie_diurne", QString());
     query.bindValue(":guardie_notturne", QString());
@@ -640,6 +684,8 @@ void SqlQueries::resetAll(const QString &tableName, const int &id)
     query.bindValue(":dmp", -1);
     query.bindValue(":altre_assenze", QString());
     query.bindValue(":nota", QString());
+    query.bindValue(":altro_str", QString());
+    query.bindValue(":mensa", QString());
 
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();

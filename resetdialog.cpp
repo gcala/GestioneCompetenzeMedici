@@ -45,7 +45,7 @@ void ResetDialog::on_restoreButton_clicked()
     }
 
     if(ui->tuttoCB->isChecked()) {
-        SqlQueries::resetAll(m_tableName,m_id);
+        SqlQueries::resetAllDoctorMods(m_tableName,m_id);
     } else {
         if(ui->gdiurneCB->isChecked()) {
             SqlQueries::resetStringValue(m_tableName, "guardie_diurne", m_id);
