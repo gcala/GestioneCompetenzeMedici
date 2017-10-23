@@ -1005,7 +1005,7 @@ QStringList SqlQueries::getTuttiMatricoleNomi()
     QStringList result;
 
     QSqlQuery query;
-    query.prepare("SELECT id,matricola,nome FROM medici;");
+    query.prepare("SELECT id,matricola,nome FROM medici ORDER BY nome;");
     if(!query.exec()) {
         qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
