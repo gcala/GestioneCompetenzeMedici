@@ -54,10 +54,10 @@ public:
     static bool timeCardExists(const QString &tableName, const QString &doctorId);
     static bool addTimeCard(const QString &tableName, const Dipendente *dipendente);
     static int doctorId(const QString &matricola);
-    static int unitId(const QString &unit);
+    static int unitId(const QString &matricola);
     static void buildUnitsMap();
     static QMap<int, QString> units();
-    static void appendOtherUnitaName(const int id, const QString &nome);
+    static void appendPseudoUnitaName(const int id, const QString &nome);
     static void resetAllDoctorMods(const QString &tableName, const int &id);
     static void resetStringValue(const QString &tableName, const QString &columnName, const int &id);
     static void resetIntValue(const QString &tableName, const QString &columnName, const int &id);

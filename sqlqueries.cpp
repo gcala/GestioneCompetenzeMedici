@@ -468,24 +468,21 @@ bool SqlQueries::addTimeCard(const QString &tableName, const Dipendente *dipende
     QSqlQuery query;
 
     int docId = doctorId(dipendente->matricola());
-    int unId = unitId(dipendente->unita());
 
-    if(unId == -1) {
+    if(dipendente->unita() == -1) {
         qDebug() << "Impossibile trovare l'unità" << dipendente->unita();
         return false;
     }
 
     if(docId == -1) {
 //        qDebug() << "---> INSERISCO" << dipendente->matricola() << dipendente->nome() << QString::number(unId);
-        if(!insertDoctor(dipendente->matricola(),dipendente->nome(),QString::number(unId)))
+        if(!insertDoctor(dipendente->matricola(),dipendente->nome(),QString::number(dipendente->unita())))
             return false;
     }
 
     docId = doctorId(dipendente->matricola());
 
     if(timeCardExists(tableName, QString::number(docId))) {
-//        qDebug() << "---> RIMUOVO " << dipendente->nome() << "da" << tableName;
-//        removeTimeCard(tableName, QString::number(docId));
         resetTimeCard(tableName, docId);
         query.prepare("UPDATE " + tableName + " " +
                       "SET riposi=:riposi,minuti_giornalieri=:minuti_giornalieri,"
@@ -498,7 +495,7 @@ bool SqlQueries::addTimeCard(const QString &tableName, const Dipendente *dipende
         query.prepare("INSERT INTO " + tableName + " (id_medico, id_unita, anno, mese, riposi, minuti_giornalieri, ferie, congedi, malattia, rmp, rmc, altre_causali, guardie_diurne, guardie_notturne, grep, congedi_minuti, eccr_minuti, grep_minuti, guar_minuti, rmc_minuti, minuti_fatti, scoperti) "
                       "VALUES (:id_medico, :id_unita, :anno, :mese, :riposi, :minuti_giornalieri, :ferie, :congedi, :malattia, :rmp, :rmc, :altre_causali, :guardie_diurne, :guardie_notturne, :grep, :congedi_minuti, :eccr_minuti, :grep_minuti, :guar_minuti, :rmc_minuti, :minuti_fatti, :scoperti);");
         query.bindValue(":id_medico", QString::number(docId));
-        query.bindValue(":id_unita", unId);
+        query.bindValue(":id_unita", dipendente->unita());
         query.bindValue(":anno", dipendente->anno());
         query.bindValue(":mese", dipendente->mese());
     }
@@ -597,16 +594,16 @@ int SqlQueries::doctorId(const QString &matricola)
     return id;
 }
 
-int SqlQueries::unitId(const QString &unit)
+int SqlQueries::unitId(const QString &matricola)
 {
     int id = -1;
-    QMap<int, QStringList>::const_iterator i = m_unitsMap.constBegin();
-    while (i != m_unitsMap.constEnd()) {
-        if(i.value().contains(unit)) {
-            id = i.key();
-            break;
-        }
-        ++i;
+    QSqlQuery query;
+    query.prepare("SELECT id_unita FROM medici WHERE matricola='" + matricola + "';");
+    if(!query.exec()) {
+        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
+    while(query.next()) {
+        id = query.value(0).toInt();
     }
     return id;
 }
@@ -641,7 +638,7 @@ QMap<int, QString> SqlQueries::units()
     return unita;
 }
 
-void SqlQueries::appendOtherUnitaName(const int id, const QString &nome)
+void SqlQueries::appendPseudoUnitaName(const int id, const QString &nome)
 {
     QSqlQuery query;
     query.prepare("SELECT pseudo FROM unita WHERE id=" + QString::number(id) + ";");

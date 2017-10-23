@@ -259,7 +259,7 @@ void CompetenzaData::buildDipendente()
 
     m_dipendente->setNome(query.at(0).toString());           // nome
     m_dipendente->setMatricola(query.at(1).toString());      // matricola
-    m_dipendente->setUnita(query.at(2).toString());          // unità
+    m_dipendente->setUnita(query.at(2).toInt());             // unità
     m_dipendente->addRiposi(query.at(3).toInt());            // riposi
     m_dipendente->setMinutiGiornalieri(query.at(4).toInt()); // orario giornaliero
     if(!query.at(5).toString().trimmed().isEmpty()) {

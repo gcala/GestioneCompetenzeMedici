@@ -169,40 +169,15 @@ void OkularCsvTimeCardsReader::run()
                 continue;
             }
 
-            m_dipendente = new Dipendente;
-            m_dipendente->setMatricola(matricola);
-            m_dipendente->setAnno(anno);
-            m_dipendente->setMese(mese);
-
             line = line.replace(matricola,"").trimmed();
 
             QStringList sl = line.split("AOSC");
             m_dipendente->setNome(sl.at(0).trimmed());
-            line.remove("AOSC");
-            line.remove(m_dipendente->nome());
-            line = line.trimmed().replace(QRegExp("A\\d+"), "");
-            line.remove("Costi comuni", Qt::CaseInsensitive);
-            line.remove("Lunghe Assenze", Qt::CaseInsensitive);
-            line.remove("Degenza ordinaria", Qt::CaseInsensitive);
-            line.remove("Centro Calc.", Qt::CaseInsensitive);
-            line.remove("Attività ambulatoriale", Qt::CaseInsensitive);
-            line.remove("Attività ambulatoriali", Qt::CaseInsensitive);
-            line.remove("Degenze ordinarie", Qt::CaseInsensitive);
-            line.remove("Radologia convenzionale", Qt::CaseInsensitive);
-            line.remove("Terapia Intensiva Post-Operatoria", Qt::CaseInsensitive);
-            line.remove("Degenza DH", Qt::CaseInsensitive);
-            line.remove("Terapia Intensiva post-operatoria", Qt::CaseInsensitive);
-            line.remove("Degenza DS", Qt::CaseInsensitive);
-            line.remove("(", Qt::CaseInsensitive);
-            line.remove("- ", Qt::CaseInsensitive);
-            m_dipendente->setUnita(line.trimmed());
 
-            int unId = SqlQueries::unitId(m_dipendente->unita());
-
-            if(unId == -1) {
-                m_nomiDialog->setUnitaLabel(m_dipendente->unita());
-                m_nomiDialog->exec();
-            }
+            m_dipendente = new Dipendente;
+            m_dipendente->setMatricola(matricola);
+            m_dipendente->setAnno(anno);
+            m_dipendente->setMese(mese);
 
             continue;
         } else {

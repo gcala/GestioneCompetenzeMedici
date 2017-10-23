@@ -40,8 +40,8 @@ public:
     void setNome(QString nome);
     QString matricola() const;
     void setMatricola(QString matricola);
-    QString unita() const;
-    void setUnita(QString unita);
+    int unita() const;
+    void setUnita(int unita);
     int riposi() const;
     void addRiposi(int num);
     QStringList guardieDiurne() const;
@@ -88,7 +88,7 @@ private:
     int m_mese;
     QString m_nome;
     QString m_matricola;
-    QString m_unita;
+    int m_unita;
     int m_riposi;
     QStringList m_guardieDiurne;
     QStringList m_guardieNotturne;
@@ -149,12 +149,12 @@ void DipendenteData::setMatricola(QString matricola)
     m_matricola = matricola;
 }
 
-QString DipendenteData::unita() const
+int DipendenteData::unita() const
 {
     return m_unita;
 }
 
-void DipendenteData::setUnita(QString unita)
+void DipendenteData::setUnita(int unita)
 {
     m_unita = unita;
 }
@@ -448,12 +448,12 @@ void Dipendente::setMatricola(QString matricola)
     data->setMatricola(matricola);
 }
 
-QString Dipendente::unita() const
+int Dipendente::unita() const
 {
     return data->unita();
 }
 
-void Dipendente::setUnita(QString unita)
+void Dipendente::setUnita(int unita)
 {
     data->setUnita(unita);
 }

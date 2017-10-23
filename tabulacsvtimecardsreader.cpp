@@ -178,36 +178,14 @@ void TabulaCsvTimeCardsReader::run()
 
             QStringList sl = line.split("AOSC");
             m_dipendente->setNome(sl.at(0).trimmed());
-            line.remove("AOSC");
-            line.remove(m_dipendente->nome());
-            line.remove("\"");
-            line = line.trimmed().replace(QRegExp("A\\d+"), "");
-            line.remove(" ");
-            line.remove("Costicomuni", Qt::CaseInsensitive);
-            line.remove("LungheAssenze", Qt::CaseInsensitive);
-            line.remove("Degenzaordinaria", Qt::CaseInsensitive);
-            line.remove("Degenzeordinarie", Qt::CaseInsensitive);
-            line.remove("CentroCalc.", Qt::CaseInsensitive);
-            line.remove("Attivitàambulatoriale", Qt::CaseInsensitive);
-            line.remove("Attivitàambulatoriali", Qt::CaseInsensitive);
-            line.remove("Degenzeordinarie", Qt::CaseInsensitive);
-            line.remove("Radologiaconvenzionale", Qt::CaseInsensitive);
-            line.remove("TerapiaIntensivaPost-Operatoria", Qt::CaseInsensitive);
-            line.remove("DegenzaDH", Qt::CaseInsensitive);
-            line.remove("TerapiaIntensivapost-operatoria", Qt::CaseInsensitive);
-            line.remove("DegenzaDS", Qt::CaseInsensitive);
-            line.remove("S.S.di", Qt::CaseInsensitive);
-            line.remove("U.O.C.", Qt::CaseInsensitive);
-            line.remove("UOC", Qt::CaseInsensitive);
-            line.remove("S.S.D.", Qt::CaseInsensitive);
-            line.remove("(", Qt::CaseInsensitive);
-            line.remove("-", Qt::CaseInsensitive);
-            m_dipendente->setUnita(line.trimmed());
-            int unId = SqlQueries::unitId(m_dipendente->unita());
-            if(unId == -1) {
-                m_nomiDialog->setUnitaLabel(m_dipendente->unita());
+
+            const int unitaId = SqlQueries::unitId(m_dipendente->matricola());
+            if(unitaId == -1) {
+                m_nomiDialog->setUnitaLabel(m_dipendente->nome());
                 m_nomiDialog->exec();
+                m_dipendente->setUnita(m_nomiDialog->currentUnit());
             }
+
             continue;
         } else {
             //nuovo giorno del mese
