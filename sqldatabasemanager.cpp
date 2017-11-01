@@ -4,6 +4,7 @@
 #include <QSqlDatabase>
 #include <QSqlError>
 #include <QApplication>
+#include <QFile>
 #include <QDebug>
 
 namespace The {
@@ -58,11 +59,28 @@ bool SQLiteDatabaseManager::createLocalConnection(const QString &fileName)
     return true;
 }
 
-bool SQLiteDatabaseManager::createRemoteConnection(const QString &host, const QString &dbName, const QString &user, const QString &pass)
+bool SQLiteDatabaseManager::createRemoteConnection(const QString &host,
+                                                   const QString &dbName,
+                                                   const QString &user,
+                                                   const QString &pass,
+                                                   const bool &secure,
+                                                   const QString &cert,
+                                                   const QString &key)
 {
     closeCurrentConnection();
+    QString opts = "MYSQL_OPT_RECONNECT=1;";
+    if(secure) {
+        if(cert.isEmpty() || key.isEmpty() || !QFile::exists(cert) || !QFile::exists(key)) {
+            QMessageBox::critical(0, "Errore Connessione", "I file Certificato/Chiave sono necessari per una connessione protetta.\n"
+                                  "Aprire Impostazioni e configurare Certificato e Chiave.", QMessageBox::Cancel);
+            return false;
+        }
+        opts += "SSL_KEY=" + key + ";";
+        opts += "SSL_CERT=" + cert + ";";
+    }
 
     QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
+    db.setConnectOptions(opts);
     db.setHostName(host);
     db.setDatabaseName(dbName);
     db.setUserName(user);

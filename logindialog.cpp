@@ -30,9 +30,26 @@ QString LoginDialog::username() const
     return ui->userLine->text().trimmed().toLower();
 }
 
+void LoginDialog::setUsername(const QString &user)
+{
+    ui->userLine->setText(user);
+    if(!user.isEmpty())
+        ui->passLine->setFocus();
+}
+
 QString LoginDialog::password() const
 {
     return ui->passLine->text().trimmed();
+}
+
+void LoginDialog::setPassword(const QString &pass)
+{
+    ui->passLine->setText(pass);
+}
+
+void LoginDialog::disablePassButton(bool ok)
+{
+    ui->passButton->setEnabled(ok);
 }
 
 void LoginDialog::on_userLine_textChanged(const QString &arg1)
@@ -55,10 +72,10 @@ void LoginDialog::on_passButton_clicked()
 {
     m_revealPass = !m_revealPass;
     if(m_revealPass) {
-        ui->passButton->setIcon(QIcon(":/icons/password-show-on.svg"));
+        ui->passButton->setIcon(QIcon(":/icons/password-show-off.svg"));
         ui->passLine->setEchoMode(QLineEdit::Normal);
     } else {
-        ui->passButton->setIcon(QIcon(":/icons/password-show-off.svg"));
+        ui->passButton->setIcon(QIcon(":/icons/password-show-on.svg"));
         ui->passLine->setEchoMode(QLineEdit::Password);
     }
 }

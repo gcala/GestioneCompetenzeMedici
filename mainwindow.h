@@ -135,6 +135,11 @@ private:
     QString m_driver;
     QString m_host;
     QString m_dbName;
+    QString m_certFile;
+    QString m_keyFile;
+    bool m_useSSL;
+    QString m_lastUsername;
+    QString m_lastPassword;
     int m_currentMeseCompetenzeIndex;
     int m_currentUnitaCompetenzeIndex;
     int m_currentDirigenteCompetenzeIndex;

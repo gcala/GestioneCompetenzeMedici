@@ -2,6 +2,7 @@
 *.db
 *.sql
 *.pdf
+*.pem
 Cartellini_Medici/
 scans/
 appunti/

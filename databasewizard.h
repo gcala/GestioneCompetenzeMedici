@@ -21,6 +21,9 @@ public:
     QString database() const;
     QString user() const;
     QString password() const;
+    bool useSSL() const;
+    QString certFile() const;
+    QString keyFile() const;
 
 private slots:
     void on_destBrowse_clicked();
@@ -42,6 +45,9 @@ private slots:
     void on_userLine_textChanged(const QString &arg1);
     void on_passLine_textChanged(const QString &arg1);
     void on_revealButton_clicked();
+    void on_useSSL_toggled(bool checked);
+    void on_certButton_clicked();
+    void on_keyButton_clicked();
 
 private:
     Ui::DatabaseWizard *ui;

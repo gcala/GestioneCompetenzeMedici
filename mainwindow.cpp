@@ -198,18 +198,31 @@ MainWindow::~MainWindow()
 void MainWindow::askDbUserPassword()
 {
     LoginDialog login(m_host, m_dbName, this);
+    login.setUsername(m_lastUsername);
+    login.setPassword(m_lastPassword);
+    login.disablePassButton(m_lastPassword.isEmpty());
     login.exec();
 
     if(login.canceled()) {
         return;
     }
 
-    connectToRemoteDatabase(login.username(), login.password());
+    m_lastUsername = login.username();
+    m_lastPassword = login.password();
+    saveSettings();
+
+    connectToRemoteDatabase(m_lastUsername, m_lastPassword);
 }
 
 void MainWindow::connectToRemoteDatabase(const QString &user, const QString &pass)
 {
-    if(!The::dbManager()->createRemoteConnection(m_host, m_dbName, user, pass)) {
+    if(!The::dbManager()->createRemoteConnection(m_host,
+                                                 m_dbName,
+                                                 user,
+                                                 pass,
+                                                 m_useSSL,
+                                                 m_certFile,
+                                                 m_keyFile)) {
         setWindowTitle("Gestione Competenze Medici");
         return;
     }
@@ -667,9 +680,14 @@ void MainWindow::on_actionApriDatabase_triggered()
     m_host = databaseWizard->host();
     m_dbName = databaseWizard->database();
     m_driver = "QMYSQL";
+    m_useSSL = databaseWizard->useSSL();
+    m_certFile = databaseWizard->certFile();
+    m_keyFile = databaseWizard->keyFile();
+    m_lastUsername = databaseWizard->user();
+    m_lastPassword = databaseWizard->password();
     saveSettings();
 
-    connectToRemoteDatabase(databaseWizard->user(), databaseWizard->password());
+    connectToRemoteDatabase(m_lastUsername, m_lastPassword);
 
     delete databaseWizard;
 }
@@ -680,6 +698,10 @@ void MainWindow::loadSettings()
     m_driver = settings.value("lastDriver", "QSQLITE").toString();
     m_host = settings.value("host", "").toString();
     m_dbName = settings.value("dbName", "").toString();
+    m_certFile = settings.value("certFile", "").toString();
+    m_keyFile = settings.value("keyFile", "").toString();
+    m_useSSL = settings.value("useSSL", false).toBool();
+    m_lastUsername = settings.value("lastUsername", "").toString();
     currentDatabase.setFile(settings.value("lastDatabasePath", "").toString());
     printDialog->setPath(settings.value("exportPath", QDir::homePath()).toString());
     m_photosPath = settings.value("photosPath", "").toString();
@@ -702,6 +724,10 @@ void MainWindow::saveSettings()
     settings.setValue("lastDriver", m_driver);
     settings.setValue("host", m_host);
     settings.setValue("dbName", m_dbName);
+    settings.setValue("certFile", m_certFile);
+    settings.setValue("keyFile", m_keyFile);
+    settings.setValue("useSSL", m_useSSL);
+    settings.setValue("lastUsername", m_lastUsername);
 
 }
 
@@ -1316,6 +1342,14 @@ void MainWindow::on_actionConnettiDbRemoto_triggered()
         return;
     }
 
+    if(m_useSSL) {
+        if(m_certFile.isEmpty() || m_keyFile.isEmpty() || !QFile::exists(m_certFile) || !QFile::exists(m_keyFile)) {
+            QMessageBox::critical(this, "Errore Connessione", "I file Certificato/Chiave sono necessari per una connessione protetta.\n"
+                                  "Aprire Impostazioni e configurare Certificato e Chiave.", QMessageBox::Cancel);
+            return;
+        }
+    }
+
     askDbUserPassword();
 }
 
@@ -1329,6 +1363,16 @@ void MainWindow::delayedSetup()
             ui->dirigenteTB->setEnabled(false);
             ui->actionBackupDatabase->setEnabled(false);
             return;
+        }
+        if(m_useSSL) {
+            if(m_certFile.isEmpty() || m_keyFile.isEmpty() || !QFile::exists(m_certFile) || !QFile::exists(m_keyFile)) {
+                QMessageBox::critical(this, "Errore Connessione", "I file Certificato/Chiave sono necessari per una connessione protetta.\n"
+                                      "Aprire Impostazioni e configurare Certificato e Chiave.", QMessageBox::Cancel);
+                ui->unitaTB->setEnabled(false);
+                ui->dirigenteTB->setEnabled(false);
+                ui->actionBackupDatabase->setEnabled(false);
+                return;
+            }
         }
         askDbUserPassword();
         return;

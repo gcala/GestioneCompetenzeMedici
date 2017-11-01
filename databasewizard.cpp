@@ -18,6 +18,7 @@ DatabaseWizard::DatabaseWizard(int page, QWidget *parent)
     m_openDb = false;
     m_canceled = true;
     m_revealPass = false;
+    on_useSSL_toggled(false);
 }
 
 DatabaseWizard::~DatabaseWizard()
@@ -53,6 +54,21 @@ QString DatabaseWizard::user() const
 QString DatabaseWizard::password() const
 {
     return ui->passLine->text().trimmed();
+}
+
+bool DatabaseWizard::useSSL() const
+{
+    return ui->useSSL->isChecked();
+}
+
+QString DatabaseWizard::certFile() const
+{
+    return ui->certLine->text();
+}
+
+QString DatabaseWizard::keyFile() const
+{
+    return ui->keyLine->text();
 }
 
 void DatabaseWizard::on_destBrowse_clicked()
@@ -330,10 +346,48 @@ void DatabaseWizard::on_revealButton_clicked()
 {
     m_revealPass = !m_revealPass;
     if(m_revealPass) {
-        ui->revealButton->setIcon(QIcon(":/icons/password-show-on.svg"));
+        ui->revealButton->setIcon(QIcon(":/icons/password-show-off.svg"));
         ui->passLine->setEchoMode(QLineEdit::Normal);
     } else {
-        ui->revealButton->setIcon(QIcon(":/icons/password-show-off.svg"));
+        ui->revealButton->setIcon(QIcon(":/icons/password-show-on.svg"));
         ui->passLine->setEchoMode(QLineEdit::Password);
+    }
+}
+
+void DatabaseWizard::on_useSSL_toggled(bool checked)
+{
+    ui->certButton->setEnabled(checked);
+    ui->keyButton->setEnabled(checked);
+
+    ui->certLabel->setEnabled(checked);
+    ui->keyLabel->setEnabled(checked);
+
+    ui->certLine->setEnabled(checked);
+    ui->keyLine->setEnabled(checked);
+}
+
+void DatabaseWizard::on_certButton_clicked()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Seleziona file Certificato"),
+                                                   QApplication::applicationDirPath(), tr("File PEM (*.pem)"));
+
+    // be sure that a valid path was selected
+    if( QFile::exists( fileName ) ) {
+        ui->certLine->setText(fileName);
+    } else {
+        ui->certLine->clear();
+    }
+}
+
+void DatabaseWizard::on_keyButton_clicked()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Seleziona file Chiave"),
+                                                   QApplication::applicationDirPath(), tr("File PEM (*.pem)"));
+
+    // be sure that a valid path was selected
+    if( QFile::exists( fileName ) ) {
+        ui->keyLine->setText(fileName);
+    } else {
+        ui->keyLine->clear();
     }
 }

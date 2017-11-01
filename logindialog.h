@@ -17,7 +17,10 @@ public:
 
     bool canceled() const;
     QString username() const;
+    void setUsername(const QString &user);
     QString password() const;
+    void setPassword(const QString &pass);
+    void disablePassButton(bool ok);
 
 private slots:
     void on_userLine_textChanged(const QString &arg1);
