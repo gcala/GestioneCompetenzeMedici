@@ -179,12 +179,14 @@ void TabulaCsvTimeCardsReader::run()
             QStringList sl = line.split("AOSC");
             m_dipendente->setNome(sl.at(0).trimmed());
 
-            const int unitaId = SqlQueries::unitId(m_dipendente->matricola());
+            int unitaId = SqlQueries::unitId(m_dipendente->matricola());
             if(unitaId == -1) {
                 m_nomiDialog->setUnitaLabel(m_dipendente->nome());
                 m_nomiDialog->exec();
-                m_dipendente->setUnita(m_nomiDialog->currentUnit());
+                unitaId = m_nomiDialog->currentUnit();
             }
+
+            m_dipendente->setUnita(unitaId);
 
             continue;
         } else {
@@ -316,8 +318,12 @@ void TabulaCsvTimeCardsReader::run()
                 forseNotte = false;
             }
 
-            if(causale == "GUAR") {
-                forseNotte = true;
+            for(int i = 14; i <= 18; i += 2) {
+                causale = campi.at(i).trimmed();
+                if(causale == "GUAR") {
+                    forseNotte = true;
+                    break;
+                }
             }
         }
     }
