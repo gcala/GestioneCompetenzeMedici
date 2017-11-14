@@ -3,12 +3,17 @@
 
 #include <QThread>
 
+class DmpCompute;
+
+namespace The {
+    DmpCompute* dmpCompute();
+}
+
 class DmpCompute : public QThread
 {
     Q_OBJECT
 public:
-    DmpCompute(QObject *parent = 0);
-    ~DmpCompute();
+    friend DmpCompute* The::dmpCompute();
 
     void setUnita(const int &id);
     void setTable(const QString &tableName);
@@ -23,11 +28,15 @@ signals:
       void currentItem(int);
 
 private:
+      DmpCompute();
       int m_idUnita;
       QString m_tableName;
       QString m_unitaName;
       QString m_mese;
       int m_idDirigente;
+      int m_currItem;
+
+      void ricalcolaDmp(const QStringList &timecards, const int &idDirigente);
 };
 
 #endif // DPMCOMPUTE_H

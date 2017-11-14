@@ -5,17 +5,49 @@
 
 #include <QDebug>
 
-DmpCompute::DmpCompute(QObject *parent)
-    : QThread(parent)
+namespace The {
+    static DmpCompute* s_DmpCompute_instance = 0;
+
+    DmpCompute* dmpCompute()
+    {
+        if( !s_DmpCompute_instance )
+            s_DmpCompute_instance = new DmpCompute();
+
+        return s_DmpCompute_instance;
+    }
+}
+
+DmpCompute::DmpCompute()
 {
     m_idUnita = -1;
     m_tableName.clear();
     m_idDirigente = -1;
 }
 
-DmpCompute::~DmpCompute()
+void DmpCompute::ricalcolaDmp(const QStringList &timecards, const int &idDirigente)
 {
+    int dmp = 0;
+    for(int i = 0; i < (timecards.count()); i++) {
+        if(SqlQueries::timeCardExists(timecards.at(i), QString::number(idDirigente))) {
+            Competenza *competenza = new Competenza(timecards.at(i), idDirigente);
+            if(i == 0) {
+                dmp = (competenza->differenzaMin() < 0 ? abs(competenza->differenzaMin()) : 0);
+                m_currItem++;
+                emit currentItem(m_currItem);
+                continue;
+            }
 
+            competenza->setDmpCalcolato(dmp);
+            competenza->saveMods();
+
+            dmp = competenza->differenzaMin() < 0 ? abs(competenza->differenzaMin()) : 0;
+        } else {
+            dmp = 0;
+        }
+
+        m_currItem++;
+        emit currentItem(m_currItem);
+    }
 }
 
 void DmpCompute::setUnita(const int &id)
@@ -35,8 +67,6 @@ void DmpCompute::setDirigente(const int &id)
 
 void DmpCompute::run()
 {
-    QStringList unitaIdList;
-
     int itemsCount = 0;
 
     QStringList timecards = SqlQueries::timecardsList();
@@ -70,71 +100,29 @@ void DmpCompute::run()
             for(QString card : timecards) {
                 itemsCount += SqlQueries::numDoctorsInTimecard(card);
             }
+            emit totalItems(itemsCount*(timecards.count()-1));
         }
     }
 
-    int currItem = 0;
-    int dmp = 0;
+    m_currItem = 0;
+//    int dmp = 0;
     if(m_idDirigente != -1) {
-        for(int i = 0; i < (timecards.count()); i++) {
-            if(SqlQueries::timeCardExists(timecards.at(i), QString::number(m_idDirigente))) {
-                Competenza *competenza = new Competenza(timecards.at(i), m_idDirigente);
-                if(i == 0) {
-                    dmp = (competenza->differenzaMin() < 0 ? abs(competenza->differenzaMin()) : 0);
-                    currItem++;
-                    emit currentItem(currItem);
-                    continue;
-                }
-
-                competenza->setDmpCalcolato(dmp);
-                competenza->saveMods();
-
-                dmp = competenza->differenzaMin() < 0 ? abs(competenza->differenzaMin()) : 0;
-            } else {
-                dmp = 0;
+        ricalcolaDmp(timecards, m_idDirigente);
+    } else {
+        if(m_idUnita != -1) {
+            // ricalcolo deficit dei medici di una unità
+            QVector<int> idsDirigenti = SqlQueries::getDoctorsIdsFromUnitInTimecard(timecards.at(0), m_idUnita);
+            for(int id : idsDirigenti) {
+                ricalcolaDmp(timecards, id);
             }
-
-            currItem++;
-            emit currentItem(currItem);
+        } else {
+            // ricalcolo deficit di tutti i medici di tutte le unità
+            QVector<int> idsDirigenti = SqlQueries::getDoctorsIdsFromUnitInTimecard(timecards.at(0), -1);
+            for(int id : idsDirigenti) {
+                ricalcolaDmp(timecards, id);
+            }
         }
     }
-
-//    int currRow = 0;
-
-//    if(m_idDirigente != -1) {
-//        currRow++;
-//        emit currentItem(currRow);
-//        QSqlQuery query;
-//        query.prepare("SELECT id_unita FROM " + m_idMese + " WHERE id_medico='" + QString::number(m_idDirigente) + "';");
-//        if(!query.exec()) {
-//            qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
-//        }
-//        while(query.next()) {
-//            m_idUnita = query.value(0).toInt();
-//        }
-
-//        m_unitaName = getUnitaName(QString::number(m_idUnita));
-//        m_competenza = new Competenza(m_idMese,m_idDirigente);
-
-//        // stampo un singolo report
-//        printDirigente(painter);
-//    } else {
-//        foreach (QString unitaId, unitaIdList) {
-//            m_unitaName = getUnitaName(unitaId);
-//            m_idUnita = unitaId.toInt();
-//            QStringList dirigentiIdList = getDirigentiIDs(unitaId);
-
-//            foreach (QString dirigenteId, dirigentiIdList) {
-//                currRow++;
-//                emit currentItem(currRow);
-//                if(!isFileStart)
-//                    writer.newPage();
-//                m_competenza = new Competenza(m_idMese,dirigenteId.toInt());
-//                printDirigente(painter);
-//                isFileStart = false;
-//            }
-//        }
-//    }
 
     emit computeFinished();
 }

@@ -26,7 +26,6 @@
 #include "okularcsvtimecardsreader.h"
 #include "competenzeunitaexporter.h"
 #include "competenzedirigenteexporter.h"
-#include "dmpcompute.h"
 
 #include <QMainWindow>
 #include <QFileInfo>
@@ -196,7 +195,6 @@ private:
     OkularCsvTimeCardsReader okularReader;
     CompetenzeUnitaExporter unitaCompetenzeExporter;
     CompetenzeDirigenteExporter dirigenteCompetenzeExporter;
-    DmpCompute dmpCompute;
 
     QString backupFileName(const QString &time) const;
     void backupDatabase(const QString &time, bool quiet);

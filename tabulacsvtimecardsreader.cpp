@@ -23,6 +23,7 @@
 #include "sqlqueries.h"
 #include "dipendente.h"
 #include "nomiunitadialog.h"
+#include "dmpcompute.h"
 
 #include <QDate>
 #include <QFile>
@@ -146,6 +147,16 @@ void TabulaCsvTimeCardsReader::run()
             }
 
             SqlQueries::addTimeCard(tableName, m_dipendente);
+
+//            The::dmpCompute()->setTable(tableName);
+//            The::dmpCompute()->setUnita(m_dipendente->unita());
+//            const int docId = SqlQueries::doctorId(m_dipendente->matricola());
+//            if(docId == -1) {
+//                qDebug() << Q_FUNC_INFO << "ID dirigente non trovato per ricalcolo del deficit";
+//            } else {
+//                The::dmpCompute()->setDirigente(docId);
+//                The::dmpCompute()->start();
+//            }
 
             forseNotte = false;
             tipoPrecedente.clear();

@@ -30,6 +30,7 @@
 #include "utilities.h"
 #include "databasewizard.h"
 #include "sqldatabasemanager.h"
+#include "dmpcompute.h"
 #include "aboutdialog.h"
 #include "configdialog.h"
 #include "resetdialog.h"
@@ -175,9 +176,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&dirigenteCompetenzeExporter, SIGNAL(exportFinished(QString)), this, SLOT(exported(QString)));
     connect(&dirigenteCompetenzeExporter, SIGNAL(totalRows(int)), this, SLOT(setTotalRows(int)));
     connect(&dirigenteCompetenzeExporter, SIGNAL(currentRow(int)), this, SLOT(setCurrentRow(int)));
-    connect(&dmpCompute, SIGNAL(computeFinished()), this, SLOT(computed()));
-    connect(&dmpCompute, SIGNAL(currentItem(int)), this, SLOT(setCurrentRow(int)));
-    connect(&dmpCompute, SIGNAL(totalItems(int)), this, SLOT(setTotalRows(int)));
 
     ui->tabWidget->setCurrentIndex(0);
     ui->tabWidget->show();
@@ -902,6 +900,10 @@ void MainWindow::exported(QString file)
 
 void MainWindow::computed()
 {
+    disconnect(The::dmpCompute(), SIGNAL(computeFinished()), 0, 0);
+    disconnect(The::dmpCompute(), SIGNAL(currentItem(int)), 0, 0);
+    disconnect(The::dmpCompute(), SIGNAL(totalItems(int)), 0, 0);
+
     ui->actionRicalcolaDeficit->setEnabled(true);
     progressBar->setVisible(false);
     msgLabel->setText("");
@@ -1322,10 +1324,14 @@ void MainWindow::on_actionRicalcolaDeficit_triggered()
     progressBar->setVisible(true);
     msgLabel->setText("Ricalcolo deficit...");
 
-    dmpCompute.setTable(printDialog->currentMeseData());
-    dmpCompute.setUnita(printDialog->currentUnitaData());
-    dmpCompute.setDirigente(printDialog->currentDirigenteData());
-    dmpCompute.start();
+    connect(The::dmpCompute(), SIGNAL(computeFinished()), this, SLOT(computed()));
+    connect(The::dmpCompute(), SIGNAL(currentItem(int)), this, SLOT(setCurrentRow(int)));
+    connect(The::dmpCompute(), SIGNAL(totalItems(int)), this, SLOT(setTotalRows(int)));
+
+    The::dmpCompute()->setTable(printDialog->currentMeseData());
+    The::dmpCompute()->setUnita(printDialog->currentUnitaData());
+    The::dmpCompute()->setDirigente(printDialog->currentDirigenteData());
+    The::dmpCompute()->start();
 }
 
 void MainWindow::on_noteLine_textEdited(const QString &arg1)
