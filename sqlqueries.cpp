@@ -965,12 +965,15 @@ QString SqlQueries::getUnitaNomeCompleto(const int &id)
 QVector<int> SqlQueries::getDoctorsIdsFromUnitInTimecard(const QString &timecard, const int &unitId)
 {
     QVector<int> ids;
+    QString whereClause;
+    if(unitId != -1)
+        whereClause = "WHERE " + timecard + ".id_unita='" + QString::number(unitId) + "' ";
     QSqlQuery query;
     query.prepare("SELECT " + timecard + ".id_medico,medici.nome "
                   "FROM " + timecard + " "
                   "LEFT JOIN medici ON "
                   + timecard + ".id_medico=medici.id "
-                  "WHERE " + timecard + ".id_unita='" + QString::number(unitId) + "' "
+                  + whereClause +
                   "ORDER BY medici.nome;");
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
