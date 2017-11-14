@@ -66,6 +66,16 @@ void CompetenzeUnitaExporter::setMese(const QString &timecard)
     m_timecard = timecard;
 }
 
+void CompetenzeUnitaExporter::setPrintCasi(bool ok)
+{
+    m_printCasi = ok;
+}
+
+void CompetenzeUnitaExporter::setPrintData(bool ok)
+{
+    m_printData = ok;
+}
+
 void CompetenzeUnitaExporter::run()
 {
     QVector<int> unitaIdList;
@@ -121,6 +131,9 @@ void CompetenzeUnitaExporter::run()
 
         disegnaTabella(painter);
 
+        if(m_printData)
+            printData(painter);
+
         QString unitaName = SqlQueries::getUnitaNomeCompleto(unitaId);
 
         printMonth(painter, mese);
@@ -137,6 +150,8 @@ void CompetenzeUnitaExporter::run()
                 counter = 0;
                 writer.newPage();
                 disegnaTabella(painter);
+                if(m_printData)
+                    printData(painter);
                 printMonth(painter, mese);
                 printUnitaName(painter, unitaName);
                 printUnitaNumber(painter, unitaId);
@@ -161,7 +176,9 @@ void CompetenzeUnitaExporter::run()
             printNumOreRepOrd(painter,m_competenza->numOreRepOrd() > 0 ? QString::number(m_competenza->numOreRepOrd()) : "//",counter);
             counter++;
         }
-        printCasi(painter, counter);
+
+        if(m_printCasi)
+            printCasi(painter);
 
         isFileStart = false;
     }
@@ -775,7 +792,7 @@ void CompetenzeUnitaExporter::printNumOreRepOrd(QPainter &painter, const QString
     painter.restore();
 }
 
-void CompetenzeUnitaExporter::printCasi(QPainter &painter, int row)
+void CompetenzeUnitaExporter::printCasi(QPainter &painter)
 {
     painter.save();
     painter.setPen(Qt::black);
@@ -799,30 +816,17 @@ void CompetenzeUnitaExporter::printCasi(QPainter &painter, int row)
     painter.drawText(getRect(m_totalRows, 3), Qt::AlignHCenter | Qt::AlignVCenter, QString::number(m_casiGuarNott));
     painter.drawText(getRect(m_totalRows, 2), Qt::AlignHCenter | Qt::AlignVCenter, QString::number(m_casiGranFest));
 
-//    if(text.isEmpty() || text == "//") {
-//        painter.setPen(Qt::NoPen);
-//        painter.setBrush(Qt::lightGray);
-//        painter.drawRect(getRect(row, 11));
-//    } else {
-//        m_casiStrRepeOrd++;
-//        painter.drawText(getRect(row, 11), Qt::AlignHCenter | Qt::AlignVCenter, text);
-//    }
+    painter.restore();
+}
 
-//    qDebug() << m_casiIndennitaNotturna = 0;
-//    m_casiIndennitaFestiva = 0;
-//    m_casiStrRepaOrd = 0;
-//    m_casiStrRepaFesONott = 0;
-//    m_casiStrRepaFesENott = 0;
-//    m_casiStrRepeOrd = 0;
-//    m_casiStrRepeFesONott = 0;
-//    m_casiStrRepeFesENott = 0;
-//    m_casiStrGuarOrd = 0;
-//    m_casiStrGuarFesONott = 0;
-//    m_casiStrGuarFesENott = 0;
-//    m_casiRepeTurni = 0;
-//    m_casiRepeOre = 0;
-//    m_casiGuarNott = 0;
-//    m_casiGranFest = 0;
+void CompetenzeUnitaExporter::printData(QPainter &painter)
+{
+    painter.save();
+    painter.setPen(Qt::black);
+    painter.setFont(headerLightFont());
+    painter.rotate(-90);
+//    painter.setFont(headerFont());
+    painter.drawText(QRect(-m_gridHeight*m_totalHeaderHeight, m_tableWidth, m_gridHeight*m_thirdHeaderHeight, m_gridWidth), Qt::AlignCenter, QDateTime::currentDateTime().toString("dd/MM/yyyy hh:mm:ss"));
     painter.restore();
 }
 

@@ -32,6 +32,7 @@ PrintDialog::PrintDialog(QWidget *parent) :
     ui(new Ui::PrintDialog)
 {
     ui->setupUi(this);
+    ui->casiCB->setChecked(true);
 }
 
 PrintDialog::~PrintDialog()
@@ -120,6 +121,7 @@ void PrintDialog::setCurrentOp(const PrintDialog::ToolOps &op)
         setWindowTitle("Stampa competenze");
         ui->saveButton->setText("Genera PDF");
         ui->destWidget->setVisible(true);
+        ui->optnsWidget->setVisible(true);
         ui->dirigenteCB->setVisible(false);
         ui->dirigenteLabel->setVisible(false);
         adjustSize();
@@ -129,6 +131,7 @@ void PrintDialog::setCurrentOp(const PrintDialog::ToolOps &op)
         setWindowTitle("Stampa competenze");
         ui->saveButton->setText("Genera PDF");
         ui->destWidget->setVisible(true);
+        ui->optnsWidget->setVisible(false);
         ui->dirigenteCB->setVisible(true);
         ui->dirigenteLabel->setVisible(true);
         adjustSize();
@@ -138,6 +141,7 @@ void PrintDialog::setCurrentOp(const PrintDialog::ToolOps &op)
         setWindowTitle("Ricalcola Deficit");
         ui->saveButton->setText("Ricalcola");
         ui->destWidget->setVisible(false);
+        ui->optnsWidget->setVisible(false);
         ui->dirigenteCB->setVisible(true);
         ui->dirigenteLabel->setVisible(true);
         adjustSize();
@@ -148,6 +152,16 @@ void PrintDialog::setCurrentOp(const PrintDialog::ToolOps &op)
 PrintDialog::ToolOps PrintDialog::currentOp() const
 {
     return m_currOp;
+}
+
+bool PrintDialog::casiIsChecked() const
+{
+    return ui->casiCB->isChecked();
+}
+
+bool PrintDialog::dataIsChecked() const
+{
+    return ui->dataCB->isChecked();
 }
 
 void PrintDialog::on_cancelButton_clicked()

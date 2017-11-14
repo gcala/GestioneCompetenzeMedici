@@ -56,6 +56,8 @@ public:
     void setPath(const QString &path);
     void setCurrentOp(const ToolOps &op);
     ToolOps currentOp() const;
+    bool casiIsChecked() const;
+    bool dataIsChecked() const;
 
 private slots:
     void on_cancelButton_clicked();

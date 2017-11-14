@@ -37,6 +37,8 @@ public:
     void setPath(const QString &path);
     void setUnita(int id);
     void setMese(const QString &timecard);
+    void setPrintCasi(bool ok);
+    void setPrintData(bool ok);
 
 protected:
     void run() override;
@@ -77,6 +79,9 @@ private:
     int m_casiGuarNott;
     int m_casiGranFest;
 
+    bool m_printCasi;
+    bool m_printData;
+
     const int m_tableHeight;
 
     void disegnaTabella(QPainter &painter);
@@ -107,7 +112,8 @@ private:
     void printNumOreRepFesENot(QPainter &painter, const QString &text, int row);
     void printNumOreRepFesONot(QPainter &painter, const QString &text, int row);
     void printNumOreRepOrd(QPainter &painter, const QString &text, int row);
-    void printCasi(QPainter &painter, int row);
+    void printCasi(QPainter &painter);
+    void printData(QPainter &painter);
     QRect getRect(int row, int column) const;
 };
 

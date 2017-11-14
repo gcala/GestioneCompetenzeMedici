@@ -1135,6 +1135,8 @@ void MainWindow::on_actionStampaCompetenzeUnita_triggered()
     unitaCompetenzeExporter.setPath(printDialog->path());
     unitaCompetenzeExporter.setMese(printDialog->currentMeseData());
     unitaCompetenzeExporter.setUnita(printDialog->currentUnitaData());
+    unitaCompetenzeExporter.setPrintCasi(printDialog->casiIsChecked());
+    unitaCompetenzeExporter.setPrintData(printDialog->dataIsChecked());
     unitaCompetenzeExporter.start();
 }
 
