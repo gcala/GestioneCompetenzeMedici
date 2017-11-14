@@ -98,6 +98,22 @@ void CompetenzeUnitaExporter::run()
     int currRow = 0;
 
     foreach (int unitaId, unitaIdList) {
+        m_casiIndennitaNotturna = 0;
+        m_casiIndennitaFestiva = 0;
+        m_casiStrRepaOrd = 0;
+        m_casiStrRepaFesONott = 0;
+        m_casiStrRepaFesENott = 0;
+        m_casiStrRepeOrd = 0;
+        m_casiStrRepeFesONott = 0;
+        m_casiStrRepeFesENott = 0;
+        m_casiStrGuarOrd = 0;
+        m_casiStrGuarFesONott = 0;
+        m_casiStrGuarFesENott = 0;
+        m_casiRepeTurni = 0;
+        m_casiRepeOre = 0;
+        m_casiGuarNott = 0;
+        m_casiGranFest = 0;
+
         currRow++;
         emit currentRow(currRow);
         if(!isFileStart)
@@ -145,6 +161,8 @@ void CompetenzeUnitaExporter::run()
             printNumOreRepOrd(painter,m_competenza->numOreRepOrd() > 0 ? QString::number(m_competenza->numOreRepOrd()) : "//",counter);
             counter++;
         }
+        printCasi(painter, counter);
+
         isFileStart = false;
     }
 
@@ -527,6 +545,7 @@ void CompetenzeUnitaExporter::printNotturno(QPainter &painter, const QString &te
         painter.setBrush(Qt::lightGray);
         painter.drawRect(getRect(row, 16));
     } else {
+        m_casiIndennitaNotturna++;
         painter.drawText(getRect(row, 16), Qt::AlignHCenter | Qt::AlignVCenter, text);
     }
     painter.restore();
@@ -542,6 +561,7 @@ void CompetenzeUnitaExporter::printFestivo(QPainter &painter, const QString &tex
         painter.setBrush(Qt::lightGray);
         painter.drawRect(getRect(row, 15));
     } else {
+        m_casiIndennitaFestiva++;
         painter.drawText(getRect(row, 15), Qt::AlignHCenter | Qt::AlignVCenter, text);
     }
         painter.restore();
@@ -557,6 +577,7 @@ void CompetenzeUnitaExporter::printStrRepartoOrdin(QPainter &painter, const QStr
         painter.setBrush(Qt::lightGray);
         painter.drawRect(getRect(row, 14));
     } else {
+        m_casiStrRepaOrd++;
         painter.drawText(getRect(row, 14), Qt::AlignHCenter | Qt::AlignVCenter, text);
     }
     painter.restore();
@@ -572,6 +593,7 @@ void CompetenzeUnitaExporter::printStrRepartoFesONott(QPainter &painter, const Q
         painter.setBrush(Qt::lightGray);
         painter.drawRect(getRect(row, 13));
     } else {
+        m_casiStrRepaFesONott++;
         painter.drawText(getRect(row, 13), Qt::AlignHCenter | Qt::AlignVCenter, text);
     }
     painter.restore();
@@ -587,6 +609,7 @@ void CompetenzeUnitaExporter::printStrRepartoFesENott(QPainter &painter, const Q
         painter.setBrush(Qt::lightGray);
         painter.drawRect(getRect(row, 12));
     } else {
+        m_casiStrRepaFesENott++;
         painter.drawText(getRect(row, 12), Qt::AlignHCenter | Qt::AlignVCenter, text);
     }
     painter.restore();
@@ -602,6 +625,7 @@ void CompetenzeUnitaExporter::printRepNumTurni(QPainter &painter, const QString 
         painter.setBrush(Qt::lightGray);
         painter.drawRect(getRect(row, 5));
     } else {
+        m_casiRepeTurni++;
         painter.drawText(getRect(row, 5), Qt::AlignHCenter | Qt::AlignVCenter, text);
     }
     painter.restore();
@@ -617,6 +641,7 @@ void CompetenzeUnitaExporter::printRepNumOre(QPainter &painter, const QString &t
         painter.setBrush(Qt::lightGray);
         painter.drawRect(getRect(row, 4));
     } else {
+        m_casiRepeOre++;
         painter.drawText(getRect(row, 4), Qt::AlignHCenter | Qt::AlignVCenter, text);
     }
     painter.restore();
@@ -632,6 +657,7 @@ void CompetenzeUnitaExporter::printNumGuarNott(QPainter &painter, const QString 
         painter.setBrush(Qt::lightGray);
         painter.drawRect(getRect(row, 3));
     } else {
+        m_casiGuarNott++;
         painter.drawText(getRect(row, 3), Qt::AlignHCenter | Qt::AlignVCenter, text);
     }
     painter.restore();
@@ -647,6 +673,7 @@ void CompetenzeUnitaExporter::printNumGfFesNott(QPainter &painter, const QString
         painter.setBrush(Qt::lightGray);
         painter.drawRect(getRect(row, 2));
     } else {
+        m_casiGranFest++;
         painter.drawText(getRect(row, 2), Qt::AlignHCenter | Qt::AlignVCenter, text);
     }
     painter.restore();
@@ -662,6 +689,7 @@ void CompetenzeUnitaExporter::printNumOreGuarFesENot(QPainter &painter, const QS
         painter.setBrush(Qt::lightGray);
         painter.drawRect(getRect(row, 6));
     } else {
+        m_casiStrGuarFesENott++;
         painter.drawText(getRect(row, 6), Qt::AlignHCenter | Qt::AlignVCenter, text);
     }
     painter.restore();
@@ -677,6 +705,7 @@ void CompetenzeUnitaExporter::printNumOreGuarFesONot(QPainter &painter, const QS
         painter.setBrush(Qt::lightGray);
         painter.drawRect(getRect(row, 7));
     } else {
+        m_casiStrGuarFesONott++;
         painter.drawText(getRect(row, 7), Qt::AlignHCenter | Qt::AlignVCenter, text);
     }
     painter.restore();
@@ -692,6 +721,7 @@ void CompetenzeUnitaExporter::printNumOreGuarOrd(QPainter &painter, const QStrin
         painter.setBrush(Qt::lightGray);
         painter.drawRect(getRect(row, 8));
     } else {
+        m_casiStrGuarOrd++;
         painter.drawText(getRect(row, 8), Qt::AlignHCenter | Qt::AlignVCenter, text);
     }
     painter.restore();
@@ -707,6 +737,7 @@ void CompetenzeUnitaExporter::printNumOreRepFesENot(QPainter &painter, const QSt
         painter.setBrush(Qt::lightGray);
         painter.drawRect(getRect(row, 9));
     } else {
+        m_casiStrRepeFesENott++;
         painter.drawText(getRect(row, 9), Qt::AlignHCenter | Qt::AlignVCenter, text);
     }
     painter.restore();
@@ -722,6 +753,7 @@ void CompetenzeUnitaExporter::printNumOreRepFesONot(QPainter &painter, const QSt
         painter.setBrush(Qt::lightGray);
         painter.drawRect(getRect(row, 10));
     } else {
+        m_casiStrRepeFesONott++;
         painter.drawText(getRect(row, 10), Qt::AlignHCenter | Qt::AlignVCenter, text);
     }
     painter.restore();
@@ -737,8 +769,60 @@ void CompetenzeUnitaExporter::printNumOreRepOrd(QPainter &painter, const QString
         painter.setBrush(Qt::lightGray);
         painter.drawRect(getRect(row, 11));
     } else {
+        m_casiStrRepeOrd++;
         painter.drawText(getRect(row, 11), Qt::AlignHCenter | Qt::AlignVCenter, text);
     }
+    painter.restore();
+}
+
+void CompetenzeUnitaExporter::printCasi(QPainter &painter, int row)
+{
+    painter.save();
+    painter.setPen(Qt::black);
+    painter.setFont(badgeFont());
+
+    painter.drawText(QRect(m_tableWidth-m_gridWidth*18, m_gridHeight*m_totalHeaderHeight+(m_totalRows*m_gridHeight), m_gridWidth*2, m_gridHeight), Qt::AlignRight | Qt::AlignVCenter, "Casi:");
+
+    painter.drawText(getRect(m_totalRows, 16), Qt::AlignHCenter | Qt::AlignVCenter, QString::number(m_casiIndennitaNotturna));
+    painter.drawText(getRect(m_totalRows, 15), Qt::AlignHCenter | Qt::AlignVCenter, QString::number(m_casiIndennitaFestiva));
+    painter.drawText(getRect(m_totalRows, 14), Qt::AlignHCenter | Qt::AlignVCenter, QString::number(m_casiStrRepaOrd));
+    painter.drawText(getRect(m_totalRows, 13), Qt::AlignHCenter | Qt::AlignVCenter, QString::number(m_casiStrRepaFesONott));
+    painter.drawText(getRect(m_totalRows, 12), Qt::AlignHCenter | Qt::AlignVCenter, QString::number(m_casiStrRepaFesENott));
+    painter.drawText(getRect(m_totalRows, 11), Qt::AlignHCenter | Qt::AlignVCenter, QString::number(m_casiStrRepeOrd));
+    painter.drawText(getRect(m_totalRows, 10), Qt::AlignHCenter | Qt::AlignVCenter, QString::number(m_casiStrRepeFesONott));
+    painter.drawText(getRect(m_totalRows, 9), Qt::AlignHCenter | Qt::AlignVCenter, QString::number(m_casiStrRepeFesENott));
+    painter.drawText(getRect(m_totalRows, 8), Qt::AlignHCenter | Qt::AlignVCenter, QString::number(m_casiStrGuarOrd));
+    painter.drawText(getRect(m_totalRows, 7), Qt::AlignHCenter | Qt::AlignVCenter, QString::number(m_casiStrGuarFesONott));
+    painter.drawText(getRect(m_totalRows, 6), Qt::AlignHCenter | Qt::AlignVCenter, QString::number(m_casiStrGuarFesENott));
+    painter.drawText(getRect(m_totalRows, 5), Qt::AlignHCenter | Qt::AlignVCenter, QString::number(m_casiRepeTurni));
+    painter.drawText(getRect(m_totalRows, 4), Qt::AlignHCenter | Qt::AlignVCenter, QString::number(m_casiRepeOre));
+    painter.drawText(getRect(m_totalRows, 3), Qt::AlignHCenter | Qt::AlignVCenter, QString::number(m_casiGuarNott));
+    painter.drawText(getRect(m_totalRows, 2), Qt::AlignHCenter | Qt::AlignVCenter, QString::number(m_casiGranFest));
+
+//    if(text.isEmpty() || text == "//") {
+//        painter.setPen(Qt::NoPen);
+//        painter.setBrush(Qt::lightGray);
+//        painter.drawRect(getRect(row, 11));
+//    } else {
+//        m_casiStrRepeOrd++;
+//        painter.drawText(getRect(row, 11), Qt::AlignHCenter | Qt::AlignVCenter, text);
+//    }
+
+//    qDebug() << m_casiIndennitaNotturna = 0;
+//    m_casiIndennitaFestiva = 0;
+//    m_casiStrRepaOrd = 0;
+//    m_casiStrRepaFesONott = 0;
+//    m_casiStrRepaFesENott = 0;
+//    m_casiStrRepeOrd = 0;
+//    m_casiStrRepeFesONott = 0;
+//    m_casiStrRepeFesENott = 0;
+//    m_casiStrGuarOrd = 0;
+//    m_casiStrGuarFesONott = 0;
+//    m_casiStrGuarFesENott = 0;
+//    m_casiRepeTurni = 0;
+//    m_casiRepeOre = 0;
+//    m_casiGuarNott = 0;
+//    m_casiGranFest = 0;
     painter.restore();
 }
 
