@@ -107,22 +107,23 @@ void CompetenzeUnitaExporter::run()
 
     int currRow = 0;
 
+    m_casiIndennitaNotturna = 0;
+    m_casiIndennitaFestiva = 0;
+    m_casiStrRepaOrd = 0;
+    m_casiStrRepaFesONott = 0;
+    m_casiStrRepaFesENott = 0;
+    m_casiStrRepeOrd = 0;
+    m_casiStrRepeFesONott = 0;
+    m_casiStrRepeFesENott = 0;
+    m_casiStrGuarOrd = 0;
+    m_casiStrGuarFesONott = 0;
+    m_casiStrGuarFesENott = 0;
+    m_casiRepeTurni = 0;
+    m_casiRepeOre = 0;
+    m_casiGuarNott = 0;
+    m_casiGranFest = 0;
+
     foreach (int unitaId, unitaIdList) {
-        m_casiIndennitaNotturna = 0;
-        m_casiIndennitaFestiva = 0;
-        m_casiStrRepaOrd = 0;
-        m_casiStrRepaFesONott = 0;
-        m_casiStrRepaFesENott = 0;
-        m_casiStrRepeOrd = 0;
-        m_casiStrRepeFesONott = 0;
-        m_casiStrRepeFesENott = 0;
-        m_casiStrGuarOrd = 0;
-        m_casiStrGuarFesONott = 0;
-        m_casiStrGuarFesENott = 0;
-        m_casiRepeTurni = 0;
-        m_casiRepeOre = 0;
-        m_casiGuarNott = 0;
-        m_casiGranFest = 0;
 
         currRow++;
         emit currentRow(currRow);
@@ -177,11 +178,11 @@ void CompetenzeUnitaExporter::run()
             counter++;
         }
 
-        if(m_printCasi)
-            printCasi(painter);
-
         isFileStart = false;
     }
+
+    if(m_printCasi)
+        printCasi(painter);
 
     emit exportFinished(m_path + QDir::separator() + fileName);
 }
