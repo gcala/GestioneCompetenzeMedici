@@ -335,6 +335,15 @@ void TabulaCsvTimeCardsReader::run()
                     forseNotte = true;
                     break;
                 }
+                if(causale == "ECCR" && (numTimbrature % 2 != 0)) {
+                    forseNotte = true;
+                    break;
+                }
+            }
+
+            if(isRestDay && numTimbrature > 0 && (numTimbrature%2==0)) {
+                m_dipendente->addGuardiaDiurna(QString::number(dataCorrente.day()));
+                forseNotte = false;
             }
         }
     }
