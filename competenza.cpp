@@ -55,8 +55,10 @@ public:
         m_g_n_fes_D = 0;
         m_totOreGuardie = 0;
         m_dmp = 0;
+        m_orarioGiornaliero = 0;
         m_dmp_calcolato = 0;
         m_defaultDmp = 0;
+        m_defaultOrarioGiornaliero = 0;
         m_note.clear();
         m_defaultNote.clear();
         m_modded = false;
@@ -115,6 +117,7 @@ public:
     QMap<int, GuardiaType> guardiaDiurnaMap() const;
     QMap<int, GuardiaType> guardiaNotturnaMap() const;
     void setDmp(const int &minutes);
+    void setOrarioGiornalieroMod(const int &minutes);
     void setDmpCalcolato(const int &minutes);
     int dmp() const;
     void setNote(const QString &note);
@@ -170,6 +173,7 @@ public:
     bool isDmpModded() const;
     bool isAltreModded() const;
     bool isNoteModded() const;
+    bool isOrarioGiornalieroModded() const;
 
 private:
     const int m_arrotondamento;
@@ -203,7 +207,9 @@ private:
     int m_totOreGuardie;
     int m_dmp;
     int m_dmp_calcolato;
+    int m_orarioGiornaliero;
     int m_defaultDmp;
+    int m_defaultOrarioGiornaliero;
     QString m_note;
     QString m_defaultNote;
     QStringList m_altreAssenze;
@@ -213,6 +219,7 @@ private:
     bool m_gnotturneModded;
     bool m_repModded;
     bool m_dmpModded;
+    bool m_orarioGiornalieroModded;
     bool m_altreModded;
     bool m_noteModded;
 
@@ -232,6 +239,7 @@ void CompetenzaData::buildDipendente()
 {
     m_dipendente->resetProperties();
     m_defaultDmp = -1;
+    m_defaultOrarioGiornaliero = 0;
     m_defaultNote.clear();
     m_unitaId = -1;
     m_orePagate = 0;
@@ -252,7 +260,7 @@ void CompetenzaData::buildDipendente()
         return;
     }
 
-    if(query.size() != 29) {
+    if(query.size() != 30) {
         qDebug() << Q_FUNC_INFO << ":: ERRORE :: dimensione query non corretta";
         return;
     }
@@ -396,6 +404,13 @@ void CompetenzaData::buildDipendente()
         }
     }
 
+    m_orarioGiornaliero = query.at(29).toInt();       // orario giornaliero
+    if(m_orarioGiornaliero >= 0) {
+        m_modded = true;
+        m_orarioGiornalieroModded = true;
+    }
+    m_defaultOrarioGiornaliero = m_orarioGiornaliero;
+
     getOrePagate();
     calcOreGuardia();
 }
@@ -473,12 +488,12 @@ QString CompetenzaData::assenzeTotali() const
 
 QString CompetenzaData::orarioGiornaliero()
 {
-    return inOrario(m_dipendente->minutiGiornalieri());
+    return inOrario((m_orarioGiornaliero >= 0 ? m_orarioGiornaliero : m_dipendente->minutiGiornalieri()));
 }
 
 QString CompetenzaData::oreDovute()
 {
-    return inOrario(m_dipendente->minutiGiornalieri() * giorniLavorati().toInt());
+    return inOrario((m_orarioGiornaliero >= 0 ? m_orarioGiornaliero : m_dipendente->minutiGiornalieri()) * giorniLavorati().toInt());
 }
 
 QString CompetenzaData::oreEffettuate()
@@ -515,7 +530,7 @@ QString CompetenzaData::differenzaOreSenzaDmp()
                     + m_dipendente->minutiEccr()
                     + m_dipendente->minutiGrep()
                     + m_dipendente->minutiGuar()
-                    - (m_dipendente->minutiGiornalieri() * giorniLavorati().toInt()));
+                    - ((m_orarioGiornaliero >= 0 ? m_orarioGiornaliero : m_dipendente->minutiGiornalieri()) * giorniLavorati().toInt()));
 }
 
 int CompetenzaData::differenzaMin() const
@@ -525,7 +540,7 @@ int CompetenzaData::differenzaMin() const
            + m_dipendente->minutiGrep()
            + m_dipendente->minutiGuar()
            - dmp()
-           - (m_dipendente->minutiGiornalieri() * giorniLavorati().toInt());
+           - ((m_orarioGiornaliero >= 0 ? m_orarioGiornaliero : m_dipendente->minutiGiornalieri()) * giorniLavorati().toInt());
 }
 
 QString CompetenzaData::deficitOrario()
@@ -535,7 +550,7 @@ QString CompetenzaData::deficitOrario()
             + m_dipendente->minutiGrep()
             + m_dipendente->minutiGuar()
             - dmp()
-            - (m_dipendente->minutiGiornalieri() * giorniLavorati().toInt());
+            - ((m_orarioGiornaliero >= 0 ? m_orarioGiornaliero : m_dipendente->minutiGiornalieri()) * giorniLavorati().toInt());
 
     if( val < 0)
         return inOrario(abs(val));
@@ -698,6 +713,11 @@ void CompetenzaData::setDmp(const int &minutes)
     m_dmp = minutes;
 }
 
+void CompetenzaData::setOrarioGiornalieroMod(const int &minutes)
+{
+    m_orarioGiornaliero = minutes;
+}
+
 void CompetenzaData::setDmpCalcolato(const int &minutes)
 {
     m_dmp_calcolato = minutes;
@@ -746,7 +766,8 @@ bool CompetenzaData::isModded() const
             m_guardiaNotturnaMap != m_defaultGNDates ||
             m_rep != m_defaultRep ||
             m_altreAssenze != m_defaultAltreAssenze ||
-            m_note != m_defaultNote);
+            m_note != m_defaultNote ||
+            m_orarioGiornaliero != m_defaultOrarioGiornaliero);
 }
 
 bool CompetenzaData::isRestorable() const
@@ -808,6 +829,10 @@ void CompetenzaData::saveMods()
         if(temp.count() == 0)
             temp << "0,0";
         SqlQueries::saveMod(m_modTableName, "turni_reperibilita", m_id, temp.join(";"));
+    }
+
+    if(m_defaultOrarioGiornaliero != m_orarioGiornaliero) {
+        SqlQueries::saveMod(m_modTableName, "orario_giornaliero", m_id, m_orarioGiornaliero);
     }
 
     m_modded = true;
@@ -1194,6 +1219,11 @@ bool CompetenzaData::isReperibilitaModded() const
 bool CompetenzaData::isDmpModded() const
 {
     return m_dmpModded;
+}
+
+bool CompetenzaData::isOrarioGiornalieroModded() const
+{
+    return m_orarioGiornalieroModded;
 }
 
 bool CompetenzaData::isNoteModded() const
@@ -1662,6 +1692,11 @@ void Competenza::setDmp(const int &minutes)
     data->setDmp(minutes);
 }
 
+void Competenza::setOrarioGiornalieroMod(const int &minutes)
+{
+    data->setOrarioGiornalieroMod(minutes);
+}
+
 void Competenza::setDmpCalcolato(const int &minutes)
 {
     data->setDmpCalcolato(minutes);
@@ -1915,4 +1950,9 @@ bool Competenza::isAltreModded() const
 bool Competenza::isNoteModded() const
 {
     return data->isNoteModded();
+}
+
+bool Competenza::isOrarioGiornalieroModded() const
+{
+    return data->isOrarioGiornalieroModded();
 }

@@ -992,6 +992,7 @@ void MainWindow::populateCompetenzeTab()
 {
     disconnect(ui->dmpHoursEdit, SIGNAL(valueChanged(int)), 0, 0);
     disconnect(ui->dmpMinsEdit, SIGNAL(valueChanged(int)), 0, 0);
+    disconnect(ui->orarioGiornalieroEdit, SIGNAL(dateChanged(QDate)),0,0);
 
     ferieCalendar->setDateRange(m_competenza->dataIniziale(), m_competenza->dataFinale());
     congediCalendar->setDateRange(m_competenza->dataIniziale(), m_competenza->dataFinale());
@@ -1032,20 +1033,13 @@ void MainWindow::populateCompetenzeTab()
     altreCalendar->setDates(m_competenza->altreAssenzeDates());
     altreCalendar->setScopertiDates(m_competenza->scopertiDates());
 
-    ui->orarioGiornalieroLabel->setText(m_competenza->orarioGiornaliero());
-    ui->oreDovuteLabel->setText(m_competenza->oreDovute());
-    ui->oreEffettuateLabel->setText(m_competenza->oreEffettuate());
-
-    ui->oreStraordinarioRepLabel->setText(m_competenza->oreProntaDisp() > 0 ? QString::number(m_competenza->oreProntaDisp()) : "//");
+    elaboraSommario();
 
     ui->noteLine->setText(m_competenza->note());
 
-    mostraDifferenzaOre();
-    elaboraGuardie();
-    elaboraRep();
-    ui->residuoLabel->setText(m_competenza->residuoOreNonPagate());
     connect(ui->dmpHoursEdit, SIGNAL(valueChanged(int)), this, SLOT(oreCambiate(int)));
     connect(ui->dmpMinsEdit, SIGNAL(valueChanged(int)), this, SLOT(minutiCambiati(int)));
+    connect(ui->orarioGiornalieroEdit, SIGNAL(timeChanged(QTime)), this, SLOT(orarioGiornalieroCambiato(QTime)));
 }
 
 void MainWindow::elaboraGuardie()
@@ -1082,6 +1076,23 @@ void MainWindow::elaboraRep()
     ui->r_n_fer->setText(Utilities::inOrario(m_competenza->r_n_fer()));
     ui->r_n_fes->setText(Utilities::inOrario(m_competenza->r_n_fes()));
     ui->totOreRep->setText(m_competenza->oreGrep());
+}
+
+void MainWindow::elaboraSommario()
+{
+    if(m_competenza->orarioGiornaliero() == "0:00")
+        ui->orarioGiornalieroEdit->setTime(QTime(0,0));
+    else
+        ui->orarioGiornalieroEdit->setTime(QTime::fromString(m_competenza->orarioGiornaliero(),"hh:mm"));
+    ui->oreDovuteLabel->setText(m_competenza->oreDovute());
+    ui->oreEffettuateLabel->setText(m_competenza->oreEffettuate());
+
+    ui->oreStraordinarioRepLabel->setText(m_competenza->oreProntaDisp() > 0 ? QString::number(m_competenza->oreProntaDisp()) : "//");
+
+    mostraDifferenzaOre();
+    elaboraGuardie();
+    elaboraRep();
+    ui->residuoLabel->setText(m_competenza->residuoOreNonPagate());
 }
 
 void MainWindow::on_actionStampaCompetenzeDirigenti_triggered()
@@ -1283,6 +1294,13 @@ void MainWindow::oreCambiate(int ore)
     mostraDifferenzaOre();
     elaboraGuardie();
     elaboraRep();
+    ui->saveCompetenzeButton->setEnabled(m_competenza->isModded());
+}
+
+void MainWindow::orarioGiornalieroCambiato(QTime orario)
+{
+    m_competenza->setOrarioGiornalieroMod(orario.hour()*60+orario.minute());
+    elaboraSommario();
     ui->saveCompetenzeButton->setEnabled(m_competenza->isModded());
 }
 

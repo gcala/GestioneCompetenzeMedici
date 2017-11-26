@@ -41,7 +41,7 @@ TabulaCsvTimeCardsReader::TabulaCsvTimeCardsReader(QObject *parent)
                    << "MAGI" << "DS" << "LUTT"
                    << "MATR" << "104G" << "AAR1" << "AF10"
                    << "AF30" << "AF0" << "MBA3" << "MBAM";
-    causaliRMP << "RMP";
+    causaliRMP << "RMP" << "RHER";
     causaliRMC << "RMC";
     causaliDaValutare << "ECCR" << "RMC" << "GUAR" << "GREP";
     m_timeCardBegin = true;

@@ -51,6 +51,10 @@ void ResetDialog::on_restoreButton_clicked()
             SqlQueries::resetStringValue(m_tableName, "guardie_diurne", m_id);
         }
 
+        if(ui->orarioGiornoCB->isChecked()) {
+            SqlQueries::resetIntValue(m_tableName, "orario_giornaliero", m_id);
+        }
+
         if(ui->gnotturneCB->isChecked()) {
             SqlQueries::resetStringValue(m_tableName, "guardie_notturne", m_id);
         }
@@ -86,6 +90,7 @@ void ResetDialog::on_tuttoCB_toggled(bool checked)
         ui->dmpCB->setEnabled(false);
         ui->altreCB->setEnabled(false);
         ui->noteCB->setEnabled(false);
+        ui->orarioGiornoCB->setEnabled(false);
     }
 }
 
@@ -97,4 +102,5 @@ void ResetDialog::enableItems()
     ui->dmpCB->setEnabled(m_competenza->isDmpModded());
     ui->altreCB->setEnabled(m_competenza->isAltreModded());
     ui->noteCB->setEnabled(m_competenza->isNoteModded());
+    ui->orarioGiornoCB->setEnabled(m_competenza->isOrarioGiornalieroModded());
 }

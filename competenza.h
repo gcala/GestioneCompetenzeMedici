@@ -81,6 +81,7 @@ public:
     void setRep(const QMap<QDate, ValoreRep> &map);
     QMap<QDate, ValoreRep> rep() const;
     void setDmp(const int &minutes);
+    void setOrarioGiornalieroMod(const int &minutes);
     void setDmpCalcolato(const int &minutes);
     int dmp() const;
     void setNote(const QString &note);
@@ -133,6 +134,7 @@ public:
     bool isDmpModded() const;
     bool isAltreModded() const;
     bool isNoteModded() const;
+    bool isOrarioGiornalieroModded() const;
 
 signals:
 

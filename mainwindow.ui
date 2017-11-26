@@ -2748,20 +2748,17 @@
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="orarioGiornalieroLabel">
-               <property name="minimumSize">
-                <size>
-                 <width>30</width>
-                 <height>0</height>
-                </size>
-               </property>
+              <widget class="QTimeEdit" name="orarioGiornalieroEdit">
                <property name="font">
                 <font>
                  <pointsize>11</pointsize>
                 </font>
                </property>
-               <property name="text">
-                <string/>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+               <property name="buttonSymbols">
+                <enum>QAbstractSpinBox::NoButtons</enum>
                </property>
               </widget>
              </item>

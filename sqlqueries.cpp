@@ -391,7 +391,8 @@ bool SqlQueries::createTimeCardsTable(const QString &tableName)
                       "altre_assenze TEXT DEFAULT '',"
                       "nota TEXT DEFAULT '',"
                       "altro_str TEXT DEFAULT '',"
-                      "mensa TEXT DEFAULT '');");
+                      "mensa TEXT DEFAULT '',"
+                      "orario_giornaliero INTEGER DEFAULT (-1));");
     } else if(The::dbManager()->driverName() == "QMYSQL") {
         query.prepare("CREATE TABLE " + modTableName.replace("_","m_") + " "
                       "(id INT NOT NULL AUTO_INCREMENT,"
@@ -405,6 +406,7 @@ bool SqlQueries::createTimeCardsTable(const QString &tableName)
                       "nota varchar(512) DEFAULT '',"
                       "altro_str varchar(128) DEFAULT '',"
                       "mensa varchar(128) DEFAULT '',"
+                      "orario_giornaliero INT DEFAULT -1,"
                       "PRIMARY KEY (id));");
     } else {
         qDebug() << Q_FUNC_INFO << "Nessun database configurato. Esco";
@@ -673,7 +675,7 @@ void SqlQueries::resetAllDoctorMods(const QString &tableName, const int &id)
     query.prepare("UPDATE " + tableName + " " +
                   "SET guardie_diurne=:guardie_diurne,guardie_notturne=:guardie_notturne,"
                   "turni_reperibilita=:turni_reperibilita,dmp=:dmp,altre_assenze=:altre_assenze,nota=:nota,"
-                  "altro_str=:altro_str,mensa=:mensa "
+                  "altro_str=:altro_str,mensa=:mensa,orario_giornaliero=:orario_giornaliero "
                   "WHERE id_medico=" + QString::number(id) + ";");
     query.bindValue(":guardie_diurne", QString());
     query.bindValue(":guardie_notturne", QString());
@@ -683,6 +685,7 @@ void SqlQueries::resetAllDoctorMods(const QString &tableName, const int &id)
     query.bindValue(":nota", QString());
     query.bindValue(":altro_str", QString());
     query.bindValue(":mensa", QString());
+    query.bindValue(":orario_giornaliero", -1);
 
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
@@ -803,7 +806,8 @@ QVariantList SqlQueries::getDoctorTimecard(const QString &tableName, const QStri
                   + modTableName + ".altre_assenze,"
                   + tableName + ".id_unita,"
                   + modTableName + ".nota,"
-                  + tableName + ".scoperti "
+                  + tableName + ".scoperti, "
+                  + modTableName + ".orario_giornaliero "
                   + "FROM " + tableName + " LEFT JOIN medici ON medici.id=" + tableName + ".id_medico "
                   + "LEFT JOIN unita ON unita.id=" + tableName + ".id_unita "
                   + "LEFT JOIN " + modTableName + " ON " + modTableName + ".id_medico=" + tableName + ".id_medico "
@@ -844,6 +848,7 @@ QVariantList SqlQueries::getDoctorTimecard(const QString &tableName, const QStri
         result << query.value(26); // id unità
         result << query.value(27); // nota
         result << query.value(28); // scoperti
+        result << query.value(29); // orario_giornaliero
     }
 
     return result;

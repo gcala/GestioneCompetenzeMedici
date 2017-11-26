@@ -103,6 +103,7 @@ private slots:
     void on_actionCaricaCsv_triggered();
     void minutiCambiati(int mins);
     void oreCambiate(int ore);
+    void orarioGiornalieroCambiato(QTime orario);
     void on_actionInformazioni_triggered();
     void on_actionDonazione_triggered();
     void on_actionConfigura_triggered();
@@ -233,6 +234,7 @@ private:
     void mostraDifferenzaOre();
     void elaboraGuardie();
     void elaboraRep();
+    void elaboraSommario();
 };
 
 #endif // MAINWINDOW_H
