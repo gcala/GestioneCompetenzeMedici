@@ -124,7 +124,7 @@ void CompetenzeUnitaExporter::run()
     m_casiGranFest = 0;
 
     foreach (int unitaId, unitaIdList) {
-
+        QStringList notes;
         currRow++;
         emit currentRow(currRow);
         if(!isFileStart)
@@ -175,9 +175,12 @@ void CompetenzeUnitaExporter::run()
             printNumOreRepFesENot(painter,m_competenza->numOreRepFesENot() > 0 ? QString::number(m_competenza->numOreRepFesENot()) : "//",counter);
             printNumOreRepFesONot(painter,m_competenza->numOreRepFesONot() > 0 ? QString::number(m_competenza->numOreRepFesONot()) : "//",counter);
             printNumOreRepOrd(painter,m_competenza->numOreRepOrd() > 0 ? QString::number(m_competenza->numOreRepOrd()) : "//",counter);
+            if(!m_competenza->note().isEmpty()) {
+                notes << m_competenza->badgeNumber() + " - " + m_competenza->name() + ": " + m_competenza->note();
+            }
             counter++;
         }
-
+        printNote(painter, notes);
         isFileStart = false;
     }
 
@@ -816,6 +819,21 @@ void CompetenzeUnitaExporter::printCasi(QPainter &painter)
     painter.drawText(getRect(m_totalRows, 4), Qt::AlignHCenter | Qt::AlignVCenter, QString::number(m_casiRepeOre));
     painter.drawText(getRect(m_totalRows, 3), Qt::AlignHCenter | Qt::AlignVCenter, QString::number(m_casiGuarNott));
     painter.drawText(getRect(m_totalRows, 2), Qt::AlignHCenter | Qt::AlignVCenter, QString::number(m_casiGranFest));
+
+    painter.restore();
+}
+
+void CompetenzeUnitaExporter::printNote(QPainter &painter, const QStringList &note)
+{
+    painter.save();
+    painter.setPen(Qt::black);
+    painter.setFont(badgeFont());
+
+    const int offset = m_gridHeight*m_totalHeaderHeight+(m_totalRows*m_gridHeight) + m_gridHeight;
+
+    for(int i = 0; i < note.size(); i++) {
+        painter.drawText(QRect(0, offset + m_gridHeight*i, m_tableWidth, m_gridHeight), Qt::AlignLeft | Qt::AlignVCenter, note.at(i));
+    }
 
     painter.restore();
 }

@@ -113,6 +113,7 @@ private:
     void printNumOreRepFesONot(QPainter &painter, const QString &text, int row);
     void printNumOreRepOrd(QPainter &painter, const QString &text, int row);
     void printCasi(QPainter &painter);
+    void printNote(QPainter &painter, const QStringList &note);
     void printData(QPainter &painter);
     QRect getRect(int row, int column) const;
 };
