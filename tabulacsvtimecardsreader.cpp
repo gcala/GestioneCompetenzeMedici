@@ -335,7 +335,7 @@ void TabulaCsvTimeCardsReader::run()
                     forseNotte = true;
                     break;
                 }
-                if(causale == "ECCR" && (numTimbrature % 2 != 0)) {
+                if(causale == "ECCR" && (numTimbrature % 2 != 0) && campi.at(20).trimmed().isEmpty()) {
                     forseNotte = true;
                     break;
                 }
