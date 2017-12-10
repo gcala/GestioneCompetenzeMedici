@@ -49,7 +49,8 @@ SOURCES += \
     resetdialog.cpp \
     dmpcompute.cpp \
     logindialog.cpp \
-    sqldatabasemanager.cpp
+    sqldatabasemanager.cpp \
+    almanac.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -77,7 +78,8 @@ HEADERS += \
     resetdialog.h \
     dmpcompute.h \
     logindialog.h \
-    sqldatabasemanager.h
+    sqldatabasemanager.h \
+    almanac.h
 
 FORMS += \
         mainwindow.ui \
