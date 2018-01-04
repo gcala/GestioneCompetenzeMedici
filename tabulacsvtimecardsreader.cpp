@@ -35,7 +35,7 @@
 TabulaCsvTimeCardsReader::TabulaCsvTimeCardsReader(QObject *parent)
     : QThread(parent)
 {
-    causaliFerie << "FEAP" << "FEAC" << "F2AP" << "FSPR";
+    causaliFerie << "FEAP" << "FEAC" << "F2AP" << "FSPR" << "SCIO";
     causaliMalattia << "MA" << "MAPR" << "MAPG" << "MACS" << "RICO" << "CSMA" << "INFO";
     causaliCongedi << "PRMP" << "ANA" << "CONV" << "RIRA" << "RIAN"
                    << "MAGI" << "DS" << "LUTT"
@@ -335,15 +335,17 @@ void TabulaCsvTimeCardsReader::run()
                     forseNotte = true;
                     break;
                 }
-                if(causale == "ECCR" && (numTimbrature % 2 != 0) && campi.at(20).trimmed().isEmpty()) {
+                if(causale == "ECCR" && (numTimbrature % 2 != 0)) {
                     forseNotte = true;
                     break;
                 }
             }
 
-            if(isRestDay && numTimbrature > 0 && (numTimbrature%2==0)) {
-                m_dipendente->addGuardiaDiurna(QString::number(dataCorrente.day()));
-                forseNotte = false;
+            if(campi.at(20).trimmed().isEmpty()) {
+                if(isRestDay && numTimbrature > 0 && (numTimbrature%2==0) && dataCorrente.dayOfWeek() != 6) {
+                    m_dipendente->addGuardiaDiurna(QString::number(dataCorrente.day()));
+                    forseNotte = false;
+                }
             }
         }
     }
