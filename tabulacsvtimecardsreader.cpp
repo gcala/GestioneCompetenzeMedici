@@ -124,7 +124,7 @@ void TabulaCsvTimeCardsReader::run()
                     mese = mese2Int(period.split(period.right(4), QString::SkipEmptyParts).at(0).trimmed());
                 }
                 // creiamo, se necessario, tabella cartellini
-                if(anno == 0 && mese == 0) {
+                if(anno == 0 || mese == 0) {
                     qDebug() << "Impossibile recuperare mese e anno di riferimento. Esco...";
                     emit timeCardsRead();
                     return;
@@ -379,8 +379,10 @@ int TabulaCsvTimeCardsReader::mese2Int(const QString &mese)
         return 10;
     if(mese == "Novembre")
         return 11;
+    if(mese == "Dicembre")
+        return 12;
 
-    return 12;
+    return 0;
 }
 
 int TabulaCsvTimeCardsReader::inMinuti(const QString &time)
