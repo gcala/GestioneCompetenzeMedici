@@ -380,7 +380,7 @@ int TabulaCsvTimeCardsReader::mese2Int(const QString &mese)
     if(mese == "Novembre")
         return 11;
 
-    return 11;
+    return 12;
 }
 
 int TabulaCsvTimeCardsReader::inMinuti(const QString &time)
