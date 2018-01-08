@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1323</width>
-    <height>779</height>
+    <width>1351</width>
+    <height>783</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -36,7 +36,7 @@
        <string notr="true">QTabWidget::tab-bar { alignment: center; }</string>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="unitaTab">
        <attribute name="icon">
@@ -2990,16 +2990,18 @@
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_16">
              <item>
-              <widget class="QLabel" name="label_39">
+              <widget class="QCheckBox" name="pagaStrGuardiaCB">
                <property name="font">
                 <font>
-                 <pointsize>11</pointsize>
                  <weight>75</weight>
                  <bold>true</bold>
                 </font>
                </property>
                <property name="text">
                 <string>Lavoro straordinario per guardie:</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
                </property>
               </widget>
              </item>
@@ -3046,6 +3048,7 @@
                  <pointsize>11</pointsize>
                  <weight>75</weight>
                  <bold>true</bold>
+                 <strikeout>false</strikeout>
                 </font>
                </property>
                <property name="text">
@@ -3586,7 +3589,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1323</width>
+     <width>1351</width>
      <height>34</height>
     </rect>
    </property>

@@ -56,6 +56,7 @@ public:
         m_g_n_fes_D = 0;
         m_totOreGuardie = 0;
         m_dmp = 0;
+        m_pagaStrGuardia = true;
         m_orarioGiornaliero = 0;
         m_dmp_calcolato = 0;
         m_defaultDmp = 0;
@@ -116,9 +117,11 @@ public:
     QMap<int, GuardiaType> guardiaDiurnaMap() const;
     QMap<int, GuardiaType> guardiaNotturnaMap() const;
     void setDmp(const int &minutes);
+    void setPagaStrGuardia(const bool &ok);
     void setOrarioGiornalieroMod(const int &minutes);
     void setDmpCalcolato(const int &minutes);
     int dmp() const;
+    bool pagaStrGuardia() const;
     void setNote(const QString &note);
     QString note() const;
     QList<QDate> altreAssenzeDates() const;
@@ -204,6 +207,7 @@ private:
     int m_g_n_fes_D;
     int m_totOreGuardie;
     int m_dmp;
+    bool m_pagaStrGuardia;
     int m_dmp_calcolato;
     int m_orarioGiornaliero;
     int m_defaultDmp;
@@ -256,7 +260,7 @@ void CompetenzaData::buildDipendente()
         return;
     }
 
-    if(query.size() != 30) {
+    if(query.size() != 31) {
         qDebug() << Q_FUNC_INFO << ":: ERRORE :: dimensione query non corretta";
         return;
     }
@@ -406,6 +410,8 @@ void CompetenzaData::buildDipendente()
         m_orarioGiornalieroModded = true;
     }
     m_defaultOrarioGiornaliero = m_orarioGiornaliero;
+
+    m_pagaStrGuardia = query.at(30).toBool();
 
     getOrePagate();
     calcOreGuardia();
@@ -709,6 +715,11 @@ void CompetenzaData::setDmp(const int &minutes)
     m_dmp = minutes;
 }
 
+void CompetenzaData::setPagaStrGuardia(const bool &ok)
+{
+    m_pagaStrGuardia = ok;
+}
+
 void CompetenzaData::setOrarioGiornalieroMod(const int &minutes)
 {
     m_orarioGiornaliero = minutes;
@@ -724,6 +735,11 @@ int CompetenzaData::dmp() const
     if(m_dmp >= 0)
         return m_dmp;
     return m_dmp_calcolato;
+}
+
+bool CompetenzaData::pagaStrGuardia() const
+{
+    return m_pagaStrGuardia;
 }
 
 void CompetenzaData::setNote(const QString &note)
@@ -981,6 +997,8 @@ int CompetenzaData::numGuarGFNonPag() const
 
 int CompetenzaData::numOreGuarFesENot() const
 {
+    if(!m_pagaStrGuardia)
+        return 0;
     if((g_n_fes_F() + g_n_fes_S() + g_n_fes_D()) >= numOreGuarPagabili())
         return numOreGuarPagabili();
     return (g_n_fes_F() + g_n_fes_S() + g_n_fes_D());
@@ -988,6 +1006,9 @@ int CompetenzaData::numOreGuarFesENot() const
 
 int CompetenzaData::numOreGuarFesONot() const
 {
+    if(!m_pagaStrGuardia)
+        return 0;
+
     int restoOre = numOreGuarPagabili() - numOreGuarFesENot();
     if(restoOre <= 0)
         return 0;
@@ -999,6 +1020,9 @@ int CompetenzaData::numOreGuarFesONot() const
 
 int CompetenzaData::numOreGuarOrd() const
 {
+    if(!m_pagaStrGuardia)
+        return 0;
+
     int restoOre = numOreGuarPagabili() - numOreGuarFesONot() - numOreGuarFesENot();
     if(restoOre <= 0)
         return 0;
@@ -1046,12 +1070,11 @@ int CompetenzaData::numOreRepOrd()
 
 QString CompetenzaData::residuoOreNonPagate()
 {
-    int oreStrGuaPagate;
+    int oreStrGuaPagate = 0;
 
-    if(numOreGuarPagabili() == 0 && numGrFestPagabili() == 0)
-        oreStrGuaPagate = 0;
-    else {
-        oreStrGuaPagate = numGrFestPagabili() * 12 + numOreGuarPagabili();
+    if(m_pagaStrGuardia) {
+        if(numOreGuarPagabili() != 0 || numGrFestPagabili() != 0)
+            oreStrGuaPagate = numGrFestPagabili() * 12 + numOreGuarPagabili();
     }
 
     const int totMinPagati = oreStrGuaPagate*60 + oreProntaDisp()*60;
@@ -1608,6 +1631,11 @@ void Competenza::setDmp(const int &minutes)
     data->setDmp(minutes);
 }
 
+void Competenza::setPagaStrGuardia(const bool &ok)
+{
+    data->setPagaStrGuardia(ok);
+}
+
 void Competenza::setOrarioGiornalieroMod(const int &minutes)
 {
     data->setOrarioGiornalieroMod(minutes);
@@ -1621,6 +1649,11 @@ void Competenza::setDmpCalcolato(const int &minutes)
 int Competenza::dmp() const
 {
     return data->dmp();
+}
+
+bool Competenza::pagaStrGuardia() const
+{
+    return data->pagaStrGuardia();
 }
 
 void Competenza::setNote(const QString &note)

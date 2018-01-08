@@ -81,9 +81,11 @@ public:
     void setRep(const QMap<QDate, ValoreRep> &map);
     QMap<QDate, ValoreRep> rep() const;
     void setDmp(const int &minutes);
+    void setPagaStrGuardia(const bool &ok);
     void setOrarioGiornalieroMod(const int &minutes);
     void setDmpCalcolato(const int &minutes);
     int dmp() const;
+    bool pagaStrGuardia() const;
     void setNote(const QString &note);
     QString note() const;
     QList<QDate> altreAssenzeDates() const;

@@ -993,6 +993,12 @@ void MainWindow::populateCompetenzeTab()
     disconnect(ui->dmpHoursEdit, SIGNAL(valueChanged(int)), 0, 0);
     disconnect(ui->dmpMinsEdit, SIGNAL(valueChanged(int)), 0, 0);
     disconnect(ui->orarioGiornalieroEdit, SIGNAL(dateChanged(QDate)),0,0);
+    disconnect(ui->pagaStrGuardiaCB, SIGNAL(toggled(bool)),0,0);
+
+    ui->pagaStrGuardiaCB->setChecked(m_competenza->pagaStrGuardia());
+    QFont font = ui->oreStraordinarioGuardieLabel->font();
+    font.setStrikeOut(!ui->pagaStrGuardiaCB->isChecked());
+    ui->oreStraordinarioGuardieLabel->setFont(font);
 
     ferieCalendar->setDateRange(m_competenza->dataIniziale(), m_competenza->dataFinale());
     congediCalendar->setDateRange(m_competenza->dataIniziale(), m_competenza->dataFinale());
@@ -1040,6 +1046,7 @@ void MainWindow::populateCompetenzeTab()
     connect(ui->dmpHoursEdit, SIGNAL(valueChanged(int)), this, SLOT(oreCambiate(int)));
     connect(ui->dmpMinsEdit, SIGNAL(valueChanged(int)), this, SLOT(minutiCambiati(int)));
     connect(ui->orarioGiornalieroEdit, SIGNAL(timeChanged(QTime)), this, SLOT(orarioGiornalieroCambiato(QTime)));
+    connect(ui->pagaStrGuardiaCB, SIGNAL(toggled(bool)), SLOT(pagaStrGuardiaCambiato(bool)));
 }
 
 void MainWindow::elaboraGuardie()
@@ -1424,4 +1431,17 @@ void MainWindow::delayedSetup()
         needsBackup();
         connectToLocalDatabase();
     }
+}
+
+void MainWindow::pagaStrGuardiaCambiato(bool checked)
+{
+    QFont font = ui->oreStraordinarioGuardieLabel->font();
+    font.setStrikeOut(!checked);
+    ui->oreStraordinarioGuardieLabel->setFont(font);
+    m_competenza->setPagaStrGuardia(checked);
+    QString table = ui->meseCompetenzeCB->currentData(Qt::UserRole).toString();
+    table.replace("_","m_");
+    int value = checked ? 1 : 0;
+    SqlQueries::saveMod(table, "pagaStrGuar", ui->dirigentiCompetenzeCB->currentData(Qt::UserRole).toInt(), value);
+    elaboraSommario();
 }

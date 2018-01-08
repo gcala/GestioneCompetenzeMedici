@@ -110,6 +110,7 @@ private slots:
     void on_actionRicalcolaDeficit_triggered();
     void on_noteLine_textEdited(const QString &arg1);
     void on_actionConnettiDbRemoto_triggered();
+    void pagaStrGuardiaCambiato(bool checked);
 
 private:
     Ui::MainWindow *ui;

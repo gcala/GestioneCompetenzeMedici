@@ -392,7 +392,8 @@ bool SqlQueries::createTimeCardsTable(const QString &tableName)
                       "nota TEXT DEFAULT '',"
                       "altro_str TEXT DEFAULT '',"
                       "mensa TEXT DEFAULT '',"
-                      "orario_giornaliero INTEGER DEFAULT (-1));");
+                      "orario_giornaliero INTEGER DEFAULT (-1),"
+                      "pagaStrGuar INTEGER DEFAULT (1) NOT NULL);");
     } else if(The::dbManager()->driverName() == "QMYSQL") {
         query.prepare("CREATE TABLE " + modTableName.replace("_","m_") + " "
                       "(id INT NOT NULL AUTO_INCREMENT,"
@@ -407,6 +408,7 @@ bool SqlQueries::createTimeCardsTable(const QString &tableName)
                       "altro_str varchar(128) DEFAULT '',"
                       "mensa varchar(128) DEFAULT '',"
                       "orario_giornaliero INT DEFAULT -1,"
+                      "pagaStrGuar TINYINT DEFAULT 1 NOT NULL,"
                       "PRIMARY KEY (id));");
     } else {
         qDebug() << Q_FUNC_INFO << "Nessun database configurato. Esco";
@@ -807,7 +809,8 @@ QVariantList SqlQueries::getDoctorTimecard(const QString &tableName, const QStri
                   + tableName + ".id_unita,"
                   + modTableName + ".nota,"
                   + tableName + ".scoperti, "
-                  + modTableName + ".orario_giornaliero "
+                  + modTableName + ".orario_giornaliero, "
+                  + modTableName + ".pagaStrGuar "
                   + "FROM " + tableName + " LEFT JOIN medici ON medici.id=" + tableName + ".id_medico "
                   + "LEFT JOIN unita ON unita.id=" + tableName + ".id_unita "
                   + "LEFT JOIN " + modTableName + " ON " + modTableName + ".id_medico=" + tableName + ".id_medico "
@@ -849,6 +852,7 @@ QVariantList SqlQueries::getDoctorTimecard(const QString &tableName, const QStri
         result << query.value(27); // nota
         result << query.value(28); // scoperti
         result << query.value(29); // orario_giornaliero
+        result << query.value(30); // pagaStrGuar
     }
 
     return result;
