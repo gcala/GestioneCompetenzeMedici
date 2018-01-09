@@ -317,7 +317,8 @@ void TabulaCsvTimeCardsReader::run()
             }
 
             if(forseNotte && numTimbrature == 0) {
-                m_dipendente->addGuardiaDiurna(QString::number(dataCorrente.addDays(-1).day()));
+                if(dataCorrente.addDays(-1).dayOfWeek() != 6)
+                    m_dipendente->addGuardiaDiurna(QString::number(dataCorrente.addDays(-1).day()));
                 forseNotte = false;
             } else if(forseNotte && campi.at(2).trimmed().isEmpty()) {
                 m_dipendente->addGuardiaNotturna(QString::number(dataCorrente.addDays(-1).day()));
