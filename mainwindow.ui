@@ -3513,6 +3513,9 @@
               <bold>true</bold>
              </font>
             </property>
+            <property name="styleSheet">
+             <string notr="true">color: red;</string>
+            </property>
            </widget>
           </item>
          </layout>
