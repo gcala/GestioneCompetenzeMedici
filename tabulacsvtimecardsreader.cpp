@@ -273,7 +273,7 @@ void TabulaCsvTimeCardsReader::run()
                         m_dipendente->addMinutiRmc(inMinuti(campi.at(i+1).trimmed()));
                         m_dipendente->addRmc(QString::number(dataCorrente.day()));
                     }
-                } else if(causale == "RMP") {
+                } else if(causaliRMP.contains(causale)) {
                     m_dipendente->addRmp(QString::number(dataCorrente.day()));
                 } else if(causale == "SEES") {
                     m_dipendente->addMinutiFatti(inMinuti(campi.at(i+1).trimmed()));
