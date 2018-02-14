@@ -42,6 +42,7 @@ public:
 
     void setGuardiaMap(const QMap<int, GuardiaType> &guardiaMap);
     void setDiurna(const bool ok);
+    void setMeseAnno(const int &mese, const int &anno);
 
 public slots:
 
@@ -51,6 +52,8 @@ protected:
 private:
     QMap<int, GuardiaType> m_guardiaMap;
     bool m_diurna;
+    int m_mese;
+    int m_anno;
 };
 
 #endif // RENDERAREA_H

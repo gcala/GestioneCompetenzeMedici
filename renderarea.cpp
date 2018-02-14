@@ -20,6 +20,7 @@
  */
 
 #include "renderarea.h"
+#include "almanac.h"
 
 #include <QPainter>
 #include <QDebug>
@@ -52,18 +53,28 @@ void RenderArea::setDiurna(const bool ok)
     m_diurna = ok;
 }
 
+void RenderArea::setMeseAnno(const int &mese, const int &anno)
+{
+    m_mese = mese;
+    m_anno = anno;
+}
+
 void RenderArea::paintEvent(QPaintEvent * /* event */)
 {
-    QPen pen;
-    pen.setColor(Qt::black);
-    pen.setWidth(2);
+    QPen blackPen;
+    blackPen.setColor(Qt::black);
+    blackPen.setWidth(2);
+
+    QPen redPen;
+    redPen.setColor(Qt::red);
+    redPen.setWidth(2);
 
     QPainter painter(this);
     QFont font = painter.font();
     font.setPixelSize(18);
     font.setBold(true);
     painter.setFont(font);
-    painter.setPen(pen);
+    painter.setPen(blackPen);
     painter.setRenderHint(QPainter::Antialiasing, true);
     painter.setBrush(Qt::NoBrush);
 
@@ -73,7 +84,11 @@ void RenderArea::paintEvent(QPaintEvent * /* event */)
     QMap<int, GuardiaType>::const_iterator i = m_guardiaMap.constBegin();
     while (i != m_guardiaMap.constEnd()) {
         QRect rect(cellSize*(counter%5),cellSize*yCounter,cellSize,cellSize);
+        if(The::almanac()->isGrandeFestivita(QDate(m_anno, m_mese, i.key())) || QDate(m_anno, m_mese, i.key()).weekNumber() == 7 ) {
+            painter.setPen(redPen);
+        }
         painter.drawText(rect,Qt::AlignCenter | Qt::AlignVCenter,QString::number(i.key()));
+        painter.setPen(blackPen);
         switch (i.value()) {
         case GuardiaType::Sabato:
             if(m_diurna)
