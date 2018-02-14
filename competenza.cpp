@@ -146,7 +146,10 @@ public:
     int numOreRepFesENot();
     int numOreRepFesONot();
     int numOreRepOrd();
-    QString residuoOreNonPagate();
+    int residuoOreNonPagate();
+    int numFestiviRecuperabili();
+    int numNottiRecuperabili();
+    QString residuoOreNonRecuperabili();
 
     int g_d_fer_F() const;
     int g_d_fer_S() const;
@@ -1068,7 +1071,7 @@ int CompetenzaData::numOreRepOrd()
     return ore;
 }
 
-QString CompetenzaData::residuoOreNonPagate()
+int CompetenzaData::residuoOreNonPagate()
 {
     int oreStrGuaPagate = 0;
 
@@ -1080,9 +1083,68 @@ QString CompetenzaData::residuoOreNonPagate()
     const int totMinPagati = oreStrGuaPagate*60 + oreProntaDisp()*60;
 
     if(differenzaMin() - totMinPagati > 0)
-        return inOrario(differenzaMin() - totMinPagati);
+        return differenzaMin() - totMinPagati;
 
-    return "//";
+    return 0;
+}
+
+int CompetenzaData::numFestiviRecuperabili()
+{
+    if(residuoOreNonPagate() == 0)
+        return 0;
+
+    QList<QDate> dates = gdDates();
+
+    int num = 0;
+    for(QDate date : dates) {
+        if(The::almanac()->isGrandeFestivita(date) || date.dayOfWeek() == 7) {
+            num++;
+        }
+    }
+
+    if(num == 0)
+        return num;
+
+    const int val = residuoOreNonPagate() / m_dipendente->minutiGiornalieri();
+
+    if(val <= num*2) {
+        return val*m_dipendente->minutiGiornalieri();
+    }
+
+    return num*2*m_dipendente->minutiGiornalieri();
+}
+
+int CompetenzaData::numNottiRecuperabili()
+{
+    if(m_orePagate > 0)
+        return 0;
+
+    const int residuo = residuoOreNonPagate() - numFestiviRecuperabili();
+
+    if(residuo < m_dipendente->minutiGiornalieri())
+        return 0;
+
+    QList<QDate> dates = gnDates();
+
+    if(dates.count() == 0)
+        return 0;
+
+    const int val = residuo / m_dipendente->minutiGiornalieri();
+
+    if(val <= dates.count()) {
+        return val*m_dipendente->minutiGiornalieri();
+    }
+
+    return dates.count()*m_dipendente->minutiGiornalieri();
+}
+
+QString CompetenzaData::residuoOreNonRecuperabili()
+{
+    const int mins = residuoOreNonPagate() - numFestiviRecuperabili() - numNottiRecuperabili();
+    if(mins == 0) {
+        return "//";
+    }
+    return inOrario( mins );
 }
 
 int CompetenzaData::g_d_fer_F() const
@@ -1776,9 +1838,24 @@ int Competenza::numOreRepOrd()
     return data->numOreRepOrd();
 }
 
-QString Competenza::residuoOreNonPagate()
+int Competenza::residuoOreNonPagate()
 {
     return data->residuoOreNonPagate();
+}
+
+int Competenza::numFestiviRecuperabili()
+{
+    return data->numFestiviRecuperabili();
+}
+
+int Competenza::numNottiRecuperabili()
+{
+    return data->numNottiRecuperabili();
+}
+
+QString Competenza::residuoOreNonRecuperabili()
+{
+    return data->residuoOreNonRecuperabili();
 }
 
 int Competenza::g_d_fer_F() const

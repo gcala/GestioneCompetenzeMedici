@@ -1051,6 +1051,8 @@ void MainWindow::populateCompetenzeTab()
 
 void MainWindow::elaboraGuardie()
 {
+    ui->gnPainterWidget->setMeseAnno(m_competenza->dataIniziale().month(), m_competenza->dataIniziale().year());
+    ui->gdPainterWidget->setMeseAnno(m_competenza->dataIniziale().month(), m_competenza->dataIniziale().year());
     ui->gnPainterWidget->setGuardiaMap(m_competenza->guardiaNotturnaMap());
     ui->gdPainterWidget->setGuardiaMap(m_competenza->guardiaDiurnaMap());
 
@@ -1099,7 +1101,10 @@ void MainWindow::elaboraSommario()
     mostraDifferenzaOre();
     elaboraGuardie();
     elaboraRep();
-    ui->residuoLabel->setText(m_competenza->residuoOreNonPagate());
+    ui->residuoLabel->setText(m_competenza->residuoOreNonPagate() > 0 ? Utilities::inOrario(m_competenza->residuoOreNonPagate()) : "//");
+    ui->oreFestiviLabel->setText(m_competenza->numFestiviRecuperabili() > 0 ? Utilities::inOrario(m_competenza->numFestiviRecuperabili()) : "//");
+    ui->oreNottiLabel->setText(m_competenza->numNottiRecuperabili() > 0 ? Utilities::inOrario(m_competenza->numNottiRecuperabili()) : "//");
+    ui->oreNonRecLabel->setText(m_competenza->residuoOreNonRecuperabili());
 }
 
 void MainWindow::on_actionStampaCompetenzeDirigenti_triggered()
