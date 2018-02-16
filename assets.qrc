@@ -34,5 +34,6 @@
         <file>icons/network-connect.svg</file>
         <file>icons/password-show-off.svg</file>
         <file>icons/password-show-on.svg</file>
+        <file>icons/view-preview.svg</file>
     </qresource>
 </RCC>

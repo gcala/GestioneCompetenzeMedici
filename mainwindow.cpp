@@ -1450,3 +1450,42 @@ void MainWindow::pagaStrGuardiaCambiato(bool checked)
     SqlQueries::saveMod(table, "pagaStrGuar", ui->dirigentiCompetenzeCB->currentData(Qt::UserRole).toInt(), value);
     elaboraSommario();
 }
+
+void MainWindow::on_actionTakeScreenshot_triggered()
+{
+
+    QScreen *screen = QGuiApplication::primaryScreen();
+    if (const QWindow *window = windowHandle())
+        screen = window->screen();
+    if (!screen)
+        return;
+
+    ui->actionTakeScreenshot->setEnabled(false);
+    QPixmap originalPixmap = screen->grabWindow(0,this->geometry().x(),this->geometry().y(),this->geometry().width(),this->geometry().height());
+
+    qDebug() << QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
+
+    const QString fileName = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) + QDir::separator() + ui->dirigentiCompetenzeCB->currentText() + " - " + ui->meseCompetenzeCB->currentText() + ".png";
+
+    QFile outPix(fileName);
+
+    if(!outPix.open(QIODevice::WriteOnly)) {
+        return;
+    }
+
+    originalPixmap.save(&outPix, "PNG");
+
+    outPix.close();
+
+    QDesktopServices::openUrl(QUrl::fromLocalFile(fileName));
+    ui->actionTakeScreenshot->setEnabled(true);
+}
+
+void MainWindow::on_tabWidget_currentChanged(int index)
+{
+    if(index == 2) {
+        ui->actionTakeScreenshot->setEnabled(true);
+    } else {
+        ui->actionTakeScreenshot->setEnabled(false);
+    }
+}

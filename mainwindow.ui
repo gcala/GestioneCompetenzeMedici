@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1351</width>
-    <height>783</height>
+    <height>813</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -3766,7 +3766,7 @@
      <x>0</x>
      <y>0</y>
      <width>1351</width>
-     <height>26</height>
+     <height>34</height>
     </rect>
    </property>
    <property name="font">
@@ -3840,6 +3840,7 @@
    <addaction name="actionStampaCompetenzeDirigenti"/>
    <addaction name="actionStampaCompetenzeUnita"/>
    <addaction name="actionRicalcolaDeficit"/>
+   <addaction name="actionTakeScreenshot"/>
    <addaction name="separator"/>
    <addaction name="actionConfigura"/>
   </widget>
@@ -4061,6 +4062,18 @@
    </property>
    <property name="toolTip">
     <string>Connetti ad un database remoto</string>
+   </property>
+  </action>
+  <action name="actionTakeScreenshot">
+   <property name="icon">
+    <iconset resource="assets.qrc">
+     <normaloff>:/icons/view-preview.svg</normaloff>:/icons/view-preview.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Cattura schermata</string>
+   </property>
+   <property name="toolTip">
+    <string>Cattura una schermata dell'applicazione</string>
    </property>
   </action>
  </widget>
