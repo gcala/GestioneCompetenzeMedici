@@ -1105,6 +1105,12 @@ int CompetenzaData::numFestiviRecuperabili()
     if(num == 0)
         return num;
 
+
+    const int maxMins = num*2*m_dipendente->minutiGiornalieri();
+
+    if(residuoOreNonPagate() <= maxMins)
+        return residuoOreNonPagate();
+
     const int val = residuoOreNonPagate() / m_dipendente->minutiGiornalieri();
 
     if(val <= num*2) {
@@ -1121,21 +1127,28 @@ int CompetenzaData::numNottiRecuperabili()
 
     const int residuo = residuoOreNonPagate() - numFestiviRecuperabili();
 
-    if(residuo < m_dipendente->minutiGiornalieri())
-        return 0;
-
     QList<QDate> dates = gnDates();
 
     if(dates.count() == 0)
         return 0;
 
+    const int numNottiNonPagate = dates.count() - numGrFestPagabili();
+
+    if(numNottiNonPagate == 0)
+        return 0;
+
+    const int maxMins = numNottiNonPagate*m_dipendente->minutiGiornalieri();
+
+    if(residuo <= maxMins)
+        return residuo;
+
     const int val = residuo / m_dipendente->minutiGiornalieri();
 
-    if(val <= dates.count()) {
+    if(val <= numNottiNonPagate) {
         return val*m_dipendente->minutiGiornalieri();
     }
 
-    return dates.count()*m_dipendente->minutiGiornalieri();
+    return numNottiNonPagate*m_dipendente->minutiGiornalieri();
 }
 
 QString CompetenzaData::residuoOreNonRecuperabili()
