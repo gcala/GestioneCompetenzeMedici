@@ -28,7 +28,7 @@ void DmpCompute::ricalcolaDmp(const QStringList &timecards, const int &idDirigen
 {
     int dmp = 0;
     for(int i = 0; i < (timecards.count()); i++) {
-        if(SqlQueries::timeCardExists(timecards.at(i), QString::number(idDirigente))) {
+        if(SqlQueries::timeCardExists(timecards.at(i), idDirigente)) {
             Competenza *competenza = new Competenza(timecards.at(i), idDirigente);
             if(i == 0) {
                 dmp = (competenza->differenzaMin() < 0 ? abs(competenza->differenzaMin()) : 0);

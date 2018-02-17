@@ -1102,8 +1102,18 @@ void MainWindow::elaboraSommario()
     elaboraGuardie();
     elaboraRep();
     ui->residuoLabel->setText(m_competenza->residuoOreNonPagate() > 0 ? Utilities::inOrario(m_competenza->residuoOreNonPagate()) : "//");
-    ui->oreFestiviLabel->setText(m_competenza->numFestiviRecuperabili() > 0 ? Utilities::inOrario(m_competenza->numFestiviRecuperabili()) : "//");
-    ui->oreNottiLabel->setText(m_competenza->numNottiRecuperabili() > 0 ? Utilities::inOrario(m_competenza->numNottiRecuperabili()) : "//");
+
+    if(m_competenza->numOreRecuperabili() < 0)
+        ui->oreRecLabel->setStyleSheet("color: red;");
+    else
+        ui->oreRecLabel->setStyleSheet("color: green;");
+
+    if(m_competenza->numOreRecuperabili() == 0 && m_competenza->recuperiMesiSuccessivo() == 0)
+        ui->oreRecLabel->setText("//");
+    else {
+        ui->oreRecLabel->setText(Utilities::inOrario(m_competenza->numOreRecuperabili()) + " (" + QString::number(m_competenza->recuperiMesiSuccessivo()) + ")");
+    }
+
     ui->oreNonRecLabel->setText(m_competenza->residuoOreNonRecuperabili());
 }
 

@@ -3503,12 +3503,12 @@
                 </font>
                </property>
                <property name="text">
-                <string>Ore Rec. Festivi:</string>
+                <string>Ore Recuperabili</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="oreFestiviLabel">
+              <widget class="QLabel" name="oreRecLabel">
                <property name="minimumSize">
                 <size>
                  <width>50</width>
@@ -3532,62 +3532,6 @@
              </item>
              <item>
               <widget class="QLabel" name="label_66">
-               <property name="minimumSize">
-                <size>
-                 <width>20</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="font">
-                <font/>
-               </property>
-               <property name="text">
-                <string>|</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="label_69">
-               <property name="font">
-                <font>
-                 <pointsize>11</pointsize>
-                 <weight>75</weight>
-                 <bold>true</bold>
-                </font>
-               </property>
-               <property name="text">
-                <string>Ore Rec. Notti:</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="oreNottiLabel">
-               <property name="minimumSize">
-                <size>
-                 <width>50</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="font">
-                <font>
-                 <pointsize>11</pointsize>
-                 <weight>75</weight>
-                 <bold>true</bold>
-                </font>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">color: green;</string>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="label_68">
                <property name="minimumSize">
                 <size>
                  <width>20</width>

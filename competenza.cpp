@@ -149,7 +149,9 @@ public:
     int residuoOreNonPagate();
     int numFestiviRecuperabili();
     int numNottiRecuperabili();
+    int numOreRecuperabili();
     QString residuoOreNonRecuperabili();
+    int recuperiMesiSuccessivo() const;
 
     int g_d_fer_F() const;
     int g_d_fer_S() const;
@@ -188,6 +190,7 @@ private:
     int m_unitaId;
     int m_orePagate;
     int m_oreTot;
+    int m_recuperiMeseSuccessivo;
     Dipendente *m_dipendente;
     QMap<int, GuardiaType> m_guardiaNotturnaMap;
     QMap<int, GuardiaType> m_guardiaDiurnaMap;
@@ -234,6 +237,7 @@ private:
     RepType tipoReperibilita(const int giorno, const int tipo);
     void calcOreGuardia();
     void getOrePagate();
+    void getRecuperiMeseSuccessivo();
     int grFestCount() const;
 };
 
@@ -247,6 +251,7 @@ void CompetenzaData::buildDipendente()
     m_unitaId = -1;
     m_orePagate = 0;
     m_oreTot = 0;
+    m_recuperiMeseSuccessivo = 0;
     m_defaultGDDates.clear();
     m_defaultGNDates.clear();
     m_defaultRep.clear();
@@ -417,6 +422,7 @@ void CompetenzaData::buildDipendente()
     m_pagaStrGuardia = query.at(30).toBool();
 
     getOrePagate();
+    getRecuperiMeseSuccessivo();
     calcOreGuardia();
 }
 
@@ -1151,6 +1157,11 @@ int CompetenzaData::numNottiRecuperabili()
     return numNottiNonPagate*m_dipendente->minutiGiornalieri();
 }
 
+int CompetenzaData::numOreRecuperabili()
+{
+    return (numFestiviRecuperabili() + numNottiRecuperabili()) - m_dipendente->minutiGiornalieri()*m_recuperiMeseSuccessivo;
+}
+
 QString CompetenzaData::residuoOreNonRecuperabili()
 {
     const int mins = residuoOreNonPagate() - numFestiviRecuperabili() - numNottiRecuperabili();
@@ -1484,6 +1495,16 @@ void CompetenzaData::getOrePagate()
             break;
         }
     }
+}
+
+void CompetenzaData::getRecuperiMeseSuccessivo()
+{
+    m_recuperiMeseSuccessivo = SqlQueries::getRecuperiMeseSuccessivo(m_dipendente->anno(), m_dipendente->mese(), doctorId());
+}
+
+int CompetenzaData::recuperiMesiSuccessivo() const
+{
+    return m_recuperiMeseSuccessivo;
 }
 
 int CompetenzaData::grFestCount() const
@@ -1866,9 +1887,19 @@ int Competenza::numNottiRecuperabili()
     return data->numNottiRecuperabili();
 }
 
+int Competenza::numOreRecuperabili()
+{
+    return data->numOreRecuperabili();
+}
+
 QString Competenza::residuoOreNonRecuperabili()
 {
     return data->residuoOreNonRecuperabili();
+}
+
+int Competenza::recuperiMesiSuccessivo() const
+{
+    return data->recuperiMesiSuccessivo();
 }
 
 int Competenza::g_d_fer_F() const

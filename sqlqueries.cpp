@@ -449,11 +449,11 @@ bool SqlQueries::tableExists(const QString &tableName)
     return true;
 }
 
-bool SqlQueries::timeCardExists(const QString &tableName, const QString &doctorId)
+bool SqlQueries::timeCardExists(const QString &tableName, const int &doctorId)
 {
     int count = 0;
     QSqlQuery query;
-    query.prepare("SELECT COUNT(*) FROM " + tableName + " WHERE id_medico='" + doctorId + "';");
+    query.prepare("SELECT COUNT(*) FROM " + tableName + " WHERE id_medico='" + QString::number(doctorId) + "';");
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
@@ -486,7 +486,7 @@ bool SqlQueries::addTimeCard(const QString &tableName, const Dipendente *dipende
 
     docId = doctorId(dipendente->matricola());
 
-    if(timeCardExists(tableName, QString::number(docId))) {
+    if(timeCardExists(tableName, docId)) {
         resetTimeCard(tableName, docId);
         query.prepare("UPDATE " + tableName + " " +
                       "SET riposi=:riposi,minuti_giornalieri=:minuti_giornalieri,"
@@ -550,7 +550,7 @@ bool SqlQueries::addTimeCard(const QString &tableName, const Dipendente *dipende
 
     QString modTablePrevMonth = "tcm_" + QString::number(d.addDays(-1).year()) + QString::number(d.addDays(-1).month()).rightJustified(2, '0');
     if(tableExists(modTablePrevMonth)) {
-        if(timeCardExists(modTablePrevMonth, QString::number(docId))) {
+        if(timeCardExists(modTablePrevMonth, docId)) {
             Competenza comp(modTablePrevMonth.replace("tcm", "tc"),docId);
             diffMinuti = comp.differenzaMin();
         }
@@ -564,7 +564,7 @@ bool SqlQueries::addTimeCard(const QString &tableName, const Dipendente *dipende
     modTableName.replace("_","m_");
 
     // se la riga del medico nella tabella delle modifiche esiste già non aggiungiamo nuovamente
-    if(timeCardExists(modTableName, QString::number(docId))) {
+    if(timeCardExists(modTableName, docId)) {
         query.prepare("UPDATE " + modTableName + " "
                       "SET dmp_calcolato=:dmp_calcolato "
                       "WHERE id_medico=" + QString::number(docId) + ";");
@@ -1126,6 +1126,39 @@ QVariantList SqlQueries::getDoctorDataById(const int &idDoctor)
         result << query.value(1);
         result << query.value(2);
         result << query.value(3);
+    }
+
+    return result;
+}
+
+int SqlQueries::getRecuperiMeseSuccessivo(const int &anno, const int &mese, const int &doctorId)
+{
+    int result = 0;
+    const QDate date(anno, mese, 1);
+
+    const QString table = "tc_" + QString::number(date.addMonths(1).year()) + QString::number(date.addMonths(1).month()).rightJustified(2, '0');
+
+
+    if(!tableExists(table)) {
+        qDebug() << Q_FUNC_INFO << "La tabella " + table + " non esiste";
+        return result;
+    }
+
+    if(!timeCardExists(table,doctorId)) {
+        qDebug() << Q_FUNC_INFO << "La timecard di " + QString::number(doctorId) + " in " + table + " non esiste";
+        return result;
+    }
+
+    QSqlQuery query;
+    query.prepare("SELECT rmp from " + table + " WHERE id_medico=" + QString::number(doctorId) + ";");
+
+    if(!query.exec()) {
+        qDebug() << Q_FUNC_INFO << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        return result;
+    }
+
+    while(query.next()) {
+        result = query.value(0).toString().trimmed().split(",", QString::SkipEmptyParts).count();
     }
 
     return result;

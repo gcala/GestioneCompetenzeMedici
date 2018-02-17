@@ -111,7 +111,9 @@ public:
     int residuoOreNonPagate();
     int numFestiviRecuperabili();
     int numNottiRecuperabili();
+    int numOreRecuperabili();
     QString residuoOreNonRecuperabili();
+    int recuperiMesiSuccessivo() const;
 
     int g_d_fer_F() const;
     int g_d_fer_S() const;

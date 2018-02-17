@@ -51,7 +51,7 @@ public:
     static void resetTimeCard(const QString &tableName, const int &doctorId);
     static bool createTimeCardsTable(const QString &tableName);
     static bool tableExists(const QString &tableName);
-    static bool timeCardExists(const QString &tableName, const QString &doctorId);
+    static bool timeCardExists(const QString &tableName, const int &doctorId);
     static bool addTimeCard(const QString &tableName, const Dipendente *dipendente);
     static int doctorId(const QString &matricola);
     static int unitId(const QString &matricola);
@@ -81,6 +81,7 @@ public:
     static QStringList getDoctorDataFromUnitaInTimecard(const QString &timecard, const int &idUnita);
     static QVariantList getUnitaDataById(const int &idUnita);
     static QVariantList getDoctorDataById(const int &idDoctor);
+    static int getRecuperiMeseSuccessivo(const int &anno, const int &mese, const int &doctorId);
 };
 
 #endif // SQLQUERIES_H
