@@ -1140,7 +1140,7 @@ int SqlQueries::getRecuperiMeseSuccessivo(const int &anno, const int &mese, cons
 
 
     if(!tableExists(table)) {
-        qDebug() << Q_FUNC_INFO << "La tabella " + table + " non esiste";
+//        qDebug() << Q_FUNC_INFO << "La tabella " + table + " non esiste";
         return result;
     }
 

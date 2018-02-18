@@ -173,6 +173,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&unitaCompetenzeExporter, SIGNAL(exportFinished(QString)), this, SLOT(exported(QString)));
     connect(&unitaCompetenzeExporter, SIGNAL(totalRows(int)), this, SLOT(setTotalRows(int)));
     connect(&unitaCompetenzeExporter, SIGNAL(currentRow(int)), this, SLOT(setCurrentRow(int)));
+    connect(&deficitRecuperiExporter, SIGNAL(exportFinished(QString)), this, SLOT(exported(QString)));
+    connect(&deficitRecuperiExporter, SIGNAL(totalRows(int)), this, SLOT(setTotalRows(int)));
+    connect(&deficitRecuperiExporter, SIGNAL(currentRow(int)), this, SLOT(setCurrentRow(int)));
     connect(&dirigenteCompetenzeExporter, SIGNAL(exportFinished(QString)), this, SLOT(exported(QString)));
     connect(&dirigenteCompetenzeExporter, SIGNAL(totalRows(int)), this, SLOT(setTotalRows(int)));
     connect(&dirigenteCompetenzeExporter, SIGNAL(currentRow(int)), this, SLOT(setCurrentRow(int)));
@@ -891,6 +894,7 @@ void MainWindow::exported(QString file)
 {
     ui->actionStampaCompetenzeUnita->setEnabled(true);
     ui->actionStampaCompetenzeDirigenti->setEnabled(true);
+    ui->actionPrintDeficit->setEnabled(true);
     progressBar->setVisible(false);
     msgLabel->setText("");
 
@@ -1171,6 +1175,32 @@ void MainWindow::on_actionStampaCompetenzeUnita_triggered()
     unitaCompetenzeExporter.setPrintCasi(printDialog->casiIsChecked());
     unitaCompetenzeExporter.setPrintData(printDialog->dataIsChecked());
     unitaCompetenzeExporter.start();
+}
+
+void MainWindow::on_actionPrintDeficit_triggered()
+{
+    ui->actionPrintDeficit->setEnabled(false);
+    printDialog->setCurrentOp(PrintDialog::ToolOps::PrintDeficit);
+
+    if(ui->tabWidget->currentIndex() == 2) {
+        printDialog->setCurrentMese(ui->meseCompetenzeCB->currentIndex());
+        printDialog->setCurrentUnita(ui->unitaCompetenzeCB->currentIndex() + 1);
+    }
+
+    printDialog->exec();
+
+    if(!printDialog->proceed) {
+        exported(QString());
+        return;
+    }
+
+    progressBar->setVisible(true);
+    msgLabel->setText("Esportazione deficit");
+
+    deficitRecuperiExporter.setPath(printDialog->path());
+    deficitRecuperiExporter.setMese(printDialog->currentMeseData());
+    deficitRecuperiExporter.setUnita(printDialog->currentUnitaData());
+    deficitRecuperiExporter.start();
 }
 
 void MainWindow::gdCalendarClicked(const QDate &date)

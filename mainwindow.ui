@@ -3750,12 +3750,14 @@
     </property>
     <addaction name="actionStampaCompetenzeDirigenti"/>
     <addaction name="actionStampaCompetenzeUnita"/>
+    <addaction name="actionPrintDeficit"/>
    </widget>
    <widget class="QMenu" name="menuStrumenti">
     <property name="title">
      <string>Strum&amp;enti</string>
     </property>
     <addaction name="actionRicalcolaDeficit"/>
+    <addaction name="actionTakeScreenshot"/>
     <addaction name="separator"/>
     <addaction name="actionConfigura"/>
    </widget>
@@ -3785,6 +3787,7 @@
    <addaction name="actionStampaCompetenzeUnita"/>
    <addaction name="actionRicalcolaDeficit"/>
    <addaction name="actionTakeScreenshot"/>
+   <addaction name="actionPrintDeficit"/>
    <addaction name="separator"/>
    <addaction name="actionConfigura"/>
   </widget>
@@ -4018,6 +4021,18 @@
    </property>
    <property name="toolTip">
     <string>Cattura una schermata dell'applicazione</string>
+   </property>
+  </action>
+  <action name="actionPrintDeficit">
+   <property name="icon">
+    <iconset resource="assets.qrc">
+     <normaloff>:/icons/appointment-soon-symbolic.svg</normaloff>:/icons/appointment-soon-symbolic.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Stampa deficit...</string>
+   </property>
+   <property name="toolTip">
+    <string>Stampa il deficit orario</string>
    </property>
   </action>
  </widget>

@@ -36,7 +36,7 @@ public:
     explicit PrintDialog(QWidget *parent = 0);
     ~PrintDialog();
 
-    enum ToolOps { PrintUnits, PrintDoctors, CalcDpm };
+    enum ToolOps { PrintUnits, PrintDoctors, CalcDpm, PrintDeficit };
     Q_ENUM(ToolOps)
 
     void addUnita(const QString &unita, const QVariant &id);

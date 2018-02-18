@@ -46,11 +46,12 @@ SOURCES += \
         aboutdialog.cpp \
         configdialog.cpp \
         settingsitem.cpp \
-    resetdialog.cpp \
-    dmpcompute.cpp \
-    logindialog.cpp \
-    sqldatabasemanager.cpp \
-    almanac.cpp
+        resetdialog.cpp \
+        dmpcompute.cpp \
+        logindialog.cpp \
+        sqldatabasemanager.cpp \
+        almanac.cpp \
+        deficitrecuperiexporter.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -75,11 +76,12 @@ HEADERS += \
         aboutdialog.h \
         configdialog.h \
         settingsitem.h \
-    resetdialog.h \
-    dmpcompute.h \
-    logindialog.h \
-    sqldatabasemanager.h \
-    almanac.h
+        resetdialog.h \
+        dmpcompute.h \
+        logindialog.h \
+        sqldatabasemanager.h \
+        almanac.h \
+        deficitrecuperiexporter.h
 
 FORMS += \
         mainwindow.ui \
@@ -90,8 +92,8 @@ FORMS += \
         aboutdialog.ui \
         configdialog.ui \
         settingsitem.ui \
-    resetdialog.ui \
-    logindialog.ui
+        resetdialog.ui \
+        logindialog.ui
 
 RESOURCES += \
     assets.qrc

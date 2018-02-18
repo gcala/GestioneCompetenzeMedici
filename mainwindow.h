@@ -26,6 +26,7 @@
 #include "okularcsvtimecardsreader.h"
 #include "competenzeunitaexporter.h"
 #include "competenzedirigenteexporter.h"
+#include "deficitrecuperiexporter.h"
 
 #include <QMainWindow>
 #include <QFileInfo>
@@ -116,6 +117,8 @@ private slots:
 
     void on_tabWidget_currentChanged(int index);
 
+    void on_actionPrintDeficit_triggered();
+
 private:
     Ui::MainWindow *ui;
     bool unitaReadOnlyMode;
@@ -201,6 +204,7 @@ private:
     OkularCsvTimeCardsReader okularReader;
     CompetenzeUnitaExporter unitaCompetenzeExporter;
     CompetenzeDirigenteExporter dirigenteCompetenzeExporter;
+    DeficitRecuperiExporter deficitRecuperiExporter;
 
     QString backupFileName(const QString &time) const;
     void backupDatabase(const QString &time, bool quiet);

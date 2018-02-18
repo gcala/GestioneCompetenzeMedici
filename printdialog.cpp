@@ -136,6 +136,16 @@ void PrintDialog::setCurrentOp(const PrintDialog::ToolOps &op)
         ui->dirigenteLabel->setVisible(true);
         adjustSize();
         break;
+    case PrintDeficit:
+        ui->titleLabel->setText("Stampa Deficit");
+        setWindowTitle("Stampa Deficit");
+        ui->saveButton->setText("Genera PDF");
+        ui->destWidget->setVisible(true);
+        ui->optnsWidget->setVisible(false);
+        ui->dirigenteCB->setVisible(false);
+        ui->dirigenteLabel->setVisible(false);
+        adjustSize();
+        break;
     default:
         ui->titleLabel->setText("Ricalcola Deficit");
         setWindowTitle("Ricalcola Deficit");
