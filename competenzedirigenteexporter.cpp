@@ -115,6 +115,7 @@ void CompetenzeDirigenteExporter::run()
 
     writer.setPageSize(QPagedPaintDevice::A4);
     writer.setPageMargins(QMargins(30, 30, 30, 30));
+    writer.setCreator("Gestione Competenze Medici");
 
     QPainter painter(&writer);
     painter.setRenderHint(QPainter::Antialiasing, true);
@@ -167,7 +168,6 @@ void CompetenzeDirigenteExporter::printDirigente(QPainter &painter)
     printMalattia(painter);
     printRmp(painter);
     printRmc(painter);
-//    printAltreAssenze(painter);
     printGuardieDiurne(painter);
     printGuardieNotturne(painter);
     printDistribuzioneOreGuardia(painter);
@@ -242,7 +242,6 @@ QFont CompetenzeDirigenteExporter::unitaFont()
     QFont font;
     font.setStyleStrategy(QFont::PreferAntialias);
     font.setPixelSize(180);
-//    font.setBold(true);
     font.setFamily("Sans Serif");
     return font;
 }
