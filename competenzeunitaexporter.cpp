@@ -99,6 +99,8 @@ void CompetenzeUnitaExporter::run()
     writer.setPageSize(QPagedPaintDevice::A4);
     writer.setPageMargins(QMargins(30, 30, 30, 30));
     writer.setPageOrientation(QPageLayout::Landscape);
+    writer.setTitle(QString(fileName).replace(".pdf", "").replace("_", " "));
+    writer.setCreator("Gestione Competenze Medici");
 
     QPainter painter(&writer);
     painter.setRenderHint(QPainter::Antialiasing, true);
