@@ -84,7 +84,7 @@ void RenderArea::paintEvent(QPaintEvent * /* event */)
     QMap<int, GuardiaType>::const_iterator i = m_guardiaMap.constBegin();
     while (i != m_guardiaMap.constEnd()) {
         QRect rect(cellSize*(counter%5),cellSize*yCounter,cellSize,cellSize);
-        if(The::almanac()->isGrandeFestivita(QDate(m_anno, m_mese, i.key())) || QDate(m_anno, m_mese, i.key()).weekNumber() == 7 ) {
+        if(The::almanac()->isGrandeFestivita(QDate(m_anno, m_mese, i.key())) || QDate(m_anno, m_mese, i.key()).dayOfWeek() == 7 ) {
             painter.setPen(redPen);
         }
         painter.drawText(rect,Qt::AlignCenter | Qt::AlignVCenter,QString::number(i.key()));
