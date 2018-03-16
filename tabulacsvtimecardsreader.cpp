@@ -286,7 +286,6 @@ void TabulaCsvTimeCardsReader::run()
                 } else if(causaliCongedi.contains(causale)) {
                     if(!isRestDay) {
                         if(!campi.at(2).trimmed().isEmpty() || !campi.at(3).trimmed().isEmpty())  {
-                            qDebug() << "----------------_>" << campi.at(10).trimmed();
                             m_dipendente->addMinutiFatti(inMinuti(campi.at(10).trimmed()));
                         }
 //                        else {
