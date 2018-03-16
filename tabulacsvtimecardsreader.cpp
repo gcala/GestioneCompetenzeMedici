@@ -285,12 +285,14 @@ void TabulaCsvTimeCardsReader::run()
                         m_dipendente->addFerie(QString::number(dataCorrente.day()));
                 } else if(causaliCongedi.contains(causale)) {
                     if(!isRestDay) {
-                        if(!campi.at(2).trimmed().isEmpty() || !campi.at(3).trimmed().isEmpty())
-                            m_dipendente->addMinutiFatti(inMinuti(campi.at(i+1).trimmed()));
-                        else {
+                        if(!campi.at(2).trimmed().isEmpty() || !campi.at(3).trimmed().isEmpty())  {
+                            qDebug() << "----------------_>" << campi.at(10).trimmed();
+                            m_dipendente->addMinutiFatti(inMinuti(campi.at(10).trimmed()));
+                        }
+//                        else {
                             m_dipendente->addCongedo(QString::number(dataCorrente.day()));
                             m_dipendente->addMinutiCongedo(inMinuti(campi.at(i+1).trimmed()));
-                        }
+//                        }
                     }
                 } else if(causaliMalattia.contains(causale)) {
                     if(!isRestDay) {
