@@ -1131,9 +1131,11 @@ QVariantList SqlQueries::getDoctorDataById(const int &idDoctor)
     return result;
 }
 
-int SqlQueries::getRecuperiMeseSuccessivo(const int &anno, const int &mese, const int &doctorId)
+QPair<int, int> SqlQueries::getRecuperiMeseSuccessivo(const int &anno, const int &mese, const int &doctorId)
 {
-    int result = 0;
+    QPair<int,int> result;
+    result.first = 0;
+    result.second = 0;
     const QDate date(anno, mese, 1);
 
     const QString table = "tc_" + QString::number(date.addMonths(1).year()) + QString::number(date.addMonths(1).month()).rightJustified(2, '0');
@@ -1150,7 +1152,7 @@ int SqlQueries::getRecuperiMeseSuccessivo(const int &anno, const int &mese, cons
     }
 
     QSqlQuery query;
-    query.prepare("SELECT rmp from " + table + " WHERE id_medico=" + QString::number(doctorId) + ";");
+    query.prepare("SELECT minuti_giornalieri,rmp from " + table + " WHERE id_medico=" + QString::number(doctorId) + ";");
 
     if(!query.exec()) {
         qDebug() << Q_FUNC_INFO << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
@@ -1158,7 +1160,8 @@ int SqlQueries::getRecuperiMeseSuccessivo(const int &anno, const int &mese, cons
     }
 
     while(query.next()) {
-        result = query.value(0).toString().trimmed().split(",", QString::SkipEmptyParts).count();
+        result.first = query.value(0).toInt(); // minuti_giornalieri
+        result.second = query.value(1).toString().trimmed().split(",", QString::SkipEmptyParts).count(); // rmp
     }
 
     return result;

@@ -81,7 +81,7 @@ public:
     static QStringList getDoctorDataFromUnitaInTimecard(const QString &timecard, const int &idUnita);
     static QVariantList getUnitaDataById(const int &idUnita);
     static QVariantList getDoctorDataById(const int &idDoctor);
-    static int getRecuperiMeseSuccessivo(const int &anno, const int &mese, const int &doctorId);
+    static QPair<int,int> getRecuperiMeseSuccessivo(const int &anno, const int &mese, const int &doctorId);
 };
 
 #endif // SQLQUERIES_H
