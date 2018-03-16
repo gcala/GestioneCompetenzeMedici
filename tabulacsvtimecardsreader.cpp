@@ -38,7 +38,7 @@ TabulaCsvTimeCardsReader::TabulaCsvTimeCardsReader(QObject *parent)
     causaliFerie << "FEAP" << "FEAC" << "F2AP" << "FSPR" << "SCIO";
     causaliMalattia << "MA" << "MAPR" << "MAPG" << "MACS" << "RICO" << "CSMA" << "INFO";
     causaliCongedi << "PRMP" << "ANA" << "CONV" << "RIRA" << "RIAN"
-                   << "MAGI" << "DS" << "LUTT" << "MOEL"
+                   << "MAGI" << "DS" << "LUTT" << "MOEL" << "ASSA" << "ARCO" << "COMA" << "DISI"
                    << "MATR" << "104G" << "AAR1" << "AF10"
                    << "AF30" << "AF0" << "MBA3" << "MBAM";
     causaliRMP << "RMP" << "RHER";
