@@ -1200,6 +1200,7 @@ void MainWindow::on_actionPrintDeficit_triggered()
     deficitRecuperiExporter.setPath(printDialog->path());
     deficitRecuperiExporter.setMese(printDialog->currentMeseData());
     deficitRecuperiExporter.setUnita(printDialog->currentUnitaData());
+    deficitRecuperiExporter.setType(printDialog->type);
     deficitRecuperiExporter.start();
 }
 

@@ -72,6 +72,11 @@ void DeficitRecuperiExporter::setMese(const QString &timecard)
     m_timecard = timecard;
 }
 
+void DeficitRecuperiExporter::setType(const QString &type)
+{
+    m_type = type;
+}
+
 void DeficitRecuperiExporter::run()
 {
     QVector<int> unitaIdList;
@@ -88,8 +93,18 @@ void DeficitRecuperiExporter::run()
 
     emit totalRows(unitaIdList.count());
 
-    fileName += ".pdf";
+    fileName += "." + m_type;
 
+    if(m_type == "pdf")
+        printPdf(fileName, mese, unitaIdList);
+    else
+        printCsv(fileName, mese, unitaIdList);
+
+    emit exportFinished(m_path + QDir::separator() + fileName);
+}
+
+void DeficitRecuperiExporter::printPdf(const QString &fileName, const QString &mese, const QVector<int> &unitaIdList)
+{
     QPdfWriter writer(m_path + QDir::separator() + fileName);
 
     writer.setPageSize(QPagedPaintDevice::A4);
@@ -135,7 +150,6 @@ void DeficitRecuperiExporter::run()
         }
 
         if(doctors.size() > 0) {
-
             if((m_offset + (m_unitHeight + 100 + doctors.size()*m_rowHeight)) > m_pageHeight) {
                 writer.newPage();
                 m_offset = 0;
@@ -155,8 +169,58 @@ void DeficitRecuperiExporter::run()
             m_offset += 500;
         }
     }
+}
 
-    emit exportFinished(m_path + QDir::separator() + fileName);
+void DeficitRecuperiExporter::printCsv(const QString &fileName, const QString &mese, const QVector<int> &unitaIdList)
+{
+    QFile outFile(m_path + QDir::separator() + fileName);
+    if(!outFile.open(QIODevice::WriteOnly)) {
+        qDebug() << "Impossibile aprire il file di destinazione";
+        return;
+    }
+
+    int currRow = 0;
+
+    QTextStream out(&outFile);
+    out.setAutoDetectUnicode(true);
+
+    out << "Deficit " + mese + ";;\n";
+    out << ";;\n";
+
+    foreach (int unitaId, unitaIdList) {
+        currRow++;
+        emit currentRow(currRow);
+
+        QString unitaName = SqlQueries::getUnitaNomeCompleto(unitaId);
+
+        QVector<int> dirigentiIdList = SqlQueries::getDoctorsIdsFromUnitInTimecard(m_timecard, unitaId);
+
+        QList<Doctor> doctors;
+
+        foreach (int dirigenteId, dirigentiIdList) {
+            m_competenza = new Competenza(m_timecard,dirigenteId);
+
+            if(m_competenza->deficitOrario() == "//")
+                continue;
+
+            Doctor doctor;
+            doctor.badge = m_competenza->badgeNumber();
+            doctor.name = m_competenza->name();
+            doctor.deficit = m_competenza->deficitOrario();
+
+            doctors << doctor;
+        }
+
+        if(doctors.size() > 0) {
+            out << unitaName + ";;\n";
+            for(Doctor doc : doctors) {
+                out << doc.badge + ";" + doc.name + ";" + doc.deficit + "\n";
+            }
+            out << ";;\n";
+        }
+    }
+
+    outFile.close();
 }
 
 void DeficitRecuperiExporter::printTitle(QPainter &painter, const QString &text)

@@ -33,6 +33,7 @@ PrintDialog::PrintDialog(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->casiCB->setChecked(true);
+    ui->saveButton->addAction(ui->actionGeneraCSV);
 }
 
 PrintDialog::~PrintDialog()
@@ -119,6 +120,7 @@ void PrintDialog::setCurrentOp(const PrintDialog::ToolOps &op)
     case PrintUnits:
         ui->titleLabel->setText("Genera competenze Unità Operativa");
         setWindowTitle("Stampa competenze");
+        ui->saveButton->setIcon(QIcon(":/icons/pdflatex.svg"));
         ui->saveButton->setText("Genera PDF");
         ui->destWidget->setVisible(true);
         ui->optnsWidget->setVisible(true);
@@ -129,6 +131,7 @@ void PrintDialog::setCurrentOp(const PrintDialog::ToolOps &op)
     case PrintDoctors:
         ui->titleLabel->setText("Genera competenze Dirigenti");
         setWindowTitle("Stampa competenze");
+        ui->saveButton->setIcon(QIcon(":/icons/pdflatex.svg"));
         ui->saveButton->setText("Genera PDF");
         ui->destWidget->setVisible(true);
         ui->optnsWidget->setVisible(false);
@@ -140,6 +143,7 @@ void PrintDialog::setCurrentOp(const PrintDialog::ToolOps &op)
         ui->titleLabel->setText("Stampa Deficit");
         setWindowTitle("Stampa Deficit");
         ui->saveButton->setText("Genera PDF");
+        ui->saveButton->setIcon(QIcon(":/icons/pdflatex.svg"));
         ui->destWidget->setVisible(true);
         ui->optnsWidget->setVisible(false);
         ui->dirigenteCB->setVisible(false);
@@ -150,6 +154,7 @@ void PrintDialog::setCurrentOp(const PrintDialog::ToolOps &op)
         ui->titleLabel->setText("Ricalcola Deficit");
         setWindowTitle("Ricalcola Deficit");
         ui->saveButton->setText("Ricalcola");
+        ui->saveButton->setIcon(QIcon(":/icons/view-refresh.svg"));
         ui->destWidget->setVisible(false);
         ui->optnsWidget->setVisible(false);
         ui->dirigenteCB->setVisible(true);
@@ -183,6 +188,14 @@ void PrintDialog::on_cancelButton_clicked()
 void PrintDialog::on_saveButton_clicked()
 {
     proceed = true;
+    type = "pdf";
+    close();
+}
+
+void PrintDialog::on_actionGeneraCSV_triggered()
+{
+    proceed = true;
+    type = "csv";
     close();
 }
 

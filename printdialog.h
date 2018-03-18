@@ -52,6 +52,7 @@ public:
     void setCurrentUnita(int index);
     void setCurrentDirigente(int index);
     bool proceed;
+    QString type;
     QString path() const;
     void setPath(const QString &path);
     void setCurrentOp(const ToolOps &op);
@@ -65,6 +66,7 @@ private slots:
     void on_unitaCB_currentIndexChanged(int index);
     void on_meseCB_currentIndexChanged(int index);
     void on_browseButton_clicked();
+    void on_actionGeneraCSV_triggered();
 
 private:
     Ui::PrintDialog *ui;

@@ -36,5 +36,6 @@
         <file>icons/password-show-on.svg</file>
         <file>icons/view-preview.svg</file>
         <file>icons/appointment-soon-symbolic.svg</file>
+        <file>icons/text-csv.svg</file>
     </qresource>
 </RCC>

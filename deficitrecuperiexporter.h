@@ -37,6 +37,7 @@ public:
     void setPath(const QString &path);
     void setUnita(int id);
     void setMese(const QString &timecard);
+    void setType(const QString &type);
 
 protected:
     void run() override;
@@ -50,6 +51,7 @@ private:
     QString m_path;
     int m_idUnita;
     QString m_timecard;
+    QString m_type;
     Competenza *m_competenza;
 
     struct Doctor{
@@ -83,6 +85,8 @@ private:
     QFont unitFont();
     QFont rowFont();
     QFont pageFont();
+    void printPdf(const QString &fileName, const QString &mese, const QVector<int> &unitaIdList);
+    void printCsv(const QString &fileName, const QString &mese, const QVector<int> &unitaIdList);
 };
 
 #endif // DEFICITRECUPERIEXPORTER_H

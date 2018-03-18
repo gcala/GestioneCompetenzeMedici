@@ -278,7 +278,7 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="saveButton">
+      <widget class="QToolButton" name="saveButton">
        <property name="font">
         <font>
          <pointsize>12</pointsize>
@@ -289,13 +289,28 @@
        </property>
        <property name="icon">
         <iconset resource="assets.qrc">
-         <normaloff>:/icons/dialog-ok.svg</normaloff>:/icons/dialog-ok.svg</iconset>
+         <normaloff>:/icons/pdflatex.svg</normaloff>:/icons/pdflatex.svg</iconset>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonTextBesideIcon</enum>
+       </property>
+       <property name="arrowType">
+        <enum>Qt::NoArrow</enum>
        </property>
       </widget>
      </item>
     </layout>
    </item>
   </layout>
+  <action name="actionGeneraCSV">
+   <property name="icon">
+    <iconset resource="assets.qrc">
+     <normaloff>:/icons/text-csv.svg</normaloff>:/icons/text-csv.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Genera CSV</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
