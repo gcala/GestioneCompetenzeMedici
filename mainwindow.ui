@@ -2899,7 +2899,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QSpinBox" name="dmpHoursEdit">
+              <widget class="TwoDigitsSpinBox" name="dmpHoursEdit">
                <property name="font">
                 <font>
                  <pointsize>11</pointsize>
@@ -2918,7 +2918,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QSpinBox" name="dmpMinsEdit">
+              <widget class="TwoDigitsSpinBox" name="dmpMinsEdit">
                <property name="font">
                 <font>
                  <pointsize>11</pointsize>
@@ -3710,7 +3710,7 @@
      <x>0</x>
      <y>0</y>
      <width>1351</width>
-     <height>34</height>
+     <height>26</height>
     </rect>
    </property>
    <property name="font">
@@ -4054,6 +4054,11 @@
    <extends>QWidget</extends>
    <header>renderarearep.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>TwoDigitsSpinBox</class>
+   <extends>QSpinBox</extends>
+   <header>twodigitsspinbox.h</header>
   </customwidget>
  </customwidgets>
  <resources>
