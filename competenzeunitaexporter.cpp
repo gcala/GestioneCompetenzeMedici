@@ -170,7 +170,7 @@ void CompetenzeUnitaExporter::run()
             printStrRepartoFesONott(painter,"//",counter);
             printStrRepartoFesENott(painter,"//",counter);
             printNumGfFesNott(painter,m_competenza->numGrFestPagabili() > 0 ? QString::number(m_competenza->numGrFestPagabili()) : "//",counter);
-            printNumGuarNott(painter,m_competenza->numGuarGFNonPag() > 0 ? QString::number(m_competenza->numGuarGFNonPag()) : "//",counter);
+            printNumGuarNott(painter, (m_competenza->numGuar() + m_competenza->numGuarGFNonPag() > 0 ? QString::number(m_competenza->numGuar() + m_competenza->numGuarGFNonPag()) : "//" ),counter);
             printNumOreGuarFesENot(painter,m_competenza->numOreGuarFesENot() > 0 ? QString::number(m_competenza->numOreGuarFesENot()) : "//",counter);
             printNumOreGuarFesONot(painter,m_competenza->numOreGuarFesONot() > 0 ? QString::number(m_competenza->numOreGuarFesONot()) : "//",counter);
             printNumOreGuarOrd(painter,m_competenza->numOreGuarOrd() > 0 ? QString::number(m_competenza->numOreGuarOrd()) : "//",counter);
