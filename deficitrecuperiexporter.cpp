@@ -184,8 +184,7 @@ void DeficitRecuperiExporter::printCsv(const QString &fileName, const QString &m
     QTextStream out(&outFile);
     out.setAutoDetectUnicode(true);
 
-    out << "Deficit " + mese + ";;\n";
-    out << ";;\n";
+    out << "UNITA';MATR.;NOMINATIVO;DEFICIT;FERIE;MALATTIA;CONGEDI;RECUPERI\n";
 
     foreach (int unitaId, unitaIdList) {
         currRow++;
@@ -200,23 +199,48 @@ void DeficitRecuperiExporter::printCsv(const QString &fileName, const QString &m
         foreach (int dirigenteId, dirigentiIdList) {
             m_competenza = new Competenza(m_timecard,dirigenteId);
 
-            if(m_competenza->deficitOrario() == "//")
-                continue;
-
             Doctor doctor;
             doctor.badge = m_competenza->badgeNumber();
             doctor.name = m_competenza->name();
-            doctor.deficit = m_competenza->deficitOrario();
+            if(m_competenza->deficitOrario() == "//")
+                doctor.deficit = "00:00";
+            else
+                doctor.deficit = m_competenza->deficitOrario();
+            doctor.ferie = m_competenza->ferieDates();
+            doctor.congedi = m_competenza->congediDates();
+            doctor.malattie = m_competenza->malattiaDates();
+            doctor.recuperi = m_competenza->rmcDates();
+            doctor.recuperi << m_competenza->rmpDates();
 
             doctors << doctor;
         }
 
         if(doctors.size() > 0) {
-            out << unitaName + ";;\n";
             for(Doctor doc : doctors) {
-                out << doc.badge + ";" + doc.name + ";" + doc.deficit + "\n";
+                QMap<int, QString> ferie;
+                QMap<int, QString> malattie;
+                QMap<int, QString> congedi;
+                QMap<int, QString> recuperi;
+
+                for(QDate date : doc.ferie) {
+                    ferie[date.day()] = QString::number(date.day());
+                }
+
+                for(QDate date : doc.malattie) {
+                    malattie[date.day()] = QString::number(date.day());
+                }
+
+                for(QDate date : doc.congedi) {
+                    congedi[date.day()] = QString::number(date.day());
+                }
+
+                for(QDate date : doc.recuperi) {
+                    recuperi[date.day()] = QString::number(date.day());
+                }
+
+                out << unitaName + ";"
+                    + doc.badge + ";" + doc.name + ";" + doc.deficit + ";" + ferie.values().join(",") + ";" + malattie.values().join(",") + ";" + congedi.values().join(",") + ";" + recuperi.values().join(",") + "\n";
             }
-            out << ";;\n";
         }
     }
 
@@ -249,7 +273,6 @@ void DeficitRecuperiExporter::printBadge(QPainter &painter, const QString &text,
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(rowFont());
-//    painter.drawRect(0, m_offset, m_badgeWidth, m_rowHeight);
     painter.drawText(QRect(0, m_offset, m_badgeWidth, m_rowHeight), Qt::AlignRight | Qt::AlignVCenter | Qt::TextWordWrap, text);
     painter.restore();
 }
@@ -259,7 +282,6 @@ void DeficitRecuperiExporter::printName(QPainter &painter, const QString &text, 
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(rowFont());
-//    painter.drawRect(m_badgeWidth+m_cellSpacing, m_offset, m_nameWidth, m_rowHeight);
     painter.drawText(QRect(m_badgeWidth+m_cellSpacing, m_offset, m_nameWidth, m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, text);
     painter.restore();
 }
@@ -269,7 +291,6 @@ void DeficitRecuperiExporter::printDeficit(QPainter &painter, const QString &tex
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(rowFont());
-//    painter.drawRect(m_badgeWidth + m_nameWidth+m_cellSpacing*2, m_offset, m_deficitWidth, m_rowHeight);
     painter.drawText(QRect(m_badgeWidth + m_nameWidth+m_cellSpacing*2, m_offset, m_deficitWidth, m_rowHeight), Qt::AlignCenter | Qt::AlignVCenter, text == "//" ? "" : text);
     painter.restore();
 }
@@ -279,7 +300,6 @@ void DeficitRecuperiExporter::printPageNumber(QPainter &painter, int page)
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(pageFont());
-//    painter.drawRect(m_badgeWidth + m_nameWidth+m_cellSpacing*2, m_offset, m_deficitWidth, m_rowHeight);
     painter.drawText(QRect(0, 0, m_pageWidth, m_pageHeight + 150), Qt::AlignCenter | Qt::AlignBottom, "Pagina " + QString::number(page));
     painter.restore();
 }
