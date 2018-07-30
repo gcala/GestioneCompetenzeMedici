@@ -1118,10 +1118,12 @@ int CompetenzaData::numFestiviRecuperabili()
     if(residuoOreNonPagate() <= maxMins)
         return residuoOreNonPagate();
 
-    const int val = residuoOreNonPagate() / m_dipendente->minutiGiornalieri();
+    if(m_dipendente->minutiGiornalieri() != 0) {
+        const int val = residuoOreNonPagate() / m_dipendente->minutiGiornalieri();
 
-    if(val <= num*2) {
-        return val*m_dipendente->minutiGiornalieri();
+        if(val <= num*2) {
+            return val*m_dipendente->minutiGiornalieri();
+        }
     }
 
     return num*2*m_dipendente->minutiGiornalieri();

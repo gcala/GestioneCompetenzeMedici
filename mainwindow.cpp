@@ -1096,7 +1096,7 @@ void MainWindow::elaboraSommario()
     if(m_competenza->orarioGiornaliero() == "0:00")
         ui->orarioGiornalieroEdit->setTime(QTime(0,0));
     else
-        ui->orarioGiornalieroEdit->setTime(QTime::fromString(m_competenza->orarioGiornaliero(),"hh:mm"));
+        ui->orarioGiornalieroEdit->setTime(QTime::fromString(m_competenza->orarioGiornaliero(),"h:mm"));
     ui->oreDovuteLabel->setText(m_competenza->oreDovute());
     ui->oreEffettuateLabel->setText(m_competenza->oreEffettuate());
 
