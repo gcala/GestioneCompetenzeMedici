@@ -184,6 +184,9 @@ void DeficitRecuperiExporter::printCsv(const QString &fileName, const QString &m
     QTextStream out(&outFile);
     out.setAutoDetectUnicode(true);
 
+//    out << "Deficit " + mese + ";;\n";
+//    out << ";;\n";
+
     out << "UNITA';MATR.;NOMINATIVO;DEFICIT;FERIE;MALATTIA;CONGEDI;RECUPERI\n";
 
     foreach (int unitaId, unitaIdList) {
@@ -198,6 +201,9 @@ void DeficitRecuperiExporter::printCsv(const QString &fileName, const QString &m
 
         foreach (int dirigenteId, dirigentiIdList) {
             m_competenza = new Competenza(m_timecard,dirigenteId);
+
+//            if(m_competenza->deficitOrario() == "//")
+//                continue;
 
             Doctor doctor;
             doctor.badge = m_competenza->badgeNumber();
@@ -273,6 +279,7 @@ void DeficitRecuperiExporter::printBadge(QPainter &painter, const QString &text,
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(rowFont());
+//    painter.drawRect(0, m_offset, m_badgeWidth, m_rowHeight);
     painter.drawText(QRect(0, m_offset, m_badgeWidth, m_rowHeight), Qt::AlignRight | Qt::AlignVCenter | Qt::TextWordWrap, text);
     painter.restore();
 }
@@ -282,6 +289,7 @@ void DeficitRecuperiExporter::printName(QPainter &painter, const QString &text, 
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(rowFont());
+//    painter.drawRect(m_badgeWidth+m_cellSpacing, m_offset, m_nameWidth, m_rowHeight);
     painter.drawText(QRect(m_badgeWidth+m_cellSpacing, m_offset, m_nameWidth, m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, text);
     painter.restore();
 }
@@ -291,6 +299,7 @@ void DeficitRecuperiExporter::printDeficit(QPainter &painter, const QString &tex
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(rowFont());
+//    painter.drawRect(m_badgeWidth + m_nameWidth+m_cellSpacing*2, m_offset, m_deficitWidth, m_rowHeight);
     painter.drawText(QRect(m_badgeWidth + m_nameWidth+m_cellSpacing*2, m_offset, m_deficitWidth, m_rowHeight), Qt::AlignCenter | Qt::AlignVCenter, text == "//" ? "" : text);
     painter.restore();
 }
@@ -300,6 +309,7 @@ void DeficitRecuperiExporter::printPageNumber(QPainter &painter, int page)
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(pageFont());
+//    painter.drawRect(m_badgeWidth + m_nameWidth+m_cellSpacing*2, m_offset, m_deficitWidth, m_rowHeight);
     painter.drawText(QRect(0, 0, m_pageWidth, m_pageHeight + 150), Qt::AlignCenter | Qt::AlignBottom, "Pagina " + QString::number(page));
     painter.restore();
 }
