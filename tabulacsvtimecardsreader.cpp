@@ -22,7 +22,6 @@
 #include "tabulacsvtimecardsreader.h"
 #include "sqlqueries.h"
 #include "dipendente.h"
-#include "nomiunitadialog.h"
 #include "dmpcompute.h"
 
 #include <QDate>
@@ -46,12 +45,10 @@ TabulaCsvTimeCardsReader::TabulaCsvTimeCardsReader(QObject *parent)
     causaliRMC << "RMC";
     causaliDaValutare << "ECCR" << "RMC" << "GUAR" << "GREP";
     m_timeCardBegin = true;
-    m_nomiDialog = new NomiUnitaDialog;
 }
 
 TabulaCsvTimeCardsReader::~TabulaCsvTimeCardsReader()
 {
-    delete m_nomiDialog;
 }
 
 void TabulaCsvTimeCardsReader::setFile(const QString &file)
@@ -90,7 +87,6 @@ void TabulaCsvTimeCardsReader::run()
     bool isRestDay = false;
 
     int rowCount = 0;
-    m_nomiDialog->populateUnits();
 
     while(!file.atEnd()) {
         QString s = file.readLine();
@@ -193,9 +189,7 @@ void TabulaCsvTimeCardsReader::run()
 
             int unitaId = SqlQueries::unitId(m_dipendente->matricola());
             if(unitaId == -1) {
-                m_nomiDialog->setUnitaLabel(m_dipendente->nome());
-                m_nomiDialog->exec();
-                unitaId = m_nomiDialog->currentUnit();
+                emit selectUnit(m_dipendente->nome(), unitaId);
             }
 
             m_dipendente->setUnita(unitaId);
