@@ -51,7 +51,8 @@ SOURCES += \
         logindialog.cpp \
         sqldatabasemanager.cpp \
         almanac.cpp \
-        deficitrecuperiexporter.cpp
+        deficitrecuperiexporter.cpp \
+        twodigitsspinbox.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -81,7 +82,8 @@ HEADERS += \
         logindialog.h \
         sqldatabasemanager.h \
         almanac.h \
-        deficitrecuperiexporter.h
+        deficitrecuperiexporter.h \
+        twodigitsspinbox.h
 
 FORMS += \
         mainwindow.ui \

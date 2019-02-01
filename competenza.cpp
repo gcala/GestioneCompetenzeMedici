@@ -979,7 +979,7 @@ int CompetenzaData::numOreGuarPagabili() const
     int numOreGuarNott = numGuar();
 
     int totMinArrot = (totMin % 60) >= m_arrotondamento ? totMin/60+1 : totMin/60;
-    int oreGuar = numOreGuarNott * m_orePagate;
+    int oreGuar = (numOreGuarNott+numGuarGFNonPag()) * m_orePagate;
     if(oreGuar <= totMinArrot)
         return oreGuar;
 
@@ -1002,7 +1002,7 @@ int CompetenzaData::numGuar() const
 // numero guardie con grandi festività non pagate
 int CompetenzaData::numGuarGFNonPag() const
 {
-    return numGuar() + (grFestCount() - numGrFestPagabili());
+    return grFestCount() - numGrFestPagabili();
 }
 
 int CompetenzaData::numOreGuarFesENot() const
@@ -1118,10 +1118,12 @@ int CompetenzaData::numFestiviRecuperabili()
     if(residuoOreNonPagate() <= maxMins)
         return residuoOreNonPagate();
 
-    const int val = residuoOreNonPagate() / m_dipendente->minutiGiornalieri();
+    if(m_dipendente->minutiGiornalieri() != 0) {
+        const int val = residuoOreNonPagate() / m_dipendente->minutiGiornalieri();
 
-    if(val <= num*2) {
-        return val*m_dipendente->minutiGiornalieri();
+        if(val <= num*2) {
+            return val*m_dipendente->minutiGiornalieri();
+        }
     }
 
     return num*2*m_dipendente->minutiGiornalieri();

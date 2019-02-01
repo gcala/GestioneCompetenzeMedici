@@ -58,6 +58,10 @@ private:
         QString badge;
         QString name;
         QString deficit;
+        QList<QDate> ferie;
+        QList<QDate> congedi;
+        QList<QDate> malattie;
+        QList<QDate> recuperi;
     };
 
     const int m_pageWidth;
