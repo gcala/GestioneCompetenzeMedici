@@ -143,6 +143,13 @@ void TabulaCsvTimeCardsReader::run()
                 m_dipendente->addGuardiaNotturna(QString::number(dataCorrente.day()));
             }
 
+            // completa il mese con i giorni mancanti
+            if(dataCorrente.day() != dataCorrente.daysInMonth()) {
+                for(int i = dataCorrente.addDays(1).day(); i <= dataCorrente.daysInMonth(); i++) {
+                    m_dipendente->addRiposi(1);
+                }
+            }
+
             SqlQueries::addTimeCard(tableName, m_dipendente);
 
 //            The::dmpCompute()->setTable(tableName);
