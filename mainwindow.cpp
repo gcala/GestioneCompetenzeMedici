@@ -35,6 +35,7 @@
 #include "configdialog.h"
 #include "resetdialog.h"
 #include "logindialog.h"
+#include "nomiunitadialog.h"
 
 #include <QtWidgets>
 #include <QSqlQueryModel>
@@ -180,6 +181,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&dirigenteCompetenzeExporter, SIGNAL(totalRows(int)), this, SLOT(setTotalRows(int)));
     connect(&dirigenteCompetenzeExporter, SIGNAL(currentRow(int)), this, SLOT(setCurrentRow(int)));
 
+    m_nomiDialog = new NomiUnitaDialog;
+    connect(&tabulaReader, SIGNAL( selectUnit(QString, int&) ), this, SLOT( associaUnita(QString, int &) ), Qt::BlockingQueuedConnection ) ;
+
     ui->tabWidget->setCurrentIndex(0);
     ui->tabWidget->show();
     ui->unitaComboBox->setCurrentIndex(0);
@@ -193,6 +197,7 @@ MainWindow::~MainWindow()
     saveSettings();
     delete insertDialog;
     delete printDialog;
+    delete m_nomiDialog;
     delete ui;
 }
 
@@ -273,6 +278,7 @@ void MainWindow::on_actionNuovoDatabase_triggered()
     populateUnitaCB();
     populateDirigentiCB();
     populateMeseCompetenzeCB();
+    m_nomiDialog->populateUnits();
     ui->actionBackupDatabase->setEnabled(true);
 
     delete databaseWizard;
@@ -467,6 +473,7 @@ void MainWindow::connectToLocalDatabase()
     populateUnitaCB();
     populateDirigentiCB();
     populateMeseCompetenzeCB();
+    m_nomiDialog->populateUnits();
 }
 
 void MainWindow::populateMeseCompetenzeCB()
@@ -1477,6 +1484,14 @@ void MainWindow::delayedSetup()
         needsBackup();
         connectToLocalDatabase();
     }
+}
+
+void MainWindow::associaUnita(QString nome, int &unitaId)
+{
+    m_nomiDialog->setUnitaLabel(nome);
+    m_nomiDialog->exec();
+    populateDirigentiCB();
+    unitaId = m_nomiDialog->currentUnit();
 }
 
 void MainWindow::pagaStrGuardiaCambiato(bool checked)

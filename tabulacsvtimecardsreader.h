@@ -25,7 +25,6 @@
 #include <QThread>
 
 class Dipendente;
-class NomiUnitaDialog;
 
 class TabulaCsvTimeCardsReader : public QThread
 {
@@ -43,6 +42,7 @@ signals:
       void timeCardsRead();
       void totalRows(int);
       void currentRow(int);
+      void selectUnit(QString, int&);
 
 private:
       QStringList causaliFerie;
@@ -53,7 +53,6 @@ private:
       QStringList causaliDaValutare;
       QString fileName;
       Dipendente *m_dipendente;
-      NomiUnitaDialog *m_nomiDialog;
       bool m_timeCardBegin;
 
       int mese2Int(const QString &mese);

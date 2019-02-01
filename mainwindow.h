@@ -46,6 +46,7 @@ class CalendarManager;
 class CalendarManagerRep;
 class QWidgetAction;
 class Competenza;
+class NomiUnitaDialog;
 
 class MainWindow : public QMainWindow
 {
@@ -67,6 +68,7 @@ private slots:
     void tabulaFinished(int exitCode, QProcess::ExitStatus exitStatus);
     void tabulaError(QProcess::ProcessError error);
     void delayedSetup();
+    void associaUnita(QString, int &unitaId);
 
     void on_editUnitaSaveButton_clicked();
     void on_editUnitaCancelButton_clicked();
@@ -187,6 +189,8 @@ private:
     QMenu *altreCalendarMenu;
     CalendarManager *altreCalendar;
     QWidgetAction *altreCalendarAction;
+
+    NomiUnitaDialog *m_nomiDialog;
 
     QString lastUnitaNum;
     QString lastUnitaRaggr;
