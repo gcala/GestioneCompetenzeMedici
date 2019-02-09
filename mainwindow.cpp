@@ -36,6 +36,7 @@
 #include "resetdialog.h"
 #include "logindialog.h"
 #include "nomiunitadialog.h"
+#include "switchunitdialog.h"
 
 #include <QtWidgets>
 #include <QSqlQueryModel>
@@ -483,7 +484,6 @@ void MainWindow::populateMeseCompetenzeCB()
 
     const QStringList timeCards = SqlQueries::timecardsList();
 
-    ui->meseCompetenzeCB->clear();
     QStringList::const_iterator i = timeCards.constEnd();
 
     while(i != timeCards.constBegin()) {
@@ -1544,4 +1544,10 @@ void MainWindow::on_tabWidget_currentChanged(int index)
     } else {
         ui->actionTakeScreenshot->setEnabled(false);
     }
+}
+
+void MainWindow::on_actionCambiaUnit_triggered()
+{
+    SwitchUnitDialog dialog;
+    dialog.exec();
 }

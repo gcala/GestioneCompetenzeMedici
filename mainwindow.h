@@ -114,12 +114,10 @@ private slots:
     void on_noteLine_textEdited(const QString &arg1);
     void on_actionConnettiDbRemoto_triggered();
     void pagaStrGuardiaCambiato(bool checked);
-
     void on_actionTakeScreenshot_triggered();
-
     void on_tabWidget_currentChanged(int index);
-
     void on_actionPrintDeficit_triggered();
+    void on_actionCambiaUnit_triggered();
 
 private:
     Ui::MainWindow *ui;

@@ -1167,3 +1167,16 @@ QPair<int, int> SqlQueries::getRecuperiMeseSuccessivo(const int &anno, const int
     return result;
 }
 
+void SqlQueries::setUnitaMedico(const int &docId, const int &unitId)
+{
+    QSqlQuery query;
+    query.prepare("UPDATE medici "
+                  "SET id_unita=:id_unita "
+                  "WHERE id=" + QString::number(docId) + ";");
+    query.bindValue(":id_unita", unitId);
+
+    if(!query.exec()) {
+        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
+}
+

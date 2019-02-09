@@ -37,5 +37,9 @@
         <file>icons/view-preview.svg</file>
         <file>icons/appointment-soon-symbolic.svg</file>
         <file>icons/text-csv.svg</file>
+        <file>icons/double-arrow-forward.svg</file>
+        <file>icons/double-arrow-back.svg</file>
+        <file>icons/draw-arrow-forward.svg</file>
+        <file>icons/switch.svg</file>
     </qresource>
 </RCC>

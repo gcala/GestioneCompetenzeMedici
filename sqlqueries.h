@@ -82,6 +82,7 @@ public:
     static QVariantList getUnitaDataById(const int &idUnita);
     static QVariantList getDoctorDataById(const int &idDoctor);
     static QPair<int,int> getRecuperiMeseSuccessivo(const int &anno, const int &mese, const int &doctorId);
+    static void setUnitaMedico(const int &docId, const int &unitId);
 };
 
 #endif // SQLQUERIES_H

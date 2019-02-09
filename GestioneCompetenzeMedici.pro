@@ -52,7 +52,8 @@ SOURCES += \
         sqldatabasemanager.cpp \
         almanac.cpp \
         deficitrecuperiexporter.cpp \
-        twodigitsspinbox.cpp
+        twodigitsspinbox.cpp \
+    switchunitdialog.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -83,7 +84,8 @@ HEADERS += \
         sqldatabasemanager.h \
         almanac.h \
         deficitrecuperiexporter.h \
-        twodigitsspinbox.h
+        twodigitsspinbox.h \
+    switchunitdialog.h
 
 FORMS += \
         mainwindow.ui \
@@ -95,7 +97,8 @@ FORMS += \
         configdialog.ui \
         settingsitem.ui \
         resetdialog.ui \
-        logindialog.ui
+        logindialog.ui \
+    switchunitdialog.ui
 
 RESOURCES += \
     assets.qrc

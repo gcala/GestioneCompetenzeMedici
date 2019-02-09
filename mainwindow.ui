@@ -977,19 +977,6 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="2">
-           <spacer name="horizontalSpacer_8">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>388</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
           <item row="1" column="0">
            <widget class="QLabel" name="label_13">
             <property name="sizePolicy">
@@ -1073,6 +1060,19 @@
              <bool>true</bool>
             </property>
            </widget>
+          </item>
+          <item row="0" column="2">
+           <spacer name="horizontalSpacer_8">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>388</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
         </item>
@@ -3710,7 +3710,7 @@
      <x>0</x>
      <y>0</y>
      <width>1351</width>
-     <height>26</height>
+     <height>34</height>
     </rect>
    </property>
    <property name="font">
@@ -3756,6 +3756,7 @@
     <property name="title">
      <string>Strum&amp;enti</string>
     </property>
+    <addaction name="actionCambiaUnit"/>
     <addaction name="actionRicalcolaDeficit"/>
     <addaction name="actionTakeScreenshot"/>
     <addaction name="separator"/>
@@ -3785,6 +3786,7 @@
    <addaction name="separator"/>
    <addaction name="actionStampaCompetenzeDirigenti"/>
    <addaction name="actionStampaCompetenzeUnita"/>
+   <addaction name="actionCambiaUnit"/>
    <addaction name="actionRicalcolaDeficit"/>
    <addaction name="actionTakeScreenshot"/>
    <addaction name="actionPrintDeficit"/>
@@ -4017,7 +4019,7 @@
      <normaloff>:/icons/view-preview.svg</normaloff>:/icons/view-preview.svg</iconset>
    </property>
    <property name="text">
-    <string>Cattura schermata</string>
+    <string>Cattura &amp;schermata</string>
    </property>
    <property name="toolTip">
     <string>Cattura una schermata dell'applicazione</string>
@@ -4029,10 +4031,22 @@
      <normaloff>:/icons/appointment-soon-symbolic.svg</normaloff>:/icons/appointment-soon-symbolic.svg</iconset>
    </property>
    <property name="text">
-    <string>Stampa deficit...</string>
+    <string>Stampa &amp;deficit...</string>
    </property>
    <property name="toolTip">
     <string>Stampa il deficit orario</string>
+   </property>
+  </action>
+  <action name="actionCambiaUnit">
+   <property name="icon">
+    <iconset resource="assets.qrc">
+     <normaloff>:/icons/switch.svg</normaloff>:/icons/switch.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Cambia Unità Dirigenti Medici</string>
+   </property>
+   <property name="toolTip">
+    <string>Cambia Unità Dirigenti Medici</string>
    </property>
   </action>
  </widget>
