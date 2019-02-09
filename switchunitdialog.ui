@@ -151,12 +151,6 @@
         <iconset resource="assets.qrc">
          <normaloff>:/icons/kt-restore-defaults.svg</normaloff>:/icons/kt-restore-defaults.svg</iconset>
        </property>
-       <property name="iconSize">
-        <size>
-         <width>22</width>
-         <height>22</height>
-        </size>
-       </property>
       </widget>
      </item>
      <item>
@@ -180,12 +174,6 @@
        <property name="icon">
         <iconset resource="assets.qrc">
          <normaloff>:/icons/dialog-ok-apply.svg</normaloff>:/icons/dialog-ok-apply.svg</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>22</width>
-         <height>22</height>
-        </size>
        </property>
       </widget>
      </item>
