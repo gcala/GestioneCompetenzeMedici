@@ -23,6 +23,7 @@
 #define TABULACSVTIMECARDSREADER_H
 
 #include <QThread>
+#include <QVector>
 
 class Dipendente;
 
@@ -54,6 +55,7 @@ private:
       QString fileName;
       Dipendente *m_dipendente;
       bool m_timeCardBegin;
+      QVector<int> m_giorniRiposo;
 
       int mese2Int(const QString &mese);
       int inMinuti(const QString &time);

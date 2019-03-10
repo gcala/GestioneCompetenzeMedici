@@ -162,6 +162,7 @@ void TabulaCsvTimeCardsReader::run()
 //                The::dmpCompute()->start();
 //            }
 
+            m_giorniRiposo.clear();
             forseNotte = false;
             tipoPrecedente.clear();
             m_timeCardBegin = true;
@@ -226,6 +227,7 @@ void TabulaCsvTimeCardsReader::run()
             if(campi.at(1).toLower().trimmed() == "f" || campi.at(1).toLower().trimmed() == "r") {
                 m_dipendente->addRiposi(1);
                 isRestDay = true;
+                m_giorniRiposo << dataCorrente.day();
             }
 
             m_dipendente->addMinutiFatti(inMinuti(campi.at(10).trimmed()));
@@ -320,7 +322,7 @@ void TabulaCsvTimeCardsReader::run()
             }
 
             if(forseNotte && numTimbrature == 0) {
-                if(dataCorrente.addDays(-1).dayOfWeek() != 6)
+                if(m_giorniRiposo.contains(dataCorrente.addDays(-1).day()))
                     m_dipendente->addGuardiaDiurna(QString::number(dataCorrente.addDays(-1).day()));
                 forseNotte = false;
             } else if(forseNotte && campi.at(2).trimmed().isEmpty()) {
@@ -329,7 +331,8 @@ void TabulaCsvTimeCardsReader::run()
             }
 
             if(forseNotte && !campi.at(2).trimmed().isEmpty()) {
-                m_dipendente->addGuardiaDiurna(QString::number(dataCorrente.addDays(-1).day()));
+                if(m_giorniRiposo.contains(dataCorrente.addDays(-1).day()))
+                    m_dipendente->addGuardiaDiurna(QString::number(dataCorrente.addDays(-1).day()));
                 forseNotte = false;
             }
 
