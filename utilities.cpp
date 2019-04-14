@@ -21,6 +21,8 @@
 
 #include "utilities.h"
 
+QString Utilities::m_connectionName;
+
 QString Utilities::inOrario(int value )
 {
     QString sign;

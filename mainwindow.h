@@ -53,7 +53,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
     enum UnitsOps { UndefOp, AddUnit, RemoveUnit, EditUnit };
@@ -225,8 +225,9 @@ private:
     void saveCurrentDirigenteValues();
     void restoreUnitaValues();
     void restoreDirigenteValues();
-    void connectToLocalDatabase();
-    void connectToRemoteDatabase(const QString &user, const QString &pass);
+    void connectToDatabase();
+//    void connectToLocalDatabase();
+//    void connectToRemoteDatabase(const QString &user, const QString &pass);
     void askDbUserPassword();
 
     void createUnitsTable();
@@ -246,6 +247,8 @@ private:
     void elaboraGuardie();
     void elaboraRep();
     void elaboraSommario();
+
+    void setupDbConnectionParameters();
 };
 
 #endif // MAINWINDOW_H

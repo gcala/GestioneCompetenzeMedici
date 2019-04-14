@@ -31,6 +31,7 @@ private:
 
 public:
     static QString inOrario(int value);
+    static QString m_connectionName;
 };
 
 #endif // UTILITIES_H

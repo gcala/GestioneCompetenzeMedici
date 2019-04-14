@@ -165,6 +165,7 @@ MainWindow::MainWindow(QWidget *parent) :
     toggleUnitaEditMode();
     toggleDirigenteEditMode();
     loadSettings();
+    Utilities::m_connectionName = "";
 
     connect(&tabulaReader, SIGNAL(timeCardsRead()), this, SLOT(handleResults()));
     connect(&tabulaReader, SIGNAL(totalRows(int)), this, SLOT(setTotalRows(int)));
@@ -216,32 +217,37 @@ void MainWindow::askDbUserPassword()
 
     m_lastUsername = login.username();
     m_lastPassword = login.password();
+
+    m_driver = "QMYSQL";
+
+    setupDbConnectionParameters();
+
     saveSettings();
 
-    connectToRemoteDatabase(m_lastUsername, m_lastPassword);
+    connectToDatabase();
 }
 
-void MainWindow::connectToRemoteDatabase(const QString &user, const QString &pass)
-{
-    if(!The::dbManager()->createRemoteConnection(m_host,
-                                                 m_dbName,
-                                                 user,
-                                                 pass,
-                                                 m_useSSL,
-                                                 m_certFile,
-                                                 m_keyFile)) {
-        setWindowTitle("Gestione Competenze Medici");
-        return;
-    }
-    m_driver = "QMYSQL";
-    setWindowTitle("Gestione Competenze Medici - " + m_host);
+//void MainWindow::connectToRemoteDatabase(const QString &user, const QString &pass)
+//{
+//    if(!The::dbManager()->createRemoteConnection(m_host,
+//                                                 m_dbName,
+//                                                 user,
+//                                                 pass,
+//                                                 m_useSSL,
+//                                                 m_certFile,
+//                                                 m_keyFile)) {
+//        setWindowTitle("Gestione Competenze Medici");
+//        return;
+//    }
+//    m_driver = "QMYSQL";
+//    setWindowTitle("Gestione Competenze Medici - " + m_host);
 
-//    clearWidgets();
-    populateUnitaCB();
-    populateDirigentiCB();
-    populateMeseCompetenzeCB();
-    m_nomiDialog->populateUnits();
-}
+////    clearWidgets();
+//    populateUnitaCB();
+//    populateDirigentiCB();
+//    populateMeseCompetenzeCB();
+//    m_nomiDialog->populateUnits();
+//}
 
 void MainWindow::mostraDifferenzaOre()
 {
@@ -460,9 +466,9 @@ void MainWindow::restoreDirigenteValues()
     ui->dirigentiUnitaComboBox->show();
 }
 
-void MainWindow::connectToLocalDatabase()
+void MainWindow::connectToDatabase()
 {
-    if(!The::dbManager()->createLocalConnection(currentDatabase.absoluteFilePath())) {
+    if(!The::dbManager()->createConnection()) {
         setWindowTitle("Gestione Competenze Medici");
         return;
     }
@@ -476,6 +482,23 @@ void MainWindow::connectToLocalDatabase()
     populateMeseCompetenzeCB();
     m_nomiDialog->populateUnits();
 }
+
+//void MainWindow::connectToLocalDatabase()
+//{
+//    if(!The::dbManager()->createLocalConnection(currentDatabase.absoluteFilePath())) {
+//        setWindowTitle("Gestione Competenze Medici");
+//        return;
+//    }
+
+//    QFileInfo fi(The::dbManager()->currentDatabase());
+
+//    setWindowTitle("Gestione Competenze Medici - " + fi.completeBaseName());
+
+//    populateUnitaCB();
+//    populateDirigentiCB();
+//    populateMeseCompetenzeCB();
+//    m_nomiDialog->populateUnits();
+//}
 
 void MainWindow::populateMeseCompetenzeCB()
 {
@@ -673,7 +696,8 @@ void MainWindow::on_actionApriDatabase_triggered()
             m_driver = "QSQLITE";
             saveSettings();
             needsBackup();
-            connectToLocalDatabase();
+            setupDbConnectionParameters();
+            connectToDatabase();
 //            clearWidgets();
             populateUnitaCB();
             populateDirigentiCB();
@@ -695,7 +719,8 @@ void MainWindow::on_actionApriDatabase_triggered()
     m_lastPassword = databaseWizard->password();
     saveSettings();
 
-    connectToRemoteDatabase(m_lastUsername, m_lastPassword);
+    setupDbConnectionParameters();
+    connectToDatabase();
 
     delete databaseWizard;
 }
@@ -719,6 +744,8 @@ void MainWindow::loadSettings()
 #else
     m_javaPath = settings.value("javaPath", "/usr/bin/java").toString();
 #endif
+
+    setupDbConnectionParameters();
 }
 
 void MainWindow::saveSettings()
@@ -736,7 +763,6 @@ void MainWindow::saveSettings()
     settings.setValue("keyFile", m_keyFile);
     settings.setValue("useSSL", m_useSSL);
     settings.setValue("lastUsername", m_lastUsername);
-
 }
 
 void MainWindow::on_unitaComboBox_currentIndexChanged(int index)
@@ -882,6 +908,8 @@ void MainWindow::on_actionCaricaPdf_triggered()
 
 void MainWindow::handleResults()
 {
+    Utilities::m_connectionName = "";
+
     progressBar->setVisible(false);
     msgLabel->setText("");
     populateDirigentiCB();
@@ -899,6 +927,7 @@ void MainWindow::handleResults()
 
 void MainWindow::exported(QString file)
 {
+    Utilities::m_connectionName = "";
     ui->actionStampaCompetenzeUnita->setEnabled(true);
     ui->actionStampaCompetenzeDirigenti->setEnabled(true);
     ui->actionPrintDeficit->setEnabled(true);
@@ -911,6 +940,8 @@ void MainWindow::exported(QString file)
 
 void MainWindow::computed()
 {
+    Utilities::m_connectionName = "";
+
     disconnect(The::dmpCompute(), SIGNAL(computeFinished()), 0, 0);
     disconnect(The::dmpCompute(), SIGNAL(currentItem(int)), 0, 0);
     disconnect(The::dmpCompute(), SIGNAL(totalItems(int)), 0, 0);
@@ -1126,6 +1157,19 @@ void MainWindow::elaboraSommario()
     }
 
     ui->oreNonRecLabel->setText(m_competenza->residuoOreNonRecuperabili());
+}
+
+void MainWindow::setupDbConnectionParameters()
+{
+    The::dbManager()->setDriver(m_driver);
+    The::dbManager()->setHost(m_host);
+    The::dbManager()->setDbName(m_dbName);
+    The::dbManager()->setCert(m_certFile);
+    The::dbManager()->setKey(m_keyFile);
+    The::dbManager()->setSecure(m_useSSL);
+    The::dbManager()->setLocalDbFileName(currentDatabase.absoluteFilePath());
+    The::dbManager()->setUser(m_lastUsername);
+    The::dbManager()->setPass(m_lastPassword);
 }
 
 void MainWindow::on_actionStampaCompetenzeDirigenti_triggered()
@@ -1482,8 +1526,10 @@ void MainWindow::delayedSetup()
         }
 
         needsBackup();
-        connectToLocalDatabase();
+//        connectToLocalDatabase();
     }
+
+    connectToDatabase();
 }
 
 void MainWindow::associaUnita(QString nome, int &unitaId)

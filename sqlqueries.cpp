@@ -23,6 +23,7 @@
 #include "dipendente.h"
 #include "competenza.h"
 #include "sqldatabasemanager.h"
+#include "utilities.h"
 
 #include <QSqlQuery>
 #include <QSqlError>
@@ -32,7 +33,7 @@ QMap<int, QStringList> SqlQueries::m_unitsMap;
 
 void SqlQueries::createUnitsTable()
 {
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     if(The::dbManager()->driverName() == "QSQLITE") {
         query.prepare("CREATE TABLE unita "
                       "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
@@ -60,7 +61,7 @@ void SqlQueries::createUnitsTable()
 
 void SqlQueries::createDoctorsTable()
 {
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     if(The::dbManager()->driverName() == "QSQLITE") {
         query.prepare("CREATE TABLE medici "
                       "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
@@ -86,7 +87,7 @@ void SqlQueries::createDoctorsTable()
 
 void SqlQueries::createUnitsPayedHoursTable()
 {
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     if(The::dbManager()->driverName() == "QSQLITE") {
         query.prepare("CREATE TABLE unita_ore_pagate "
                       "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
@@ -114,7 +115,7 @@ void SqlQueries::createUnitsPayedHoursTable()
 
 void SqlQueries::createUnitsRepTable()
 {
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     if(The::dbManager()->driverName() == "QSQLITE") {
         query.prepare("CREATE TABLE unita_reperibilita "
                       "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
@@ -150,7 +151,7 @@ void SqlQueries::insertUnit(const QString &id,
                             const QString &breve,
                             const QString &pseudo)
 {
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("INSERT INTO unita (id,raggruppamento,nome,breve,pseudo) "
                   "VALUES (:id,:raggruppamento, :nome, :breve, :pseudo);");
     query.bindValue(":id", id);
@@ -170,7 +171,7 @@ void SqlQueries::editUnit(const QString &id,
                           const QString &breve,
                           const QString &pseudo)
 {
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("UPDATE unita "
                   "SET raggruppamento=:raggruppamento,nome=:nome,breve=:breve,pseudo=:pseudo "
                   "WHERE id=" + id + ";");
@@ -188,7 +189,7 @@ bool SqlQueries::insertDoctor(const QString &matricola,
                               const QString &nome,
                               const QString &id_unita)
 {
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("INSERT INTO medici (matricola,nome,id_unita  ) "
                   "VALUES (:matricola, :nome, :id_unita);");
     query.bindValue(":matricola", matricola);
@@ -207,7 +208,7 @@ void SqlQueries::editDoctor(const QString &id,
                             const QString &nome,
                             const QString &id_unita)
 {
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("UPDATE medici "
                   "SET matricola=:matricola,nome=:nome,id_unita=:id_unita "
                   "WHERE id=" + id + ";");
@@ -222,7 +223,7 @@ void SqlQueries::editDoctor(const QString &id,
 
 void SqlQueries::insertPayload(const QString &id_unita, const QString &data, const QString &ore_tot, const QString &ore_pagate)
 {
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("INSERT INTO unita_ore_pagate (id_unita,data,ore_tot,ore_pagate) "
                   "VALUES (:id_unita,:data,:ore_tot,:ore_pagate);");
     query.bindValue(":id_unita", id_unita);
@@ -237,7 +238,7 @@ void SqlQueries::insertPayload(const QString &id_unita, const QString &data, con
 
 void SqlQueries::insertRep(const QString &id_unita, const QString &data, const QString &feriale, const QString &sabato, const QString &prefestivo, const QString &festivo)
 {
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("INSERT INTO unita_reperibilita (id_unita,data,feriale,sabato,prefestivo,festivo) "
                   "VALUES (:id_unita,:data, :feriale, :sabato, :prefestivo, :festivo);");
     query.bindValue(":id_unita", id_unita);
@@ -254,7 +255,7 @@ void SqlQueries::insertRep(const QString &id_unita, const QString &data, const Q
 
 void SqlQueries::removeUnit(const QString &id)
 {
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("DELETE FROM unita WHERE id=" + id + ";");
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
@@ -263,7 +264,7 @@ void SqlQueries::removeUnit(const QString &id)
 
 void SqlQueries::removeDoctor(const QString &id)
 {
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("DELETE FROM medici WHERE id=" + id + ";");
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
@@ -272,7 +273,7 @@ void SqlQueries::removeDoctor(const QString &id)
 
 void SqlQueries::removeTimeCard(const QString &tableName, const QString &doctorId)
 {
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("DELETE FROM " + tableName + " WHERE id_medico=" + doctorId + ";");
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
@@ -281,7 +282,7 @@ void SqlQueries::removeTimeCard(const QString &tableName, const QString &doctorI
 
 void SqlQueries::resetTimeCard(const QString &tableName, const int &doctorId)
 {
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("UPDATE " + tableName + " " +
                   "SET riposi=:riposi,minuti_giornalieri=:minuti_giornalieri,"
                   "ferie=:ferie,congedi=:congedi,malattia=:malattia,rmp=:rmp,"
@@ -315,7 +316,7 @@ void SqlQueries::resetTimeCard(const QString &tableName, const int &doctorId)
 
 bool SqlQueries::createTimeCardsTable(const QString &tableName)
 {
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     if(The::dbManager()->driverName() == "QSQLITE") {
         query.prepare("CREATE TABLE " + tableName + " "
                       "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
@@ -426,7 +427,7 @@ bool SqlQueries::createTimeCardsTable(const QString &tableName)
 bool SqlQueries::tableExists(const QString &tableName)
 {
     int count = 0;
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     if(The::dbManager()->driverName() == "QSQLITE") {
         query.prepare("SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='" + tableName + "';");
     } else if(The::dbManager()->driverName() == "QMYSQL") {
@@ -452,7 +453,7 @@ bool SqlQueries::tableExists(const QString &tableName)
 bool SqlQueries::timeCardExists(const QString &tableName, const int &doctorId)
 {
     int count = 0;
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("SELECT COUNT(*) FROM " + tableName + " WHERE id_medico='" + QString::number(doctorId) + "';");
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
@@ -469,7 +470,7 @@ bool SqlQueries::timeCardExists(const QString &tableName, const int &doctorId)
 
 bool SqlQueries::addTimeCard(const QString &tableName, const Dipendente *dipendente)
 {
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
 
     int docId = doctorId(dipendente->matricola());
 
@@ -587,7 +588,7 @@ bool SqlQueries::addTimeCard(const QString &tableName, const Dipendente *dipende
 int SqlQueries::doctorId(const QString &matricola)
 {
     int id = -1;
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("SELECT id FROM medici WHERE matricola='" + matricola + "';");
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
@@ -601,7 +602,7 @@ int SqlQueries::doctorId(const QString &matricola)
 int SqlQueries::unitId(const QString &matricola)
 {
     int id = -1;
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("SELECT id_unita FROM medici WHERE matricola='" + matricola + "';");
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
@@ -615,7 +616,7 @@ int SqlQueries::unitId(const QString &matricola)
 void SqlQueries::buildUnitsMap()
 {
     m_unitsMap.clear();
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("SELECT id,pseudo FROM unita;");
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
@@ -630,7 +631,7 @@ QMap<int, QString> SqlQueries::units()
 {
     QMap<int, QString> unita;
 
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("SELECT id,nome FROM unita;");
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
@@ -644,7 +645,7 @@ QMap<int, QString> SqlQueries::units()
 
 void SqlQueries::appendPseudoUnitaName(const int id, const QString &nome)
 {
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("SELECT pseudo FROM unita WHERE id=" + QString::number(id) + ";");
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
@@ -673,7 +674,7 @@ void SqlQueries::appendPseudoUnitaName(const int id, const QString &nome)
 
 void SqlQueries::resetAllDoctorMods(const QString &tableName, const int &id)
 {
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("UPDATE " + tableName + " " +
                   "SET guardie_diurne=:guardie_diurne,guardie_notturne=:guardie_notturne,"
                   "turni_reperibilita=:turni_reperibilita,dmp=:dmp,altre_assenze=:altre_assenze,nota=:nota,"
@@ -696,7 +697,7 @@ void SqlQueries::resetAllDoctorMods(const QString &tableName, const int &id)
 
 void SqlQueries::resetStringValue(const QString &tableName, const QString &columnName, const int &id)
 {
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("UPDATE " + tableName + " " +
                   "SET " + columnName + "=:" + columnName + " " +
                   "WHERE id_medico=" + QString::number(id) + ";");
@@ -709,7 +710,7 @@ void SqlQueries::resetStringValue(const QString &tableName, const QString &colum
 
 void SqlQueries::resetIntValue(const QString &tableName, const QString &columnName, const int &id)
 {
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("UPDATE " + tableName + " " +
                   "SET " + columnName + "=:" + columnName + " " +
                   "WHERE id_medico=" + QString::number(id) + ";");
@@ -724,7 +725,7 @@ QStringList SqlQueries::timecardsList()
 {
     QStringList tables;
 
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     if(The::dbManager()->driverName() == "QSQLITE") {
         query.prepare("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;");
     } else if(The::dbManager()->driverName() == "QMYSQL") {
@@ -748,7 +749,7 @@ QStringList SqlQueries::timecardsList()
 int SqlQueries::numDoctorsInTimecard(const QString &timecard)
 {
     int count = 0;
-    QSqlQuery queryCount;
+    QSqlQuery queryCount(QSqlDatabase::database(Utilities::m_connectionName));
     queryCount.prepare("SELECT COUNT(*) FROM " + timecard + ";");
     if(!queryCount.exec()) {
         qDebug() << "ERROR: " << queryCount.lastQuery() << " : " << queryCount.lastError();
@@ -763,7 +764,7 @@ int SqlQueries::numDoctorsInTimecard(const QString &timecard)
 int SqlQueries::numDoctorsFromUnitInTimecard(const QString &timecard, const int &unitId)
 {
     int count = 0;
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("SELECT COUNT(*) FROM " + timecard + " WHERE id_unita='" + QString::number(unitId) + "';");
     if(!query.exec()) {
         qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
@@ -779,7 +780,7 @@ QVariantList SqlQueries::getDoctorTimecard(const QString &tableName, const QStri
 {
     QVariantList result;
 
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("SELECT medici.nome,"
                   "medici.matricola,"
                   "unita.nome,"
@@ -860,7 +861,7 @@ QVariantList SqlQueries::getDoctorTimecard(const QString &tableName, const QStri
 
 void SqlQueries::saveMod(const QString &tableName, const QString &columnName, const int &id, QVariant value)
 {
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("UPDATE " + tableName + " " +
                   "SET " + columnName + "=:" + columnName + " " +
                   "WHERE id_medico=" + QString::number(id) + ";");
@@ -874,7 +875,7 @@ void SqlQueries::saveMod(const QString &tableName, const QString &columnName, co
 QMap<QDate, QPair<int, int> > SqlQueries::getOrePagateFromUnit(const int &unitaId)
 {
     QMap<QDate, QPair<int,int> > map;
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("SELECT data,ore_tot,ore_pagate FROM unita_ore_pagate WHERE id_unita=" + QString::number(unitaId) + ";");
     if(!query.exec()) {
         qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
@@ -895,7 +896,7 @@ QPair<int, QString> SqlQueries::getMatricolaNome(const int &doctorId)
 {
     QPair<int, QString> result;
 
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("SELECT matricola,nome FROM medici WHERE id='" + QString::number(doctorId) + "';");
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
@@ -912,7 +913,7 @@ QString SqlQueries::getUnitaNomeBreve(const int &id)
 {
     QString nome;
 
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("SELECT breve FROM unita WHERE id='" + QString::number(id) + "';");
     if(!query.exec()) {
         qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
@@ -927,7 +928,7 @@ QString SqlQueries::getUnitaNomeBreve(const int &id)
 QVector<int> SqlQueries::getUnitaIdsInTimecard(const QString &timecard)
 {
     QVector<int> ids;
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("SELECT id_unita FROM " + timecard + " ORDER BY length(id_unita), id_unita;");
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
@@ -943,7 +944,7 @@ QVector<int> SqlQueries::getUnitaIdsInTimecard(const QString &timecard)
 int SqlQueries::getDoctorUnitaIdFromTimecard(const QString &timecard, const int &doctorId)
 {
     int id = -1;
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("SELECT id_unita FROM " + timecard + " WHERE id_medico='" + QString::number(doctorId) + "';");
     if(!query.exec()) {
         qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
@@ -959,7 +960,7 @@ QString SqlQueries::getUnitaNomeCompleto(const int &id)
 {
     QString nome;
 
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("SELECT nome FROM unita WHERE id='" + QString::number(id) + "';");
     if(!query.exec()) {
         qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
@@ -977,7 +978,7 @@ QVector<int> SqlQueries::getDoctorsIdsFromUnitInTimecard(const QString &timecard
     QString whereClause;
     if(unitId != -1)
         whereClause = "WHERE " + timecard + ".id_unita='" + QString::number(unitId) + "' ";
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("SELECT " + timecard + ".id_medico,medici.nome "
                   "FROM " + timecard + " "
                   "LEFT JOIN medici ON "
@@ -997,7 +998,7 @@ QVector<int> SqlQueries::getDoctorsIdsFromUnitInTimecard(const QString &timecard
 QVariantList SqlQueries::getOrePagateFromId(const int &id)
 {
     QVariantList result;
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("SELECT data,ore_tot,ore_pagate FROM unita_ore_pagate WHERE id=" + QString::number(id) + ";");
     if(!query.exec()) {
         qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
@@ -1016,7 +1017,7 @@ QStringList SqlQueries::getTuttiMatricoleNomi()
 {
     QStringList result;
 
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("SELECT id,matricola,nome FROM medici ORDER BY nome;");
     if(!query.exec()) {
         qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
@@ -1047,7 +1048,7 @@ void SqlQueries::setUnitaReperibilitaModel(QSqlQueryModel *model, const int &idU
 QStringList SqlQueries::getUnitaDataFromTimecard(const QString &timecard)
 {
     QStringList result;
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("SELECT " + timecard + ".id_unita,unita.nome,unita.id "
                   "FROM " + timecard + " "
                   "LEFT JOIN unita "
@@ -1072,7 +1073,7 @@ QStringList SqlQueries::getDoctorDataFromUnitaInTimecard(const QString &timecard
     if(idUnita != -1)
         whereClause = "WHERE " + timecard + ".id_unita=" + QString::number(idUnita);
 
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("SELECT medici.id,medici.matricola,medici.nome "
                   "FROM medici "
                   "LEFT JOIN " + timecard + " "
@@ -1093,7 +1094,7 @@ QStringList SqlQueries::getDoctorDataFromUnitaInTimecard(const QString &timecard
 QVariantList SqlQueries::getUnitaDataById(const int &idUnita)
 {
     QVariantList result;
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("SELECT * FROM unita WHERE id=" + QString::number(idUnita) + ";");
     if(!query.exec()) {
         qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
@@ -1114,7 +1115,7 @@ QVariantList SqlQueries::getUnitaDataById(const int &idUnita)
 QVariantList SqlQueries::getDoctorDataById(const int &idDoctor)
 {
     QVariantList result;
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("SELECT * FROM medici WHERE id=" + QString::number(idDoctor) + ";");
     if(!query.exec()) {
         qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
@@ -1151,7 +1152,7 @@ QPair<int, int> SqlQueries::getRecuperiMeseSuccessivo(const int &anno, const int
         return result;
     }
 
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("SELECT minuti_giornalieri,rmp from " + table + " WHERE id_medico=" + QString::number(doctorId) + ";");
 
     if(!query.exec()) {
@@ -1169,7 +1170,7 @@ QPair<int, int> SqlQueries::getRecuperiMeseSuccessivo(const int &anno, const int
 
 void SqlQueries::setUnitaMedico(const int &docId, const int &unitId)
 {
-    QSqlQuery query;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("UPDATE medici "
                   "SET id_unita=:id_unita "
                   "WHERE id=" + QString::number(docId) + ";");

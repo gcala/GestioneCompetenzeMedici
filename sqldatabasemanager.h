@@ -35,14 +35,18 @@ class SQLiteDatabaseManager : public QObject
     Q_OBJECT
 public:
     friend SQLiteDatabaseManager* The::dbManager();
+    static bool createConnection();
     static bool createLocalConnection(const QString &fileName);
-    static bool createRemoteConnection(const QString &host,
-                                       const QString &dbName,
-                                       const QString &user,
-                                       const QString &pass,
-                                       const bool &secure,
-                                       const QString &cert,
-                                       const QString &key);
+    static void setLocalDbFileName(const QString &fileName);
+    static void setDbName(const QString &name);
+    static void setHost(const QString &host);
+    static void setUser(const QString &user);
+    static void setPass(const QString &pass);
+    static void setSecure(const bool &secure);
+    static void setCert(const QString &cert);
+    static void setKey(const QString &key);
+    static void setDriver(const QString &driver);
+
     QString currentDatabase() const;
     QString driverName() const;
 
@@ -52,8 +56,20 @@ public slots:
 
 private:
     SQLiteDatabaseManager();
-    QString m_currentDatabase;
+//    QString m_currentDatabase;
     static void closeCurrentConnection();
+    static bool createLocalConnection();
+    static bool createRemoteConnection();
+
+    static QString m_dbFile;
+    static QString m_dbName;
+    static QString m_host;
+    static QString m_user;
+    static QString m_password;
+    static bool m_secure;
+    static QString m_certFile;
+    static QString m_keyFile;
+    static QString m_driver;
 };
 
 #endif // SQLITEDATABASEMANAGER_H

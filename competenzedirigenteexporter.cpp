@@ -23,6 +23,7 @@
 #include "sqlqueries.h"
 #include "competenza.h"
 #include "utilities.h"
+#include "sqldatabasemanager.h"
 
 #include <QDate>
 #include <QFile>
@@ -74,6 +75,13 @@ void CompetenzeDirigenteExporter::setDirigente(int id)
 
 void CompetenzeDirigenteExporter::run()
 {
+    Utilities::m_connectionName = "CompetenzeDirigenteExporter";
+
+    if(!The::dbManager()->createConnection()) {
+        emit exportFinished(QString());
+        return;
+    }
+
     QVector<int> unitaIdList;
     const QString s = m_tableName.split("_").last();
     m_mese = QDate::longMonthName(s.right(2).toInt(), QDate::StandaloneFormat) + " " + s.left(4);

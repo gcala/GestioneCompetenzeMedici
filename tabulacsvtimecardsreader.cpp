@@ -23,6 +23,8 @@
 #include "sqlqueries.h"
 #include "dipendente.h"
 #include "dmpcompute.h"
+#include "sqldatabasemanager.h"
+#include "utilities.h"
 
 #include <QDate>
 #include <QFile>
@@ -58,6 +60,13 @@ void TabulaCsvTimeCardsReader::setFile(const QString &file)
 
 void TabulaCsvTimeCardsReader::run()
 {
+    Utilities::m_connectionName = "TabulaCsvTimeCardsReader";
+
+    if(!The::dbManager()->createConnection()) {
+        emit timeCardsRead();
+        return;
+    }
+
     if(fileName.isEmpty()) {
         qDebug() << "stringa vuota";
         emit timeCardsRead();

@@ -22,6 +22,8 @@
 #include "deficitrecuperiexporter.h"
 #include "sqlqueries.h"
 #include "competenza.h"
+#include "sqldatabasemanager.h"
+#include "utilities.h"
 
 #include <QDate>
 #include <QFile>
@@ -79,6 +81,13 @@ void DeficitRecuperiExporter::setType(const QString &type)
 
 void DeficitRecuperiExporter::run()
 {
+    Utilities::m_connectionName = "DeficitRecuperiExporter";
+
+    if(!The::dbManager()->createConnection()) {
+        emit exportFinished(QString());
+        return;
+    }
+
     QVector<int> unitaIdList;
     const QString s = m_timecard.split("_").last();
     QString mese = QDate::longMonthName(s.right(2).toInt(), QDate::StandaloneFormat) + " " + s.left(4);

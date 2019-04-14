@@ -23,6 +23,8 @@
 #include "sqlqueries.h"
 #include "dipendente.h"
 #include "nomiunitadialog.h"
+#include "utilities.h"
+#include "sqldatabasemanager.h"
 
 #include <QDate>
 #include <QFile>
@@ -60,6 +62,13 @@ void OkularCsvTimeCardsReader::setFile(const QString &file)
 
 void OkularCsvTimeCardsReader::run()
 {
+    Utilities::m_connectionName = "OkularCsvTimeCardsReader";
+
+    if(!The::dbManager()->createConnection()) {
+        emit timeCardsRead();
+        return;
+    }
+
     if(fileName.isEmpty()) {
         qDebug() << "stringa vuota";
         emit timeCardsRead();

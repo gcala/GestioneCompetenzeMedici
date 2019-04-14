@@ -23,6 +23,7 @@
 #include "sqlqueries.h"
 #include "competenza.h"
 #include "utilities.h"
+#include "sqldatabasemanager.h"
 
 #include <QDebug>
 
@@ -88,6 +89,13 @@ void DmpCompute::setDirigente(const int &id)
 
 void DmpCompute::run()
 {
+    Utilities::m_connectionName = "DmpCompute";
+
+    if(!The::dbManager()->createConnection()) {
+        emit computeFinished();
+        return;
+    }
+
     int itemsCount = 0;
 
     QStringList timecards = SqlQueries::timecardsList();
