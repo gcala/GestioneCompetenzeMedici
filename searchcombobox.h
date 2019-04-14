@@ -32,7 +32,7 @@ class SearchComboBox : public QComboBox
 {
     Q_OBJECT
 public:
-    explicit SearchComboBox(QWidget *parent = 0);
+    explicit SearchComboBox(QWidget *parent = nullptr);
 
 private slots:
 //    void onTextChanged(const QString text);

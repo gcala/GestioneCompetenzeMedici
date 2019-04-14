@@ -33,7 +33,7 @@ class LoginDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit LoginDialog(const QString &host, const QString &db, QWidget *parent = 0);
+    explicit LoginDialog(const QString &host, const QString &db, QWidget *parent = nullptr);
     ~LoginDialog();
 
     bool canceled() const;

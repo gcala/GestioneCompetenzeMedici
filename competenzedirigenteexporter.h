@@ -32,7 +32,7 @@ class CompetenzeDirigenteExporter : public QThread
 {
     Q_OBJECT
 public:
-    CompetenzeDirigenteExporter(QObject *parent = 0);
+    CompetenzeDirigenteExporter(QObject *parent = nullptr);
     ~CompetenzeDirigenteExporter();
 
     void setPath(const QString &path);

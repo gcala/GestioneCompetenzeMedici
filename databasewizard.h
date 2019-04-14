@@ -33,7 +33,7 @@ class DatabaseWizard : public QDialog
     Q_OBJECT
 
 public:
-    explicit DatabaseWizard(int page = 0, QWidget *parent = 0);
+    explicit DatabaseWizard(int page = 0, QWidget *parent = nullptr);
     ~DatabaseWizard();
 
     bool openDb() const;

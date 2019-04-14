@@ -31,7 +31,7 @@ class DeficitRecuperiExporter : public QThread
 {
     Q_OBJECT
 public:
-    DeficitRecuperiExporter(QObject *parent = 0);
+    DeficitRecuperiExporter(QObject *parent = nullptr);
     ~DeficitRecuperiExporter();
 
     void setPath(const QString &path);

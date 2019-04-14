@@ -33,7 +33,7 @@ class PrintDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit PrintDialog(QWidget *parent = 0);
+    explicit PrintDialog(QWidget *parent = nullptr);
     ~PrintDialog();
 
     enum ToolOps { PrintUnits, PrintDoctors, CalcDpm, PrintDeficit };

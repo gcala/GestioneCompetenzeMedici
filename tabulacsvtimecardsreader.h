@@ -31,7 +31,7 @@ class TabulaCsvTimeCardsReader : public QThread
 {
     Q_OBJECT
 public:
-    TabulaCsvTimeCardsReader(QObject *parent = 0);
+    TabulaCsvTimeCardsReader(QObject *parent = nullptr);
     ~TabulaCsvTimeCardsReader();
 
     void setFile(const QString &);

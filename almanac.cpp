@@ -22,7 +22,7 @@
 #include "almanac.h"
 
 namespace The {
-    static Almanac* s_Almanac_instance = 0;
+    static Almanac* s_Almanac_instance = nullptr;
 
     Almanac* almanac()
     {

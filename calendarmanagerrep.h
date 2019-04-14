@@ -41,7 +41,7 @@ class CalendarManagerRep : public QCalendarWidget
     Q_PROPERTY(QColor color READ getColor WRITE setColor)
 
 public:
-    CalendarManagerRep(QWidget *parent = 0);
+    CalendarManagerRep(QWidget *parent = nullptr);
     ~CalendarManagerRep();
 
 //    Q_ENUM(ValoreRep)

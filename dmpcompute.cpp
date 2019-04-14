@@ -28,7 +28,7 @@
 #include <QDebug>
 
 namespace The {
-    static DmpCompute* s_DmpCompute_instance = 0;
+    static DmpCompute* s_DmpCompute_instance = nullptr;
 
     DmpCompute* dmpCompute()
     {

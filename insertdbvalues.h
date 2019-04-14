@@ -33,7 +33,7 @@ class InsertDBValues : public QDialog
     Q_OBJECT
 
 public:
-    explicit InsertDBValues(QWidget *parent = 0);
+    explicit InsertDBValues(QWidget *parent = nullptr);
     ~InsertDBValues();
 
     enum Operation { AddOre, RemoveOre, AddNotte, RemoveNotte };

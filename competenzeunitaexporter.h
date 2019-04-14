@@ -31,7 +31,7 @@ class CompetenzeUnitaExporter : public QThread
 {
     Q_OBJECT
 public:
-    CompetenzeUnitaExporter(QObject *parent = 0);
+    CompetenzeUnitaExporter(QObject *parent = nullptr);
     ~CompetenzeUnitaExporter();
 
     void setPath(const QString &path);

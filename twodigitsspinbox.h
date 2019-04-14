@@ -28,7 +28,7 @@ class TwoDigitsSpinBox : public QSpinBox
 {
     Q_OBJECT
 public:
-    explicit TwoDigitsSpinBox(QWidget *parent = 0);
+    explicit TwoDigitsSpinBox(QWidget *parent = nullptr);
 
 protected:
     virtual QString textFromValue ( int value ) const;

@@ -33,7 +33,7 @@ class NomiUnitaDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit NomiUnitaDialog(QWidget *parent = 0);
+    explicit NomiUnitaDialog(QWidget *parent = nullptr);
     ~NomiUnitaDialog();
 
     void populateUnits();

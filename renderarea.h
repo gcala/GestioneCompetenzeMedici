@@ -35,7 +35,7 @@ class RenderArea : public QWidget
     Q_OBJECT
 
 public:
-    RenderArea(QWidget *parent = 0);
+    RenderArea(QWidget *parent = nullptr);
 
     QSize minimumSizeHint() const override;
     QSize sizeHint() const override;

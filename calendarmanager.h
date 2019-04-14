@@ -39,7 +39,7 @@ class CalendarManager : public QCalendarWidget
     Q_PROPERTY(QColor color READ getColor WRITE setColor)
 
 public:
-    CalendarManager(QWidget *parent = 0);
+    CalendarManager(QWidget *parent = nullptr);
     ~CalendarManager();
 
     enum ValoreRep { Mezzo, Uno, UnoMezzo, Due, DueMezzo };

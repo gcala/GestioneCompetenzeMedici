@@ -31,7 +31,7 @@ class OkularCsvTimeCardsReader : public QThread
 {
     Q_OBJECT
 public:
-    OkularCsvTimeCardsReader(QObject *parent = 0);
+    OkularCsvTimeCardsReader(QObject *parent = nullptr);
     ~OkularCsvTimeCardsReader();
 
     void setFile(const QString &);
