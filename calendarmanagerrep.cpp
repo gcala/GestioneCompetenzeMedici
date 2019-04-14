@@ -40,9 +40,7 @@ CalendarManagerRep::CalendarManagerRep(QWidget *parent)
 }
 
 CalendarManagerRep::~CalendarManagerRep()
-{
-
-}
+= default;
 
 void CalendarManagerRep::setColor(const QColor &color)
 {
@@ -103,7 +101,7 @@ void CalendarManagerRep::dataSelezionata(const QDate &date)
     menu.addAction("2",this, SLOT(dueSelected()));
     menu.exec(QCursor::pos());
 
-    QAbstractItemView *view = this->findChild<QAbstractItemView*>();
+    auto view = this->findChild<QAbstractItemView*>();
     if(view){
         view->viewport()->update();
     } else update(); // fallback

@@ -42,7 +42,7 @@ SearchComboBox::SearchComboBox(QWidget *parent) :
     connect(completer, SIGNAL(activated(const QString &)), this, SLOT(onCompleterActivated(const QString &)));
 }
 
-void SearchComboBox::onCompleterActivated(const QString text)
+void SearchComboBox::onCompleterActivated(const QString &text)
 {
     if(text.isEmpty())
         return;

@@ -35,7 +35,7 @@ class ResetDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit ResetDialog(const QString &tableName = QString(), const int &id = -1, QWidget *parent = nullptr);
+    explicit ResetDialog(QString tableName = QString(), const int &id = -1, QWidget *parent = nullptr);
     explicit ResetDialog(Competenza *competenza, QWidget *parent = nullptr);
     ~ResetDialog();
 
@@ -48,7 +48,7 @@ private:
     Ui::ResetDialog *ui;
     QString m_tableName;
     int m_id;
-    Competenza *m_competenza;
+    Competenza *m_competenza{};
 
     void enableItems();
 

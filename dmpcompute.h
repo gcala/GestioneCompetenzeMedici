@@ -55,7 +55,7 @@ private:
       QString m_unitaName;
       QString m_mese;
       int m_idDirigente;
-      int m_currItem;
+      int m_currItem{};
 
       void ricalcolaDmp(const QStringList &timecards, const int &idDirigente);
 };

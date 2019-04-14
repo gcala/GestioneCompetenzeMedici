@@ -26,6 +26,7 @@
 
 RenderAreaRep::RenderAreaRep(QWidget *parent)
     : QWidget(parent)
+    , year(0)
 {
 //    setBackgroundRole(QPalette::Base);
 //    setAutoFillBackground(true);
@@ -33,12 +34,12 @@ RenderAreaRep::RenderAreaRep(QWidget *parent)
 
 QSize RenderAreaRep::minimumSizeHint() const
 {
-    return QSize(100, 100);
+    return {100, 100};
 }
 
 QSize RenderAreaRep::sizeHint() const
 {
-    return QSize(400, 200);
+    return {400, 200};
 }
 
 void RenderAreaRep::setRepMap(const QMap<QDate, ValoreRep> &repMap)
@@ -151,8 +152,15 @@ void RenderAreaRep::caricaGrandiFestivita(int anno)
 void RenderAreaRep::caricaPasqua(int anno)
 {
 
-    int giorno, mese;
-    int a, b, c, d, e, m, n;
+    int giorno = 0;
+    int mese = 0;
+    int a = 0;
+    int b = 0;
+    int c = 0;
+    int d = 0;
+    int e = 0;
+    int m = 0;
+    int n = 0;
 
     switch(anno/100)
     {

@@ -34,7 +34,7 @@ class SettingsItem : public QWidget
     Q_OBJECT
 
 public:
-    SettingsItem(const QString &name, const QString &icon, QWidget *parent = nullptr);
+    SettingsItem(QString name, QString icon, QWidget *parent = nullptr);
 
 private:
     Ui::SettingsItem *ui;

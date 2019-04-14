@@ -1523,12 +1523,15 @@ int CompetenzaData::grFestCount() const
     return numGrFest;
 }
 
-Competenza::Competenza(const QString &tableName, const int id, QObject *parent) : QObject(parent), data(new CompetenzaData(tableName, id))
+Competenza::Competenza(const QString &tableName, const int id, QObject *parent)
+    : QObject(parent)
+    , data(new CompetenzaData(tableName, id))
 {
 
 }
 
-Competenza::Competenza(const Competenza &rhs) : data(rhs.data)
+Competenza::Competenza(const Competenza &rhs)
+    : data(rhs.data)
 {
 
 }

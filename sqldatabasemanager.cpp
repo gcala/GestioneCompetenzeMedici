@@ -54,9 +54,7 @@ namespace The {
 }
 
 SQLiteDatabaseManager::SQLiteDatabaseManager()
-{
-
-}
+= default;
 
 void SQLiteDatabaseManager::closeCurrentConnection()
 {
@@ -144,43 +142,6 @@ bool SQLiteDatabaseManager::createLocalConnection(const QString &fileName)
 
     return true;
 }
-
-//bool SQLiteDatabaseManager::createRemoteConnection(const QString &host,
-//                                                   const QString &dbName,
-//                                                   const QString &user,
-//                                                   const QString &pass,
-//                                                   const bool &secure,
-//                                                   const QString &cert,
-//                                                   const QString &key)
-//{
-//    closeCurrentConnection();
-//    QString opts = "MYSQL_OPT_RECONNECT=1;";
-//    if(secure) {
-//        if(cert.isEmpty() || key.isEmpty() || !QFile::exists(cert) || !QFile::exists(key)) {
-//            QMessageBox::critical(0, "Errore Connessione", "I file Certificato/Chiave sono necessari per una connessione protetta.\n"
-//                                  "Aprire Impostazioni e configurare Certificato e Chiave.", QMessageBox::Cancel);
-//            return false;
-//        }
-//        opts += "SSL_KEY=" + key + ";";
-//        opts += "SSL_CERT=" + cert + ";";
-//    }
-
-//    QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
-//    db.setConnectOptions(opts);
-//    db.setHostName(host);
-//    db.setDatabaseName(dbName);
-//    db.setUserName(user);
-//    db.setPassword(pass);
-//    // bool ok = db.open();
-
-//    if (!db.open()) {
-//        QMessageBox::critical(0, qApp->tr("Errore apertura database"),
-//            "Impossibile connettersi al database.\n" + db.lastError().text(), QMessageBox::Cancel);
-//        return false;
-//    }
-
-//    return true;
-//}
 
 QString SQLiteDatabaseManager::currentDatabase() const
 {

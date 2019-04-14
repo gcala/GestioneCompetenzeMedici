@@ -51,7 +51,7 @@ void DmpCompute::ricalcolaDmp(const QStringList &timecards, const int &idDirigen
     int dmp = 0;
     for(int i = 0; i < (timecards.count()); i++) {
         if(SqlQueries::timeCardExists(timecards.at(i), idDirigente)) {
-            Competenza *competenza = new Competenza(timecards.at(i), idDirigente);
+            auto competenza = new Competenza(timecards.at(i), idDirigente);
             if(i == 0) {
                 dmp = (competenza->differenzaMin() < 0 ? abs(competenza->differenzaMin()) : 0);
                 m_currItem++;
@@ -100,7 +100,7 @@ void DmpCompute::run()
 
     QStringList timecards = SqlQueries::timecardsList();
 
-    for(QString s: timecards) {
+    for(const QString &s: timecards) {
         if(s == m_tableName)
             break;
         timecards.removeOne(s);
@@ -120,13 +120,13 @@ void DmpCompute::run()
     } else {
         if(m_idUnita != -1) {
             // ricalcolo deficit dei medici di una unità
-            for(QString card : timecards) {
+            for(const QString &card : timecards) {
                 itemsCount += SqlQueries::numDoctorsFromUnitInTimecard(card, m_idUnita);
             }
             emit totalItems(itemsCount*timecards.count());
         } else {
             // ricalcolo deficit di tutti i medici di tutte le unità
-            for(QString card : timecards) {
+            for(const QString &card : timecards) {
                 itemsCount += SqlQueries::numDoctorsInTimecard(card);
             }
             emit totalItems(itemsCount*(timecards.count()-1));

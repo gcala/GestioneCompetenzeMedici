@@ -44,11 +44,11 @@ DeficitRecuperiExporter::DeficitRecuperiExporter(QObject *parent)
     , m_cellSpacing(100)
     , m_titleHeight(1000)
     , m_unitHeight(380)
+    , m_rowHeight(280)
     , m_rowFontPixels(240)
     , m_unitFontPixels(280)
     , m_titleFontPixels(400)
     , m_pageFontPixels(200)
-    , m_rowHeight(280)
 {
     m_idUnita = -1;
     m_timecard.clear();
@@ -90,7 +90,7 @@ void DeficitRecuperiExporter::run()
 
     QVector<int> unitaIdList;
     const QString s = m_timecard.split("_").last();
-    QString mese = QDate::longMonthName(s.right(2).toInt(), QDate::StandaloneFormat) + " " + s.left(4);
+    QString mese = QLocale().monthName(s.rightRef(2).toInt()) + " " + s.left(4);
     QString fileName = "Deficit_" + QString(mese).replace(" ","_");
 
     if(m_idUnita != -1) {
@@ -168,7 +168,7 @@ void DeficitRecuperiExporter::printPdf(const QString &fileName, const QString &m
             }
 
             printUnita(painter, unitaId, unitaName);
-            for(Doctor doc : doctors) {
+            Q_FOREACH(const auto &doc, doctors) {
                 printBadge(painter, doc.badge,counter);
                 printName(painter, doc.name,counter);
                 printDeficit(painter, doc.deficit,counter);
@@ -182,6 +182,7 @@ void DeficitRecuperiExporter::printPdf(const QString &fileName, const QString &m
 
 void DeficitRecuperiExporter::printCsv(const QString &fileName, const QString &mese, const QVector<int> &unitaIdList)
 {
+    Q_UNUSED(mese)
     QFile outFile(m_path + QDir::separator() + fileName);
     if(!outFile.open(QIODevice::WriteOnly)) {
         qDebug() << "Impossibile aprire il file di destinazione";
@@ -231,7 +232,7 @@ void DeficitRecuperiExporter::printCsv(const QString &fileName, const QString &m
         }
 
         if(doctors.size() > 0) {
-            for(Doctor doc : doctors) {
+            Q_FOREACH(const auto &doc, doctors) {
                 QMap<int, QString> ferie;
                 QMap<int, QString> malattie;
                 QMap<int, QString> congedi;
@@ -285,6 +286,7 @@ void DeficitRecuperiExporter::printUnita(QPainter &painter, const int &id, const
 
 void DeficitRecuperiExporter::printBadge(QPainter &painter, const QString &text, int row)
 {
+    Q_UNUSED(row)
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(rowFont());
@@ -295,6 +297,7 @@ void DeficitRecuperiExporter::printBadge(QPainter &painter, const QString &text,
 
 void DeficitRecuperiExporter::printName(QPainter &painter, const QString &text, int row)
 {
+    Q_UNUSED(row)
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(rowFont());
@@ -305,6 +308,7 @@ void DeficitRecuperiExporter::printName(QPainter &painter, const QString &text, 
 
 void DeficitRecuperiExporter::printDeficit(QPainter &painter, const QString &text, int row)
 {
+    Q_UNUSED(row)
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(rowFont());

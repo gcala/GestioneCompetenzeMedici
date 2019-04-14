@@ -39,9 +39,7 @@ CalendarManager::CalendarManager(QWidget *parent)
 }
 
 CalendarManager::~CalendarManager()
-{
-
-}
+= default;
 
 void CalendarManager::setColor(const QColor &color)
 {
@@ -100,7 +98,7 @@ void CalendarManager::dataSelezionata(const QDate &date)
 
     std::sort(m_dates.begin(),m_dates.end());
 
-    QAbstractItemView *view = this->findChild<QAbstractItemView*>();
+    auto view = this->findChild<QAbstractItemView*>();
     if(view){
         view->viewport()->update();
     } else update(); // fallback

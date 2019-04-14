@@ -211,7 +211,7 @@ void PrintDialog::on_unitaCB_currentIndexChanged(int index)
 
     QStringList query = SqlQueries::getDoctorDataFromUnitaInTimecard(ui->meseCB->currentData(Qt::UserRole).toString(), ui->unitaCB->currentData(Qt::UserRole).toInt());
 
-    for(QString s : query) {
+    for(const QString &s : query) {
         QStringList l = s.split("~");
         ui->dirigenteCB->addItem(l.at(1) + " - " + l.at(2), l.at(0));
     }
@@ -231,7 +231,7 @@ void PrintDialog::on_meseCB_currentIndexChanged(int index)
 
     QStringList list;
 
-    for(QString s : query) {
+    for(const QString &s : query) {
         QStringList l = s.split("~");
         if(!list.contains(l.at(1))) {
             ui->unitaCB->addItem(l.at(2) + " - " + l.at(1), l.at(0));

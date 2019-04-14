@@ -52,7 +52,7 @@ private:
     QString m_path;
     int m_idUnita;
     QString m_timecard;
-    Competenza *m_competenza;
+    Competenza *m_competenza{};
 
     const int m_firstHeaderHeight;
     const int m_secondHeaderHeight;
@@ -63,24 +63,24 @@ private:
     const int m_tableWidth;
     const int m_totalHeaderHeight;
 
-    int m_casiIndennitaNotturna;
-    int m_casiIndennitaFestiva;
-    int m_casiStrRepaOrd;
-    int m_casiStrRepaFesONott;
-    int m_casiStrRepaFesENott;
-    int m_casiStrRepeOrd;
-    int m_casiStrRepeFesONott;
-    int m_casiStrRepeFesENott;
-    int m_casiStrGuarOrd;
-    int m_casiStrGuarFesONott;
-    int m_casiStrGuarFesENott;
-    int m_casiRepeTurni;
-    int m_casiRepeOre;
-    int m_casiGuarNott;
-    int m_casiGranFest;
+    int m_casiIndennitaNotturna{};
+    int m_casiIndennitaFestiva{};
+    int m_casiStrRepaOrd{};
+    int m_casiStrRepaFesONott{};
+    int m_casiStrRepaFesENott{};
+    int m_casiStrRepeOrd{};
+    int m_casiStrRepeFesONott{};
+    int m_casiStrRepeFesENott{};
+    int m_casiStrGuarOrd{};
+    int m_casiStrGuarFesONott{};
+    int m_casiStrGuarFesENott{};
+    int m_casiRepeTurni{};
+    int m_casiRepeOre{};
+    int m_casiGuarNott{};
+    int m_casiGranFest{};
 
-    bool m_printCasi;
-    bool m_printData;
+    bool m_printCasi{};
+    bool m_printData{};
 
     const int m_tableHeight;
 

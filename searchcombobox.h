@@ -36,7 +36,7 @@ public:
 
 private slots:
 //    void onTextChanged(const QString text);
-    void onCompleterActivated(const QString text);
+    void onCompleterActivated(const QString &text);
 
 private:
     QSortFilterProxyModel *proxyModel;

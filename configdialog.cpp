@@ -61,12 +61,12 @@ void ConfigDialog::setupSettingsCategories()
     SettingsItem *generalItem = new SettingsItem( generalString, "", this ); // empty icon name is default for application own icon
     SettingsItem *pathsItem = new SettingsItem( pathsString, QLatin1String( "stock_folder" ), this );
 
-    QListWidgetItem *generalWidget = new QListWidgetItem();
+    auto generalWidget = new QListWidgetItem();
     ui->contentsWidget->addItem( generalWidget );
     ui->contentsWidget->setItemWidget( generalWidget, generalItem );
     generalWidget->setSizeHint( QSize( maxWidth,80 ) );
 
-    QListWidgetItem *pathsWidget = new QListWidgetItem();
+    auto pathsWidget = new QListWidgetItem();
     ui->contentsWidget->addItem( pathsWidget );
     ui->contentsWidget->setItemWidget( pathsWidget, pathsItem );
     pathsWidget->setSizeHint( QSize(maxWidth,80 ) );

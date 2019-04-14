@@ -72,8 +72,15 @@ void Almanac::caricaGrandiFestivita(const int &anno)
 void Almanac::caricaPasqua(const int &anno)
 {
 
-    int giorno, mese;
-    int a, b, c, d, e, m, n;
+    int giorno = 0;
+    int mese = 0;
+    int a = 0;
+    int b = 0;
+    int c = 0;
+    int d = 0;
+    int e = 0;
+    int m = 0;
+    int n = 0;
 
     switch(anno/100)
     {

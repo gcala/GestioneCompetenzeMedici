@@ -60,7 +60,7 @@ void SwitchUnitDialog::populateMeseCompetenzeCB()
         --i;
         QString ss = (*i).split("_").last();
         QLocale locale;
-        ui->meseCompetenzeCB->addItem(locale.monthName((*i).right(2).toInt(), QLocale::LongFormat) + " " + ss.left(4), *i);
+        ui->meseCompetenzeCB->addItem(locale.monthName((*i).rightRef(2).toInt(), QLocale::LongFormat) + " " + ss.left(4), *i);
     }
 }
 
@@ -76,7 +76,7 @@ void SwitchUnitDialog::populateUnitaCompetenzeCB()
 
     QStringList list;
 
-    for(QString s : query) {
+    for(const QString &s : query) {
         QStringList l = s.split("~");
         if(!list.contains(l.at(1))) {
             ui->unitaCompetenze1CB->addItem(l.at(2) + " - " + l.at(1), l.at(0));
@@ -158,7 +158,7 @@ void SwitchUnitDialog::on_unitaCompetenze1CB_currentIndexChanged(int index)
 
     QStringList query = SqlQueries::getDoctorDataFromUnitaInTimecard(ui->meseCompetenzeCB->currentData(Qt::UserRole).toString(), ui->unitaCompetenze1CB->currentData(Qt::UserRole).toInt());
 
-    for(QString s : query) {
+    for(const QString &s : query) {
         QStringList l = s.split("~");
         m_dirigenti1Initial << l.at(1);
         m_dirigenti1Current << l.at(1);
@@ -185,7 +185,7 @@ void SwitchUnitDialog::on_unitaCompetenze2CB_currentIndexChanged(int index)
 
     QStringList query = SqlQueries::getDoctorDataFromUnitaInTimecard(ui->meseCompetenzeCB->currentData(Qt::UserRole).toString(), ui->unitaCompetenze2CB->currentData(Qt::UserRole).toInt());
 
-    for(QString s : query) {
+    for(const QString &s : query) {
         QStringList l = s.split("~");
         m_dirigenti2Initial << l.at(1);
         m_dirigenti2Current << l.at(1);
@@ -226,14 +226,14 @@ void SwitchUnitDialog::on_restoreButton_clicked()
 
 void SwitchUnitDialog::on_saveButton_clicked()
 {
-    for(QString s : m_dirigenti1Initial) {
+    Q_FOREACH(const QString &s, m_dirigenti1Initial) {
         if(m_dirigenti1Current.contains(s))
             continue;
         SqlQueries::saveMod(ui->meseCompetenzeCB->currentData(Qt::UserRole).toString(), "id_unita", SqlQueries::doctorId(s), ui->unitaCompetenze2CB->currentData());
         SqlQueries::setUnitaMedico(SqlQueries::doctorId(s), ui->unitaCompetenze2CB->currentData().toInt());
     }
 
-    for(QString s : m_dirigenti2Initial) {
+    Q_FOREACH(const QString &s, m_dirigenti2Initial) {
         if(m_dirigenti2Current.contains(s))
             continue;
         SqlQueries::saveMod(ui->meseCompetenzeCB->currentData(Qt::UserRole).toString(), "id_unita", SqlQueries::doctorId(s), ui->unitaCompetenze1CB->currentData());

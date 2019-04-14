@@ -49,9 +49,7 @@ CompetenzeDirigenteExporter::CompetenzeDirigenteExporter(QObject *parent)
 }
 
 CompetenzeDirigenteExporter::~CompetenzeDirigenteExporter()
-{
-
-}
+= default;
 
 void CompetenzeDirigenteExporter::setPath(const QString &path)
 {
@@ -63,7 +61,7 @@ void CompetenzeDirigenteExporter::setUnita(int id)
     m_idUnita = id;
 }
 
-void CompetenzeDirigenteExporter::setTable(QString tableName)
+void CompetenzeDirigenteExporter::setTable(const QString &tableName)
 {
     m_tableName = tableName;
 }
@@ -84,7 +82,7 @@ void CompetenzeDirigenteExporter::run()
 
     QVector<int> unitaIdList;
     const QString s = m_tableName.split("_").last();
-    m_mese = QDate::longMonthName(s.right(2).toInt(), QDate::StandaloneFormat) + " " + s.left(4);
+    m_mese = QLocale().monthName(s.rightRef(2).toInt()) + " " + s.left(4);
     QString fileName = "Competenze_" + QString(m_mese).replace(" ","_");
     QString dipName;
 
@@ -393,7 +391,7 @@ void CompetenzeDirigenteExporter::printFerie(QPainter &painter)
     }
 
     doc.setHtml(list.join(" - "));
-    const float ratio = doc.documentLayout()->documentSize().width() / (m_maxPageWidth-sectionWidth);
+    const double ratio = doc.documentLayout()->documentSize().width() / (m_maxPageWidth-sectionWidth);
     painter.translate(sectionWidth,vOffset+50);
     if(ratio > 1.0)
         painter.scale(1.0/ratio,1.0);
@@ -429,7 +427,7 @@ void CompetenzeDirigenteExporter::printCongedi(QPainter &painter)
     }
 
     doc.setHtml(list.join(" - "));
-    const float ratio = doc.documentLayout()->documentSize().width() / (m_maxPageWidth-sectionWidth);
+    const double ratio = doc.documentLayout()->documentSize().width() / (m_maxPageWidth-sectionWidth);
     painter.translate(sectionWidth,vOffset+50);
     if(ratio > 1.0)
         painter.scale(1.0/ratio,1.0);
@@ -465,7 +463,7 @@ void CompetenzeDirigenteExporter::printMalattia(QPainter &painter)
     }
 
     doc.setHtml(list.join(" - "));
-    const float ratio = doc.documentLayout()->documentSize().width() / (m_maxPageWidth-sectionWidth);
+    const double ratio = doc.documentLayout()->documentSize().width() / (m_maxPageWidth-sectionWidth);
     painter.translate(sectionWidth,vOffset+50);
     if(ratio > 1.0)
         painter.scale(1.0/ratio,1.0);
@@ -501,7 +499,7 @@ void CompetenzeDirigenteExporter::printRmp(QPainter &painter)
     }
 
     doc.setHtml(list.join(" - "));
-    const float ratio = doc.documentLayout()->documentSize().width() / (m_maxPageWidth/2-sectionWidth);
+    const double ratio = doc.documentLayout()->documentSize().width() / (m_maxPageWidth/2-sectionWidth);
     painter.translate(sectionWidth,vOffset+50);
     if(ratio > 1.0)
         painter.scale(1.0/ratio,1.0);
@@ -537,7 +535,7 @@ void CompetenzeDirigenteExporter::printRmc(QPainter &painter)
     }
 
     doc.setHtml(list.join(" - "));
-    const float ratio = doc.documentLayout()->documentSize().width() / (m_maxPageWidth/2-sectionWidth);
+    const double ratio = doc.documentLayout()->documentSize().width() / (m_maxPageWidth/2-sectionWidth);
     painter.translate(m_maxPageWidth/2+sectionWidth,vOffset+100);
     if(ratio > 1.0)
         painter.scale(1.0/ratio,1.0);
@@ -573,7 +571,7 @@ void CompetenzeDirigenteExporter::printAltreAssenze(QPainter &painter)
     }
 
     doc.setHtml(list.join(" - "));
-    const float ratio = doc.documentLayout()->documentSize().width() / (m_maxPageWidth-sectionWidth);
+    const double ratio = doc.documentLayout()->documentSize().width() / (m_maxPageWidth-sectionWidth);
     painter.translate(sectionWidth,vOffset+50);
     if(ratio > 1.0)
         painter.scale(1.0/ratio,1.0);
@@ -825,7 +823,8 @@ void CompetenzeDirigenteExporter::printDistribuzioneOreReperibilita(QPainter &pa
     if(m_competenza->r_n_fes() != 0)
         painter.drawText(QRect(7050,m_boxVOffset+m_boxSpacing+m_boxHeight/5*4-150+m_boxHeight,1300,m_rowHeight), Qt::AlignCenter | Qt::AlignVCenter, Utilities::inOrario(m_competenza->r_n_fes()));
     painter.setFont(totalsFont());
-    if(m_competenza->oreGrep() != 0)
+
+    if(m_competenza->oreGrep() != "0")
         painter.drawText(QRect(8050,m_boxVOffset+m_boxHeight*2+m_boxSpacing-350,800,m_rowHeight), Qt::AlignCenter | Qt::AlignVCenter, m_competenza->oreGrep());
     painter.restore();
 }

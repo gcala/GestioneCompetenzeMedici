@@ -21,6 +21,8 @@
 
 
 #include "settingsitem.h"
+
+#include <utility>
 #include "ui_settingsitem.h"
 
 /*!
@@ -29,11 +31,11 @@
   \param icon: setting icon
   \param parent: The Parent Widget
 */
-SettingsItem::SettingsItem(const QString &name, const QString &icon, QWidget *parent) :
+SettingsItem::SettingsItem(QString name, QString icon, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::SettingsItem),
-    m_settingName(name),
-    m_settingIcon(icon)
+    m_settingName(std::move(name)),
+    m_settingIcon(std::move(icon))
 {
     ui->setupUi(this);
     if(m_settingIcon.isEmpty()) {

@@ -26,10 +26,11 @@
 
 #include <QtWidgets>
 #include <QDebug>
+#include <utility>
 
-ResetDialog::ResetDialog(const QString &tableName, const int &id, QWidget *parent)
+ResetDialog::ResetDialog(QString tableName, const int &id, QWidget *parent)
     : QDialog(parent)
-    , m_tableName(tableName)
+    , m_tableName(std::move(tableName))
     , m_id(id)
     , ui(new Ui::ResetDialog)
 {

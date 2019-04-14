@@ -37,7 +37,7 @@ public:
 
     void setPath(const QString &path);
     void setUnita(int id);
-    void setTable(QString tableName);
+    void setTable(const QString &tableName);
     void setDirigente(int id);
 
 protected:
@@ -62,7 +62,7 @@ private:
     QString m_unitaName;
     QString m_mese;
     int m_idDirigente;
-    Competenza *m_competenza;
+    Competenza *m_competenza{};
 
     void disegnaScheletro(QPainter &painter);
     void printDirigente(QPainter &painter);

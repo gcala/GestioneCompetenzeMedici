@@ -61,14 +61,14 @@ public:
 
 private slots:
     void handleResults();
-    void exported(QString file);
+    void exported(const QString &file);
     void computed();
     void setTotalRows(int);
     void setCurrentRow(int);
     void tabulaFinished(int exitCode, QProcess::ExitStatus exitStatus);
     void tabulaError(QProcess::ProcessError error);
     void delayedSetup();
-    void associaUnita(QString, int &unitaId);
+    void associaUnita(const QString &, int &unitaId);
 
     void on_editUnitaSaveButton_clicked();
     void on_editUnitaCancelButton_clicked();

@@ -227,28 +227,6 @@ void MainWindow::askDbUserPassword()
     connectToDatabase();
 }
 
-//void MainWindow::connectToRemoteDatabase(const QString &user, const QString &pass)
-//{
-//    if(!The::dbManager()->createRemoteConnection(m_host,
-//                                                 m_dbName,
-//                                                 user,
-//                                                 pass,
-//                                                 m_useSSL,
-//                                                 m_certFile,
-//                                                 m_keyFile)) {
-//        setWindowTitle("Gestione Competenze Medici");
-//        return;
-//    }
-//    m_driver = "QMYSQL";
-//    setWindowTitle("Gestione Competenze Medici - " + m_host);
-
-////    clearWidgets();
-//    populateUnitaCB();
-//    populateDirigentiCB();
-//    populateMeseCompetenzeCB();
-//    m_nomiDialog->populateUnits();
-//}
-
 void MainWindow::mostraDifferenzaOre()
 {
     if(m_competenza->differenzaOre().startsWith("-"))
@@ -272,7 +250,7 @@ void MainWindow::mostraDifferenzaOre()
 
 void MainWindow::on_actionNuovoDatabase_triggered()
 {
-    DatabaseWizard *databaseWizard = new DatabaseWizard(2, this);
+    auto databaseWizard = new DatabaseWizard(2, this);
     databaseWizard->exec();
 
     if(databaseWizard->canceled()) {
@@ -366,7 +344,7 @@ void MainWindow::populateUnitaCB()
 
     SqlQueries::buildUnitsMap();
 
-    ui->unitaTB->setEnabled(ui->unitaComboBox->count() > 0 ? true : false);
+    ui->unitaTB->setEnabled(ui->unitaComboBox->count() > 0);
 
     switch (unitOp) {
     case AddUnit:
@@ -411,12 +389,12 @@ void MainWindow::populateDirigentiCB()
 {
     ui->dirigentiComboBox->clear();
     QStringList query = SqlQueries::getTuttiMatricoleNomi();
-    for(QString s : query) {
+    for(const QString &s : query) {
         QStringList l = s.split("~");
         ui->dirigentiComboBox->addItem(l.at(1) + " - " + l.at(2), l.at(0));
     }
 
-    ui->dirigenteTB->setEnabled(ui->dirigentiComboBox->count() > 0 ? true : false);
+    ui->dirigenteTB->setEnabled(ui->dirigentiComboBox->count() > 0);
 
     switch (unitOp) {
     case AddUnit:
@@ -483,23 +461,6 @@ void MainWindow::connectToDatabase()
     m_nomiDialog->populateUnits();
 }
 
-//void MainWindow::connectToLocalDatabase()
-//{
-//    if(!The::dbManager()->createLocalConnection(currentDatabase.absoluteFilePath())) {
-//        setWindowTitle("Gestione Competenze Medici");
-//        return;
-//    }
-
-//    QFileInfo fi(The::dbManager()->currentDatabase());
-
-//    setWindowTitle("Gestione Competenze Medici - " + fi.completeBaseName());
-
-//    populateUnitaCB();
-//    populateDirigentiCB();
-//    populateMeseCompetenzeCB();
-//    m_nomiDialog->populateUnits();
-//}
-
 void MainWindow::populateMeseCompetenzeCB()
 {
     ui->meseCompetenzeCB->clear();
@@ -512,8 +473,8 @@ void MainWindow::populateMeseCompetenzeCB()
     while(i != timeCards.constBegin()) {
         --i;
         QString ss = (*i).split("_").last();
-        ui->meseCompetenzeCB->addItem(QDate::longMonthName((*i).right(2).toInt(),QDate::StandaloneFormat) + " " + ss.left(4), *i);
-        printDialog->addMese(QDate::longMonthName((*i).right(2).toInt(),QDate::StandaloneFormat) + " " + ss.left(4), *i);
+        ui->meseCompetenzeCB->addItem(QLocale().monthName((*i).rightRef(2).toInt()) + " " + ss.left(4), *i);
+        printDialog->addMese(QLocale().monthName((*i).rightRef(2).toInt()) + " " + ss.left(4), *i);
     }
 }
 
@@ -528,7 +489,7 @@ void MainWindow::populateUnitaCompetenzeCB()
 
     QStringList list;
 
-    for(QString s : query) {
+    for(const QString &s : query) {
         QStringList l = s.split("~");
         if(!list.contains(l.at(1))) {
             ui->unitaCompetenzeCB->addItem(l.at(2) + " - " + l.at(1), l.at(0));
@@ -546,7 +507,7 @@ void MainWindow::populateDirigentiCompetenzeCB()
 
     QStringList query = SqlQueries::getDoctorDataFromUnitaInTimecard(ui->meseCompetenzeCB->currentData(Qt::UserRole).toString(), ui->unitaCompetenzeCB->currentData(Qt::UserRole).toInt());
 
-    for(QString s : query) {
+    for(const QString &s : query) {
         QStringList l = s.split("~");
         ui->dirigentiCompetenzeCB->addItem(l.at(1) + " - " + l.at(2), l.at(0));
     }
@@ -677,7 +638,7 @@ void MainWindow::on_actionRimuoviDirigente_triggered()
 
 void MainWindow::on_actionApriDatabase_triggered()
 {
-    DatabaseWizard *databaseWizard = new DatabaseWizard(0, this);
+    auto databaseWizard = new DatabaseWizard(0, this);
     databaseWizard->exec();
 
     if(databaseWizard->canceled()) {
@@ -925,7 +886,7 @@ void MainWindow::handleResults()
     ui->dirigentiCompetenzeCB->setCurrentIndex(m_currentDirigenteCompetenzeIndex);
 }
 
-void MainWindow::exported(QString file)
+void MainWindow::exported(const QString &file)
 {
     Utilities::m_connectionName = "";
     ui->actionStampaCompetenzeUnita->setEnabled(true);
@@ -942,9 +903,9 @@ void MainWindow::computed()
 {
     Utilities::m_connectionName = "";
 
-    disconnect(The::dmpCompute(), SIGNAL(computeFinished()), 0, 0);
-    disconnect(The::dmpCompute(), SIGNAL(currentItem(int)), 0, 0);
-    disconnect(The::dmpCompute(), SIGNAL(totalItems(int)), 0, 0);
+    disconnect(The::dmpCompute(), SIGNAL(computeFinished()), nullptr, nullptr);
+    disconnect(The::dmpCompute(), SIGNAL(currentItem(int)), nullptr, nullptr);
+    disconnect(The::dmpCompute(), SIGNAL(totalItems(int)), nullptr, nullptr);
 
     ui->actionRicalcolaDeficit->setEnabled(true);
     progressBar->setVisible(false);
@@ -978,7 +939,7 @@ void MainWindow::on_saveCompetenzeButton_clicked()
 void MainWindow::on_restoreCompetenzeButton_clicked()
 {
 //    ResetDialog *resetDialog = new ResetDialog(m_competenza->modTableName(), m_competenza->doctorId(), this);
-    ResetDialog *resetDialog = new ResetDialog(m_competenza, this);
+    auto resetDialog = new ResetDialog(m_competenza, this);
     resetDialog->exec();
     // per aggiornare la situazione cambiare l'indice corrente e torniamo subito dopo su quello originale
     int idx = ui->dirigentiCompetenzeCB->currentIndex();
@@ -1032,10 +993,10 @@ void MainWindow::on_dirigentiCompetenzeCB_currentIndexChanged(int index)
 
 void MainWindow::populateCompetenzeTab()
 {
-    disconnect(ui->dmpHoursEdit, SIGNAL(valueChanged(int)), 0, 0);
-    disconnect(ui->dmpMinsEdit, SIGNAL(valueChanged(int)), 0, 0);
-    disconnect(ui->orarioGiornalieroEdit, SIGNAL(dateChanged(QDate)),0,0);
-    disconnect(ui->pagaStrGuardiaCB, SIGNAL(toggled(bool)),0,0);
+    disconnect(ui->dmpHoursEdit, SIGNAL(valueChanged(int)), nullptr, nullptr);
+    disconnect(ui->dmpMinsEdit, SIGNAL(valueChanged(int)), nullptr, nullptr);
+    disconnect(ui->orarioGiornalieroEdit, SIGNAL(dateChanged(QDate)), nullptr, nullptr);
+    disconnect(ui->pagaStrGuardiaCB, SIGNAL(toggled(bool)), nullptr, nullptr);
 
     ui->pagaStrGuardiaCB->setChecked(m_competenza->pagaStrGuardia());
     QFont font = ui->oreStraordinarioGuardieLabel->font();
@@ -1350,7 +1311,7 @@ void MainWindow::tabulaFinished(int exitCode, QProcess::ExitStatus exitStatus)
 
 void MainWindow::tabulaError(QProcess::ProcessError error)
 {
-    QMessageBox::critical(0, "Errore generazione file csv", "Si è verificato un errore durante la crezione del file CSV.\n"
+    QMessageBox::critical(nullptr, "Errore generazione file csv", "Si è verificato un errore durante la crezione del file CSV.\n"
                           "Codice dell'errore: " + QString::number(error), QMessageBox::Ok);
     handleResults();
 }
@@ -1460,6 +1421,7 @@ void MainWindow::on_actionRicalcolaDeficit_triggered()
 
 void MainWindow::on_noteLine_textEdited(const QString &arg1)
 {
+    Q_UNUSED(arg1)
     m_competenza->setNote(ui->noteLine->text().trimmed());
     ui->saveCompetenzeButton->setEnabled(m_competenza->isModded());
 }
@@ -1532,7 +1494,7 @@ void MainWindow::delayedSetup()
     connectToDatabase();
 }
 
-void MainWindow::associaUnita(QString nome, int &unitaId)
+void MainWindow::associaUnita(const QString &nome, int &unitaId)
 {
     m_nomiDialog->setUnitaLabel(nome);
     m_nomiDialog->exec();

@@ -52,7 +52,7 @@ private:
     int m_idUnita;
     QString m_timecard;
     QString m_type;
-    Competenza *m_competenza;
+    Competenza *m_competenza{};
 
     struct Doctor{
         QString badge;
@@ -77,7 +77,7 @@ private:
     const int m_unitFontPixels;
     const int m_titleFontPixels;
     const int m_pageFontPixels;
-    int m_offset;
+    int m_offset{};
 
     void printTitle(QPainter &painter, const QString &text);
     void printUnita(QPainter &painter, const int &id, const QString &text);

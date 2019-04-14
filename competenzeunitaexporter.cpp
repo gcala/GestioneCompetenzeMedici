@@ -49,9 +49,7 @@ CompetenzeUnitaExporter::CompetenzeUnitaExporter(QObject *parent)
 }
 
 CompetenzeUnitaExporter::~CompetenzeUnitaExporter()
-{
-
-}
+= default;
 
 void CompetenzeUnitaExporter::setPath(const QString &path)
 {
@@ -89,7 +87,7 @@ void CompetenzeUnitaExporter::run()
 
     QVector<int> unitaIdList;
     const QString s = m_timecard.split("_").last();
-    QString mese = QDate::longMonthName(s.right(2).toInt(), QDate::StandaloneFormat) + " " + s.left(4);
+    QString mese = QLocale().monthName(s.rightRef(2).toInt()) + " " + s.left(4);
     QString fileName = "Competenze_" + QString(mese).replace(" ","_");
 
     if(m_idUnita != -1) {
@@ -890,8 +888,10 @@ QRect CompetenzeUnitaExporter::getRect(int row, int column) const
         heightStretch = 17;
     }
 
-    return QRect(m_tableWidth-m_gridWidth*column+xOffeset,
-                 m_gridHeight*m_totalHeaderHeight+(row*m_gridHeight)+yOffeset,
-                 m_gridWidth-widthStretch,
-                 m_gridHeight-heightStretch);
+    return {
+        m_tableWidth-m_gridWidth*column+xOffeset,
+        m_gridHeight*m_totalHeaderHeight+(row*m_gridHeight)+yOffeset,
+        m_gridWidth-widthStretch,
+        m_gridHeight-heightStretch
+    };
 }
