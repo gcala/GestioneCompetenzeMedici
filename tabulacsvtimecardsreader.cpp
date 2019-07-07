@@ -32,6 +32,7 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QApplication>
+#include <QSqlError>
 
 TabulaCsvTimeCardsReader::TabulaCsvTimeCardsReader(QObject *parent)
     : QThread(parent)
@@ -62,9 +63,22 @@ void TabulaCsvTimeCardsReader::run()
 {
     Utilities::m_connectionName = "TabulaCsvTimeCardsReader";
 
-    if(!The::dbManager()->createConnection()) {
+    bool ok = true;
+
+    QSqlDatabase db = The::dbManager()->database(ok, Utilities::m_connectionName);
+
+    if(!ok) {
+        qDebug() << "Impossibile creare la connessione" << Utilities::m_connectionName;
         emit timeCardsRead();
         return;
+    }
+
+    if(!QSqlDatabase::connectionNames().contains(Utilities::m_connectionName)) {
+        if (!db.open()) {
+            qDebug() << QLatin1String("Impossibile connettersi al database.") << db.lastError().text();
+            emit timeCardsRead();
+            return;
+        }
     }
 
     if(fileName.isEmpty()) {

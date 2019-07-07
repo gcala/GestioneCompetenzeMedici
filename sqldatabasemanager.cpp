@@ -23,7 +23,6 @@
 #include "utilities.h"
 
 #include <QMessageBox>
-#include <QSqlDatabase>
 #include <QSqlError>
 #include <QApplication>
 #include <QFile>
@@ -209,6 +208,39 @@ void SQLiteDatabaseManager::setKey(const QString &key)
 void SQLiteDatabaseManager::setDriver(const QString &driver)
 {
     m_driver = driver;
+}
+
+QSqlDatabase SQLiteDatabaseManager::database(bool &ok, const QString &connectionName)
+{
+    QSqlDatabase db;
+    ok = true;
+
+    if(m_driver == "QMYSQL") {
+        QString opts = "MYSQL_OPT_RECONNECT=1;";
+
+        if(m_secure) {
+            if(m_certFile.isEmpty() || m_keyFile.isEmpty() || !QFile::exists(m_certFile) || !QFile::exists(m_keyFile)) {
+                qDebug() << "I file Certificato/Chiave sono necessari per una connessione protetta.\nAprire Impostazioni e configurare Certificato e Chiave.";
+                ok = false;
+            } else {
+                opts += "SSL_KEY=" + m_keyFile + ";";
+                opts += "SSL_CERT=" + m_certFile + ";";
+            }
+        }
+
+        db = QSqlDatabase::addDatabase(m_driver, connectionName);
+        db.setConnectOptions(opts);
+        db.setHostName(m_host);
+        db.setDatabaseName(m_dbName);
+        db.setUserName(m_user);
+        db.setPassword(m_password);
+//        return db;
+    } else {
+        db = QSqlDatabase::addDatabase("QSQLITE");
+        db.setDatabaseName(m_dbFile);
+    }
+
+    return db;
 }
 
 QString SQLiteDatabaseManager::driverName() const

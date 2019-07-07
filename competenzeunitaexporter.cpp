@@ -31,6 +31,7 @@
 #include <QDebug>
 #include <QPdfWriter>
 #include <QPainter>
+#include <QSqlError>
 
 CompetenzeUnitaExporter::CompetenzeUnitaExporter(QObject *parent)
     : QThread(parent)
@@ -80,9 +81,22 @@ void CompetenzeUnitaExporter::run()
 {
     Utilities::m_connectionName = "CompetenzeUnitaExporter";
 
-    if(!The::dbManager()->createConnection()) {
+    bool ok = true;
+
+    QSqlDatabase db = The::dbManager()->database(ok, Utilities::m_connectionName);
+
+    if(!ok) {
+        qDebug() << "Impossibile creare la connessione" << Utilities::m_connectionName;
         emit exportFinished(QString());
         return;
+    }
+
+    if(!QSqlDatabase::connectionNames().contains(Utilities::m_connectionName)) {
+        if (!db.open()) {
+            qDebug() << QLatin1String("Impossibile connettersi al database.") << db.lastError().text();
+            emit exportFinished(QString());
+            return;
+        }
     }
 
     QVector<int> unitaIdList;

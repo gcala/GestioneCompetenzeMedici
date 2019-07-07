@@ -23,6 +23,7 @@
 #define SQLITEDATABASEMANAGER_H
 
 #include <QObject>
+#include <QSqlDatabase>
 
 class SQLiteDatabaseManager;
 
@@ -47,6 +48,7 @@ public:
     static void setKey(const QString &key);
     static void setDriver(const QString &driver);
 
+    static QSqlDatabase database(bool &ok, const QString &connectionName = QString());
     QString currentDatabase() const;
     QString driverName() const;
 

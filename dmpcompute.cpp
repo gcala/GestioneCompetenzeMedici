@@ -25,6 +25,7 @@
 #include "utilities.h"
 #include "sqldatabasemanager.h"
 
+#include <QSqlError>
 #include <QDebug>
 
 namespace The {
@@ -91,9 +92,22 @@ void DmpCompute::run()
 {
     Utilities::m_connectionName = "DmpCompute";
 
-    if(!The::dbManager()->createConnection()) {
+    bool ok = true;
+
+    QSqlDatabase db = The::dbManager()->database(ok, Utilities::m_connectionName);
+
+    if(!ok) {
+        qDebug() << "Impossibile creare la connessione" << Utilities::m_connectionName;
         emit computeFinished();
         return;
+    }
+
+    if(!QSqlDatabase::connectionNames().contains(Utilities::m_connectionName)) {
+        if (!db.open()) {
+            qDebug() << QLatin1String("Impossibile connettersi al database.") << db.lastError().text();
+            emit computeFinished();
+            return;
+        }
     }
 
     int itemsCount = 0;
