@@ -47,4 +47,11 @@ enum RepType
         FesNot
     };
 
+enum Reperibilita {
+    Ordinaria,
+    FestivaONotturna,
+    FestivaENotturna
+};
+
+
 #endif // GUARDIA_ENUM_H

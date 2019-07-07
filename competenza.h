@@ -105,9 +105,7 @@ public:
     int numOreGuarFesENot() const;
     int numOreGuarFesONot() const;
     int numOreGuarOrd() const;
-    int numOreRepFesENot();
-    int numOreRepFesONot();
-    int numOreRepOrd();
+    int numOreRep(Reperibilita rep);
     int residuoOreNonPagate();
     int numFestiviRecuperabili();
     int numNottiRecuperabili();

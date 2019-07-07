@@ -143,9 +143,7 @@ public:
     int numOreGuarFesENot() const;
     int numOreGuarFesONot() const;
     int numOreGuarOrd() const;
-    int numOreRepFesENot();
-    int numOreRepFesONot();
-    int numOreRepOrd();
+    int numOreRep(Reperibilita rep);
     int residuoOreNonPagate();
     int numFestiviRecuperabili();
     int numNottiRecuperabili();
@@ -1042,40 +1040,65 @@ int CompetenzaData::numOreGuarOrd() const
     return (g_d_fer_F() + g_d_fer_S() + g_d_fer_D());
 }
 
-int CompetenzaData::numOreRepFesENot()
+int CompetenzaData::numOreRep(Reperibilita rep)
 {
-    int ore = r_n_fes() % 60 <= m_arrotondamento ? r_n_fes() / 60 :r_n_fes() / 60 + 1;
-    if(ore >=  oreProntaDisp())
-        return  oreProntaDisp();
+    int oreRepFesENot = r_n_fes() % 60 <= m_arrotondamento ? r_n_fes() / 60 :r_n_fes() / 60 + 1;
+    if(oreRepFesENot >=  oreProntaDisp())
+        oreRepFesENot = oreProntaDisp();
 
-    return ore;
-}
+    int oreRepFesONot = 0;
+    int restoOre = oreProntaDisp() - oreRepFesENot;
+    if(restoOre <= 0) {
+        oreRepFesONot = 0;
+    } else {
+        oreRepFesONot = (r_n_fer() + r_d_fes()) % 60 <= m_arrotondamento ? (r_n_fer() + r_d_fes()) / 60 :(r_n_fer() + r_d_fes()) / 60 + 1;
+        if(oreRepFesONot >= restoOre)
+            oreRepFesONot = restoOre;
+    }
 
-int CompetenzaData::numOreRepFesONot()
-{
-    int restoOre =  oreProntaDisp() - numOreRepFesENot();
-    if(restoOre <= 0)
-        return 0;
+    int oreRepOrd = 0;
+    restoOre = oreProntaDisp() - oreRepFesENot - oreRepFesONot;
+    if(restoOre <= 0) {
+        oreRepOrd = 0;
+    } else {
+        oreRepOrd = r_d_fer() % 60 <= m_arrotondamento ? r_d_fer() / 60 :r_d_fer() / 60 + 1;
 
-    int ore = (r_n_fer() + r_d_fes()) % 60 <= m_arrotondamento ? (r_n_fer() + r_d_fes()) / 60 :(r_n_fer() + r_d_fes()) / 60 + 1;
-    if(ore >= restoOre)
-        return restoOre;
+        if(oreRepOrd >= restoOre)
+            oreRepOrd = restoOre;
+    }
 
-    return ore;
-}
+    const int diff = oreProntaDisp() - (oreRepFesENot + oreRepFesONot + oreRepOrd);
+    if(diff == 2) {
+        oreRepFesENot++;
+        oreRepFesONot++;
+    } else if(diff == 1) {
+        const int restoMinutiRepFesENot = r_n_fes() % 60 <= m_arrotondamento ? r_n_fes() / 60 : 0;
+        const int restoMinutiRepFesONot = (r_n_fer() + r_d_fes()) % 60 <= m_arrotondamento ? (r_n_fer() + r_d_fes()) / 60 : 0;
+        const int restoMinutiRepOrd = r_d_fer() % 60 <= m_arrotondamento ? r_d_fer() / 60 : 0;
+        if(restoMinutiRepFesENot >= restoMinutiRepFesONot) {
+            if(restoMinutiRepFesENot >= restoMinutiRepOrd) {
+                oreRepFesENot++;
+            } else {
+                oreRepOrd++;
+            }
+        } else if(restoMinutiRepFesONot >= restoMinutiRepOrd) {
+            oreRepFesONot++;
+        } else {
+            oreRepOrd++;
+        }
+    }
 
-int CompetenzaData::numOreRepOrd()
-{
-    int restoOre = oreProntaDisp() - numOreRepFesENot() - numOreRepFesONot();
-    if(restoOre <= 0)
-        return 0;
-
-    int ore = r_d_fer() % 60 <= m_arrotondamento ? r_d_fer() / 60 :r_d_fer() / 60 + 1;
-
-    if(ore >= restoOre)
-        return restoOre;
-
-    return ore;
+    switch (rep) {
+    case Reperibilita::Ordinaria:
+        return oreRepOrd;
+        break;
+    case Reperibilita::FestivaENotturna:
+        return oreRepFesENot;
+        break;
+    default:
+        return oreRepFesONot;
+        break;
+    }
 }
 
 int CompetenzaData::residuoOreNonPagate()
@@ -1863,19 +1886,9 @@ int Competenza::numOreGuarOrd() const
     return data->numOreGuarOrd();
 }
 
-int Competenza::numOreRepFesENot()
+int Competenza::numOreRep(Reperibilita rep)
 {
-    return data->numOreRepFesENot();
-}
-
-int Competenza::numOreRepFesONot()
-{
-    return data->numOreRepFesONot();
-}
-
-int Competenza::numOreRepOrd()
-{
-    return data->numOreRepOrd();
+    return data->numOreRep(rep);
 }
 
 int Competenza::residuoOreNonPagate()
