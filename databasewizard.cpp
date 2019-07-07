@@ -1,7 +1,7 @@
 /*
  * Gestione Competenze Medici
  *
- * Copyright (C) 2017-2018 Giuseppe Calà <giuseppe.cala@mailbox.org>
+ * Copyright (C) 2017-2019 Giuseppe Calà <giuseppe.cala@mailbox.org>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
