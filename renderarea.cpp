@@ -46,6 +46,7 @@ QSize RenderArea::sizeHint() const
 void RenderArea::setGuardiaMap(const QMap<int, GuardiaType> &guardiaMap)
 {
     m_guardiaMap = guardiaMap;
+    update();
 }
 
 void RenderArea::setDiurna(const bool ok)
