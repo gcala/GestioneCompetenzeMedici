@@ -147,23 +147,23 @@ MainWindow::MainWindow(QWidget *parent) :
     insertDialog = new InsertDBValues(this);
     printDialog = new PrintDialog(this);
 
-    unitaOrePagateModel = new QSqlQueryModel;
-    ui->unitaOrePagateTW->setModel(unitaOrePagateModel);
+//    unitaOrePagateModel = new QSqlQueryModel;
+//    ui->unitaOrePagateTW->setModel(unitaOrePagateModel);
 
 //    unitaReperibilitaModel = new QSqlQueryModel;
 //    ui->unitaReperibilitaTW->setModel(unitaReperibilitaModel);
 
-    ui->unitaTB->setDefaultAction(ui->actionModificaUnita);
-    ui->unitaTB->addAction(ui->actionAggiungiUnita);
-    ui->unitaTB->addAction(ui->actionRimuoviUnita);
+//    ui->unitaTB->setDefaultAction(ui->actionModificaUnita);
+//    ui->unitaTB->addAction(ui->actionAggiungiUnita);
+//    ui->unitaTB->addAction(ui->actionRimuoviUnita);
 
-    ui->dirigenteTB->setDefaultAction(ui->actionModificaDirigente);
-    ui->dirigenteTB->addAction(ui->actionAggiungiDirigente);
-    ui->dirigenteTB->addAction(ui->actionRimuoviDirigente);
+//    ui->dirigenteTB->setDefaultAction(ui->actionModificaDirigente);
+//    ui->dirigenteTB->addAction(ui->actionAggiungiDirigente);
+//    ui->dirigenteTB->addAction(ui->actionRimuoviDirigente);
 
-    ui->unitaTB->setEnabled(false);
-    toggleUnitaEditMode();
-    toggleDirigenteEditMode();
+//    ui->unitaTB->setEnabled(false);
+//    toggleUnitaEditMode();
+//    toggleDirigenteEditMode();
     loadSettings();
     Utilities::m_connectionName = "";
 
@@ -186,10 +186,10 @@ MainWindow::MainWindow(QWidget *parent) :
     m_nomiDialog = new NomiUnitaDialog;
     connect(&tabulaReader, SIGNAL( selectUnit(QString, int&) ), this, SLOT( associaUnita(QString, int &) ), Qt::BlockingQueuedConnection ) ;
 
-    ui->tabWidget->setCurrentIndex(0);
-    ui->tabWidget->show();
-    ui->unitaComboBox->setCurrentIndex(0);
-    ui->dirigentiComboBox->setCurrentIndex(0);
+//    ui->tabWidget->setCurrentIndex(0);
+//    ui->tabWidget->show();
+//    ui->unitaComboBox->setCurrentIndex(0);
+//    ui->dirigentiComboBox->setCurrentIndex(0);
 
     QTimer::singleShot(500, this, SLOT(delayedSetup()));
 }
@@ -261,66 +261,66 @@ void MainWindow::on_actionNuovoDatabase_triggered()
     currentDatabase.setFile(The::dbManager()->currentDatabase());
 
     clearWidgets();
-    populateUnitaCB();
-    populateDirigentiCB();
+//    populateUnitaCB();
+//    populateDirigentiCB();
     populateMeseCompetenzeCB();
     ui->actionBackupDatabase->setEnabled(true);
 
     delete databaseWizard;
 }
 
-void MainWindow::toggleUnitaEditMode()
-{
-    ui->unitaComboBox->setEnabled(unitaReadOnlyMode);
-    ui->unitaTB->setEnabled(unitaReadOnlyMode);
+//void MainWindow::toggleUnitaEditMode()
+//{
+//    ui->unitaComboBox->setEnabled(unitaReadOnlyMode);
+//    ui->unitaTB->setEnabled(unitaReadOnlyMode);
 
-    ui->unitaNumLE->setReadOnly(unitaReadOnlyMode);
-    ui->raggrLE->setReadOnly(unitaReadOnlyMode);
-    ui->unitaNomeLE->setReadOnly(unitaReadOnlyMode);
-    ui->unitaBreveLE->setReadOnly(unitaReadOnlyMode);
+//    ui->unitaNumLE->setReadOnly(unitaReadOnlyMode);
+//    ui->raggrLE->setReadOnly(unitaReadOnlyMode);
+//    ui->unitaNomeLE->setReadOnly(unitaReadOnlyMode);
+//    ui->unitaBreveLE->setReadOnly(unitaReadOnlyMode);
 
-    ui->confirmUnitaWidget->setVisible(!unitaReadOnlyMode);
-    ui->otherNamesLabel->setVisible(!unitaReadOnlyMode);
-    ui->otherNamesLE->setVisible(!unitaReadOnlyMode);
+//    ui->confirmUnitaWidget->setVisible(!unitaReadOnlyMode);
+//    ui->otherNamesLabel->setVisible(!unitaReadOnlyMode);
+//    ui->otherNamesLE->setVisible(!unitaReadOnlyMode);
 
-    unitaReadOnlyMode = !unitaReadOnlyMode;
-    currentUnitaIndex = ui->unitaComboBox->currentIndex();
-    currentDirigenteIndex = ui->dirigentiComboBox->currentIndex();
-}
+//    unitaReadOnlyMode = !unitaReadOnlyMode;
+//    currentUnitaIndex = ui->unitaComboBox->currentIndex();
+//    currentDirigenteIndex = ui->dirigentiComboBox->currentIndex();
+//}
 
-void MainWindow::toggleDirigenteEditMode()
-{
-    ui->dirigentiComboBox->setEnabled(dirigenteReadOnlyMode);
-    ui->dirigenteTB->setEnabled(dirigenteReadOnlyMode);
-    ui->dirigenteUnitaLE->setReadOnly(dirigenteReadOnlyMode);
-    ui->dirigenteUnitaLE->setVisible(dirigenteReadOnlyMode);
-    ui->dirigenteUnitaROLabel->setVisible(dirigenteReadOnlyMode);
+//void MainWindow::toggleDirigenteEditMode()
+//{
+//    ui->dirigentiComboBox->setEnabled(dirigenteReadOnlyMode);
+//    ui->dirigenteTB->setEnabled(dirigenteReadOnlyMode);
+//    ui->dirigenteUnitaLE->setReadOnly(dirigenteReadOnlyMode);
+//    ui->dirigenteUnitaLE->setVisible(dirigenteReadOnlyMode);
+//    ui->dirigenteUnitaROLabel->setVisible(dirigenteReadOnlyMode);
 
-    ui->dirigenteNomeLE->setReadOnly(dirigenteReadOnlyMode);
-    ui->dirigenteMatricolaSB->setReadOnly(dirigenteReadOnlyMode);
+//    ui->dirigenteNomeLE->setReadOnly(dirigenteReadOnlyMode);
+//    ui->dirigenteMatricolaSB->setReadOnly(dirigenteReadOnlyMode);
 
-    ui->confirmDirigenteWidget->setVisible(!dirigenteReadOnlyMode);
-    ui->dirigentiUnitaComboBox->setVisible(!dirigenteReadOnlyMode);
-    ui->dirigenteUnitaRWLabel->setVisible(!dirigenteReadOnlyMode);
+//    ui->confirmDirigenteWidget->setVisible(!dirigenteReadOnlyMode);
+//    ui->dirigentiUnitaComboBox->setVisible(!dirigenteReadOnlyMode);
+//    ui->dirigenteUnitaRWLabel->setVisible(!dirigenteReadOnlyMode);
 
-    dirigenteReadOnlyMode = !dirigenteReadOnlyMode;
-    currentDirigenteIndex = ui->dirigentiComboBox->currentIndex();
-}
+//    dirigenteReadOnlyMode = !dirigenteReadOnlyMode;
+//    currentDirigenteIndex = ui->dirigentiComboBox->currentIndex();
+//}
 
 void MainWindow::clearWidgets()
 {
-    ui->unitaComboBox->clear();
-    ui->unitaNomeLE->clear();
-    ui->unitaBreveLE->clear();
-    ui->raggrLE->clear();
-    ui->unitaNumLE->clear();
-    unitaOrePagateModel->clear();
+//    ui->unitaComboBox->clear();
+//    ui->unitaNomeLE->clear();
+//    ui->unitaBreveLE->clear();
+//    ui->raggrLE->clear();
+//    ui->unitaNumLE->clear();
+//    unitaOrePagateModel->clear();
 //    unitaReperibilitaModel->clear();
-    ui->dirigentiComboBox->clear();
-    ui->dirigenteNomeLE->clear();
-    ui->dirigenteMatricolaSB->clear();
-    ui->dirigenteUnitaLE->clear();
-    ui->dirigentiUnitaComboBox->clear();
+//    ui->dirigentiComboBox->clear();
+//    ui->dirigenteNomeLE->clear();
+//    ui->dirigenteMatricolaSB->clear();
+//    ui->dirigenteUnitaLE->clear();
+//    ui->dirigentiUnitaComboBox->clear();
     ui->meseCompetenzeCB->clear();
     ui->unitaCompetenzeCB->clear();
     ui->dirigentiCompetenzeCB->clear();
@@ -332,117 +332,117 @@ void MainWindow::clearWidgets()
     ui->altreLabel->clear();
 }
 
-void MainWindow::populateUnitaCB()
-{
-    const QMap<int, QString> map = SqlQueries::units();
-    QMap<int, QString>::const_iterator i = map.constBegin();
-    while (i != map.constEnd()) {
-        ui->unitaComboBox->addItem(QString::number(i.key()) + " - " + i.value(), i.key());
-        ui->dirigentiUnitaComboBox->addItem(QString::number(i.key()) + " - " + i.value(), i.key());
-        ++i;
-    }
+//void MainWindow::populateUnitaCB()
+//{
+//    const QMap<int, QString> map = SqlQueries::units();
+//    QMap<int, QString>::const_iterator i = map.constBegin();
+//    while (i != map.constEnd()) {
+//        ui->unitaComboBox->addItem(QString::number(i.key()) + " - " + i.value(), i.key());
+//        ui->dirigentiUnitaComboBox->addItem(QString::number(i.key()) + " - " + i.value(), i.key());
+//        ++i;
+//    }
 
-    SqlQueries::buildUnitsMap();
+//    SqlQueries::buildUnitsMap();
 
-    ui->unitaTB->setEnabled(ui->unitaComboBox->count() > 0);
+//    ui->unitaTB->setEnabled(ui->unitaComboBox->count() > 0);
 
-    switch (unitOp) {
-    case AddUnit:
-    case RemoveUnit:
-        ui->unitaComboBox->setCurrentIndex(0);
-        break;
-    case EditUnit:
-        ui->unitaComboBox->setCurrentIndex(currentUnitaIndex);
-//        ui->dirigentiUnitaComboBox->setCurrentIndex(currentDirigenteUnitaIndex);
-        break;
-    default:
-        qDebug() << unitOp << "Undefined";
-    }
-}
+//    switch (unitOp) {
+//    case AddUnit:
+//    case RemoveUnit:
+//        ui->unitaComboBox->setCurrentIndex(0);
+//        break;
+//    case EditUnit:
+//        ui->unitaComboBox->setCurrentIndex(currentUnitaIndex);
+////        ui->dirigentiUnitaComboBox->setCurrentIndex(currentDirigenteUnitaIndex);
+//        break;
+//    default:
+//        qDebug() << unitOp << "Undefined";
+//    }
+//}
 
-void MainWindow::populateUnitaOrePagate()
-{
-    SqlQueries::setUnitaOrePagateModel(unitaOrePagateModel, ui->unitaComboBox->currentData(Qt::UserRole).toInt());
+//void MainWindow::populateUnitaOrePagate()
+//{
+//    SqlQueries::setUnitaOrePagateModel(unitaOrePagateModel, ui->unitaComboBox->currentData(Qt::UserRole).toInt());
 
-    unitaOrePagateModel->setHeaderData(1, Qt::Horizontal, QObject::tr("Da Mese"));
-    unitaOrePagateModel->setHeaderData(2, Qt::Horizontal, QObject::tr("Ore totali"));
-    unitaOrePagateModel->setHeaderData(3, Qt::Horizontal, QObject::tr("Ore pagate"));
-    ui->unitaOrePagateTW->hideColumn(0);
-    ui->removeUnitaOrePagateButton->setEnabled(false);
-}
+//    unitaOrePagateModel->setHeaderData(1, Qt::Horizontal, QObject::tr("Da Mese"));
+//    unitaOrePagateModel->setHeaderData(2, Qt::Horizontal, QObject::tr("Ore totali"));
+//    unitaOrePagateModel->setHeaderData(3, Qt::Horizontal, QObject::tr("Ore pagate"));
+//    ui->unitaOrePagateTW->hideColumn(0);
+//    ui->removeUnitaOrePagateButton->setEnabled(false);
+//}
 
-void MainWindow::populateUnitaReperibilita()
-{
-    SqlQueries::setUnitaReperibilitaModel(unitaReperibilitaModel, ui->unitaComboBox->currentData(Qt::UserRole).toInt());
+//void MainWindow::populateUnitaReperibilita()
+//{
+//    SqlQueries::setUnitaReperibilitaModel(unitaReperibilitaModel, ui->unitaComboBox->currentData(Qt::UserRole).toInt());
 
-    unitaReperibilitaModel->setHeaderData(2, Qt::Horizontal, QObject::tr("Da Mese"));
-    unitaReperibilitaModel->setHeaderData(3, Qt::Horizontal, QObject::tr("Feriale"));
-    unitaReperibilitaModel->setHeaderData(4, Qt::Horizontal, QObject::tr("Sabato"));
-    unitaReperibilitaModel->setHeaderData(5, Qt::Horizontal, QObject::tr("Pre-Festivo"));
-    unitaReperibilitaModel->setHeaderData(6, Qt::Horizontal, QObject::tr("Festivo"));
-    ui->unitaReperibilitaTW->hideColumn(0);
-    ui->unitaReperibilitaTW->hideColumn(1);
-    ui->removeUnitaReperibilitaButton->setEnabled(false);
-}
+//    unitaReperibilitaModel->setHeaderData(2, Qt::Horizontal, QObject::tr("Da Mese"));
+//    unitaReperibilitaModel->setHeaderData(3, Qt::Horizontal, QObject::tr("Feriale"));
+//    unitaReperibilitaModel->setHeaderData(4, Qt::Horizontal, QObject::tr("Sabato"));
+//    unitaReperibilitaModel->setHeaderData(5, Qt::Horizontal, QObject::tr("Pre-Festivo"));
+//    unitaReperibilitaModel->setHeaderData(6, Qt::Horizontal, QObject::tr("Festivo"));
+//    ui->unitaReperibilitaTW->hideColumn(0);
+//    ui->unitaReperibilitaTW->hideColumn(1);
+//    ui->removeUnitaReperibilitaButton->setEnabled(false);
+//}
 
-void MainWindow::populateDirigentiCB()
-{
-    ui->dirigentiComboBox->clear();
-    QStringList query = SqlQueries::getTuttiMatricoleNomi();
-    for(const QString &s : query) {
-        QStringList l = s.split("~");
-        ui->dirigentiComboBox->addItem(l.at(1) + " - " + l.at(2), l.at(0));
-    }
+//void MainWindow::populateDirigentiCB()
+//{
+//    ui->dirigentiComboBox->clear();
+//    QStringList query = SqlQueries::getTuttiMatricoleNomi();
+//    for(const QString &s : query) {
+//        QStringList l = s.split("~");
+//        ui->dirigentiComboBox->addItem(l.at(1) + " - " + l.at(2), l.at(0));
+//    }
 
-    ui->dirigenteTB->setEnabled(ui->dirigentiComboBox->count() > 0);
+//    ui->dirigenteTB->setEnabled(ui->dirigentiComboBox->count() > 0);
 
-    switch (unitOp) {
-    case AddUnit:
-    case RemoveUnit:
-        ui->dirigentiComboBox->setCurrentIndex(0);
-        break;
-    case EditUnit:
-        ui->dirigentiComboBox->setCurrentIndex(currentDirigenteIndex);
-        break;
-    default:
-        qDebug() << "ERROR: " << unitOp << "Undefined";
-    }
-}
+//    switch (unitOp) {
+//    case AddUnit:
+//    case RemoveUnit:
+//        ui->dirigentiComboBox->setCurrentIndex(0);
+//        break;
+//    case EditUnit:
+//        ui->dirigentiComboBox->setCurrentIndex(currentDirigenteIndex);
+//        break;
+//    default:
+//        qDebug() << "ERROR: " << unitOp << "Undefined";
+//    }
+//}
 
-void MainWindow::saveCurrentUnitaValues()
-{
-    lastUnitaNum = ui->unitaNumLE->text();
-    lastUnitaRaggr = ui->raggrLE->text();
-    lastUnitaNome = ui->unitaNomeLE->text();
-    lastUnitaBreve = ui->unitaBreveLE->text();
-    lastOtherNames = ui->otherNamesLE->text();
-}
+//void MainWindow::saveCurrentUnitaValues()
+//{
+//    lastUnitaNum = ui->unitaNumLE->text();
+//    lastUnitaRaggr = ui->raggrLE->text();
+//    lastUnitaNome = ui->unitaNomeLE->text();
+//    lastUnitaBreve = ui->unitaBreveLE->text();
+//    lastOtherNames = ui->otherNamesLE->text();
+//}
 
-void MainWindow::saveCurrentDirigenteValues()
-{
-    lastDirigenteNome = ui->dirigenteNomeLE->text();
-    lastDirigenteMatricola = ui->dirigenteMatricolaSB->value();
-    lastDirigenteUnitaIndex = ui->dirigentiUnitaComboBox->currentIndex();
-    lastDirigenteUnitaNome = ui->dirigenteUnitaLE->text();
-}
+//void MainWindow::saveCurrentDirigenteValues()
+//{
+//    lastDirigenteNome = ui->dirigenteNomeLE->text();
+//    lastDirigenteMatricola = ui->dirigenteMatricolaSB->value();
+//    lastDirigenteUnitaIndex = ui->dirigentiUnitaComboBox->currentIndex();
+//    lastDirigenteUnitaNome = ui->dirigenteUnitaLE->text();
+//}
 
-void MainWindow::restoreUnitaValues()
-{
-    ui->unitaNumLE->setText(lastUnitaNum);
-    ui->raggrLE->setText(lastUnitaRaggr);
-    ui->unitaNomeLE->setText(lastUnitaNome);
-    ui->unitaBreveLE->setText(lastUnitaBreve);
-    ui->otherNamesLE->setText(lastOtherNames);
-}
+//void MainWindow::restoreUnitaValues()
+//{
+//    ui->unitaNumLE->setText(lastUnitaNum);
+//    ui->raggrLE->setText(lastUnitaRaggr);
+//    ui->unitaNomeLE->setText(lastUnitaNome);
+//    ui->unitaBreveLE->setText(lastUnitaBreve);
+//    ui->otherNamesLE->setText(lastOtherNames);
+//}
 
-void MainWindow::restoreDirigenteValues()
-{
-    ui->dirigenteNomeLE->setText(lastDirigenteNome);
-    ui->dirigenteMatricolaSB->setValue(lastDirigenteMatricola);
-    ui->dirigenteUnitaLE->setText(lastDirigenteUnitaNome);
-    ui->dirigentiUnitaComboBox->setCurrentIndex(lastDirigenteUnitaIndex);
-    ui->dirigentiUnitaComboBox->show();
-}
+//void MainWindow::restoreDirigenteValues()
+//{
+//    ui->dirigenteNomeLE->setText(lastDirigenteNome);
+//    ui->dirigenteMatricolaSB->setValue(lastDirigenteMatricola);
+//    ui->dirigenteUnitaLE->setText(lastDirigenteUnitaNome);
+//    ui->dirigentiUnitaComboBox->setCurrentIndex(lastDirigenteUnitaIndex);
+//    ui->dirigentiUnitaComboBox->show();
+//}
 
 void MainWindow::connectToDatabase()
 {
@@ -455,8 +455,8 @@ void MainWindow::connectToDatabase()
 
     setWindowTitle("Gestione Competenze Medici - " + fi.completeBaseName());
 
-    populateUnitaCB();
-    populateDirigentiCB();
+//    populateUnitaCB();
+//    populateDirigentiCB();
     populateMeseCompetenzeCB();
     m_nomiDialog->populateUnits();
 }
@@ -513,127 +513,127 @@ void MainWindow::populateDirigentiCompetenzeCB()
     }
 }
 
-void MainWindow::on_editUnitaSaveButton_clicked()
-{
-    switch(unitOp) {
-    case AddUnit:
-        SqlQueries::insertUnit(ui->raggrLE->text(),
-                               ui->unitaNomeLE->text(),
-                               ui->unitaBreveLE->text(),
-                               ui->unitaNumLE->text(),
-                               ui->otherNamesLE->text());
-        break;
-    case EditUnit:
-        SqlQueries::editUnit(ui->unitaComboBox->currentData(Qt::UserRole).toString(),
-                             ui->raggrLE->text(),
-                             ui->unitaNomeLE->text(),
-                             ui->unitaBreveLE->text(),
-                             ui->otherNamesLE->text());
-        break;
-    default:
-        break;
-    }
+//void MainWindow::on_editUnitaSaveButton_clicked()
+//{
+//    switch(unitOp) {
+//    case AddUnit:
+//        SqlQueries::insertUnit(ui->raggrLE->text(),
+//                               ui->unitaNomeLE->text(),
+//                               ui->unitaBreveLE->text(),
+//                               ui->unitaNumLE->text(),
+//                               ui->otherNamesLE->text());
+//        break;
+//    case EditUnit:
+//        SqlQueries::editUnit(ui->unitaComboBox->currentData(Qt::UserRole).toString(),
+//                             ui->raggrLE->text(),
+//                             ui->unitaNomeLE->text(),
+//                             ui->unitaBreveLE->text(),
+//                             ui->otherNamesLE->text());
+//        break;
+//    default:
+//        break;
+//    }
 
-    populateUnitaCB();
-    toggleUnitaEditMode();
+//    populateUnitaCB();
+//    toggleUnitaEditMode();
 
-    ui->unitaComboBox->setCurrentIndex(currentUnitaIndex);
-    ui->dirigentiComboBox->setCurrentIndex(currentDirigenteIndex);
-}
+//    ui->unitaComboBox->setCurrentIndex(currentUnitaIndex);
+//    ui->dirigentiComboBox->setCurrentIndex(currentDirigenteIndex);
+//}
 
-void MainWindow::on_editDirigenteSaveButton_clicked()
-{
-    switch(unitOp) {
-    case AddUnit:
-        SqlQueries::insertDoctor(QString::number(ui->dirigenteMatricolaSB->value()),
-                                 ui->dirigenteNomeLE->text().replace("'","''"),
-                                 ui->dirigentiUnitaComboBox->currentData(Qt::UserRole).toString());
-        break;
-    case EditUnit:
-        SqlQueries::editDoctor(ui->dirigentiComboBox->currentData(Qt::UserRole).toString(),
-                               QString::number(ui->dirigenteMatricolaSB->value()),
-                               ui->dirigenteNomeLE->text().replace("'","''"),
-                               ui->dirigentiUnitaComboBox->currentData(Qt::UserRole).toString());
-        break;
-    default:
-        break;
-    }
+//void MainWindow::on_editDirigenteSaveButton_clicked()
+//{
+//    switch(unitOp) {
+//    case AddUnit:
+//        SqlQueries::insertDoctor(QString::number(ui->dirigenteMatricolaSB->value()),
+//                                 ui->dirigenteNomeLE->text().replace("'","''"),
+//                                 ui->dirigentiUnitaComboBox->currentData(Qt::UserRole).toString());
+//        break;
+//    case EditUnit:
+//        SqlQueries::editDoctor(ui->dirigentiComboBox->currentData(Qt::UserRole).toString(),
+//                               QString::number(ui->dirigenteMatricolaSB->value()),
+//                               ui->dirigenteNomeLE->text().replace("'","''"),
+//                               ui->dirigentiUnitaComboBox->currentData(Qt::UserRole).toString());
+//        break;
+//    default:
+//        break;
+//    }
 
-    populateDirigentiCB();
-    toggleDirigenteEditMode();
+//    populateDirigentiCB();
+//    toggleDirigenteEditMode();
 
-    ui->dirigentiComboBox->setCurrentIndex(currentDirigenteIndex);
-}
+//    ui->dirigentiComboBox->setCurrentIndex(currentDirigenteIndex);
+//}
 
-void MainWindow::on_editUnitaCancelButton_clicked()
-{
-    unitOp = UndefOp;
-    restoreUnitaValues();
-    toggleUnitaEditMode();
-}
+//void MainWindow::on_editUnitaCancelButton_clicked()
+//{
+//    unitOp = UndefOp;
+//    restoreUnitaValues();
+//    toggleUnitaEditMode();
+//}
 
-void MainWindow::on_editDirigenteCancelButton_clicked()
-{
-    dirigenteOp = UndefOp;
-    restoreDirigenteValues();
-    toggleDirigenteEditMode();
-}
+//void MainWindow::on_editDirigenteCancelButton_clicked()
+//{
+//    dirigenteOp = UndefOp;
+//    restoreDirigenteValues();
+//    toggleDirigenteEditMode();
+//}
 
-void MainWindow::on_actionModificaUnita_triggered()
-{
-    unitOp = EditUnit;
-    saveCurrentUnitaValues();
-    toggleUnitaEditMode();
-}
+//void MainWindow::on_actionModificaUnita_triggered()
+//{
+//    unitOp = EditUnit;
+//    saveCurrentUnitaValues();
+//    toggleUnitaEditMode();
+//}
 
-void MainWindow::on_actionAggiungiUnita_triggered()
-{
-    saveCurrentUnitaValues();
-    toggleUnitaEditMode();
-    unitOp = AddUnit;
-    ui->unitaNomeLE->clear();
-    ui->unitaBreveLE->clear();
-    ui->raggrLE->clear();
-    ui->unitaNumLE->clear();
-    ui->otherNamesLE->clear();
-}
+//void MainWindow::on_actionAggiungiUnita_triggered()
+//{
+//    saveCurrentUnitaValues();
+//    toggleUnitaEditMode();
+//    unitOp = AddUnit;
+//    ui->unitaNomeLE->clear();
+//    ui->unitaBreveLE->clear();
+//    ui->raggrLE->clear();
+//    ui->unitaNumLE->clear();
+//    ui->otherNamesLE->clear();
+//}
 
-void MainWindow::on_actionRimuoviUnita_triggered()
-{
-    unitOp = RemoveUnit;
-    QMessageBox::StandardButton choise = QMessageBox::question(this, "Rimuovere Unità?", "Certi di voler rimuovere l'Unità Operativa selezionata?", QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
-    if(choise == QMessageBox::Yes) {
-        SqlQueries::removeUnit(ui->unitaComboBox->currentData(Qt::UserRole).toString());
-        populateUnitaCB();
-    }
-}
+//void MainWindow::on_actionRimuoviUnita_triggered()
+//{
+//    unitOp = RemoveUnit;
+//    QMessageBox::StandardButton choise = QMessageBox::question(this, "Rimuovere Unità?", "Certi di voler rimuovere l'Unità Operativa selezionata?", QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+//    if(choise == QMessageBox::Yes) {
+//        SqlQueries::removeUnit(ui->unitaComboBox->currentData(Qt::UserRole).toString());
+//        populateUnitaCB();
+//    }
+//}
 
-void MainWindow::on_actionModificaDirigente_triggered()
-{
-    unitOp = EditUnit;
-    saveCurrentDirigenteValues();
-    toggleDirigenteEditMode();
-}
+//void MainWindow::on_actionModificaDirigente_triggered()
+//{
+//    unitOp = EditUnit;
+//    saveCurrentDirigenteValues();
+//    toggleDirigenteEditMode();
+//}
 
-void MainWindow::on_actionAggiungiDirigente_triggered()
-{
-    unitOp = AddUnit;
-    saveCurrentDirigenteValues();
-    toggleDirigenteEditMode();
-    ui->dirigenteNomeLE->clear();
-    ui->dirigenteMatricolaSB->setValue(0);
-}
+//void MainWindow::on_actionAggiungiDirigente_triggered()
+//{
+//    unitOp = AddUnit;
+//    saveCurrentDirigenteValues();
+//    toggleDirigenteEditMode();
+//    ui->dirigenteNomeLE->clear();
+//    ui->dirigenteMatricolaSB->setValue(0);
+//}
 
-void MainWindow::on_actionRimuoviDirigente_triggered()
-{
-    unitOp = RemoveUnit;
+//void MainWindow::on_actionRimuoviDirigente_triggered()
+//{
+//    unitOp = RemoveUnit;
 
-    QMessageBox::StandardButton choise = QMessageBox::question(this, "Rimuovere Dirigente?", "Certi di voler rimuovere il Dirigente Medico selezionato?", QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
-    if(choise == QMessageBox::Yes) {
-        SqlQueries::removeDoctor(ui->dirigentiComboBox->currentData(Qt::UserRole).toString());
-        populateDirigentiCB();
-    }
-}
+//    QMessageBox::StandardButton choise = QMessageBox::question(this, "Rimuovere Dirigente?", "Certi di voler rimuovere il Dirigente Medico selezionato?", QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+//    if(choise == QMessageBox::Yes) {
+//        SqlQueries::removeDoctor(ui->dirigentiComboBox->currentData(Qt::UserRole).toString());
+//        populateDirigentiCB();
+//    }
+//}
 
 
 void MainWindow::on_actionApriDatabase_triggered()
@@ -660,8 +660,8 @@ void MainWindow::on_actionApriDatabase_triggered()
             setupDbConnectionParameters();
             connectToDatabase();
 //            clearWidgets();
-            populateUnitaCB();
-            populateDirigentiCB();
+//            populateUnitaCB();
+//            populateDirigentiCB();
             populateMeseCompetenzeCB();
             ui->actionBackupDatabase->setEnabled(true);
         }
@@ -726,105 +726,105 @@ void MainWindow::saveSettings()
     settings.setValue("lastUsername", m_lastUsername);
 }
 
-void MainWindow::on_unitaComboBox_currentIndexChanged(int index)
-{
-    Q_UNUSED(index)
+//void MainWindow::on_unitaComboBox_currentIndexChanged(int index)
+//{
+//    Q_UNUSED(index)
 
-    if(ui->unitaComboBox->currentData(Qt::UserRole).toString().isEmpty())
-        return;
+//    if(ui->unitaComboBox->currentData(Qt::UserRole).toString().isEmpty())
+//        return;
 
-    const QVariantList query = SqlQueries::getUnitaDataById(ui->unitaComboBox->currentData(Qt::UserRole).toInt());
+//    const QVariantList query = SqlQueries::getUnitaDataById(ui->unitaComboBox->currentData(Qt::UserRole).toInt());
 
-    if(!query.isEmpty() && query.size() == 5 ) {
-        ui->unitaNomeLE->setText(query.at(2).toString());
-        ui->unitaBreveLE->setText(query.at(3).toString());
-        ui->raggrLE->setText(query.at(1).toString());
-        ui->unitaNumLE->setText(query.at(0).toString());
-        ui->otherNamesLE->setText(query.at(4).toString());
-    }
+//    if(!query.isEmpty() && query.size() == 5 ) {
+//        ui->unitaNomeLE->setText(query.at(2).toString());
+//        ui->unitaBreveLE->setText(query.at(3).toString());
+//        ui->raggrLE->setText(query.at(1).toString());
+//        ui->unitaNumLE->setText(query.at(0).toString());
+//        ui->otherNamesLE->setText(query.at(4).toString());
+//    }
 
-    populateUnitaOrePagate();
-//    populateUnitaReperibilita();
-}
+//    populateUnitaOrePagate();
+////    populateUnitaReperibilita();
+//}
 
-void MainWindow::on_dirigentiComboBox_currentIndexChanged(int index)
-{
-    Q_UNUSED(index)
+//void MainWindow::on_dirigentiComboBox_currentIndexChanged(int index)
+//{
+//    Q_UNUSED(index)
 
-    if(ui->dirigentiComboBox->currentData(Qt::UserRole).toString().isEmpty())
-        return;
+//    if(ui->dirigentiComboBox->currentData(Qt::UserRole).toString().isEmpty())
+//        return;
 
-    const QVariantList query = SqlQueries::getDoctorDataById(ui->dirigentiComboBox->currentData(Qt::UserRole).toInt());
+//    const QVariantList query = SqlQueries::getDoctorDataById(ui->dirigentiComboBox->currentData(Qt::UserRole).toInt());
 
-    int idUnita;
+//    int idUnita;
 
-    if(!query.isEmpty() && query.size() == 4 ) {
-        ui->dirigenteNomeLE->setText(query.at(2).toString());
-        ui->dirigenteMatricolaSB->setValue(query.at(1).toInt());
-        idUnita = query.at(3).toInt();
-    }
+//    if(!query.isEmpty() && query.size() == 4 ) {
+//        ui->dirigenteNomeLE->setText(query.at(2).toString());
+//        ui->dirigenteMatricolaSB->setValue(query.at(1).toInt());
+//        idUnita = query.at(3).toInt();
+//    }
 
-    // recupero nome completo da id
-    ui->dirigenteUnitaLE->setText(SqlQueries::getUnitaNomeCompleto(idUnita));
+//    // recupero nome completo da id
+//    ui->dirigenteUnitaLE->setText(SqlQueries::getUnitaNomeCompleto(idUnita));
 
-    ui->dirigentiUnitaComboBox->setCurrentText(QString::number(idUnita) + " - " + ui->dirigenteUnitaLE->text());
+//    ui->dirigentiUnitaComboBox->setCurrentText(QString::number(idUnita) + " - " + ui->dirigenteUnitaLE->text());
 
-    const QString path = "/home/gcala/Progetti/C++/GestioneCompetenzeMedici/appunti/Foto/";
-    if(QFile::exists(path + "F" + QString::number(ui->dirigenteMatricolaSB->value()).rightJustified(6, '0') + ".jpg")) {
-        QPixmap pix(path + "F" + QString::number(ui->dirigenteMatricolaSB->value()).rightJustified(6, '0') + ".jpg");
-        if(pix.width() > pix.height())
-            pix = pix.scaledToWidth(180);
-        else
-            pix = pix.scaledToHeight(180);
-        ui->photoLabel->setPixmap(pix);
-    } else {
-        ui->photoLabel->setPixmap(QPixmap(":/images/user-none.png"));
-    }
-}
+//    const QString path = "/home/gcala/Progetti/C++/GestioneCompetenzeMedici/appunti/Foto/";
+//    if(QFile::exists(path + "F" + QString::number(ui->dirigenteMatricolaSB->value()).rightJustified(6, '0') + ".jpg")) {
+//        QPixmap pix(path + "F" + QString::number(ui->dirigenteMatricolaSB->value()).rightJustified(6, '0') + ".jpg");
+//        if(pix.width() > pix.height())
+//            pix = pix.scaledToWidth(180);
+//        else
+//            pix = pix.scaledToHeight(180);
+//        ui->photoLabel->setPixmap(pix);
+//    } else {
+//        ui->photoLabel->setPixmap(QPixmap(":/images/user-none.png"));
+//    }
+//}
 
-void MainWindow::on_unitaOrePagateTW_activated(const QModelIndex &index)
-{
-    Q_UNUSED(index)
-    ui->removeUnitaOrePagateButton->setEnabled(true);
-}
+//void MainWindow::on_unitaOrePagateTW_activated(const QModelIndex &index)
+//{
+//    Q_UNUSED(index)
+//    ui->removeUnitaOrePagateButton->setEnabled(true);
+//}
 
-void MainWindow::on_unitaReperibilitaTW_activated(const QModelIndex &index)
-{
-    Q_UNUSED(index)
-    ui->removeUnitaReperibilitaButton->setEnabled(true);
-}
+//void MainWindow::on_unitaReperibilitaTW_activated(const QModelIndex &index)
+//{
+//    Q_UNUSED(index)
+//    ui->removeUnitaReperibilitaButton->setEnabled(true);
+//}
 
-void MainWindow::on_addUnitaOrePagateButton_clicked()
-{
-    insertDialog->unitaAddOreSetup(ui->unitaComboBox->currentData(Qt::UserRole).toString());
-    insertDialog->exec();
-    populateUnitaOrePagate();
-}
+//void MainWindow::on_addUnitaOrePagateButton_clicked()
+//{
+//    insertDialog->unitaAddOreSetup(ui->unitaComboBox->currentData(Qt::UserRole).toString());
+//    insertDialog->exec();
+//    populateUnitaOrePagate();
+//}
 
-void MainWindow::on_removeUnitaOrePagateButton_clicked()
-{
-    const QAbstractItemModel * model = ui->unitaOrePagateTW->currentIndex().model();
-    int id = model->data(model->index(ui->unitaOrePagateTW->currentIndex().row(), 0), Qt::DisplayRole).toInt();
-    insertDialog->unitaRemoveOreSetup(id);
-    insertDialog->exec();
-    populateUnitaOrePagate();
-}
+//void MainWindow::on_removeUnitaOrePagateButton_clicked()
+//{
+//    const QAbstractItemModel * model = ui->unitaOrePagateTW->currentIndex().model();
+//    int id = model->data(model->index(ui->unitaOrePagateTW->currentIndex().row(), 0), Qt::DisplayRole).toInt();
+//    insertDialog->unitaRemoveOreSetup(id);
+//    insertDialog->exec();
+//    populateUnitaOrePagate();
+//}
 
-void MainWindow::on_addUnitaReperibilitaButton_clicked()
-{
+//void MainWindow::on_addUnitaReperibilitaButton_clicked()
+//{
 //    insertDialog->unitaAddNotteSetup(ui->unitaComboBox->currentData(Qt::UserRole).toString());
 //    insertDialog->exec();
 //    populateUnitaReperibilita();
-}
+//}
 
-void MainWindow::on_removeUnitaReperibilitaButton_clicked()
-{
+//void MainWindow::on_removeUnitaReperibilitaButton_clicked()
+//{
 //    const QAbstractItemModel * model = ui->unitaReperibilitaTW->currentIndex().model();
 //    QString id = model->data(model->index(ui->unitaReperibilitaTW->currentIndex().row(), 0), Qt::DisplayRole).toString();
 //    insertDialog->unitaRemoveReperibilitaSetup(id);
 //    insertDialog->exec();
 //    populateUnitaReperibilita();
-}
+//}
 
 void MainWindow::on_actionCaricaPdf_triggered()
 {
@@ -842,9 +842,10 @@ void MainWindow::on_actionCaricaPdf_triggered()
         progressBar->setMinimum(0);
         progressBar->setMaximum(0);
         msgLabel->setText("Converto pdf in csv");
-        ui->unitaTab->setEnabled(false);
-        ui->dirigentiTab->setEnabled(false);
-        ui->competenzeDirigenteTab->setEnabled(false);
+//        ui->unitaTab->setEnabled(false);
+//        ui->dirigentiTab->setEnabled(false);
+//        ui->competenzeDirigenteTab->setEnabled(false);
+        ui->competenzeWidget->setEnabled(false);
 
         QFileInfo fi(pdfFile);
 
@@ -873,11 +874,12 @@ void MainWindow::handleResults()
 
     progressBar->setVisible(false);
     msgLabel->setText("");
-    populateDirigentiCB();
+//    populateDirigentiCB();
 
-    ui->unitaTab->setEnabled(true);
-    ui->dirigentiTab->setEnabled(true);
-    ui->competenzeDirigenteTab->setEnabled(true);
+//    ui->unitaTab->setEnabled(true);
+//    ui->dirigentiTab->setEnabled(true);
+//    ui->competenzeDirigenteTab->setEnabled(true);
+    ui->competenzeWidget->setEnabled(true);
 
     populateMeseCompetenzeCB();
     m_loadingTimeCards = false;
@@ -1138,11 +1140,11 @@ void MainWindow::on_actionStampaCompetenzeDirigenti_triggered()
     ui->actionStampaCompetenzeDirigenti->setEnabled(false);
     printDialog->setCurrentOp(PrintDialog::ToolOps::PrintDoctors);
 
-    if(ui->tabWidget->currentIndex() == 2) {
+//    if(ui->tabWidget->currentIndex() == 2) {
         printDialog->setCurrentMese(ui->meseCompetenzeCB->currentIndex());
         printDialog->setCurrentUnita(ui->unitaCompetenzeCB->currentIndex() + 1);
         printDialog->setCurrentDirigente(ui->dirigentiCompetenzeCB->currentIndex() + 1);
-    }
+//    }
 
     printDialog->exec();
 
@@ -1166,10 +1168,10 @@ void MainWindow::on_actionStampaCompetenzeUnita_triggered()
     ui->actionStampaCompetenzeUnita->setEnabled(false);
     printDialog->setCurrentOp(PrintDialog::ToolOps::PrintUnits);
 
-    if(ui->tabWidget->currentIndex() == 2) {
+//    if(ui->tabWidget->currentIndex() == 2) {
         printDialog->setCurrentMese(ui->meseCompetenzeCB->currentIndex());
         printDialog->setCurrentUnita(ui->unitaCompetenzeCB->currentIndex() + 1);
-    }
+//    }
 
     printDialog->exec();
 
@@ -1194,10 +1196,10 @@ void MainWindow::on_actionPrintDeficit_triggered()
     ui->actionPrintDeficit->setEnabled(false);
     printDialog->setCurrentOp(PrintDialog::ToolOps::PrintDeficit);
 
-    if(ui->tabWidget->currentIndex() == 2) {
+//    if(ui->tabWidget->currentIndex() == 2) {
         printDialog->setCurrentMese(ui->meseCompetenzeCB->currentIndex());
         printDialog->setCurrentUnita(ui->unitaCompetenzeCB->currentIndex() + 1);
-    }
+//    }
 
     printDialog->exec();
 
@@ -1338,9 +1340,10 @@ void MainWindow::on_actionCaricaCsv_triggered()
         okularReader.start();
         progressBar->setVisible(true);
         msgLabel->setText("Importo i cartellini");
-        ui->unitaTab->setEnabled(false);
-        ui->dirigentiTab->setEnabled(false);
-        ui->competenzeDirigenteTab->setEnabled(false);
+//        ui->unitaTab->setEnabled(false);
+//        ui->dirigentiTab->setEnabled(false);
+//        ui->competenzeDirigenteTab->setEnabled(false);
+        ui->competenzeWidget->setEnabled(false);
     }
 }
 
@@ -1393,11 +1396,11 @@ void MainWindow::on_actionRicalcolaDeficit_triggered()
     ui->actionRicalcolaDeficit->setEnabled(false);
     printDialog->setCurrentOp(PrintDialog::ToolOps::CalcDpm);
 
-    if(ui->tabWidget->currentIndex() == 2) {
+//    if(ui->tabWidget->currentIndex() == 2) {
         printDialog->setCurrentMese(ui->meseCompetenzeCB->currentIndex());
         printDialog->setCurrentUnita(ui->unitaCompetenzeCB->currentIndex() + 1);
         printDialog->setCurrentDirigente(ui->dirigentiCompetenzeCB->currentIndex() + 1);
-    }
+//    }
 
     printDialog->exec();
 
@@ -1451,8 +1454,8 @@ void MainWindow::delayedSetup()
         if(m_host.isEmpty() || m_dbName.isEmpty()) {
             QMessageBox::warning(this, "Database non configurato",
                                  "Nessun database remoto configurato.\nAprire Impostazioni e indicare Host e Nome Database");
-            ui->unitaTB->setEnabled(false);
-            ui->dirigenteTB->setEnabled(false);
+//            ui->unitaTB->setEnabled(false);
+//            ui->dirigenteTB->setEnabled(false);
             ui->actionBackupDatabase->setEnabled(false);
             return;
         }
@@ -1460,8 +1463,8 @@ void MainWindow::delayedSetup()
             if(m_certFile.isEmpty() || m_keyFile.isEmpty() || !QFile::exists(m_certFile) || !QFile::exists(m_keyFile)) {
                 QMessageBox::critical(this, "Errore Connessione", "I file Certificato/Chiave sono necessari per una connessione protetta.\n"
                                       "Aprire Impostazioni e configurare Certificato e Chiave.", QMessageBox::Cancel);
-                ui->unitaTB->setEnabled(false);
-                ui->dirigenteTB->setEnabled(false);
+//                ui->unitaTB->setEnabled(false);
+//                ui->dirigenteTB->setEnabled(false);
                 ui->actionBackupDatabase->setEnabled(false);
                 return;
             }
@@ -1473,16 +1476,16 @@ void MainWindow::delayedSetup()
     if(m_driver == "QSQLITE") {
         if(currentDatabase.fileName().isEmpty()) {
             QMessageBox::warning(this, "Nessun Database", "Nessun database configurato (primo avvio?)\nUsare il menu File per aprire un database esistente \no per crearne uno nuovo.");
-            ui->unitaTB->setEnabled(false);
-            ui->dirigenteTB->setEnabled(false);
+//            ui->unitaTB->setEnabled(false);
+//            ui->dirigenteTB->setEnabled(false);
             ui->actionBackupDatabase->setEnabled(false);
             return;
         }
 
         if(!currentDatabase.exists()) {
             QMessageBox::warning(this, "Il database non esiste", "L'ultimo file database usato non è stato trovato:\n" + currentDatabase.absoluteFilePath());
-            ui->unitaTB->setEnabled(false);
-            ui->dirigenteTB->setEnabled(false);
+//            ui->unitaTB->setEnabled(false);
+//            ui->dirigenteTB->setEnabled(false);
             ui->actionBackupDatabase->setEnabled(false);
             return;
         }
@@ -1498,7 +1501,7 @@ void MainWindow::associaUnita(const QString &nome, int &unitaId)
 {
     m_nomiDialog->setUnitaLabel(nome);
     m_nomiDialog->exec();
-    populateDirigentiCB();
+//    populateDirigentiCB();
     unitaId = m_nomiDialog->currentUnit();
 }
 
@@ -1527,13 +1530,14 @@ void MainWindow::on_actionTakeScreenshot_triggered()
     ui->actionTakeScreenshot->setEnabled(false);
     QPixmap originalPixmap = screen->grabWindow(0,this->geometry().x(),this->geometry().y(),this->geometry().width(),this->geometry().height());
 
-    qDebug() << QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
+//    qDebug() << QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
 
     const QString fileName = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) + QDir::separator() + ui->dirigentiCompetenzeCB->currentText() + " - " + ui->meseCompetenzeCB->currentText() + ".png";
 
     QFile outPix(fileName);
 
     if(!outPix.open(QIODevice::WriteOnly)) {
+        ui->actionTakeScreenshot->setEnabled(true);
         return;
     }
 
