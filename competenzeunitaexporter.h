@@ -97,8 +97,8 @@ private:
     void printBadge(QPainter &painter, const QString &text, int row);
     void printName(QPainter &painter, const QString &text, int row);
     void printDeficit(QPainter&painter, const QString &text, int row);
-    void printNotturno(QPainter &painter, const QString &text, int row);
-    void printFestivo(QPainter &painter, const QString &text, int row);
+    void printNotturno(QPainter &painter, const int value, int row);
+    void printFestivo(QPainter &painter, const int value, int row);
     void printStrRepartoOrdin(QPainter &painter, const QString &text, int row);
     void printStrRepartoFesONott(QPainter &painter, const QString &text, int row);
     void printStrRepartoFesENott(QPainter &painter, const QString &text, int row);

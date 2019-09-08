@@ -132,8 +132,8 @@ public:
     void addGuardiaDiurnaDay(int day);
     void addGuardiaNotturnaDay(int day);
     int orePagate() const;
-    QString notte() const;
-    QString festivo() const;
+    int notte() const;
+    int festivo() const;
     QString repCount() const;
     QString oreGrep();
     int numGrFestPagabili() const;
@@ -883,7 +883,7 @@ int CompetenzaData::orePagate() const
     return m_orePagate;
 }
 
-QString CompetenzaData::notte() const
+int CompetenzaData::notte() const
 {
     int tot = 0;
     QMap<int, GuardiaType>::const_iterator i = m_guardiaNotturnaMap.constBegin();
@@ -896,12 +896,12 @@ QString CompetenzaData::notte() const
     // somma eventuali grandi festività non pagate
     tot += (grFestCount() - numGrFestPagabili()) * (m_oreTot - m_orePagate);
 
-    return tot == 0 ? "//" : QString::number(tot);
+    return tot;
 }
 
-QString CompetenzaData::festivo() const
+int CompetenzaData::festivo() const
 {
-    return  m_guardiaDiurnaMap.count() == 0 ? "//" : QString::number(m_guardiaDiurnaMap.count());
+    return  m_guardiaDiurnaMap.count();
 }
 
 QString CompetenzaData::repCount() const
@@ -1831,12 +1831,12 @@ int Competenza::orePagate() const
     return data->orePagate();
 }
 
-QString Competenza::notte() const
+int Competenza::notte() const
 {
     return data->notte();
 }
 
-QString Competenza::festivo() const
+int Competenza::festivo() const
 {
     return data->festivo();
 }

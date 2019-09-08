@@ -94,8 +94,8 @@ public:
     bool isRestorable() const;
     void saveMods();
     int orePagate() const;
-    QString notte() const;
-    QString festivo() const;
+    int notte() const;
+    int festivo() const;
     QString repCount() const;
     QString oreGrep();
     int numGrFestPagabili() const;

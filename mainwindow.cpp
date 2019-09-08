@@ -894,6 +894,7 @@ void MainWindow::exported(const QString &file)
     ui->actionStampaCompetenzeUnita->setEnabled(true);
     ui->actionStampaCompetenzeDirigenti->setEnabled(true);
     ui->actionPrintDeficit->setEnabled(true);
+    ui->competenzeWidget->setEnabled(true);
     progressBar->setVisible(false);
     msgLabel->setText("");
 
@@ -1075,8 +1076,8 @@ void MainWindow::elaboraGuardie()
     ui->g_n_fes_D->setText(QString::number(m_competenza->g_n_fes_D()));
 
     ui->totOreGuardie->setText(QString::number(m_competenza->totOreGuardie()));
-    ui->notteLabel->setText(m_competenza->notte());
-    ui->festivoLabel->setText(m_competenza->festivo());
+    ui->notteLabel->setText(m_competenza->notte() > 0 ? QString::number(m_competenza->notte()) : "//");
+    ui->festivoLabel->setText(m_competenza->festivo() > 0 ? QString::number(m_competenza->festivo()) : "//");
     ui->oreStraordinarioGuardieLabel->setText(m_competenza->oreStraordinarioGuardie());
 }
 
@@ -1138,6 +1139,8 @@ void MainWindow::setupDbConnectionParameters()
 void MainWindow::on_actionStampaCompetenzeDirigenti_triggered()
 {
     ui->actionStampaCompetenzeDirigenti->setEnabled(false);
+    ui->actionStampaCompetenzeUnita->setEnabled(false);
+    ui->actionPrintDeficit->setEnabled(false);
     printDialog->setCurrentOp(PrintDialog::ToolOps::PrintDoctors);
 
 //    if(ui->tabWidget->currentIndex() == 2) {
@@ -1156,6 +1159,7 @@ void MainWindow::on_actionStampaCompetenzeDirigenti_triggered()
     progressBar->setVisible(true);
     msgLabel->setText("Esportazione competenze dirigenti");
 
+    ui->competenzeWidget->setEnabled(false);
     dirigenteCompetenzeExporter.setPath(printDialog->path());
     dirigenteCompetenzeExporter.setTable(printDialog->currentMeseData());
     dirigenteCompetenzeExporter.setUnita(printDialog->currentUnitaData());
@@ -1165,7 +1169,9 @@ void MainWindow::on_actionStampaCompetenzeDirigenti_triggered()
 
 void MainWindow::on_actionStampaCompetenzeUnita_triggered()
 {
+    ui->actionStampaCompetenzeDirigenti->setEnabled(false);
     ui->actionStampaCompetenzeUnita->setEnabled(false);
+    ui->actionPrintDeficit->setEnabled(false);
     printDialog->setCurrentOp(PrintDialog::ToolOps::PrintUnits);
 
 //    if(ui->tabWidget->currentIndex() == 2) {
@@ -1183,6 +1189,7 @@ void MainWindow::on_actionStampaCompetenzeUnita_triggered()
     progressBar->setVisible(true);
     msgLabel->setText("Esportazione competenze unità");
 
+    ui->competenzeWidget->setEnabled(false);
     unitaCompetenzeExporter.setPath(printDialog->path());
     unitaCompetenzeExporter.setMese(printDialog->currentMeseData());
     unitaCompetenzeExporter.setUnita(printDialog->currentUnitaData());
@@ -1193,6 +1200,8 @@ void MainWindow::on_actionStampaCompetenzeUnita_triggered()
 
 void MainWindow::on_actionPrintDeficit_triggered()
 {
+    ui->actionStampaCompetenzeDirigenti->setEnabled(false);
+    ui->actionStampaCompetenzeUnita->setEnabled(false);
     ui->actionPrintDeficit->setEnabled(false);
     printDialog->setCurrentOp(PrintDialog::ToolOps::PrintDeficit);
 
@@ -1211,6 +1220,7 @@ void MainWindow::on_actionPrintDeficit_triggered()
     progressBar->setVisible(true);
     msgLabel->setText("Esportazione deficit");
 
+    ui->competenzeWidget->setEnabled(false);
     deficitRecuperiExporter.setPath(printDialog->path());
     deficitRecuperiExporter.setMese(printDialog->currentMeseData());
     deficitRecuperiExporter.setUnita(printDialog->currentUnitaData());

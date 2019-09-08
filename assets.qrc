@@ -41,5 +41,7 @@
         <file>icons/double-arrow-back.svg</file>
         <file>icons/draw-arrow-forward.svg</file>
         <file>icons/switch.svg</file>
+        <file>icons/down-bank.svg</file>
+        <file>icons/down-process-users.svg</file>
     </qresource>
 </RCC>

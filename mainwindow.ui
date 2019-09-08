@@ -2893,6 +2893,9 @@
    <addaction name="actionTakeScreenshot"/>
    <addaction name="actionPrintDeficit"/>
    <addaction name="separator"/>
+   <addaction name="actionManageUnits"/>
+   <addaction name="actionManageDirigenti"/>
+   <addaction name="separator"/>
    <addaction name="actionConfigura"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -2980,7 +2983,7 @@
   <action name="actionStampaCompetenzeDirigenti">
    <property name="icon">
     <iconset resource="assets.qrc">
-     <normaloff>:/icons/view-process-users.svg</normaloff>:/icons/view-process-users.svg</iconset>
+     <normaloff>:/icons/down-process-users.svg</normaloff>:/icons/down-process-users.svg</iconset>
    </property>
    <property name="text">
     <string>&amp;Stampa Competenze Dirigenti</string>
@@ -2989,7 +2992,7 @@
   <action name="actionStampaCompetenzeUnita">
    <property name="icon">
     <iconset resource="assets.qrc">
-     <normaloff>:/icons/view-bank.svg</normaloff>:/icons/view-bank.svg</iconset>
+     <normaloff>:/icons/down-bank.svg</normaloff>:/icons/down-bank.svg</iconset>
    </property>
    <property name="text">
     <string>Stampa &amp;Competenze Unità</string>
@@ -3077,6 +3080,30 @@
    </property>
    <property name="toolTip">
     <string>Cambia Unità Dirigenti Medici</string>
+   </property>
+  </action>
+  <action name="actionManageUnits">
+   <property name="icon">
+    <iconset resource="assets.qrc">
+     <normaloff>:/icons/view-bank.svg</normaloff>:/icons/view-bank.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Gestisci Unità</string>
+   </property>
+   <property name="toolTip">
+    <string>Gestisci Unità</string>
+   </property>
+  </action>
+  <action name="actionManageDirigenti">
+   <property name="icon">
+    <iconset resource="assets.qrc">
+     <normaloff>:/icons/view-process-users.svg</normaloff>:/icons/view-process-users.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Gestisci Dirigenti</string>
+   </property>
+   <property name="toolTip">
+    <string>Gestisci Dirigenti</string>
    </property>
   </action>
  </widget>

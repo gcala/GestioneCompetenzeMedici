@@ -1108,7 +1108,7 @@ void CompetenzeDirigenteExporter::printNotte(QPainter &painter)
     const int sectionWidth = fm.width(text) + 100;
 
     painter.setFont(bodyFontBold());
-    painter.drawText(QRect(0+sectionWidth,vOffset,6200,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, m_competenza->notte());
+    painter.drawText(QRect(0+sectionWidth,vOffset,6200,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, m_competenza->notte() > 0 ? QString::number(m_competenza->notte()) : "//");
     painter.restore();
 }
 
@@ -1127,6 +1127,6 @@ void CompetenzeDirigenteExporter::printFestivo(QPainter &painter)
     const int sectionWidth = fm.width(text) + 100;
 
     painter.setFont(bodyFontBold());
-    painter.drawText(QRect(2100+sectionWidth,vOffset,6200,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, m_competenza->festivo());
+    painter.drawText(QRect(2100+sectionWidth,vOffset,6200,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, m_competenza->festivo() > 0 ? QString::number(m_competenza->festivo()) : "//");
     painter.restore();
 }
