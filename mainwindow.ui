@@ -2968,42 +2968,6 @@
     <string>Ca&amp;rica cartellini da PDF...</string>
    </property>
   </action>
-  <action name="actionModificaUnita">
-   <property name="icon">
-    <iconset resource="assets.qrc">
-     <normaloff>:/icons/document-edit.svg</normaloff>:/icons/document-edit.svg</iconset>
-   </property>
-   <property name="text">
-    <string>Modifica Unità</string>
-   </property>
-   <property name="toolTip">
-    <string>Modifica Unità Operativa</string>
-   </property>
-  </action>
-  <action name="actionAggiungiUnita">
-   <property name="icon">
-    <iconset resource="assets.qrc">
-     <normaloff>:/icons/list-add.svg</normaloff>:/icons/list-add.svg</iconset>
-   </property>
-   <property name="text">
-    <string>Aggiungi Unità</string>
-   </property>
-   <property name="toolTip">
-    <string>Aggiungi Unità Operativa</string>
-   </property>
-  </action>
-  <action name="actionRimuoviUnita">
-   <property name="icon">
-    <iconset resource="assets.qrc">
-     <normaloff>:/icons/list-remove.svg</normaloff>:/icons/list-remove.svg</iconset>
-   </property>
-   <property name="text">
-    <string>Rimuovi Unità</string>
-   </property>
-   <property name="toolTip">
-    <string>Rimuovi Unità Operativa</string>
-   </property>
-  </action>
   <action name="actionNuovoDatabase">
    <property name="icon">
     <iconset resource="assets.qrc">
@@ -3011,42 +2975,6 @@
    </property>
    <property name="text">
     <string>&amp;Nuovo database...</string>
-   </property>
-  </action>
-  <action name="actionModificaDirigente">
-   <property name="icon">
-    <iconset resource="assets.qrc">
-     <normaloff>:/icons/document-edit.svg</normaloff>:/icons/document-edit.svg</iconset>
-   </property>
-   <property name="text">
-    <string>Modifica Dirigente</string>
-   </property>
-   <property name="toolTip">
-    <string>Modifica Dirigente Medico</string>
-   </property>
-  </action>
-  <action name="actionAggiungiDirigente">
-   <property name="icon">
-    <iconset resource="assets.qrc">
-     <normaloff>:/icons/list-add.svg</normaloff>:/icons/list-add.svg</iconset>
-   </property>
-   <property name="text">
-    <string>Aggiungi Dirigente</string>
-   </property>
-   <property name="toolTip">
-    <string>Aggiungi Dirigente Medico</string>
-   </property>
-  </action>
-  <action name="actionRimuoviDirigente">
-   <property name="icon">
-    <iconset resource="assets.qrc">
-     <normaloff>:/icons/list-remove.svg</normaloff>:/icons/list-remove.svg</iconset>
-   </property>
-   <property name="text">
-    <string>Rimuovi Dirigente</string>
-   </property>
-   <property name="toolTip">
-    <string>Rimuovi Dirigente Medico</string>
    </property>
   </action>
   <action name="actionStampaCompetenzeDirigenti">
