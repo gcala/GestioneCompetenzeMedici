@@ -99,6 +99,8 @@ void CompetenzeUnitaExporter::run()
         }
     }
 
+    const QString printedData = QDateTime::currentDateTime().toString("dd/MM/yyyy hh:mm:ss");
+
     QVector<int> unitaIdList;
     const QString s = m_timecard.split("_").last();
     QDate date = QDate::fromString(s+"01", "yyyyMMdd");
@@ -184,7 +186,7 @@ void CompetenzeUnitaExporter::run()
         disegnaTabella(painter);
 
         if(m_printData)
-            printData(painter);
+            printData(painter, printedData);
 
         QString unitaName = SqlQueries::getUnitaNomeCompleto(unitaId);
 
@@ -203,7 +205,7 @@ void CompetenzeUnitaExporter::run()
                 writer.newPage();
                 disegnaTabella(painter);
                 if(m_printData)
-                    printData(painter);
+                    printData(painter, printedData);
                 printMonth(painter, mese);
                 printUnitaName(painter, unitaName);
                 printUnitaNumber(painter, unitaId);
@@ -917,14 +919,13 @@ void CompetenzeUnitaExporter::printNote(QPainter &painter, const QStringList &no
     painter.restore();
 }
 
-void CompetenzeUnitaExporter::printData(QPainter &painter)
+void CompetenzeUnitaExporter::printData(QPainter &painter, const QString &text)
 {
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(headerLightFont());
     painter.rotate(-90);
-//    painter.setFont(headerFont());
-    painter.drawText(QRect(-m_gridHeight*m_totalHeaderHeight, m_tableWidth, m_gridHeight*m_thirdHeaderHeight, m_gridWidth), Qt::AlignCenter, QDateTime::currentDateTime().toString("dd/MM/yyyy hh:mm:ss"));
+    painter.drawText(QRect(-m_gridHeight*m_totalHeaderHeight, m_tableWidth, m_gridHeight*m_thirdHeaderHeight, m_gridWidth), Qt::AlignCenter, text);
     painter.restore();
 }
 

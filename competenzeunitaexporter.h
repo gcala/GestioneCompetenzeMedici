@@ -114,7 +114,7 @@ private:
     void printNumOreRepOrd(QPainter &painter, const QString &text, int row);
     void printCasi(QPainter &painter);
     void printNote(QPainter &painter, const QStringList &note);
-    void printData(QPainter &painter);
+    void printData(QPainter &painter, const QString &text);
     QRect getRect(int row, int column) const;
 };
 
