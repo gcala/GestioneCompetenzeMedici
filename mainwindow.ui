@@ -2983,7 +2983,7 @@
   <action name="actionStampaCompetenzeDirigenti">
    <property name="icon">
     <iconset resource="assets.qrc">
-     <normaloff>:/icons/down-process-users.svg</normaloff>:/icons/down-process-users.svg</iconset>
+     <normaloff>:/icons/view-process-users.svg</normaloff>:/icons/view-process-users.svg</iconset>
    </property>
    <property name="text">
     <string>&amp;Stampa Competenze Dirigenti</string>
@@ -2992,7 +2992,7 @@
   <action name="actionStampaCompetenzeUnita">
    <property name="icon">
     <iconset resource="assets.qrc">
-     <normaloff>:/icons/down-bank.svg</normaloff>:/icons/down-bank.svg</iconset>
+     <normaloff>:/icons/view-bank.svg</normaloff>:/icons/view-bank.svg</iconset>
    </property>
    <property name="text">
     <string>Stampa &amp;Competenze Unità</string>
@@ -3085,7 +3085,7 @@
   <action name="actionManageUnits">
    <property name="icon">
     <iconset resource="assets.qrc">
-     <normaloff>:/icons/view-bank.svg</normaloff>:/icons/view-bank.svg</iconset>
+     <normaloff>:/icons/edit-bank.svg</normaloff>:/icons/edit-bank.svg</iconset>
    </property>
    <property name="text">
     <string>Gestisci Unità</string>
@@ -3097,7 +3097,7 @@
   <action name="actionManageDirigenti">
    <property name="icon">
     <iconset resource="assets.qrc">
-     <normaloff>:/icons/view-process-users.svg</normaloff>:/icons/view-process-users.svg</iconset>
+     <normaloff>:/icons/edit-users.svg</normaloff>:/icons/edit-users.svg</iconset>
    </property>
    <property name="text">
     <string>Gestisci Dirigenti</string>
