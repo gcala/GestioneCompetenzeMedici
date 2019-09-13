@@ -233,6 +233,9 @@ void CompetenzeUnitaExporter::run()
             if(val > 0) // 25
                 out << rowText.arg(m_competenza->badgeNumber()).arg("IND.PR.REP").arg(QString::number(val)) << "\n";
 
+            if(m_competenza->repCount().contains(".")) // 40
+                out << rowText.arg(m_competenza->badgeNumber()).arg("NUM.REP").arg("6") << "\n";
+
             if(m_competenza->numGrFestPagabili() > 0) // 1571
                 out << rowText.arg(m_competenza->badgeNumber()).arg("GR.FES.NOT").arg(QString::number(m_competenza->numGrFestPagabili())) << "\n";
 
@@ -722,7 +725,7 @@ void CompetenzeUnitaExporter::printRepNumTurni(QPainter &painter, const QString 
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(badgeFont());
-    if(text.isEmpty() || text == "//") {
+    if(text.isEmpty() || text == "0" || text == "//") {
         painter.setPen(Qt::NoPen);
         painter.setBrush(Qt::lightGray);
         painter.drawRect(getRect(row, 5));
