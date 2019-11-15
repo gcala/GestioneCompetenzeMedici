@@ -76,11 +76,6 @@ private:
     bool m_openDb;
     bool m_canceled;
     bool m_revealPass;
-
-
-    bool insertUnitsFromFile(const QString &file);
-    bool insertPayloadFromFile(const QString &file);
-    bool insertRepsFromFile(const QString &file);
 };
 
 #endif // DATABASEWIZARD_H

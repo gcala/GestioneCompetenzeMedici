@@ -32,15 +32,14 @@ class SqlQueries
 {
 private:
     SqlQueries(){}
-    static QMap<int, QStringList> m_unitsMap;
 
 public:
     static void createUnitsTable();
     static void createDoctorsTable();
     static void createUnitsPayedHoursTable();
     static void createUnitsRepTable();
-    static void insertUnit(const QString &id, const QString &raggruppamento, const QString &nome, const QString &breve, const QString &pseudo);
-    static void editUnit(const QString &id, const QString &raggruppamento, const QString &nome, const QString &breve, const QString &pseudo);
+    static void insertUnit(const QString &id, const QString &raggruppamento, const QString &nome, const QString &breve);
+    static void editUnit(const QString &id, const QString &raggruppamento, const QString &nome, const QString &breve);
     static bool insertDoctor(const QString &matricola, const QString &nome, const QString &id_unita);
     static void editDoctor(const QString &id, const QString &matricola, const QString &nome, const QString &id_unita);
     static void insertPayload(const QString &id_unita, const QString &data, const QString &ore_tot, const QString &ore_pagate);
@@ -57,7 +56,6 @@ public:
     static int unitId(const QString &matricola);
     static void buildUnitsMap();
     static QMap<int, QString> units();
-    static void appendPseudoUnitaName(const int id, const QString &nome);
     static void resetAllDoctorMods(const QString &tableName, const int &id);
     static void resetStringValue(const QString &tableName, const QString &columnName, const int &id);
     static void resetIntValue(const QString &tableName, const QString &columnName, const int &id);

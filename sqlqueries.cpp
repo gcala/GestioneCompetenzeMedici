@@ -29,8 +29,6 @@
 #include <QSqlError>
 #include <QDebug>
 
-QMap<int, QStringList> SqlQueries::m_unitsMap;
-
 void SqlQueries::createUnitsTable()
 {
     QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
@@ -39,15 +37,13 @@ void SqlQueries::createUnitsTable()
                       "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
                       "raggruppamento TEXT,"
                       "nome TEXT,"
-                      "breve TEXT,"
-                      "pseudo TEXT);");
+                      "breve TEXT);");
     } else if(The::dbManager()->driverName() == "QMYSQL") {
         query.prepare("CREATE TABLE unita "
                       "(id INT NOT NULL AUTO_INCREMENT,"
                       "raggruppamento varchar(10) NULL,"
                       "nome varchar(128) NULL,"
                       "breve varchar(32) NULL,"
-                      "pseudo varchar(512) NULL,"
                       "PRIMARY KEY (id));");
     } else {
         qDebug() << Q_FUNC_INFO << "Nessun database configurato. Esco";
@@ -148,17 +144,15 @@ void SqlQueries::createUnitsRepTable()
 void SqlQueries::insertUnit(const QString &id,
                             const QString &raggruppamento,
                             const QString &nome,
-                            const QString &breve,
-                            const QString &pseudo)
+                            const QString &breve)
 {
     QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
-    query.prepare("INSERT INTO unita (id,raggruppamento,nome,breve,pseudo) "
-                  "VALUES (:id,:raggruppamento, :nome, :breve, :pseudo);");
+    query.prepare("INSERT INTO unita (id,raggruppamento,nome,breve) "
+                  "VALUES (:id,:raggruppamento, :nome, :breve);");
     query.bindValue(":id", id);
     query.bindValue(":raggruppamento", raggruppamento);
     query.bindValue(":nome", nome);
     query.bindValue(":breve", breve);
-    query.bindValue(":pseudo", pseudo);
 
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
@@ -168,17 +162,15 @@ void SqlQueries::insertUnit(const QString &id,
 void SqlQueries::editUnit(const QString &id,
                           const QString &raggruppamento,
                           const QString &nome,
-                          const QString &breve,
-                          const QString &pseudo)
+                          const QString &breve)
 {
     QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("UPDATE unita "
-                  "SET raggruppamento=:raggruppamento,nome=:nome,breve=:breve,pseudo=:pseudo "
+                  "SET raggruppamento=:raggruppamento,nome=:nome,breve=:breve "
                   "WHERE id=" + id + ";");
     query.bindValue(":raggruppamento", raggruppamento);
     query.bindValue(":nome", nome);
     query.bindValue(":breve", breve);
-    query.bindValue(":pseudo", pseudo);
 
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
@@ -613,20 +605,6 @@ int SqlQueries::unitId(const QString &matricola)
     return id;
 }
 
-void SqlQueries::buildUnitsMap()
-{
-    m_unitsMap.clear();
-    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
-    query.prepare("SELECT id,pseudo FROM unita;");
-    if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
-    }
-
-    while(query.next()) {
-        m_unitsMap[query.value(0).toInt()] = query.value(1).toString().split(";");
-    }
-}
-
 QMap<int, QString> SqlQueries::units()
 {
     QMap<int, QString> unita;
@@ -641,35 +619,6 @@ QMap<int, QString> SqlQueries::units()
     }
 
     return unita;
-}
-
-void SqlQueries::appendPseudoUnitaName(const int id, const QString &nome)
-{
-    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
-    query.prepare("SELECT pseudo FROM unita WHERE id=" + QString::number(id) + ";");
-    if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
-        return;
-    }
-
-    QString nomi;
-
-    while(query.next()) {
-        nomi = query.value(0).toString();
-    }
-
-    nomi += ";" + nome;
-
-    query.prepare("UPDATE unita "
-                  "SET pseudo=:pseudo "
-                  "WHERE id=" + QString::number(id) + ";");
-    query.bindValue(":pseudo", nomi);
-
-    if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
-    }
-
-    buildUnitsMap();
 }
 
 void SqlQueries::resetAllDoctorMods(const QString &tableName, const int &id)

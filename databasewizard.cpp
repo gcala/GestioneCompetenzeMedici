@@ -186,11 +186,6 @@ void DatabaseWizard::on_createButton_clicked()
     SqlQueries::createDoctorsTable();
     SqlQueries::createUnitsRepTable();
 
-    if(insertUnitsFromFile(ui->unitsCSV->text())) {
-        insertPayloadFromFile(ui->payloadCSV->text());
-        insertRepsFromFile(ui->repsCSV->text());
-    }
-
     close();
 }
 
@@ -208,87 +203,6 @@ void DatabaseWizard::on_dbDest_textChanged(const QString &arg1)
         ui->createButton->setEnabled(true);
     else
         ui->createButton->setEnabled(false);
-}
-
-bool DatabaseWizard::insertUnitsFromFile(const QString &file)
-{
-    if(file.isEmpty() || !QFile::exists(file))
-        return false;
-
-    QFile f(file);
-
-    if(!f.open(QIODevice::ReadOnly | QIODevice::Text))
-        return false;
-
-    while(!f.atEnd()) {
-        QString line = f.readLine().trimmed();
-        if(line.trimmed().isEmpty())
-            continue;
-        QStringList list = line.split("|");
-        if(list.size() != 5) {
-            qDebug() << "ERRORE alla riga" << line;
-            continue;
-        }
-
-        SqlQueries::insertUnit(list.at(0), list.at(1), list.at(2), list.at(3), list.at(4));
-    }
-
-    f.close();
-    return true;
-}
-
-bool DatabaseWizard::insertPayloadFromFile(const QString &file)
-{
-    if(file.isEmpty() || !QFile::exists(file))
-        return false;
-
-    QFile f(file);
-
-    if(!f.open(QIODevice::ReadOnly | QIODevice::Text))
-        return false;
-
-    while(!f.atEnd()) {
-        QString line = f.readLine().trimmed();
-        if(line.trimmed().isEmpty())
-            continue;
-        QStringList list = line.split("|");
-        if(list.size() != 4) {
-            qDebug() << "ERRORE alla riga" << line;
-            continue;
-        }
-
-        SqlQueries::insertPayload(list.at(0), list.at(1), list.at(2), list.at(3));
-    }
-
-    f.close();
-    return true;
-}
-
-bool DatabaseWizard::insertRepsFromFile(const QString &file)
-{
-    if(file.isEmpty() || !QFile::exists(file))
-        return false;
-
-    QFile f(file);
-
-    if(!f.open(QIODevice::ReadOnly | QIODevice::Text))
-        return false;
-
-    while(!f.atEnd()) {
-        QString line = f.readLine().trimmed();
-        if(line.trimmed().isEmpty())
-            continue;
-        QStringList list = line.split("|");
-        if(list.size() != 6) {
-            qDebug() << "ERRORE alla riga" << line;
-            continue;
-        }
-
-        SqlQueries::insertRep(list.at(0), list.at(1), list.at(2), list.at(3), list.at(4), list.at(5));
-    }
-
-    f.close();
-    return true;
 }
 
 void DatabaseWizard::on_openLocalDbButton_clicked()
