@@ -2,6 +2,9 @@
 #include "ui_manageemployee.h"
 #include "sqlqueries.h"
 
+#include <QSettings>
+#include <QDir>
+
 ManageEmployee::ManageEmployee(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ManageEmployee)
@@ -52,17 +55,19 @@ void ManageEmployee::on_dirigentiComboBox_currentIndexChanged(int index)
     ui->saveButton->setEnabled(false);
     ui->dirigentiComboBox->setEnabled(true);
 
-    //    const QString path = "/home/gcala/Progetti/C++/GestioneCompetenzeMedici/appunti/Foto/";
-    //    if(QFile::exists(path + "F" + QString::number(ui->dirigenteMatricolaSB->value()).rightJustified(6, '0') + ".jpg")) {
-    //        QPixmap pix(path + "F" + QString::number(ui->dirigenteMatricolaSB->value()).rightJustified(6, '0') + ".jpg");
-    //        if(pix.width() > pix.height())
-    //            pix = pix.scaledToWidth(180);
-    //        else
-    //            pix = pix.scaledToHeight(180);
-    //        ui->photoLabel->setPixmap(pix);
-    //    } else {
-    //        ui->photoLabel->setPixmap(QPixmap(":/images/user-none.png"));
-    //    }
+    QSettings settings;
+
+    const QString path = settings.value("photosPath", "").toString();
+    if(QFile::exists(path + QDir::separator() + "F" + ui->dirigenteMatricolaSB->text().rightJustified(6, '0') + ".jpg")) {
+        QPixmap pix(path + QDir::separator() + "F" + ui->dirigenteMatricolaSB->text().rightJustified(6, '0') + ".jpg");
+        if(pix.width() > pix.height())
+            pix = pix.scaledToWidth(180);
+        else
+            pix = pix.scaledToHeight(180);
+        ui->photoLabel->setPixmap(pix);
+    } else {
+        ui->photoLabel->setPixmap(QPixmap(":/images/user-none.png"));
+    }
 }
 
 void ManageEmployee::on_dirigenteNomeLE_textChanged(const QString &arg1)
