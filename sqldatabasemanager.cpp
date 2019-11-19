@@ -81,6 +81,8 @@ bool SQLiteDatabaseManager::createLocalConnection()
         }
     }
 
+    qDebug() << m_dbFile;
+
     return true;
 }
 
@@ -142,7 +144,7 @@ bool SQLiteDatabaseManager::createLocalConnection(const QString &fileName)
     return true;
 }
 
-QString SQLiteDatabaseManager::currentDatabase() const
+QString SQLiteDatabaseManager::currentDatabaseName() const
 {
     QSqlDatabase db = QSqlDatabase::database(Utilities::m_connectionName);
     return db.databaseName();
@@ -241,6 +243,11 @@ QSqlDatabase SQLiteDatabaseManager::database(bool &ok, const QString &connection
     }
 
     return db;
+}
+
+QSqlDatabase SQLiteDatabaseManager::currentDatabase()
+{
+    return QSqlDatabase::database(Utilities::m_connectionName);
 }
 
 QString SQLiteDatabaseManager::driverName() const

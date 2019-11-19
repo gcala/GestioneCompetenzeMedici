@@ -27,6 +27,7 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     manageemployee.cpp \
+    manageunits.cpp \
         searchcombobox.cpp \
         insertdbvalues.cpp \
         okularcsvtimecardsreader.cpp \
@@ -59,6 +60,7 @@ SOURCES += \
 HEADERS += \
         mainwindow.h \
     manageemployee.h \
+    manageunits.h \
         searchcombobox.h \
         insertdbvalues.h \
         okularcsvtimecardsreader.h \
@@ -93,6 +95,7 @@ FORMS += \
         mainwindow.ui \
         insertdbvalues.ui \
     manageemployee.ui \
+    manageunits.ui \
         printdialog.ui \
         databasewizard.ui \
         nomiunitadialog.ui \

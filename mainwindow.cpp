@@ -21,7 +21,6 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "insertdbvalues.h"
 #include "printdialog.h"
 #include "sqlqueries.h"
 #include "calendarmanager.h"
@@ -38,9 +37,9 @@
 #include "nomiunitadialog.h"
 #include "switchunitdialog.h"
 #include "manageemployee.h"
+#include "manageunits.h"
 
 #include <QtWidgets>
-#include <QSqlQueryModel>
 #include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -145,26 +144,8 @@ MainWindow::MainWindow(QWidget *parent) :
     unitOp = UndefOp;
     dirigenteOp = UndefOp;
 
-    insertDialog = new InsertDBValues(this);
     printDialog = new PrintDialog(this);
 
-//    unitaOrePagateModel = new QSqlQueryModel;
-//    ui->unitaOrePagateTW->setModel(unitaOrePagateModel);
-
-//    unitaReperibilitaModel = new QSqlQueryModel;
-//    ui->unitaReperibilitaTW->setModel(unitaReperibilitaModel);
-
-//    ui->unitaTB->setDefaultAction(ui->actionModificaUnita);
-//    ui->unitaTB->addAction(ui->actionAggiungiUnita);
-//    ui->unitaTB->addAction(ui->actionRimuoviUnita);
-
-//    ui->dirigenteTB->setDefaultAction(ui->actionModificaDirigente);
-//    ui->dirigenteTB->addAction(ui->actionAggiungiDirigente);
-//    ui->dirigenteTB->addAction(ui->actionRimuoviDirigente);
-
-//    ui->unitaTB->setEnabled(false);
-//    toggleUnitaEditMode();
-//    toggleDirigenteEditMode();
     loadSettings();
     Utilities::m_connectionName = "";
 
@@ -195,7 +176,6 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     saveSettings();
-    delete insertDialog;
     delete printDialog;
     delete m_nomiDialog;
     delete ui;
@@ -256,11 +236,9 @@ void MainWindow::on_actionNuovoDatabase_triggered()
         return;
     }
 
-    currentDatabase.setFile(The::dbManager()->currentDatabase());
+    currentDatabase.setFile(The::dbManager()->currentDatabaseName());
 
     clearWidgets();
-//    populateUnitaCB();
-//    populateDirigentiCB();
     populateMeseCompetenzeCB();
     ui->actionBackupDatabase->setEnabled(true);
 
@@ -280,77 +258,6 @@ void MainWindow::clearWidgets()
     ui->altreLabel->clear();
 }
 
-//void MainWindow::populateUnitaCB()
-//{
-//    const QMap<int, QString> map = SqlQueries::units();
-//    QMap<int, QString>::const_iterator i = map.constBegin();
-//    while (i != map.constEnd()) {
-//        ui->unitaComboBox->addItem(QString::number(i.key()) + " - " + i.value(), i.key());
-//        ui->dirigentiUnitaComboBox->addItem(QString::number(i.key()) + " - " + i.value(), i.key());
-//        ++i;
-//    }
-
-//    SqlQueries::buildUnitsMap();
-
-//    ui->unitaTB->setEnabled(ui->unitaComboBox->count() > 0);
-
-//    switch (unitOp) {
-//    case AddUnit:
-//    case RemoveUnit:
-//        ui->unitaComboBox->setCurrentIndex(0);
-//        break;
-//    case EditUnit:
-//        ui->unitaComboBox->setCurrentIndex(currentUnitaIndex);
-////        ui->dirigentiUnitaComboBox->setCurrentIndex(currentDirigenteUnitaIndex);
-//        break;
-//    default:
-//        qDebug() << unitOp << "Undefined";
-//    }
-//}
-
-//void MainWindow::populateUnitaOrePagate()
-//{
-//    SqlQueries::setUnitaOrePagateModel(unitaOrePagateModel, ui->unitaComboBox->currentData(Qt::UserRole).toInt());
-
-//    unitaOrePagateModel->setHeaderData(1, Qt::Horizontal, QObject::tr("Da Mese"));
-//    unitaOrePagateModel->setHeaderData(2, Qt::Horizontal, QObject::tr("Ore totali"));
-//    unitaOrePagateModel->setHeaderData(3, Qt::Horizontal, QObject::tr("Ore pagate"));
-//    ui->unitaOrePagateTW->hideColumn(0);
-//    ui->removeUnitaOrePagateButton->setEnabled(false);
-//}
-
-//void MainWindow::populateUnitaReperibilita()
-//{
-//    SqlQueries::setUnitaReperibilitaModel(unitaReperibilitaModel, ui->unitaComboBox->currentData(Qt::UserRole).toInt());
-
-//    unitaReperibilitaModel->setHeaderData(2, Qt::Horizontal, QObject::tr("Da Mese"));
-//    unitaReperibilitaModel->setHeaderData(3, Qt::Horizontal, QObject::tr("Feriale"));
-//    unitaReperibilitaModel->setHeaderData(4, Qt::Horizontal, QObject::tr("Sabato"));
-//    unitaReperibilitaModel->setHeaderData(5, Qt::Horizontal, QObject::tr("Pre-Festivo"));
-//    unitaReperibilitaModel->setHeaderData(6, Qt::Horizontal, QObject::tr("Festivo"));
-//    ui->unitaReperibilitaTW->hideColumn(0);
-//    ui->unitaReperibilitaTW->hideColumn(1);
-//    ui->removeUnitaReperibilitaButton->setEnabled(false);
-//}
-
-//void MainWindow::saveCurrentUnitaValues()
-//{
-//    lastUnitaNum = ui->unitaNumLE->text();
-//    lastUnitaRaggr = ui->raggrLE->text();
-//    lastUnitaNome = ui->unitaNomeLE->text();
-//    lastUnitaBreve = ui->unitaBreveLE->text();
-//    lastOtherNames = ui->otherNamesLE->text();
-//}
-
-//void MainWindow::restoreUnitaValues()
-//{
-//    ui->unitaNumLE->setText(lastUnitaNum);
-//    ui->raggrLE->setText(lastUnitaRaggr);
-//    ui->unitaNomeLE->setText(lastUnitaNome);
-//    ui->unitaBreveLE->setText(lastUnitaBreve);
-//    ui->otherNamesLE->setText(lastOtherNames);
-//}
-
 void MainWindow::connectToDatabase()
 {
     if(!The::dbManager()->createConnection()) {
@@ -358,11 +265,10 @@ void MainWindow::connectToDatabase()
         return;
     }
 
-    QFileInfo fi(The::dbManager()->currentDatabase());
+    QFileInfo fi(The::dbManager()->currentDatabaseName());
 
     setWindowTitle("Gestione Competenze Medici - " + fi.completeBaseName());
 
-//    populateUnitaCB();
     populateMeseCompetenzeCB();
     m_nomiDialog->populateUnits();
 }
@@ -419,63 +325,6 @@ void MainWindow::populateDirigentiCompetenzeCB()
     }
 }
 
-//void MainWindow::on_editUnitaSaveButton_clicked()
-//{
-//    switch(unitOp) {
-//    case AddUnit:
-//        SqlQueries::insertUnit(ui->raggrLE->text(),
-//                               ui->unitaNomeLE->text(),
-//                               ui->unitaBreveLE->text(),
-//                               ui->unitaNumLE->text(),
-//                               ui->otherNamesLE->text());
-//        break;
-//    case EditUnit:
-//        SqlQueries::editUnit(ui->unitaComboBox->currentData(Qt::UserRole).toString(),
-//                             ui->raggrLE->text(),
-//                             ui->unitaNomeLE->text(),
-//                             ui->unitaBreveLE->text(),
-//                             ui->otherNamesLE->text());
-//        break;
-//    default:
-//        break;
-//    }
-
-//    populateUnitaCB();
-//    toggleUnitaEditMode();
-
-//    ui->unitaComboBox->setCurrentIndex(currentUnitaIndex);
-//    ui->dirigentiComboBox->setCurrentIndex(currentDirigenteIndex);
-//}
-
-//void MainWindow::on_actionModificaUnita_triggered()
-//{
-//    unitOp = EditUnit;
-//    saveCurrentUnitaValues();
-//    toggleUnitaEditMode();
-//}
-
-//void MainWindow::on_actionAggiungiUnita_triggered()
-//{
-//    saveCurrentUnitaValues();
-//    toggleUnitaEditMode();
-//    unitOp = AddUnit;
-//    ui->unitaNomeLE->clear();
-//    ui->unitaBreveLE->clear();
-//    ui->raggrLE->clear();
-//    ui->unitaNumLE->clear();
-//    ui->otherNamesLE->clear();
-//}
-
-//void MainWindow::on_actionRimuoviUnita_triggered()
-//{
-//    unitOp = RemoveUnit;
-//    QMessageBox::StandardButton choise = QMessageBox::question(this, "Rimuovere Unità?", "Certi di voler rimuovere l'Unità Operativa selezionata?", QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
-//    if(choise == QMessageBox::Yes) {
-//        SqlQueries::removeUnit(ui->unitaComboBox->currentData(Qt::UserRole).toString());
-//        populateUnitaCB();
-//    }
-//}
-
 void MainWindow::on_actionApriDatabase_triggered()
 {
     auto databaseWizard = new DatabaseWizard(0, this);
@@ -499,7 +348,6 @@ void MainWindow::on_actionApriDatabase_triggered()
             needsBackup();
             setupDbConnectionParameters();
             connectToDatabase();
-//            populateUnitaCB();
             populateMeseCompetenzeCB();
             ui->actionBackupDatabase->setEnabled(true);
         }
@@ -563,71 +411,6 @@ void MainWindow::saveSettings()
     settings.setValue("useSSL", m_useSSL);
     settings.setValue("lastUsername", m_lastUsername);
 }
-
-//void MainWindow::on_unitaComboBox_currentIndexChanged(int index)
-//{
-//    Q_UNUSED(index)
-
-//    if(ui->unitaComboBox->currentData(Qt::UserRole).toString().isEmpty())
-//        return;
-
-//    const QVariantList query = SqlQueries::getUnitaDataById(ui->unitaComboBox->currentData(Qt::UserRole).toInt());
-
-//    if(!query.isEmpty() && query.size() == 5 ) {
-//        ui->unitaNomeLE->setText(query.at(2).toString());
-//        ui->unitaBreveLE->setText(query.at(3).toString());
-//        ui->raggrLE->setText(query.at(1).toString());
-//        ui->unitaNumLE->setText(query.at(0).toString());
-//        ui->otherNamesLE->setText(query.at(4).toString());
-//    }
-
-//    populateUnitaOrePagate();
-////    populateUnitaReperibilita();
-//}
-
-//void MainWindow::on_unitaOrePagateTW_activated(const QModelIndex &index)
-//{
-//    Q_UNUSED(index)
-//    ui->removeUnitaOrePagateButton->setEnabled(true);
-//}
-
-//void MainWindow::on_unitaReperibilitaTW_activated(const QModelIndex &index)
-//{
-//    Q_UNUSED(index)
-//    ui->removeUnitaReperibilitaButton->setEnabled(true);
-//}
-
-//void MainWindow::on_addUnitaOrePagateButton_clicked()
-//{
-//    insertDialog->unitaAddOreSetup(ui->unitaComboBox->currentData(Qt::UserRole).toString());
-//    insertDialog->exec();
-//    populateUnitaOrePagate();
-//}
-
-//void MainWindow::on_removeUnitaOrePagateButton_clicked()
-//{
-//    const QAbstractItemModel * model = ui->unitaOrePagateTW->currentIndex().model();
-//    int id = model->data(model->index(ui->unitaOrePagateTW->currentIndex().row(), 0), Qt::DisplayRole).toInt();
-//    insertDialog->unitaRemoveOreSetup(id);
-//    insertDialog->exec();
-//    populateUnitaOrePagate();
-//}
-
-//void MainWindow::on_addUnitaReperibilitaButton_clicked()
-//{
-//    insertDialog->unitaAddNotteSetup(ui->unitaComboBox->currentData(Qt::UserRole).toString());
-//    insertDialog->exec();
-//    populateUnitaReperibilita();
-//}
-
-//void MainWindow::on_removeUnitaReperibilitaButton_clicked()
-//{
-//    const QAbstractItemModel * model = ui->unitaReperibilitaTW->currentIndex().model();
-//    QString id = model->data(model->index(ui->unitaReperibilitaTW->currentIndex().row(), 0), Qt::DisplayRole).toString();
-//    insertDialog->unitaRemoveReperibilitaSetup(id);
-//    insertDialog->exec();
-//    populateUnitaReperibilita();
-//}
 
 void MainWindow::on_actionCaricaPdf_triggered()
 {
@@ -938,11 +721,9 @@ void MainWindow::on_actionStampaCompetenzeDirigenti_triggered()
     ui->actionPrintDeficit->setEnabled(false);
     printDialog->setCurrentOp(PrintDialog::ToolOps::PrintDoctors);
 
-//    if(ui->tabWidget->currentIndex() == 2) {
-        printDialog->setCurrentMese(ui->meseCompetenzeCB->currentIndex());
-        printDialog->setCurrentUnita(ui->unitaCompetenzeCB->currentIndex() + 1);
-        printDialog->setCurrentDirigente(ui->dirigentiCompetenzeCB->currentIndex() + 1);
-//    }
+    printDialog->setCurrentMese(ui->meseCompetenzeCB->currentIndex());
+    printDialog->setCurrentUnita(ui->unitaCompetenzeCB->currentIndex() + 1);
+    printDialog->setCurrentDirigente(ui->dirigentiCompetenzeCB->currentIndex() + 1);
 
     printDialog->exec();
 
@@ -969,10 +750,8 @@ void MainWindow::on_actionStampaCompetenzeUnita_triggered()
     ui->actionPrintDeficit->setEnabled(false);
     printDialog->setCurrentOp(PrintDialog::ToolOps::PrintUnits);
 
-//    if(ui->tabWidget->currentIndex() == 2) {
-        printDialog->setCurrentMese(ui->meseCompetenzeCB->currentIndex());
-        printDialog->setCurrentUnita(ui->unitaCompetenzeCB->currentIndex() + 1);
-//    }
+    printDialog->setCurrentMese(ui->meseCompetenzeCB->currentIndex());
+    printDialog->setCurrentUnita(ui->unitaCompetenzeCB->currentIndex() + 1);
 
     printDialog->exec();
 
@@ -1000,10 +779,8 @@ void MainWindow::on_actionPrintDeficit_triggered()
     ui->actionPrintDeficit->setEnabled(false);
     printDialog->setCurrentOp(PrintDialog::ToolOps::PrintDeficit);
 
-//    if(ui->tabWidget->currentIndex() == 2) {
-        printDialog->setCurrentMese(ui->meseCompetenzeCB->currentIndex());
-        printDialog->setCurrentUnita(ui->unitaCompetenzeCB->currentIndex() + 1);
-//    }
+    printDialog->setCurrentMese(ui->meseCompetenzeCB->currentIndex());
+    printDialog->setCurrentUnita(ui->unitaCompetenzeCB->currentIndex() + 1);
 
     printDialog->exec();
 
@@ -1145,9 +922,6 @@ void MainWindow::on_actionCaricaCsv_triggered()
         okularReader.start();
         progressBar->setVisible(true);
         msgLabel->setText("Importo i cartellini");
-//        ui->unitaTab->setEnabled(false);
-//        ui->dirigentiTab->setEnabled(false);
-//        ui->competenzeDirigenteTab->setEnabled(false);
         ui->competenzeWidget->setEnabled(false);
     }
 }
@@ -1201,11 +975,9 @@ void MainWindow::on_actionRicalcolaDeficit_triggered()
     ui->actionRicalcolaDeficit->setEnabled(false);
     printDialog->setCurrentOp(PrintDialog::ToolOps::CalcDpm);
 
-//    if(ui->tabWidget->currentIndex() == 2) {
-        printDialog->setCurrentMese(ui->meseCompetenzeCB->currentIndex());
-        printDialog->setCurrentUnita(ui->unitaCompetenzeCB->currentIndex() + 1);
-        printDialog->setCurrentDirigente(ui->dirigentiCompetenzeCB->currentIndex() + 1);
-//    }
+    printDialog->setCurrentMese(ui->meseCompetenzeCB->currentIndex());
+    printDialog->setCurrentUnita(ui->unitaCompetenzeCB->currentIndex() + 1);
+    printDialog->setCurrentDirigente(ui->dirigentiCompetenzeCB->currentIndex() + 1);
 
     printDialog->exec();
 
@@ -1288,7 +1060,6 @@ void MainWindow::delayedSetup()
         }
 
         needsBackup();
-//        connectToLocalDatabase();
     }
 
     connectToDatabase();
@@ -1376,5 +1147,24 @@ void MainWindow::on_editEmployeeButton_clicked()
     dialog.exec();
     if(dialog.isChanged()) {
         populateDirigentiCompetenzeCB();
+    }
+}
+
+void MainWindow::on_editUnitButton_clicked()
+{
+    ManageUnits dialog;
+    dialog.setUnit(ui->unitaCompetenzeCB->currentData(Qt::UserRole).toInt());
+    dialog.exec();
+    if(dialog.isChanged()) {
+        populateUnitaCompetenzeCB();
+    }
+}
+
+void MainWindow::on_actionManageUnits_triggered()
+{
+    ManageUnits dialog;
+    dialog.exec();
+    if(dialog.isChanged()) {
+        populateUnitaCompetenzeCB();
     }
 }

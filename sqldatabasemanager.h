@@ -49,7 +49,8 @@ public:
     static void setDriver(const QString &driver);
 
     static QSqlDatabase database(bool &ok, const QString &connectionName = QString());
-    QString currentDatabase() const;
+    static QSqlDatabase currentDatabase();
+    QString currentDatabaseName() const;
     QString driverName() const;
 
 signals:

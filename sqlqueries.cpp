@@ -978,7 +978,7 @@ QStringList SqlQueries::getTuttiMatricoleNomi()
 
 void SqlQueries::setUnitaOrePagateModel(QSqlQueryModel *model, const int &idUnita)
 {
-    model->setQuery("SELECT id,data,ore_tot,ore_pagate FROM unita_ore_pagate WHERE id_unita=" + QString::number(idUnita) + ";");
+    model->setQuery("SELECT id,data,ore_tot,ore_pagate FROM unita_ore_pagate WHERE id_unita=" + QString::number(idUnita) + ";", The::dbManager()->currentDatabase());
     if(model->lastError().isValid()) {
         qDebug() << "ERROR: " << model->query().lastQuery() << " : " << model->lastError();
     }

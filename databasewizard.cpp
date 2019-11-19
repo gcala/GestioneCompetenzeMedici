@@ -155,7 +155,7 @@ void DatabaseWizard::on_createButton_clicked()
 {
     QString file = ui->dbDest->text() + QDir::separator() + ui->dbName->text().trimmed() + ".db";
 
-    if(file == The::dbManager()->currentDatabase()) {
+    if(file == The::dbManager()->currentDatabaseName()) {
         QMessageBox::critical(this, "Database in uso", "Si sta tentando di sovrascrivere un database aperto. "
                                                        "Si prega di selezionare un altro nome per il nuovo database, "
                                                        "oppure chiudere l'applicazione ed eliminare "

@@ -40,7 +40,6 @@ class MainWindow;
 class QLabel;
 class QProgressBar;
 class QSqlQueryModel;
-class InsertDBValues;
 class PrintDialog;
 class CalendarManager;
 class CalendarManagerRep;
@@ -70,21 +69,9 @@ private slots:
     void delayedSetup();
     void associaUnita(const QString &, int &unitaId);
 
-//    void on_editUnitaSaveButton_clicked();
-//    void on_editUnitaCancelButton_clicked();
-//    void on_actionModificaUnita_triggered();
-//    void on_actionAggiungiUnita_triggered();
-//    void on_actionRimuoviUnita_triggered();
     void on_actionApriDatabase_triggered();
-//    void on_unitaComboBox_currentIndexChanged(int index);
-//    void on_unitaOrePagateTW_activated(const QModelIndex &index);
-//    void on_addUnitaOrePagateButton_clicked();
-//    void on_removeUnitaOrePagateButton_clicked();
     void on_actionCaricaPdf_triggered();
     void on_actionNuovoDatabase_triggered();
-//    void on_unitaReperibilitaTW_activated(const QModelIndex &index);
-//    void on_addUnitaReperibilitaButton_clicked();
-//    void on_removeUnitaReperibilitaButton_clicked();
     void on_saveCompetenzeButton_clicked();
     void on_restoreCompetenzeButton_clicked();
     void on_meseCompetenzeCB_currentIndexChanged(int index);
@@ -112,10 +99,10 @@ private slots:
     void on_tabWidget_currentChanged(int index);
     void on_actionPrintDeficit_triggered();
     void on_actionCambiaUnit_triggered();
-
     void on_actionManageDirigenti_triggered();
-
     void on_editEmployeeButton_clicked();
+    void on_editUnitButton_clicked();
+    void on_actionManageUnits_triggered();
 
 private:
     Ui::MainWindow *ui;
@@ -124,8 +111,6 @@ private:
     int currentUnitaIndex;
     int currentDirigenteIndex;
     int currentDirigenteUnitaIndex;
-//    QSqlQueryModel *unitaOrePagateModel;
-//    QSqlQueryModel *unitaReperibilitaModel;
     UnitsOps unitOp;
     UnitsOps dirigenteOp;
     Competenza *m_competenza;
@@ -198,7 +183,6 @@ private:
     int lastDirigenteUnitaIndex;
     QString lastDirigenteUnitaNome;
     QFileInfo currentDatabase;
-    InsertDBValues *insertDialog;
     PrintDialog *printDialog;
     TabulaCsvTimeCardsReader tabulaReader;
     OkularCsvTimeCardsReader okularReader;
@@ -212,15 +196,8 @@ private:
     void loadSettings();
     void saveSettings();
     void clearWidgets();
-//    void populateUnitaCB();
-//    void populateUnitaOrePagate();
-//    void populateUnitaReperibilita();
     void populateDirigenteCronoNotti();
-//    void saveCurrentUnitaValues();
-//    void restoreUnitaValues();
     void connectToDatabase();
-//    void connectToLocalDatabase();
-//    void connectToRemoteDatabase(const QString &user, const QString &pass);
     void askDbUserPassword();
 
     void createUnitsTable();
