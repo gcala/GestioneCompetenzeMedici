@@ -119,6 +119,10 @@ private slots:
     void on_actionPrintDeficit_triggered();
     void on_actionCambiaUnit_triggered();
 
+    void on_actionManageDirigenti_triggered();
+
+    void on_editEmployeeButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     bool unitaReadOnlyMode;

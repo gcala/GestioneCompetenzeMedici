@@ -26,6 +26,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
+    manageemployee.cpp \
         searchcombobox.cpp \
         insertdbvalues.cpp \
         okularcsvtimecardsreader.cpp \
@@ -57,6 +58,7 @@ SOURCES += \
 
 HEADERS += \
         mainwindow.h \
+    manageemployee.h \
         searchcombobox.h \
         insertdbvalues.h \
         okularcsvtimecardsreader.h \
@@ -90,6 +92,7 @@ HEADERS += \
 FORMS += \
         mainwindow.ui \
         insertdbvalues.ui \
+    manageemployee.ui \
         printdialog.ui \
         databasewizard.ui \
         nomiunitadialog.ui \

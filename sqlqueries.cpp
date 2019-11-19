@@ -197,16 +197,14 @@ bool SqlQueries::insertDoctor(const QString &matricola,
 
 void SqlQueries::editDoctor(const QString &id,
                             const QString &matricola,
-                            const QString &nome,
-                            const QString &id_unita)
+                            const QString &nome)
 {
     QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("UPDATE medici "
-                  "SET matricola=:matricola,nome=:nome,id_unita=:id_unita "
+                  "SET matricola=:matricola,nome=:nome "
                   "WHERE id=" + id + ";");
     query.bindValue(":matricola", matricola);
-    query.bindValue(":nome", QString(nome).replace("''","'"));
-    query.bindValue(":id_unita", id_unita);
+    query.bindValue(":nome", nome);
 
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();

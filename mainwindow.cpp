@@ -37,6 +37,7 @@
 #include "logindialog.h"
 #include "nomiunitadialog.h"
 #include "switchunitdialog.h"
+#include "manageemployee.h"
 
 #include <QtWidgets>
 #include <QSqlQueryModel>
@@ -1572,4 +1573,23 @@ void MainWindow::on_actionCambiaUnit_triggered()
 {
     SwitchUnitDialog dialog;
     dialog.exec();
+}
+
+void MainWindow::on_actionManageDirigenti_triggered()
+{
+    ManageEmployee dialog;
+    dialog.exec();
+    if(dialog.isChanged()) {
+        populateDirigentiCompetenzeCB();
+    }
+}
+
+void MainWindow::on_editEmployeeButton_clicked()
+{
+    ManageEmployee dialog;
+    dialog.setDipendente(ui->dirigentiCompetenzeCB->currentText().split("-").at(0).trimmed().toInt());
+    dialog.exec();
+    if(dialog.isChanged()) {
+        populateDirigentiCompetenzeCB();
+    }
 }
