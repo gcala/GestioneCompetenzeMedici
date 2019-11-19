@@ -88,14 +88,14 @@ void SqlQueries::createUnitsPayedHoursTable()
         query.prepare("CREATE TABLE unita_ore_pagate "
                       "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
                       "id_unita INTEGER,"
-                      "data TEXT DEFAULT (08.2017),"
+                      "data TEXT DEFAULT (08/2017),"
                       "ore_tot INTEGER NOT NULL DEFAULT (8),"
                       "ore_pagate INTEGER NOT NULL DEFAULT (0));");
     } else if(The::dbManager()->driverName() == "QMYSQL") {
         query.prepare("CREATE TABLE unita_ore_pagate "
                       "(id INT NOT NULL AUTO_INCREMENT,"
                       "id_unita INT NULL,"
-                      "data varchar(10) DEFAULT 08.2017 NOT NULL,"
+                      "data varchar(10) DEFAULT 08/2017 NOT NULL,"
                       "ore_tot INT DEFAULT 8 NOT NULL,"
                       "ore_pagate INT DEFAULT 0 NOT NULL,"
                       "PRIMARY KEY (id));");
@@ -829,7 +829,7 @@ QMap<QDate, QPair<int, int> > SqlQueries::getOrePagateFromUnit(const int &unitaI
         return map;
     }
     while(query.next()) {
-        QStringList meseAnno = query.value(0).toString().split(".");
+        QStringList meseAnno = query.value(0).toString().split("/");
         QDate date(meseAnno.at(1).toInt(),meseAnno.at(0).toInt(),1);
         QPair<int, int> vals;
         vals.first = query.value(1).toInt();

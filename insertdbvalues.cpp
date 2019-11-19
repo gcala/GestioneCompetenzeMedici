@@ -68,7 +68,7 @@ void InsertDBValues::unitaRemoveOreSetup(const int &id)
         return;
     }
 
-    ui->unitaData->setDate(QDate::fromString(query.at(0).toString(), "MM.yyyy"));
+    ui->unitaData->setDate(QDate::fromString(query.at(0).toString(), "MM/yyyy"));
     ui->unitaOreTot->setValue(query.at(1).toInt());
     ui->unitaOrePagate->setValue(query.at(2).toInt());
 }
@@ -86,7 +86,7 @@ void InsertDBValues::on_unitaSave_clicked()
     switch(currentOp) {
     case AddOre:
         SqlQueries::insertPayload(currentId,
-                                  ui->unitaData->date().toString("MM.yyyy"),
+                                  ui->unitaData->date().toString("MM/yyyy"),
                                   QString::number(ui->unitaOreTot->value()),
                                   QString::number(ui->unitaOrePagate->value()));
         break;

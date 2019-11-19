@@ -24,6 +24,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
+    dateeditdelegate.cpp \
         main.cpp \
         mainwindow.cpp \
     manageemployee.cpp \
@@ -58,6 +59,7 @@ SOURCES += \
     switchunitdialog.cpp
 
 HEADERS += \
+    dateeditdelegate.h \
         mainwindow.h \
     manageemployee.h \
     manageunits.h \

@@ -19,39 +19,30 @@
  *
  */
 
-#ifndef MANAGEEMPLOYEE_H
-#define MANAGEEMPLOYEE_H
+#ifndef DATEEDITDELEGATE_H
+#define DATEEDITDELEGATE_H
 
-#include <QDialog>
+#include <QStyledItemDelegate>
 
-namespace Ui {
-class ManageEmployee;
-}
-
-class ManageEmployee : public QDialog
+class DateEditDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 
 public:
-    explicit ManageEmployee(QWidget *parent = nullptr);
-    ~ManageEmployee();
+    DateEditDelegate(QObject *parent = nullptr);
 
-    void setDipendente(const int matricola);
-    bool isChanged() const;
+    QWidget *createEditor(QWidget *parent, 
+                          const QStyleOptionViewItem &option,
+                          const QModelIndex &index) const override;
 
-private slots:
-    void on_dirigentiComboBox_currentIndexChanged(int index);
-    void on_dirigenteNomeLE_textChanged(const QString &arg1);
-    void on_closeButton_clicked();
-    void on_restoreButton_clicked();
-    void on_saveButton_clicked();
+    void setEditorData(QWidget *editor, const QModelIndex &index) const override;
+    void setModelData(QWidget *editor, 
+                      QAbstractItemModel *model,
+                      const QModelIndex &index) const override;
 
-private:
-    Ui::ManageEmployee *ui;
-    QString m_nominativo;
-    bool m_changed;
-
-    void populateDirigenti();
+    void updateEditorGeometry(QWidget *editor, 
+                              const QStyleOptionViewItem &option,
+                              const QModelIndex &index) const override;
 };
 
-#endif // MANAGEEMPLOYEE_H
+#endif 
