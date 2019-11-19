@@ -187,10 +187,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_nomiDialog = new NomiUnitaDialog;
     connect(&tabulaReader, SIGNAL( selectUnit(QString, int&) ), this, SLOT( associaUnita(QString, int &) ), Qt::BlockingQueuedConnection ) ;
 
-//    ui->tabWidget->setCurrentIndex(0);
-//    ui->tabWidget->show();
 //    ui->unitaComboBox->setCurrentIndex(0);
-//    ui->dirigentiComboBox->setCurrentIndex(0);
 
     QTimer::singleShot(500, this, SLOT(delayedSetup()));
 }
@@ -270,58 +267,8 @@ void MainWindow::on_actionNuovoDatabase_triggered()
     delete databaseWizard;
 }
 
-//void MainWindow::toggleUnitaEditMode()
-//{
-//    ui->unitaComboBox->setEnabled(unitaReadOnlyMode);
-//    ui->unitaTB->setEnabled(unitaReadOnlyMode);
-
-//    ui->unitaNumLE->setReadOnly(unitaReadOnlyMode);
-//    ui->raggrLE->setReadOnly(unitaReadOnlyMode);
-//    ui->unitaNomeLE->setReadOnly(unitaReadOnlyMode);
-//    ui->unitaBreveLE->setReadOnly(unitaReadOnlyMode);
-
-//    ui->confirmUnitaWidget->setVisible(!unitaReadOnlyMode);
-//    ui->otherNamesLabel->setVisible(!unitaReadOnlyMode);
-//    ui->otherNamesLE->setVisible(!unitaReadOnlyMode);
-
-//    unitaReadOnlyMode = !unitaReadOnlyMode;
-//    currentUnitaIndex = ui->unitaComboBox->currentIndex();
-//    currentDirigenteIndex = ui->dirigentiComboBox->currentIndex();
-//}
-
-//void MainWindow::toggleDirigenteEditMode()
-//{
-//    ui->dirigentiComboBox->setEnabled(dirigenteReadOnlyMode);
-//    ui->dirigenteTB->setEnabled(dirigenteReadOnlyMode);
-//    ui->dirigenteUnitaLE->setReadOnly(dirigenteReadOnlyMode);
-//    ui->dirigenteUnitaLE->setVisible(dirigenteReadOnlyMode);
-//    ui->dirigenteUnitaROLabel->setVisible(dirigenteReadOnlyMode);
-
-//    ui->dirigenteNomeLE->setReadOnly(dirigenteReadOnlyMode);
-//    ui->dirigenteMatricolaSB->setReadOnly(dirigenteReadOnlyMode);
-
-//    ui->confirmDirigenteWidget->setVisible(!dirigenteReadOnlyMode);
-//    ui->dirigentiUnitaComboBox->setVisible(!dirigenteReadOnlyMode);
-//    ui->dirigenteUnitaRWLabel->setVisible(!dirigenteReadOnlyMode);
-
-//    dirigenteReadOnlyMode = !dirigenteReadOnlyMode;
-//    currentDirigenteIndex = ui->dirigentiComboBox->currentIndex();
-//}
-
 void MainWindow::clearWidgets()
 {
-//    ui->unitaComboBox->clear();
-//    ui->unitaNomeLE->clear();
-//    ui->unitaBreveLE->clear();
-//    ui->raggrLE->clear();
-//    ui->unitaNumLE->clear();
-//    unitaOrePagateModel->clear();
-//    unitaReperibilitaModel->clear();
-//    ui->dirigentiComboBox->clear();
-//    ui->dirigenteNomeLE->clear();
-//    ui->dirigenteMatricolaSB->clear();
-//    ui->dirigenteUnitaLE->clear();
-//    ui->dirigentiUnitaComboBox->clear();
     ui->meseCompetenzeCB->clear();
     ui->unitaCompetenzeCB->clear();
     ui->dirigentiCompetenzeCB->clear();
@@ -386,30 +333,6 @@ void MainWindow::clearWidgets()
 //    ui->removeUnitaReperibilitaButton->setEnabled(false);
 //}
 
-//void MainWindow::populateDirigentiCB()
-//{
-//    ui->dirigentiComboBox->clear();
-//    QStringList query = SqlQueries::getTuttiMatricoleNomi();
-//    for(const QString &s : query) {
-//        QStringList l = s.split("~");
-//        ui->dirigentiComboBox->addItem(l.at(1) + " - " + l.at(2), l.at(0));
-//    }
-
-//    ui->dirigenteTB->setEnabled(ui->dirigentiComboBox->count() > 0);
-
-//    switch (unitOp) {
-//    case AddUnit:
-//    case RemoveUnit:
-//        ui->dirigentiComboBox->setCurrentIndex(0);
-//        break;
-//    case EditUnit:
-//        ui->dirigentiComboBox->setCurrentIndex(currentDirigenteIndex);
-//        break;
-//    default:
-//        qDebug() << "ERROR: " << unitOp << "Undefined";
-//    }
-//}
-
 //void MainWindow::saveCurrentUnitaValues()
 //{
 //    lastUnitaNum = ui->unitaNumLE->text();
@@ -419,14 +342,6 @@ void MainWindow::clearWidgets()
 //    lastOtherNames = ui->otherNamesLE->text();
 //}
 
-//void MainWindow::saveCurrentDirigenteValues()
-//{
-//    lastDirigenteNome = ui->dirigenteNomeLE->text();
-//    lastDirigenteMatricola = ui->dirigenteMatricolaSB->value();
-//    lastDirigenteUnitaIndex = ui->dirigentiUnitaComboBox->currentIndex();
-//    lastDirigenteUnitaNome = ui->dirigenteUnitaLE->text();
-//}
-
 //void MainWindow::restoreUnitaValues()
 //{
 //    ui->unitaNumLE->setText(lastUnitaNum);
@@ -434,15 +349,6 @@ void MainWindow::clearWidgets()
 //    ui->unitaNomeLE->setText(lastUnitaNome);
 //    ui->unitaBreveLE->setText(lastUnitaBreve);
 //    ui->otherNamesLE->setText(lastOtherNames);
-//}
-
-//void MainWindow::restoreDirigenteValues()
-//{
-//    ui->dirigenteNomeLE->setText(lastDirigenteNome);
-//    ui->dirigenteMatricolaSB->setValue(lastDirigenteMatricola);
-//    ui->dirigenteUnitaLE->setText(lastDirigenteUnitaNome);
-//    ui->dirigentiUnitaComboBox->setCurrentIndex(lastDirigenteUnitaIndex);
-//    ui->dirigentiUnitaComboBox->show();
 //}
 
 void MainWindow::connectToDatabase()
@@ -457,7 +363,6 @@ void MainWindow::connectToDatabase()
     setWindowTitle("Gestione Competenze Medici - " + fi.completeBaseName());
 
 //    populateUnitaCB();
-//    populateDirigentiCB();
     populateMeseCompetenzeCB();
     m_nomiDialog->populateUnits();
 }
@@ -542,44 +447,6 @@ void MainWindow::populateDirigentiCompetenzeCB()
 //    ui->dirigentiComboBox->setCurrentIndex(currentDirigenteIndex);
 //}
 
-//void MainWindow::on_editDirigenteSaveButton_clicked()
-//{
-//    switch(unitOp) {
-//    case AddUnit:
-//        SqlQueries::insertDoctor(QString::number(ui->dirigenteMatricolaSB->value()),
-//                                 ui->dirigenteNomeLE->text().replace("'","''"),
-//                                 ui->dirigentiUnitaComboBox->currentData(Qt::UserRole).toString());
-//        break;
-//    case EditUnit:
-//        SqlQueries::editDoctor(ui->dirigentiComboBox->currentData(Qt::UserRole).toString(),
-//                               QString::number(ui->dirigenteMatricolaSB->value()),
-//                               ui->dirigenteNomeLE->text().replace("'","''"),
-//                               ui->dirigentiUnitaComboBox->currentData(Qt::UserRole).toString());
-//        break;
-//    default:
-//        break;
-//    }
-
-//    populateDirigentiCB();
-//    toggleDirigenteEditMode();
-
-//    ui->dirigentiComboBox->setCurrentIndex(currentDirigenteIndex);
-//}
-
-//void MainWindow::on_editUnitaCancelButton_clicked()
-//{
-//    unitOp = UndefOp;
-//    restoreUnitaValues();
-//    toggleUnitaEditMode();
-//}
-
-//void MainWindow::on_editDirigenteCancelButton_clicked()
-//{
-//    dirigenteOp = UndefOp;
-//    restoreDirigenteValues();
-//    toggleDirigenteEditMode();
-//}
-
 //void MainWindow::on_actionModificaUnita_triggered()
 //{
 //    unitOp = EditUnit;
@@ -609,34 +476,6 @@ void MainWindow::populateDirigentiCompetenzeCB()
 //    }
 //}
 
-//void MainWindow::on_actionModificaDirigente_triggered()
-//{
-//    unitOp = EditUnit;
-//    saveCurrentDirigenteValues();
-//    toggleDirigenteEditMode();
-//}
-
-//void MainWindow::on_actionAggiungiDirigente_triggered()
-//{
-//    unitOp = AddUnit;
-//    saveCurrentDirigenteValues();
-//    toggleDirigenteEditMode();
-//    ui->dirigenteNomeLE->clear();
-//    ui->dirigenteMatricolaSB->setValue(0);
-//}
-
-//void MainWindow::on_actionRimuoviDirigente_triggered()
-//{
-//    unitOp = RemoveUnit;
-
-//    QMessageBox::StandardButton choise = QMessageBox::question(this, "Rimuovere Dirigente?", "Certi di voler rimuovere il Dirigente Medico selezionato?", QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
-//    if(choise == QMessageBox::Yes) {
-//        SqlQueries::removeDoctor(ui->dirigentiComboBox->currentData(Qt::UserRole).toString());
-//        populateDirigentiCB();
-//    }
-//}
-
-
 void MainWindow::on_actionApriDatabase_triggered()
 {
     auto databaseWizard = new DatabaseWizard(0, this);
@@ -660,9 +499,7 @@ void MainWindow::on_actionApriDatabase_triggered()
             needsBackup();
             setupDbConnectionParameters();
             connectToDatabase();
-//            clearWidgets();
 //            populateUnitaCB();
-//            populateDirigentiCB();
             populateMeseCompetenzeCB();
             ui->actionBackupDatabase->setEnabled(true);
         }
@@ -748,41 +585,6 @@ void MainWindow::saveSettings()
 ////    populateUnitaReperibilita();
 //}
 
-//void MainWindow::on_dirigentiComboBox_currentIndexChanged(int index)
-//{
-//    Q_UNUSED(index)
-
-//    if(ui->dirigentiComboBox->currentData(Qt::UserRole).toString().isEmpty())
-//        return;
-
-//    const QVariantList query = SqlQueries::getDoctorDataById(ui->dirigentiComboBox->currentData(Qt::UserRole).toInt());
-
-//    int idUnita;
-
-//    if(!query.isEmpty() && query.size() == 4 ) {
-//        ui->dirigenteNomeLE->setText(query.at(2).toString());
-//        ui->dirigenteMatricolaSB->setValue(query.at(1).toInt());
-//        idUnita = query.at(3).toInt();
-//    }
-
-//    // recupero nome completo da id
-//    ui->dirigenteUnitaLE->setText(SqlQueries::getUnitaNomeCompleto(idUnita));
-
-//    ui->dirigentiUnitaComboBox->setCurrentText(QString::number(idUnita) + " - " + ui->dirigenteUnitaLE->text());
-
-//    const QString path = "/home/gcala/Progetti/C++/GestioneCompetenzeMedici/appunti/Foto/";
-//    if(QFile::exists(path + "F" + QString::number(ui->dirigenteMatricolaSB->value()).rightJustified(6, '0') + ".jpg")) {
-//        QPixmap pix(path + "F" + QString::number(ui->dirigenteMatricolaSB->value()).rightJustified(6, '0') + ".jpg");
-//        if(pix.width() > pix.height())
-//            pix = pix.scaledToWidth(180);
-//        else
-//            pix = pix.scaledToHeight(180);
-//        ui->photoLabel->setPixmap(pix);
-//    } else {
-//        ui->photoLabel->setPixmap(QPixmap(":/images/user-none.png"));
-//    }
-//}
-
 //void MainWindow::on_unitaOrePagateTW_activated(const QModelIndex &index)
 //{
 //    Q_UNUSED(index)
@@ -843,9 +645,6 @@ void MainWindow::on_actionCaricaPdf_triggered()
         progressBar->setMinimum(0);
         progressBar->setMaximum(0);
         msgLabel->setText("Converto pdf in csv");
-//        ui->unitaTab->setEnabled(false);
-//        ui->dirigentiTab->setEnabled(false);
-//        ui->competenzeDirigenteTab->setEnabled(false);
         ui->competenzeWidget->setEnabled(false);
 
         QFileInfo fi(pdfFile);
@@ -875,11 +674,6 @@ void MainWindow::handleResults()
 
     progressBar->setVisible(false);
     msgLabel->setText("");
-//    populateDirigentiCB();
-
-//    ui->unitaTab->setEnabled(true);
-//    ui->dirigentiTab->setEnabled(true);
-//    ui->competenzeDirigenteTab->setEnabled(true);
     ui->competenzeWidget->setEnabled(true);
 
     populateMeseCompetenzeCB();
@@ -1465,8 +1259,6 @@ void MainWindow::delayedSetup()
         if(m_host.isEmpty() || m_dbName.isEmpty()) {
             QMessageBox::warning(this, "Database non configurato",
                                  "Nessun database remoto configurato.\nAprire Impostazioni e indicare Host e Nome Database");
-//            ui->unitaTB->setEnabled(false);
-//            ui->dirigenteTB->setEnabled(false);
             ui->actionBackupDatabase->setEnabled(false);
             return;
         }
@@ -1474,8 +1266,6 @@ void MainWindow::delayedSetup()
             if(m_certFile.isEmpty() || m_keyFile.isEmpty() || !QFile::exists(m_certFile) || !QFile::exists(m_keyFile)) {
                 QMessageBox::critical(this, "Errore Connessione", "I file Certificato/Chiave sono necessari per una connessione protetta.\n"
                                       "Aprire Impostazioni e configurare Certificato e Chiave.", QMessageBox::Cancel);
-//                ui->unitaTB->setEnabled(false);
-//                ui->dirigenteTB->setEnabled(false);
                 ui->actionBackupDatabase->setEnabled(false);
                 return;
             }
@@ -1487,16 +1277,12 @@ void MainWindow::delayedSetup()
     if(m_driver == "QSQLITE") {
         if(currentDatabase.fileName().isEmpty()) {
             QMessageBox::warning(this, "Nessun Database", "Nessun database configurato (primo avvio?)\nUsare il menu File per aprire un database esistente \no per crearne uno nuovo.");
-//            ui->unitaTB->setEnabled(false);
-//            ui->dirigenteTB->setEnabled(false);
             ui->actionBackupDatabase->setEnabled(false);
             return;
         }
 
         if(!currentDatabase.exists()) {
             QMessageBox::warning(this, "Il database non esiste", "L'ultimo file database usato non è stato trovato:\n" + currentDatabase.absoluteFilePath());
-//            ui->unitaTB->setEnabled(false);
-//            ui->dirigenteTB->setEnabled(false);
             ui->actionBackupDatabase->setEnabled(false);
             return;
         }
@@ -1512,7 +1298,6 @@ void MainWindow::associaUnita(const QString &nome, int &unitaId)
 {
     m_nomiDialog->setUnitaLabel(nome);
     m_nomiDialog->exec();
-//    populateDirigentiCB();
     unitaId = m_nomiDialog->currentUnit();
 }
 

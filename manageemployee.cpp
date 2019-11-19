@@ -51,6 +51,18 @@ void ManageEmployee::on_dirigentiComboBox_currentIndexChanged(int index)
     ui->restoreButton->setEnabled(false);
     ui->saveButton->setEnabled(false);
     ui->dirigentiComboBox->setEnabled(true);
+
+    //    const QString path = "/home/gcala/Progetti/C++/GestioneCompetenzeMedici/appunti/Foto/";
+    //    if(QFile::exists(path + "F" + QString::number(ui->dirigenteMatricolaSB->value()).rightJustified(6, '0') + ".jpg")) {
+    //        QPixmap pix(path + "F" + QString::number(ui->dirigenteMatricolaSB->value()).rightJustified(6, '0') + ".jpg");
+    //        if(pix.width() > pix.height())
+    //            pix = pix.scaledToWidth(180);
+    //        else
+    //            pix = pix.scaledToHeight(180);
+    //        ui->photoLabel->setPixmap(pix);
+    //    } else {
+    //        ui->photoLabel->setPixmap(QPixmap(":/images/user-none.png"));
+    //    }
 }
 
 void ManageEmployee::on_dirigenteNomeLE_textChanged(const QString &arg1)
