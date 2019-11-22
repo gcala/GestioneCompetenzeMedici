@@ -30,6 +30,10 @@ SearchComboBox::SearchComboBox(QWidget *parent) :
 {
     setEditable(true);
 
+    QFont font;
+    font.setPointSize(12);
+    lineEdit()->setFont(font);
+
     proxyModel = new QSortFilterProxyModel;
     proxyModel->setSourceModel(model());
     proxyModel->setFilterCaseSensitivity(Qt::CaseSensitivity::CaseInsensitive);
