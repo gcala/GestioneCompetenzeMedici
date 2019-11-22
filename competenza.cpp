@@ -1185,12 +1185,24 @@ int CompetenzaData::numNottiRecuperabili()
 
 int CompetenzaData::numOreRecuperabili()
 {
-    return (numFestiviRecuperabili() + numNottiRecuperabili()) - m_recuperiMeseSuccessivo.first*m_recuperiMeseSuccessivo.second;
+//     return (numFestiviRecuperabili() + numNottiRecuperabili()) - m_recuperiMeseSuccessivo.first*m_recuperiMeseSuccessivo.second;
+    if(m_pagaStrGuardia)
+        return (numFestiviRecuperabili() + numNottiRecuperabili()) - m_recuperiMeseSuccessivo.first*m_recuperiMeseSuccessivo.second;
+    if(numOreGuarPagabili() != 0 || numGrFestPagabili() != 0)
+        return residuoOreNonPagate() - m_recuperiMeseSuccessivo.first*m_recuperiMeseSuccessivo.second;
+    return 0;
 }
 
 QString CompetenzaData::residuoOreNonRecuperabili()
 {
-    const int mins = residuoOreNonPagate() - numFestiviRecuperabili() - numNottiRecuperabili();
+//     const int mins = residuoOreNonPagate() - numFestiviRecuperabili() - numNottiRecuperabili();
+    int mins = 0;
+    if(m_pagaStrGuardia){
+        mins = residuoOreNonPagate() - numFestiviRecuperabili() - numNottiRecuperabili();
+    } else {
+        mins = differenzaMin() - numOreRecuperabili() - oreProntaDisp()*60;
+    }
+
     if(mins == 0) {
         return "//";
     }
