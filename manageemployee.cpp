@@ -74,12 +74,12 @@ void ManageEmployee::on_dirigentiComboBox_currentIndexChanged(int index)
     QSettings settings;
 
     const QString path = settings.value("photosPath", "").toString();
-    if(QFile::exists(path + QDir::separator() + "F" + ui->dirigenteMatricolaSB->text().rightJustified(6, '0') + ".jpg")) {
-        QPixmap pix(path + QDir::separator() + "F" + ui->dirigenteMatricolaSB->text().rightJustified(6, '0') + ".jpg");
+    if(QFile::exists(path + QDir::separator() + ui->dirigenteMatricolaSB->text() + ".jpg")) {
+        QPixmap pix(path + QDir::separator() + ui->dirigenteMatricolaSB->text() + ".jpg");
         if(pix.width() > pix.height())
-            pix = pix.scaledToWidth(180);
+            pix = pix.scaledToWidth(250, Qt::SmoothTransformation);
         else
-            pix = pix.scaledToHeight(180);
+            pix = pix.scaledToHeight(250, Qt::SmoothTransformation);
         ui->photoLabel->setPixmap(pix);
     } else {
         ui->photoLabel->setPixmap(QPixmap(":/images/user-none.png"));
