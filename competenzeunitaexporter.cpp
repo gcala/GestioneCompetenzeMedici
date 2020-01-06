@@ -234,7 +234,7 @@ void CompetenzeUnitaExporter::run()
                 out << rowText.arg(m_competenza->badgeNumber()).arg("IND.PR.REP").arg(QString::number(val)) << "\n";
 
             if(m_competenza->repCount().contains(".")) // 40
-                out << rowText.arg(m_competenza->badgeNumber()).arg("NUM.REP").arg("6") << "\n";
+                out << rowText.arg(m_competenza->badgeNumber()).arg("IND.REP.OR").arg("6") << "\n";
 
             if(m_competenza->numGrFestPagabili() > 0) // 1571
                 out << rowText.arg(m_competenza->badgeNumber()).arg("GR.FES.NOT").arg(QString::number(m_competenza->numGrFestPagabili())) << "\n";
