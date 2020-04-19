@@ -33,6 +33,7 @@
 #include <QList>
 #include <QDate>
 #include <QPen>
+#include <QMap>
 
 class CalendarManagerRep : public QCalendarWidget
 {
