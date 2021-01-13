@@ -57,7 +57,10 @@ private:
     struct Doctor{
         QString badge;
         QString name;
-        QString deficit;
+        QString deficitProgressivo;
+        QString deficitPuntuale;
+        QString oreRecuperabili;
+        QString oreNonRecuperabili;
         QList<QDate> ferie;
         QList<QDate> congedi;
         QList<QDate> malattie;

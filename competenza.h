@@ -54,11 +54,12 @@ public:
     QString orarioGiornaliero();
     QString oreDovute();
     QString oreEffettuate();
-    int oreProntaDisp();
+    int oreRepPagate() const;
     QString differenzaOre();
     int differenzaMin() const;
     QString differenzaOreSenzaDmp();
     QString deficitOrario();
+    QString deficitPuntuale();
     int minutiAltreCausali() const;
     QString oreAltreCausali();
     QString ferieCount() const;
@@ -95,7 +96,8 @@ public:
     void saveMods();
     int orePagate() const;
     int notte() const;
-    int festivo() const;
+    int numGuarDiurne() const;
+    int numGuarNottPag() const;
     QString repCount() const;
     QString oreGrep();
     int numGrFestPagabili() const;

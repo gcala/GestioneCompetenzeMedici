@@ -145,6 +145,8 @@ MainWindow::MainWindow(QWidget *parent) :
     dirigenteOp = UndefOp;
 
     printDialog = new PrintDialog(this);
+    ui->sommV1->setVisible(false);
+    ui->sommV2->setVisible(false);
 
     loadSettings();
     Utilities::m_connectionName = "";
@@ -392,6 +394,11 @@ void MainWindow::loadSettings()
     m_javaPath = settings.value("javaPath", "/usr/bin/java").toString();
 #endif
 
+    if(settings.value("isMaximized", false).toBool())
+        showMaximized();
+    else
+        setGeometry(settings.value("windowGeometry", QRect(100,100,800,600)).toRect());
+
     setupDbConnectionParameters();
 }
 
@@ -410,6 +417,8 @@ void MainWindow::saveSettings()
     settings.setValue("keyFile", m_keyFile);
     settings.setValue("useSSL", m_useSSL);
     settings.setValue("lastUsername", m_lastUsername);
+    settings.setValue("windowGeometry", geometry());
+    settings.setValue("isMaximized", isMaximized());
 }
 
 void MainWindow::on_actionCaricaPdf_triggered()
@@ -542,6 +551,12 @@ void MainWindow::on_meseCompetenzeCB_currentIndexChanged(int index)
     ui->unitaCompetenzeCB->show();
     ui->dirigentiCompetenzeCB->setCurrentIndex(docIndex < 0 ? 0 : docIndex);
     ui->dirigentiCompetenzeCB->show();
+    const QDate date(ui->meseCompetenzeCB->currentData(Qt::UserRole).toString().split("_").last().left(4).toInt(),
+                     ui->meseCompetenzeCB->currentData(Qt::UserRole).toString().split("_").last().right(2).toInt(),
+                     1);
+//    ui->sommV1->setVisible(date < Utilities::ccnl1618Date);
+    ui->sommV1->setVisible(true);
+    ui->sommV2->setVisible(date >= Utilities::ccnl1618Date);
 }
 
 void MainWindow::on_unitaCompetenzeCB_currentIndexChanged(int index)
@@ -655,8 +670,13 @@ void MainWindow::elaboraGuardie()
 
     ui->totOreGuardie->setText(QString::number(m_competenza->totOreGuardie()));
     ui->notteLabel->setText(m_competenza->notte() > 0 ? QString::number(m_competenza->notte()) : "//");
-    ui->festivoLabel->setText(m_competenza->festivo() > 0 ? QString::number(m_competenza->festivo()) : "//");
+    ui->festivoLabel->setText(m_competenza->numGuarDiurne() > 0 ? QString::number(m_competenza->numGuarDiurne()) : "//");
     ui->oreStraordinarioGuardieLabel->setText(m_competenza->oreStraordinarioGuardie());
+
+    ui->numGuarDiuPag->setText(QString::number(m_competenza->numGuarDiurne()));
+    ui->numGuarNottPag->setText(QString::number(m_competenza->numGuarNottPag()));
+    ui->numGrFestPag->setText(QString::number(m_competenza->numGrFestPagabili()));
+    ui->oreRepPag->setText(QString::number(m_competenza->oreRepPagate()));
 }
 
 void MainWindow::elaboraRep()
@@ -680,7 +700,7 @@ void MainWindow::elaboraSommario()
     ui->oreDovuteLabel->setText(m_competenza->oreDovute());
     ui->oreEffettuateLabel->setText(m_competenza->oreEffettuate());
 
-    ui->oreStraordinarioRepLabel->setText(m_competenza->oreProntaDisp() > 0 ? QString::number(m_competenza->oreProntaDisp()) : "//");
+    ui->oreStraordinarioRepLabel->setText(m_competenza->oreRepPagate() > 0 ? QString::number(m_competenza->oreRepPagate()) : "//");
 
     mostraDifferenzaOre();
     elaboraGuardie();

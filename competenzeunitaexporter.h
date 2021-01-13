@@ -23,6 +23,7 @@
 #define COMPETENZEUNITAEXPORTER_H
 
 #include <QThread>
+#include <QDate>
 
 class QPainter;
 class Competenza;
@@ -53,6 +54,7 @@ private:
     int m_idUnita;
     QString m_timecard;
     Competenza *m_competenza{};
+    QDate m_currentMonthYear;
 
     const int m_firstHeaderHeight;
     const int m_secondHeaderHeight;
@@ -76,6 +78,7 @@ private:
     int m_casiStrGuarFesENott{};
     int m_casiRepeTurni{};
     int m_casiRepeOre{};
+    int m_casiGuarDiur{};
     int m_casiGuarNott{};
     int m_casiGranFest{};
 
@@ -104,6 +107,7 @@ private:
     void printStrRepartoFesENott(QPainter &painter, const QString &text, int row);
     void printRepNumTurni(QPainter &painter, const QString &text, int row);
     void printRepNumOre(QPainter &painter, const QString &text, int row);
+    void printNumGuarDiur(QPainter &painter, const QString &text, int row);
     void printNumGuarNott(QPainter &painter, const QString &text, int row);
     void printNumGfFesNott(QPainter &painter, const QString &text, int row);
     void printNumOreGuarFesENot(QPainter &painter, const QString &text, int row);

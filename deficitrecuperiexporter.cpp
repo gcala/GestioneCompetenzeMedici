@@ -105,7 +105,7 @@ void DeficitRecuperiExporter::run()
     QVector<int> unitaIdList;
     const QString s = m_timecard.split("_").last();
     QString mese = QLocale().monthName(s.rightRef(2).toInt()) + " " + s.left(4);
-    QString fileName = "Deficit_" + QString(mese).replace(" ","_");
+    QString fileName = "Deficit_" + s;
 
     if(m_idUnita != -1) {
         unitaIdList << m_idUnita;
@@ -167,7 +167,8 @@ void DeficitRecuperiExporter::printPdf(const QString &fileName, const QString &m
             Doctor doctor;
             doctor.badge = m_competenza->badgeNumber();
             doctor.name = m_competenza->name();
-            doctor.deficit = m_competenza->deficitOrario();
+            doctor.deficitProgressivo = m_competenza->deficitOrario();
+            doctor.deficitPuntuale = m_competenza->deficitPuntuale();
 
             doctors << doctor;
         }
@@ -185,7 +186,7 @@ void DeficitRecuperiExporter::printPdf(const QString &fileName, const QString &m
             Q_FOREACH(const auto &doc, doctors) {
                 printBadge(painter, doc.badge,counter);
                 printName(painter, doc.name,counter);
-                printDeficit(painter, doc.deficit,counter);
+                printDeficit(painter, doc.deficitProgressivo,counter);
                 m_offset += m_rowHeight;
                 counter++;
             }
@@ -208,10 +209,7 @@ void DeficitRecuperiExporter::printCsv(const QString &fileName, const QString &m
     QTextStream out(&outFile);
     out.setAutoDetectUnicode(true);
 
-//    out << "Deficit " + mese + ";;\n";
-//    out << ";;\n";
-
-    out << "UNITA';MATR.;NOMINATIVO;DEFICIT;FERIE;MALATTIA;CONGEDI;RECUPERI\n";
+    out << "UNITA';MESE;MATR.;NOMINATIVO;DEFICIT MESE;DEFICIT PROGRESSIVO;ORE REC;ORE NON REC;FERIE;MALATTIA;CONGEDI;RECUPERI\n";
 
     foreach (int unitaId, unitaIdList) {
         currRow++;
@@ -233,9 +231,27 @@ void DeficitRecuperiExporter::printCsv(const QString &fileName, const QString &m
             doctor.badge = m_competenza->badgeNumber();
             doctor.name = m_competenza->name();
             if(m_competenza->deficitOrario() == "//")
-                doctor.deficit = "00:00";
+                doctor.deficitProgressivo = "00:00";
             else
-                doctor.deficit = m_competenza->deficitOrario();
+                doctor.deficitProgressivo = m_competenza->deficitOrario();
+
+            if(m_competenza->deficitPuntuale() == "//")
+                doctor.deficitPuntuale = "00:00";
+            else
+                doctor.deficitPuntuale = m_competenza->deficitPuntuale();
+
+            if(m_competenza->numOreRecuperabili() == 0 && m_competenza->recuperiMesiSuccessivo().second == 0)
+                doctor.oreRecuperabili = "00:00";
+            else {
+                doctor.oreRecuperabili = Utilities::inOrario(m_competenza->numOreRecuperabili());
+            }
+
+            if(m_competenza->residuoOreNonRecuperabili() == "//")
+                doctor.oreNonRecuperabili = "00:00";
+            else {
+                doctor.oreNonRecuperabili = m_competenza->residuoOreNonRecuperabili();
+            }
+
             doctor.ferie = m_competenza->ferieDates();
             doctor.congedi = m_competenza->congediDates();
             doctor.malattie = m_competenza->malattiaDates();
@@ -268,8 +284,10 @@ void DeficitRecuperiExporter::printCsv(const QString &fileName, const QString &m
                     recuperi[date.day()] = QString::number(date.day());
                 }
 
-                out << unitaName + ";"
-                    + doc.badge + ";" + doc.name + ";" + doc.deficit + ";" + ferie.values().join(",") + ";" + malattie.values().join(",") + ";" + congedi.values().join(",") + ";" + recuperi.values().join(",") + "\n";
+                const QString mese = m_timecard.split("_").last().right(2) + "." + m_timecard.split("_").last().left(4);
+
+                out << unitaName + ";" + mese + ";"
+                    + doc.badge + ";" + doc.name + ";" + doc.deficitPuntuale + ";" + doc.deficitProgressivo + ";" + doc.oreRecuperabili + ";" + doc.oreNonRecuperabili + ";" + ferie.values().join(",") + ";" + malattie.values().join(",") + ";" + congedi.values().join(",") + ";" + recuperi.values().join(",") + "\n";
             }
         }
     }

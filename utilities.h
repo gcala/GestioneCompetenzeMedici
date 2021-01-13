@@ -23,6 +23,7 @@
 #define UTILITIES_H
 
 #include <QString>
+#include <QDate>
 
 class Utilities
 {
@@ -32,6 +33,7 @@ private:
 public:
     static QString inOrario(int value);
     static QString m_connectionName;
+    static QDate ccnl1618Date;
 };
 
 #endif // UTILITIES_H

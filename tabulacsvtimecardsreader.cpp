@@ -124,6 +124,8 @@ void TabulaCsvTimeCardsReader::run()
     QTextStream in(&file);
     in.setAutoDetectUnicode (true);
 
+    QDate currentYearMonth(1900,1,1);
+
     while(!in.atEnd()) {
         currRow++;
         emit currentRow(currRow);
@@ -150,6 +152,8 @@ void TabulaCsvTimeCardsReader::run()
                     return;
                 }
                 tableName = "tc_" + QString::number(anno) + QString::number(mese).rightJustified(2, '0');
+                currentYearMonth.setDate(anno, mese, 1);
+
                 if(!SqlQueries::tableExists(tableName)) {
                     if(!SqlQueries::createTimeCardsTable(tableName)) {
                         emit timeCardsRead();
@@ -345,8 +349,13 @@ void TabulaCsvTimeCardsReader::run()
             }
 
             if(forseNotte && numTimbrature == 0) {
-                if(m_giorniRiposo.contains(dataCorrente.addDays(-1).day()))
-                    m_dipendente->addGuardiaDiurna(QString::number(dataCorrente.addDays(-1).day()));
+                if(m_giorniRiposo.contains(dataCorrente.addDays(-1).day())) {
+                    if(currentYearMonth < QDate(2020,2,1)) {
+                        m_dipendente->addGuardiaDiurna(QString::number(dataCorrente.addDays(-1).day()));
+                    } else {
+                        m_dipendente->addGuardiaDiurna(QString::number(dataCorrente.addDays(-1).day()));
+                    }
+                }
                 forseNotte = false;
             } else if(forseNotte && campi.at(2).trimmed().isEmpty()) {
                 m_dipendente->addGuardiaNotturna(QString::number(dataCorrente.addDays(-1).day()));
@@ -354,8 +363,13 @@ void TabulaCsvTimeCardsReader::run()
             }
 
             if(forseNotte && !campi.at(2).trimmed().isEmpty()) {
-                if(m_giorniRiposo.contains(dataCorrente.addDays(-1).day()))
-                    m_dipendente->addGuardiaDiurna(QString::number(dataCorrente.addDays(-1).day()));
+                if(m_giorniRiposo.contains(dataCorrente.addDays(-1).day())) {
+                    if(currentYearMonth < QDate(2020,2,1)) {
+                        m_dipendente->addGuardiaDiurna(QString::number(dataCorrente.addDays(-1).day()));
+                    } else {
+                        m_dipendente->addGuardiaDiurna(QString::number(dataCorrente.addDays(-1).day()));
+                    }
+                }
                 forseNotte = false;
             }
 
@@ -373,7 +387,21 @@ void TabulaCsvTimeCardsReader::run()
 
             if(campi.at(20).trimmed().isEmpty()) {
                 if(isRestDay && numTimbrature > 0 && (numTimbrature%2==0) && dataCorrente.dayOfWeek() != 6) {
-                    m_dipendente->addGuardiaDiurna(QString::number(dataCorrente.day()));
+                    if(currentYearMonth < QDate(2020,2,1)) {
+                        m_dipendente->addGuardiaDiurna(QString::number(dataCorrente.day()));
+                    } else {
+                        for(int i = 14; i <= 18; i += 2) {
+                            const QString causale = campi.at(i).trimmed();
+                            if(causale.isEmpty())
+                                continue;
+                            if(causale == "GUAR") {
+                                if(inMinuti(campi.at(i+1).trimmed()) >= 660) {
+                                    m_dipendente->addGuardiaDiurna(QString::number(dataCorrente.day()));
+                                }
+                                break;
+                            }
+                        }
+                    }
                     forseNotte = false;
                 }
             }

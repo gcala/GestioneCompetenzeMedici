@@ -1051,7 +1051,7 @@ void CompetenzeDirigenteExporter::printOreProntaDisponibilita(QPainter &painter)
     const int sectionWidth = fm.width(text) + 100;
 
     painter.setFont(bodyFontBold());
-    painter.drawText(QRect(0+sectionWidth,vOffset,6200,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, QString::number(m_competenza->oreProntaDisp()));
+    painter.drawText(QRect(0+sectionWidth,vOffset,6200,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, QString::number(m_competenza->oreRepPagate()));
     painter.restore();
 }
 
@@ -1127,6 +1127,6 @@ void CompetenzeDirigenteExporter::printFestivo(QPainter &painter)
     const int sectionWidth = fm.width(text) + 100;
 
     painter.setFont(bodyFontBold());
-    painter.drawText(QRect(2100+sectionWidth,vOffset,6200,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, m_competenza->festivo() > 0 ? QString::number(m_competenza->festivo()) : "//");
+    painter.drawText(QRect(2100+sectionWidth,vOffset,6200,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, m_competenza->numGuarDiurne() > 0 ? QString::number(m_competenza->numGuarDiurne()) : "//");
     painter.restore();
 }

@@ -22,6 +22,7 @@
 #include "utilities.h"
 
 QString Utilities::m_connectionName;
+QDate Utilities::ccnl1618Date(2020,1,1);
 
 QString Utilities::inOrario(int value )
 {
