@@ -169,18 +169,18 @@ void OkularCsvTimeCardsReader::run()
         QRegularExpression matRx("^\\d{3,}");
         QRegularExpressionMatch match = matRx.match(line);
         if (match.hasMatch()) {
-            QString matricola;
+            int matricola;
             // riga con matricola;
             line = line.replace("~", "");
             QRegularExpressionMatch match2 = matRx.match(line);
             if (match2.hasMatch()) {
-                matricola = match2.captured(1).trimmed();
+                matricola = match2.captured(1).trimmed().toInt();
             }else {
                 qDebug() << "matricola non trovata in" << line;
                 continue;
             }
 
-            line = line.replace(matricola,"").trimmed();
+            line = line.replace(QString::number(matricola),"").trimmed();
 
             QStringList sl = line.split("AOSC");
             m_dipendente->setNome(sl.at(0).trimmed());

@@ -177,7 +177,7 @@ void SqlQueries::editUnit(const QString &id,
     }
 }
 
-bool SqlQueries::insertDoctor(const QString &matricola,
+bool SqlQueries::insertDoctor(const int &matricola,
                               const QString &nome,
                               const QString &id_unita)
 {
@@ -575,11 +575,11 @@ bool SqlQueries::addTimeCard(const QString &tableName, const Dipendente *dipende
     return true;
 }
 
-int SqlQueries::doctorId(const QString &matricola)
+int SqlQueries::doctorId(const int &matricola)
 {
     int id = -1;
     QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
-    query.prepare("SELECT id FROM medici WHERE matricola='" + matricola + "';");
+    query.prepare("SELECT id FROM medici WHERE matricola='" + QString::number(matricola) + "';");
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
@@ -589,11 +589,11 @@ int SqlQueries::doctorId(const QString &matricola)
     return id;
 }
 
-int SqlQueries::unitId(const QString &matricola)
+int SqlQueries::unitId(const int &matricola)
 {
     int id = -1;
     QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
-    query.prepare("SELECT id_unita FROM medici WHERE matricola='" + matricola + "';");
+    query.prepare("SELECT id_unita FROM medici WHERE matricola='" + QString::number(matricola) + "';");
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }

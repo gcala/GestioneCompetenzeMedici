@@ -204,12 +204,12 @@ void TabulaCsvTimeCardsReader::run()
 
         QRegularExpressionMatch match = matRx.match(line);
         if (match.hasMatch() && temp.contains("AOSC")) {
-            QString matricola;
+            int matricola;
             // riga con matricola;
             line = line.replace(",", "");
             QRegularExpressionMatch match2 = matRx.match(line);
             if (match.hasMatch()) {
-                matricola = match2.captured(1).trimmed();
+                matricola = match2.captured(1).trimmed().toInt();
             } else {
                 qDebug() << "matricola non trovata in" << line;
                 continue;
@@ -220,7 +220,7 @@ void TabulaCsvTimeCardsReader::run()
             m_dipendente->setAnno(anno);
             m_dipendente->setMese(mese);
 
-            line.replace(matricola,"").trimmed();
+            line.replace(QString::number(matricola),"").trimmed();
 
             QStringList sl = line.split("AOSC");
             m_dipendente->setNome(sl.at(0).trimmed());

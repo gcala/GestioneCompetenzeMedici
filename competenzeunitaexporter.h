@@ -97,7 +97,7 @@ private:
     void printMonth(QPainter &painter, const QString &text);
     void printUnitaName(QPainter &painter, const QString &text);
     void printUnitaNumber(QPainter &painter, const int &id);
-    void printBadge(QPainter &painter, const QString &text, int row);
+    void printBadge(QPainter &painter, const int &text, int row);
     void printName(QPainter &painter, const QString &text, int row);
     void printDeficit(QPainter&painter, const QString &text, int row);
     void printNotturno(QPainter &painter, const int value, int row);

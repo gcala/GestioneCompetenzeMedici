@@ -40,7 +40,7 @@ public:
     static void createUnitsRepTable();
     static void insertUnit(const QString &id, const QString &raggruppamento, const QString &nome, const QString &breve);
     static void editUnit(const QString &id, const QString &raggruppamento, const QString &nome, const QString &breve);
-    static bool insertDoctor(const QString &matricola, const QString &nome, const QString &id_unita);
+    static bool insertDoctor(const int &matricola, const QString &nome, const QString &id_unita);
     static void editDoctor(const QString &id, const QString &matricola, const QString &nome);
     static void insertPayload(const int &id_unita, const QString &data, const QString &ore_tot, const QString &ore_pagate);
     static void insertRep(const QString &id_unita, const QString &data, const QString &feriale, const QString &sabato, const QString &prefestivo, const QString &festivo);
@@ -52,8 +52,8 @@ public:
     static bool tableExists(const QString &tableName);
     static bool timeCardExists(const QString &tableName, const int &doctorId);
     static bool addTimeCard(const QString &tableName, const Dipendente *dipendente);
-    static int doctorId(const QString &matricola);
-    static int unitId(const QString &matricola);
+    static int doctorId(const int &matricola);
+    static int unitId(const int &matricola);
     static void buildUnitsMap();
     static QMap<int, QString> units();
     static void resetAllDoctorMods(const QString &tableName, const int &id);

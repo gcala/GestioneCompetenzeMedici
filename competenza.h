@@ -42,7 +42,7 @@ public:
     Competenza &operator=(const Competenza &);
     ~Competenza();
 
-    QString badgeNumber() const;
+    int badgeNumber() const;
     QString name() const;
     QDate dataIniziale() const;
     QDate dataFinale() const;

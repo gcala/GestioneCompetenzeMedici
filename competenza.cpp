@@ -30,9 +30,9 @@ class CompetenzaData : public QSharedData
 {
 public:
     CompetenzaData(const QString &tableName, const int id) :
+        m_arrotondamento(45),
         m_tableName(tableName),
-        m_id(id),
-        m_arrotondamento(45)
+        m_id(id)
     {
         if(m_tableName.isEmpty()) {
             qDebug() << Q_FUNC_INFO << "ERROR :: la stringa tableName è vuota";
@@ -81,7 +81,7 @@ public:
         buildDipendente();
     }
 
-    QString badgeNumber() const;
+    int badgeNumber() const;
     QString name() const;
     QDate dataIniziale() const;
     QDate dataFinale() const;
@@ -277,7 +277,7 @@ void CompetenzaData::buildDipendente()
     }
 
     m_dipendente->setNome(query.at(0).toString());           // nome
-    m_dipendente->setMatricola(query.at(1).toString());      // matricola
+    m_dipendente->setMatricola(query.at(1).toInt());      // matricola
     m_dipendente->setUnita(query.at(2).toInt());             // unità
     m_dipendente->addRiposi(query.at(3).toInt());            // riposi
     m_dipendente->setMinutiGiornalieri(query.at(4).toInt()); // orario giornaliero
@@ -443,7 +443,7 @@ QString CompetenzaData::inOrario(int mins)
 }
 
 
-QString CompetenzaData::badgeNumber() const
+int CompetenzaData::badgeNumber() const
 {
     return m_dipendente->matricola();
 }
@@ -1645,7 +1645,7 @@ Competenza::~Competenza()
 
 }
 
-QString Competenza::badgeNumber() const
+int Competenza::badgeNumber() const
 {
     return data->badgeNumber();
 }

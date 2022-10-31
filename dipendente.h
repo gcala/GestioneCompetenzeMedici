@@ -35,7 +35,7 @@ class Dipendente : public QObject
     Q_PROPERTY( int anno READ anno WRITE setAnno )
     Q_PROPERTY( int mese READ mese WRITE setMese )
     Q_PROPERTY( QString nome READ nome WRITE setNome )
-    Q_PROPERTY( QString matricola READ matricola WRITE setMatricola )
+    Q_PROPERTY( int matricola READ matricola WRITE setMatricola )
     Q_PROPERTY( int unita READ unita WRITE setUnita )
     Q_PROPERTY( int riposi READ riposi )
     Q_PROPERTY( QStringList guardieDiurne READ guardieDiurne )
@@ -68,8 +68,8 @@ public:
     void setMese(int mese);
     QString nome() const;
     void setNome(QString nome);
-    QString matricola() const;
-    void setMatricola(QString matricola);
+    int matricola() const;
+    void setMatricola(int matricola);
     int unita() const;
     void setUnita(int unita);
     int riposi() const;

@@ -55,7 +55,7 @@ private:
     Competenza *m_competenza{};
 
     struct Doctor{
-        QString badge;
+        int badge;
         QString name;
         QString deficitProgressivo;
         QString deficitPuntuale;
@@ -84,7 +84,7 @@ private:
 
     void printTitle(QPainter &painter, const QString &text);
     void printUnita(QPainter &painter, const int &id, const QString &text);
-    void printBadge(QPainter &painter, const QString &text, int row);
+    void printBadge(QPainter &painter, const int &text, int row);
     void printName(QPainter &painter, const QString &text, int row);
     void printDeficit(QPainter &painter, const QString &text, int row);
     void printPageNumber(QPainter &painter, int page);

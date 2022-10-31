@@ -697,12 +697,12 @@ void CompetenzeUnitaExporter::printUnitaNumber(QPainter &painter, const int &id)
     painter.restore();
 }
 
-void CompetenzeUnitaExporter::printBadge(QPainter &painter, const QString &text, int row)
+void CompetenzeUnitaExporter::printBadge(QPainter &painter, const int &text, int row)
 {
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(badgeFont());
-    painter.drawText(QRect(20, m_gridHeight*m_totalHeaderHeight+(row*m_gridHeight), m_gridWidth*2-20, m_gridHeight), Qt::AlignHCenter | Qt::AlignBottom | Qt::TextWordWrap, text);
+    painter.drawText(QRect(20, m_gridHeight*m_totalHeaderHeight+(row*m_gridHeight), m_gridWidth*2-20, m_gridHeight), Qt::AlignHCenter | Qt::AlignBottom | Qt::TextWordWrap, QString::number(text));
     painter.restore();
 }
 

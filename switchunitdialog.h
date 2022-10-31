@@ -33,10 +33,10 @@ private:
     QAbstractItemModel *m_dirigenti1Model;
     QAbstractItemModel *m_dirigenti2Model;
 
-    QStringList m_dirigenti1Initial;
-    QStringList m_dirigenti1Current;
-    QStringList m_dirigenti2Initial;
-    QStringList m_dirigenti2Current;
+    QVector<int> m_dirigenti1Initial;
+    QVector<int> m_dirigenti1Current;
+    QVector<int> m_dirigenti2Initial;
+    QVector<int> m_dirigenti2Current;
 
     void populateMeseCompetenzeCB();
     void populateUnitaCompetenzeCB();

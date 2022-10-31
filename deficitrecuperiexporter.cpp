@@ -287,7 +287,7 @@ void DeficitRecuperiExporter::printCsv(const QString &fileName, const QString &m
                 const QString mese = m_timecard.split("_").last().right(2) + "." + m_timecard.split("_").last().left(4);
 
                 out << unitaName + ";" + mese + ";"
-                    + doc.badge + ";" + doc.name + ";" + doc.deficitPuntuale + ";" + doc.deficitProgressivo + ";" + doc.oreRecuperabili + ";" + doc.oreNonRecuperabili + ";" + ferie.values().join(",") + ";" + malattie.values().join(",") + ";" + congedi.values().join(",") + ";" + recuperi.values().join(",") + "\n";
+                    + QString::number(doc.badge) + ";" + doc.name + ";" + doc.deficitPuntuale + ";" + doc.deficitProgressivo + ";" + doc.oreRecuperabili + ";" + doc.oreNonRecuperabili + ";" + ferie.values().join(",") + ";" + malattie.values().join(",") + ";" + congedi.values().join(",") + ";" + recuperi.values().join(",") + "\n";
             }
         }
     }
@@ -316,14 +316,14 @@ void DeficitRecuperiExporter::printUnita(QPainter &painter, const int &id, const
     m_offset += 100;
 }
 
-void DeficitRecuperiExporter::printBadge(QPainter &painter, const QString &text, int row)
+void DeficitRecuperiExporter::printBadge(QPainter &painter, const int &text, int row)
 {
     Q_UNUSED(row)
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(rowFont());
 //    painter.drawRect(0, m_offset, m_badgeWidth, m_rowHeight);
-    painter.drawText(QRect(0, m_offset, m_badgeWidth, m_rowHeight), Qt::AlignRight | Qt::AlignVCenter | Qt::TextWordWrap, text);
+    painter.drawText(QRect(0, m_offset, m_badgeWidth, m_rowHeight), Qt::AlignRight | Qt::AlignVCenter | Qt::TextWordWrap, QString::number(text));
     painter.restore();
 }
 
