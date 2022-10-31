@@ -40,7 +40,7 @@ class Dipendente : public QObject
     Q_PROPERTY( int riposi READ riposi )
     Q_PROPERTY( QStringList guardieDiurne READ guardieDiurne )
     Q_PROPERTY( QStringList guardieNotturne READ guardieNotturne )
-    Q_PROPERTY( QMap<int, QPair<int, int> > grep READ grep )
+    Q_PROPERTY( QMultiMap<int, QPair<int, int> > grep READ grep )
     Q_PROPERTY( QStringList rmp READ rmp )
     Q_PROPERTY( QStringList rmc READ rmc )
     Q_PROPERTY( QStringList ferie READ ferie )
@@ -78,7 +78,7 @@ public:
     void addGuardiaDiurna(QString date);
     QStringList guardieNotturne() const;
     void addGuardiaNotturna(QString date);
-    QMap<int, QPair<int, int> > grep() const;
+    QMultiMap<int, QPair<int, int> > grep() const;
     void addGrep(int giorno, int minuti, int tipo);
     QStringList rmp() const;
     void addRmp(QString date);

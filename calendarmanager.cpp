@@ -71,7 +71,11 @@ void CalendarManager::setScopertiDates(const QList<QDate> &dates)
     m_scoperti = dates;
 }
 
-void CalendarManager::paintCell(QPainter *painter, const QRect &rect, const QDate &date) const
+#if QT_VERSION >= 0x060000
+    void CalendarManager::paintCell(QPainter *painter, const QRect &rect, QDate date) const
+#else
+    void CalendarManager::paintCell(QPainter *painter, const QRect &rect, const QDate &date) const
+#endif
 {
     QCalendarWidget::paintCell(painter, rect, date);
 

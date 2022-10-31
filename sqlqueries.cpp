@@ -211,7 +211,7 @@ void SqlQueries::editDoctor(const QString &id,
     }
 }
 
-void SqlQueries::insertPayload(const QString &id_unita, const QString &data, const QString &ore_tot, const QString &ore_pagate)
+void SqlQueries::insertPayload(const int &id_unita, const QString &data, const QString &ore_tot, const QString &ore_pagate)
 {
     QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("INSERT INTO unita_ore_pagate (id_unita,data,ore_tot,ore_pagate) "
@@ -515,7 +515,7 @@ bool SqlQueries::addTimeCard(const QString &tableName, const Dipendente *dipende
     query.bindValue(":guardie_notturne", dipendente->guardieNotturne().join(","));
 
     QString grep = "";
-    QMap<int, QPair<int, int>>::const_iterator it = dipendente->grep().constBegin();
+    auto it = dipendente->grep().constBegin();
     while (it != dipendente->grep().constEnd()) {
         grep += QString::number(it.key()) + "," + QString::number(it.value().first) + "," + QString::number(it.value().second) + ";";
         ++it;
@@ -1109,7 +1109,7 @@ QPair<int, int> SqlQueries::getRecuperiMeseSuccessivo(const int &anno, const int
 
     while(query.next()) {
         result.first = query.value(0).toInt(); // minuti_giornalieri
-        result.second = query.value(1).toString().trimmed().split(",", QString::SkipEmptyParts).count(); // rmp
+        result.second = query.value(1).toString().trimmed().split(",", Qt::SkipEmptyParts).count(); // rmp
     }
 
     return result;

@@ -39,7 +39,7 @@ public:
     enum Operation { AddOre, RemoveOre, AddNotte, RemoveNotte };
     Q_ENUM(Operation)
 
-    void unitaAddOreSetup(const QString &unitaId);
+    void unitaAddOreSetup(const int &unitaId);
     void unitaRemoveOreSetup(const int &id);
 
 private slots:
@@ -49,7 +49,7 @@ private slots:
 private:
     Ui::InsertDBValues *ui;
     Operation currentOp;
-    QString currentId;
+    int currentId;
     QString tableName;
     QString idName;
 };

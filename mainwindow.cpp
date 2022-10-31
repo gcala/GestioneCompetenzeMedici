@@ -287,8 +287,8 @@ void MainWindow::populateMeseCompetenzeCB()
     while(i != timeCards.constBegin()) {
         --i;
         QString ss = (*i).split("_").last();
-        ui->meseCompetenzeCB->addItem(QLocale().monthName((*i).rightRef(2).toInt()) + " " + ss.left(4), *i);
-        printDialog->addMese(QLocale().monthName((*i).rightRef(2).toInt()) + " " + ss.left(4), *i);
+        ui->meseCompetenzeCB->addItem(QLocale().monthName((*i).right(2).toInt()) + " " + ss.left(4), *i);
+        printDialog->addMese(QLocale().monthName((*i).right(2).toInt()) + " " + ss.left(4), *i);
     }
 }
 

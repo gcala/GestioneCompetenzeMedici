@@ -243,7 +243,7 @@ void PrintDialog::on_meseCB_currentIndexChanged(int index)
 void PrintDialog::on_browseButton_clicked()
 {
     QString dir = QFileDialog::getExistingDirectory( this,
-                                                     trUtf8( "Seleziona destinazione" ),
+                                                     tr( "Seleziona destinazione" ),
                                                      ui->path->text().isEmpty() ? QDir::homePath() : ui->path->text(),
                                                      QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks );
 

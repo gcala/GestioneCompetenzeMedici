@@ -1339,7 +1339,7 @@ int CompetenzaData::totOreGuardie() const
 int CompetenzaData::r_d_fer()
 {
     int minuti = 0;
-    QMap<int, QPair<int, int> >::const_iterator i = m_dipendente->grep().constBegin();
+    auto i = m_dipendente->grep().constBegin();
     while (i != m_dipendente->grep().constEnd()) {
         if(tipoReperibilita(i.key(), i.value().second) == RepType::FerDiu)
             minuti += i.value().first;
@@ -1352,7 +1352,7 @@ int CompetenzaData::r_d_fer()
 int CompetenzaData::r_d_fes()
 {
     int minuti = 0;
-    QMap<int, QPair<int, int> >::const_iterator i = m_dipendente->grep().constBegin();
+    auto i = m_dipendente->grep().constBegin();
     while (i != m_dipendente->grep().constEnd()) {
         if(tipoReperibilita(i.key(), i.value().second) == RepType::FesDiu)
             minuti += i.value().first;
@@ -1365,7 +1365,7 @@ int CompetenzaData::r_d_fes()
 int CompetenzaData::r_n_fer()
 {
     int minuti = 0;
-    QMap<int, QPair<int, int> >::const_iterator i = m_dipendente->grep().constBegin();
+    auto i = m_dipendente->grep().constBegin();
     while (i != m_dipendente->grep().constEnd()) {
         if(tipoReperibilita(i.key(), i.value().second) == RepType::FerNot)
             minuti += i.value().first;
@@ -1378,7 +1378,7 @@ int CompetenzaData::r_n_fer()
 int CompetenzaData::r_n_fes()
 {
     int minuti = 0;
-    QMap<int, QPair<int, int> >::const_iterator i = m_dipendente->grep().constBegin();
+    auto i = m_dipendente->grep().constBegin();
     while (i != m_dipendente->grep().constEnd()) {
         if(tipoReperibilita(i.key(), i.value().second) == RepType::FesNot)
             minuti += i.value().first;

@@ -46,15 +46,15 @@ ConfigDialog::~ConfigDialog()
 
 void ConfigDialog::setupSettingsCategories()
 {
-    QString generalString = trUtf8( "Generale" );
-    QString pathsString = trUtf8( "Percorsi" );
+    QString generalString = tr( "Generale" );
+    QString pathsString = tr( "Percorsi" );
 
     QFont boldFont;
     boldFont.setBold( true );
     QFontMetrics fmText( boldFont );
 
     // adapat column width to translated strings
-    int maxWidth = qMax(fmText.width( generalString ), fmText.width( pathsString ));
+    int maxWidth = qMax(fmText.horizontalAdvance( generalString ), fmText.horizontalAdvance( pathsString ));
 
     ui->contentsWidget->setFixedWidth( maxWidth + 20 /*margin*/ );
 
@@ -89,7 +89,7 @@ void ConfigDialog::loadSettings()
 void ConfigDialog::on_photoBrowser_clicked()
 {
     QString dir = QFileDialog::getExistingDirectory( this,
-                                                     trUtf8( "Seleziona cartella con le foto" ),
+                                                     tr( "Seleziona cartella con le foto" ),
                                                      ui->photosPath->text().isEmpty() ? QDir::homePath() : ui->photosPath->text(),
                                                      QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks );
 

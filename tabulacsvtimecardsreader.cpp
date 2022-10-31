@@ -139,11 +139,12 @@ void TabulaCsvTimeCardsReader::run()
         if(line.startsWith("ZIEN")) {
             if(anno == 0 && mese == 0) {
                 line = line.replace(",", "");
-                QRegExp periodRx("Orologio\\s*(.+)\\s*Data");
-                if (periodRx.indexIn(line) != -1) {
-                    QString period = periodRx.cap(1).trimmed();
+                QRegularExpression periodRx("Orologio\\s*(.+)\\s*Data");
+                QRegularExpressionMatch match = periodRx.match(line);
+                if (match.hasMatch()) {
+                    QString period = match.captured(1).trimmed();
                     anno = period.right(4).toInt();
-                    mese = mese2Int(period.split(period.right(4), QString::SkipEmptyParts).at(0).trimmed());
+                    mese = mese2Int(period.split(period.right(4), Qt::SkipEmptyParts).at(0).trimmed());
                 }
                 // creiamo, se necessario, tabella cartellini
                 if(anno == 0 || mese == 0) {
@@ -197,16 +198,18 @@ void TabulaCsvTimeCardsReader::run()
             continue;
         }
 
-        QRegExp matRx("^\\d+");
+        QRegularExpression matRx("^\\d+");
         QString temp = line;
         temp.replace(",", "");
 
-        if (matRx.indexIn(line) != -1 && temp.contains("AOSC")) {
+        QRegularExpressionMatch match = matRx.match(line);
+        if (match.hasMatch() && temp.contains("AOSC")) {
             QString matricola;
             // riga con matricola;
             line = line.replace(",", "");
-            if (matRx.indexIn(line) != -1) {
-                matricola = matRx.cap(0).trimmed();
+            QRegularExpressionMatch match2 = matRx.match(line);
+            if (match.hasMatch()) {
+                matricola = match2.captured(1).trimmed();
             } else {
                 qDebug() << "matricola non trovata in" << line;
                 continue;

@@ -60,7 +60,7 @@ void SwitchUnitDialog::populateMeseCompetenzeCB()
         --i;
         QString ss = (*i).split("_").last();
         QLocale locale;
-        ui->meseCompetenzeCB->addItem(locale.monthName((*i).rightRef(2).toInt(), QLocale::LongFormat) + " " + ss.left(4), *i);
+        ui->meseCompetenzeCB->addItem(locale.monthName((*i).right(2).toInt(), QLocale::LongFormat) + " " + ss.left(4), *i);
     }
 }
 

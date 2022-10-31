@@ -48,7 +48,7 @@ public:
     void addGuardiaDiurna(QString date);
     QStringList guardieNotturne() const;
     void addGuardiaNotturna(QString date);
-    QMap<int, QPair<int, int> > grep() const;
+    QMultiMap<int, QPair<int, int> > grep() const;
     void addGrep(int giorno, int minuti, int tipo);
     QStringList rmp() const;
     void addRmp(QString date);
@@ -92,7 +92,7 @@ private:
     int m_riposi;
     QStringList m_guardieDiurne;
     QStringList m_guardieNotturne;
-    QMap<int, QPair<int, int> > m_grep;
+    QMultiMap<int, QPair<int, int> > m_grep;
     QStringList m_rmp;
     QStringList m_rmc;
     QStringList m_ferie;
@@ -189,7 +189,7 @@ void DipendenteData::addGuardiaNotturna(QString date)
     m_guardieNotturne.append(date);
 }
 
-QMap<int, QPair<int, int> > DipendenteData::grep() const
+QMultiMap<int, QPair<int, int> > DipendenteData::grep() const
 {
     return m_grep;
 }
@@ -199,7 +199,7 @@ void DipendenteData::addGrep(int giorno, int minuti, int tipo)
     QPair<int, int> value;
     value.first = minuti;
     value.second = tipo;
-    m_grep.insertMulti(giorno,value);
+    m_grep.insert(giorno,value);
 }
 
 QStringList DipendenteData::rmp() const
@@ -488,7 +488,7 @@ void Dipendente::addGuardiaNotturna(QString date)
     data->addGuardiaNotturna(date);
 }
 
-QMap<int, QPair<int, int> > Dipendente::grep() const
+QMultiMap<int, QPair<int, int> > Dipendente::grep() const
 {
     return data->grep();
 }

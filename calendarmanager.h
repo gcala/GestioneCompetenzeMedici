@@ -55,7 +55,11 @@ public:
     void setScopertiDates(const QList<QDate> &dates);
 
 protected:
+#if QT_VERSION >= 0x060000
+    virtual void paintCell(QPainter *painter, const QRect &rect, QDate date) const;
+#else
     virtual void paintCell(QPainter *painter, const QRect &rect, const QDate &date) const;
+#endif
 
 private slots:
     void dataSelezionata(const QDate &date);

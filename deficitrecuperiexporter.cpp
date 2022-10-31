@@ -104,7 +104,7 @@ void DeficitRecuperiExporter::run()
 
     QVector<int> unitaIdList;
     const QString s = m_timecard.split("_").last();
-    QString mese = QLocale().monthName(s.rightRef(2).toInt()) + " " + s.left(4);
+    QString mese = QLocale().monthName(s.right(2).toInt()) + " " + s.left(4);
     QString fileName = "Deficit_" + s;
 
     if(m_idUnita != -1) {
@@ -130,7 +130,7 @@ void DeficitRecuperiExporter::printPdf(const QString &fileName, const QString &m
 {
     QPdfWriter writer(m_path + QDir::separator() + fileName);
 
-    writer.setPageSize(QPagedPaintDevice::A4);
+    writer.setPageSize(QPageSize::A4);
     writer.setPageMargins(QMargins(30, 30, 30, 30));
     writer.setPageOrientation(QPageLayout::Portrait);
     writer.setTitle("Deficit " + QString(mese));

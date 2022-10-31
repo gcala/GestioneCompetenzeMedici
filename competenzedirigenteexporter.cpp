@@ -96,7 +96,7 @@ void CompetenzeDirigenteExporter::run()
 
     QVector<int> unitaIdList;
     const QString s = m_tableName.split("_").last();
-    m_mese = QLocale().monthName(s.rightRef(2).toInt()) + " " + s.left(4);
+    m_mese = QLocale().monthName(s.right(2).toInt()) + " " + s.left(4);
     QString fileName = "Competenze_" + QString(m_mese).replace(" ","_");
     QString dipName;
 
@@ -133,7 +133,7 @@ void CompetenzeDirigenteExporter::run()
 
     QPdfWriter writer(m_path + QDir::separator() + fileName);
 
-    writer.setPageSize(QPagedPaintDevice::A4);
+    writer.setPageSize(QPageSize::A4);
     writer.setPageMargins(QMargins(30, 30, 30, 30));
     writer.setCreator("Gestione Competenze Medici");
 
@@ -370,7 +370,7 @@ void CompetenzeDirigenteExporter::printGiorniLavorati(QPainter &painter)
     painter.setFont(bodyFont());
 
     QFontMetrics fm(bodyFont());
-    const int sectionWidth = fm.width(text) + 50;
+    const int sectionWidth = fm.horizontalAdvance(text) + 50;
 
     painter.drawText(QRect(0,vOffset,4000,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, text);
     painter.setFont(bodyFontBold());
@@ -388,7 +388,7 @@ void CompetenzeDirigenteExporter::printFerie(QPainter &painter)
     painter.setFont(bodyFont());
 
     QFontMetrics fm(bodyFont());
-    const int sectionWidth = fm.width(text) + 50;
+    const int sectionWidth = fm.horizontalAdvance(text) + 50;
 
     painter.drawText(QRect(0,vOffset,4000,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, text);
     painter.setFont(bodyFontBold());
@@ -424,7 +424,7 @@ void CompetenzeDirigenteExporter::printCongedi(QPainter &painter)
     painter.setFont(bodyFont());
 
     QFontMetrics fm(bodyFont());
-    const int sectionWidth = fm.width(text) + 50;
+    const int sectionWidth = fm.horizontalAdvance(text) + 50;
 
     painter.drawText(QRect(0,vOffset,4000,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, text);
     painter.setFont(bodyFontBold());
@@ -460,7 +460,7 @@ void CompetenzeDirigenteExporter::printMalattia(QPainter &painter)
     painter.setFont(bodyFont());
 
     QFontMetrics fm(bodyFont());
-    const int sectionWidth = fm.width(text) + 50;
+    const int sectionWidth = fm.horizontalAdvance(text) + 50;
 
     painter.drawText(QRect(0,vOffset,4000,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, text);
     painter.setFont(bodyFontBold());
@@ -496,7 +496,7 @@ void CompetenzeDirigenteExporter::printRmp(QPainter &painter)
     painter.setFont(bodyFont());
 
     QFontMetrics fm(bodyFont());
-    const int sectionWidth = fm.width(text) + 50;
+    const int sectionWidth = fm.horizontalAdvance(text) + 50;
 
     painter.drawText(QRect(0,vOffset,m_maxPageWidth/2-50,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, text);
     painter.setFont(bodyFontBold());
@@ -532,7 +532,7 @@ void CompetenzeDirigenteExporter::printRmc(QPainter &painter)
     painter.setFont(bodyFont());
 
     QFontMetrics fm(bodyFont());
-    const int sectionWidth = fm.width(text) + 50;
+    const int sectionWidth = fm.horizontalAdvance(text) + 50;
 
     painter.drawText(QRect(m_maxPageWidth/2,vOffset+50,m_maxPageWidth/2,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, text);
     painter.setFont(bodyFontBold());
@@ -568,7 +568,7 @@ void CompetenzeDirigenteExporter::printAltreAssenze(QPainter &painter)
     painter.setFont(bodyFont());
 
     QFontMetrics fm(bodyFont());
-    const int sectionWidth = fm.width(text) + 40;
+    const int sectionWidth = fm.horizontalAdvance(text) + 40;
 
     painter.drawText(QRect(0,vOffset,4000,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, text);
     painter.setFont(bodyFontBold());
@@ -974,7 +974,7 @@ void CompetenzeDirigenteExporter::printOreLavoroDovute(QPainter &painter)
     painter.drawText(QRect(0,vOffset,3000,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, text);
 
     QFontMetrics fm(bodyFont());
-    const int sectionWidth = fm.width(text) + 100;
+    const int sectionWidth = fm.horizontalAdvance(text) + 100;
 
     painter.setFont(bodyFontBold());
     painter.drawText(QRect(0+sectionWidth,vOffset,6200,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, m_competenza->oreDovute());
@@ -993,7 +993,7 @@ void CompetenzeDirigenteExporter::printOreLavoroEffettuate(QPainter &painter)
     painter.drawText(QRect(0,vOffset,3000,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, text);
 
     QFontMetrics fm(bodyFont());
-    const int sectionWidth = fm.width(text) + 100;
+    const int sectionWidth = fm.horizontalAdvance(text) + 100;
 
     painter.setFont(bodyFontBold());
     painter.drawText(QRect(0+sectionWidth,vOffset,6200,m_rowHeight), Qt::AlignBottom | Qt::AlignVCenter, m_competenza->oreEffettuate());
@@ -1030,7 +1030,7 @@ void CompetenzeDirigenteExporter::printOreStraordinarioGuardie(QPainter &painter
     painter.drawText(QRect(0,vOffset,6200,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, text);
 
     QFontMetrics fm(bodyFont());
-    const int sectionWidth = fm.width(text) + 100;
+    const int sectionWidth = fm.horizontalAdvance(text) + 100;
 
     painter.setFont(bodyFontBold());
     painter.drawText(QRect(0+sectionWidth,vOffset,6200,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, m_competenza->oreStraordinarioGuardie());
@@ -1048,7 +1048,7 @@ void CompetenzeDirigenteExporter::printOreProntaDisponibilita(QPainter &painter)
     painter.drawText(QRect(0,vOffset,6200,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, text);
 
     QFontMetrics fm(bodyFont());
-    const int sectionWidth = fm.width(text) + 100;
+    const int sectionWidth = fm.horizontalAdvance(text) + 100;
 
     painter.setFont(bodyFontBold());
     painter.drawText(QRect(0+sectionWidth,vOffset,6200,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, QString::number(m_competenza->oreRepPagate()));
@@ -1067,7 +1067,7 @@ void CompetenzeDirigenteExporter::printRep(QPainter &painter)
     painter.drawText(QRect(0,vOffset,2000,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, text);
 
     QFontMetrics fm(bodyFont());
-    const int sectionWidth = fm.width("Rep") + 100;
+    const int sectionWidth = fm.horizontalAdvance("Rep") + 100;
 
     painter.setFont(bodyFontBold());
     painter.drawText(QRect(0+sectionWidth,vOffset,6200,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, m_competenza->repCount());
@@ -1086,7 +1086,7 @@ void CompetenzeDirigenteExporter::printDeficit(QPainter &painter)
     painter.drawText(QRect(2100,vOffset,2000,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, text);
 
     QFontMetrics fm(bodyFont());
-    const int sectionWidth = fm.width(text) + 100;
+    const int sectionWidth = fm.horizontalAdvance(text) + 100;
 
     painter.setFont(bodyFontBold());
     painter.drawText(QRect(2100 + sectionWidth,vOffset,6200,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, m_competenza->deficitOrario());
@@ -1105,7 +1105,7 @@ void CompetenzeDirigenteExporter::printNotte(QPainter &painter)
     painter.drawText(QRect(0,vOffset,2000,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, text);
 
     QFontMetrics fm(bodyFont());
-    const int sectionWidth = fm.width(text) + 100;
+    const int sectionWidth = fm.horizontalAdvance(text) + 100;
 
     painter.setFont(bodyFontBold());
     painter.drawText(QRect(0+sectionWidth,vOffset,6200,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, m_competenza->notte() > 0 ? QString::number(m_competenza->notte()) : "//");
@@ -1124,7 +1124,7 @@ void CompetenzeDirigenteExporter::printFestivo(QPainter &painter)
     painter.drawText(QRect(2100,vOffset,2000,m_rowHeight), Qt::AlignLeft | Qt::AlignVCenter, text);
 
     QFontMetrics fm(bodyFont());
-    const int sectionWidth = fm.width(text) + 100;
+    const int sectionWidth = fm.horizontalAdvance(text) + 100;
 
     painter.setFont(bodyFontBold());
     painter.drawText(QRect(2100+sectionWidth,vOffset,6200,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, m_competenza->numGuarDiurne() > 0 ? QString::number(m_competenza->numGuarDiurne()) : "//");

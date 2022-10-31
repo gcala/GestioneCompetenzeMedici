@@ -62,7 +62,11 @@ void CalendarManagerRep::setDates(const QMap<QDate, ValoreRep> &dates)
     m_dates = dates;
 }
 
-void CalendarManagerRep::paintCell(QPainter *painter, const QRect &rect, const QDate &date) const
+#if QT_VERSION >= 0x060000
+    void CalendarManagerRep::paintCell(QPainter *painter, const QRect &rect, QDate date) const
+#else
+    void CalendarManagerRep::paintCell(QPainter *painter, const QRect &rect, const QDate &date) const
+#endif
 {
     QCalendarWidget::paintCell(painter, rect, date);
 

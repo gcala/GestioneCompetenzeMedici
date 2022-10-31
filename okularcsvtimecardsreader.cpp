@@ -124,11 +124,12 @@ void OkularCsvTimeCardsReader::run()
         if(line.startsWith("AZI")) {
             if(anno == 0 && mese == 0) {
                 line = line.replace("~", "");
-                QRegExp periodRx("Orologio\\s+(.+)\\s+Data");
-                if (periodRx.indexIn(line) != -1) {
-                    QString period = periodRx.cap(1).trimmed();
-                    anno = period.split(" ", QString::SkipEmptyParts).at(1).toInt();
-                    mese = mese2Int(period.split(" ", QString::SkipEmptyParts).at(0).trimmed());
+                QRegularExpression periodRx("Orologio\\s+(.+)\\s+Data");
+                QRegularExpressionMatch match = periodRx.match(line);
+                if (match.hasMatch()) {
+                    QString period = match.captured(1).trimmed();
+                    anno = period.right(4).toInt();
+                    mese = mese2Int(period.split(period.right(4), Qt::SkipEmptyParts).at(0).trimmed());
                 }
                 // creiamo, se necessario, tabella cartellini
                 if(anno == 0 && mese == 0) {
@@ -165,15 +166,16 @@ void OkularCsvTimeCardsReader::run()
         if(line.startsWith("~~~~"))
             continue;
 
-        QRegExp matRx("^\\d{3,}");
-
-        if (matRx.indexIn(line) != -1) {
+        QRegularExpression matRx("^\\d{3,}");
+        QRegularExpressionMatch match = matRx.match(line);
+        if (match.hasMatch()) {
             QString matricola;
             // riga con matricola;
             line = line.replace("~", "");
-            if (matRx.indexIn(line) != -1) {
-                matricola = matRx.cap(0).trimmed();
-            } else {
+            QRegularExpressionMatch match2 = matRx.match(line);
+            if (match2.hasMatch()) {
+                matricola = match2.captured(1).trimmed();
+            }else {
                 qDebug() << "matricola non trovata in" << line;
                 continue;
             }

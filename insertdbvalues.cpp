@@ -39,7 +39,7 @@ InsertDBValues::~InsertDBValues()
     delete ui;
 }
 
-void InsertDBValues::unitaAddOreSetup(const QString &unitaId)
+void InsertDBValues::unitaAddOreSetup(const int &unitaId)
 {
     currentOp = AddOre;
     ui->stackedWidget->setCurrentIndex(0);
