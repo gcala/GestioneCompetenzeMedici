@@ -24,11 +24,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
-    dateeditdelegate.cpp \
+        cartellinocompleto.cpp \
+        cartellinocompletoreader.cpp \
+        dateeditdelegate.cpp \
+        giornocartellinocompleto.cpp \
         main.cpp \
         mainwindow.cpp \
-    manageemployee.cpp \
-    manageunits.cpp \
+        manageemployee.cpp \
+        manageunits.cpp \
         searchcombobox.cpp \
         insertdbvalues.cpp \
         okularcsvtimecardsreader.cpp \
@@ -43,6 +46,8 @@ SOURCES += \
         printdialog.cpp \
         competenzeunitaexporter.cpp \
         competenzedirigenteexporter.cpp \
+        timbratura.cpp \
+        totalicartellinocompleto.cpp \
         utilities.cpp \
         databasewizard.cpp \
         nomiunitadialog.cpp \
@@ -56,13 +61,16 @@ SOURCES += \
         almanac.cpp \
         deficitrecuperiexporter.cpp \
         twodigitsspinbox.cpp \
-    switchunitdialog.cpp
+        switchunitdialog.cpp
 
 HEADERS += \
-    dateeditdelegate.h \
+        cartellinocompleto.h \
+        cartellinocompletoreader.h \
+        dateeditdelegate.h \
+        giornocartellinocompleto.h \
         mainwindow.h \
-    manageemployee.h \
-    manageunits.h \
+        manageemployee.h \
+        manageunits.h \
         searchcombobox.h \
         insertdbvalues.h \
         okularcsvtimecardsreader.h \
@@ -78,6 +86,8 @@ HEADERS += \
         printdialog.h \
         competenzeunitaexporter.h \
         competenzedirigenteexporter.h \
+        timbratura.h \
+        totalicartellinocompleto.h \
         utilities.h \
         databasewizard.h \
         nomiunitadialog.h \
@@ -91,13 +101,13 @@ HEADERS += \
         almanac.h \
         deficitrecuperiexporter.h \
         twodigitsspinbox.h \
-    switchunitdialog.h
+        switchunitdialog.h
 
 FORMS += \
         mainwindow.ui \
         insertdbvalues.ui \
-    manageemployee.ui \
-    manageunits.ui \
+        manageemployee.ui \
+        manageunits.ui \
         printdialog.ui \
         databasewizard.ui \
         nomiunitadialog.ui \
@@ -106,7 +116,7 @@ FORMS += \
         settingsitem.ui \
         resetdialog.ui \
         logindialog.ui \
-    switchunitdialog.ui
+        switchunitdialog.ui
 
 RESOURCES += \
     assets.qrc

@@ -430,8 +430,8 @@ void MainWindow::on_actionCaricaPdf_triggered()
         arguments << "-jar" << m_tabulaPath;
         arguments << "-n";
         arguments << "-p" << "all";
-        arguments << "-a" << "6.93,2.475,470.0,772.695";
-        arguments << "-c" << "23,32,72,114,155,196,237,277,318,357,395,430,466,501,529,570,597,638,665,704,731";
+        arguments << "-a" << "2.0,6.93,606.375,769.23";
+        arguments << "-c" << "21.40,28.71,53.46,70.00,78.21,114.84,150.48,187.11,222.75,259.38,296.01,331.65,368.28,401.94,435.6,470.25,504.9,537.00,567.27,594.50,624.69,653.4,682.11,710.21,739.53";
         arguments << pdfFile;
         arguments << "-o" << fi.absolutePath() + QDir::separator() + "cartellini.csv";
 
