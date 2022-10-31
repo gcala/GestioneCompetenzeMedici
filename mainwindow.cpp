@@ -614,8 +614,8 @@ void MainWindow::populateCompetenzeTab()
     ui->ferieLabel->setText(m_competenza->ferieCount());
     ferieCalendar->setDates(m_competenza->ferieDates());
 
-    ui->congediLabel->setText(m_competenza->congediCount());
-    congediCalendar->setDates(m_competenza->congediDates());
+    ui->congediLabel->setText(QString::number(m_competenza->altreCausaliDates().count()));
+    congediCalendar->setDates(m_competenza->altreCausaliDates());
 
     ui->malattiaLabel->setText(m_competenza->malattiaCount());
     malattiaCalendar->setDates(m_competenza->malattiaDates());

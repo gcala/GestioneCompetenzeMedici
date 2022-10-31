@@ -579,7 +579,7 @@ int SqlQueries::doctorId(const int &matricola)
 {
     int id = -1;
     QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
-    query.prepare("SELECT id FROM medici WHERE matricola='" + QString::number(matricola) + "';");
+    query.prepare("SELECT id FROM medici WHERE matricola=" + QString::number(matricola) + ";");
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
@@ -593,7 +593,7 @@ int SqlQueries::unitId(const int &matricola)
 {
     int id = -1;
     QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
-    query.prepare("SELECT id_unita FROM medici WHERE matricola='" + QString::number(matricola) + "';");
+    query.prepare("SELECT id_unita FROM medici WHERE matricola=" + QString::number(matricola) + ";");
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }

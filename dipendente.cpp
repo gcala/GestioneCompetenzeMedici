@@ -29,6 +29,7 @@ public:
     DipendenteData() {
         m_anno = 0;
         m_mese = 0;
+        m_matricola = 0;
         resetProperties();
     }
 

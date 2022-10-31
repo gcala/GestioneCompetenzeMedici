@@ -114,6 +114,7 @@ public:
     QList<QDate> rmcDates() const;
     QList<QDate> gdDates() const;
     QList<QDate> gnDates() const;
+    QList<QDate> altreCausaliDates() const;
     QMap<QDate, ValoreRep> rep() const;
     void setRep(const QMap<QDate, ValoreRep> &map);
     QMap<int, GuardiaType> guardiaDiurnaMap() const;
@@ -277,7 +278,7 @@ void CompetenzaData::buildDipendente()
     }
 
     m_dipendente->setNome(query.at(0).toString());           // nome
-    m_dipendente->setMatricola(query.at(1).toInt());      // matricola
+    m_dipendente->setMatricola(query.at(1).toInt());         // matricola
     m_dipendente->setUnita(query.at(2).toInt());             // unità
     m_dipendente->addRiposi(query.at(3).toInt());            // riposi
     m_dipendente->setMinutiGiornalieri(query.at(4).toInt()); // orario giornaliero
@@ -479,9 +480,9 @@ QString CompetenzaData::giorniLavorati() const
             - m_dipendente->riposi()
             - m_dipendente->rmp().count()
             - m_dipendente->ferie().count()
-            - m_dipendente->congedi().count()
+//            - m_dipendente->congedi().count()
             - m_dipendente->malattia().count()
-            - m_dipendente->altreCausaliCount()
+//            - m_dipendente->altreCausaliCount()
             - m_altreAssenze.count());
 }
 
@@ -716,6 +717,23 @@ QList<QDate> CompetenzaData::gnDates() const
     foreach (QString s, m_dipendente->guardieNotturne()) {
         QDate date(m_dipendente->anno(), m_dipendente->mese(), s.toInt());
         dates << date;
+    }
+
+    return dates;
+}
+
+QList<QDate> CompetenzaData::altreCausaliDates() const
+{
+    QList<QDate> dates;
+    QMap<QString, QPair<QStringList, int> > map = m_dipendente->altreCausali();
+    QMap<QString, QPair<QStringList, int>>::const_iterator i = map.constBegin();
+    while (i != map.constEnd()) {
+        const QStringList causaliDates = i.value().first;
+        for (auto &s : causaliDates) {
+            QDate date(m_dipendente->anno(), m_dipendente->mese(), s.toInt());
+            dates << date;
+        }
+        ++i;
     }
 
     return dates;
@@ -1018,17 +1036,20 @@ int CompetenzaData::numOreGuarPagabili() const
 //        return 0;
 //    }
 
-    int totMin = differenzaMin();
+    int totMin = differenzaMin(); // saldo minuti fine mese
 
-    if(totMin <= 0)
+    if(totMin <= 0) // se saldo <= 0
         return 0;
 
-    totMin -= numGrFestPagabili() * 12 * 60;
+    totMin -= numGrFestPagabili() * 12 * 60; // saldo senza le grandi festività
 
-    int numOreGuarNott = numGuar();
+    // arrotondiamo il saldo
+    const int totMinArrot = (totMin % 60) >= m_arrotondamento ? totMin/60+1 : totMin/60;
 
-    int totMinArrot = (totMin % 60) >= m_arrotondamento ? totMin/60+1 : totMin/60;
-    int oreGuar = (numOreGuarNott+numGuarGFNonPag()) * m_orePagate;
+    // ore delle guardie notturne e delle eventuali grandi festività non pagate
+    // m_orePagate: sono le ore pagate di ciascuna notte, varia da reparto a reparto
+    const int oreGuar = (numGuar()+numGuarGFNonPag()) * m_orePagate;
+
     if(oreGuar <= totMinArrot)
         return oreGuar;
 
@@ -1788,6 +1809,11 @@ QString Competenza::rmpCount() const
 QList<QDate> Competenza::rmpDates() const
 {
     return data->rmpDates();
+}
+
+QList<QDate> Competenza::altreCausaliDates() const
+{
+    return data->altreCausaliDates();
 }
 
 QString Competenza::rmcCount() const

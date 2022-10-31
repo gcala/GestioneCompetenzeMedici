@@ -75,6 +75,7 @@ public:
     QList<QDate> rmcDates() const;
     QList<QDate> gdDates() const;
     QList<QDate> gnDates() const;
+    QList<QDate> altreCausaliDates() const;
     QMap<int, GuardiaType> guardiaDiurnaMap() const;
     QMap<int, GuardiaType> guardiaNotturnaMap() const;
     void addGuardiaDiurnaDay(int day);

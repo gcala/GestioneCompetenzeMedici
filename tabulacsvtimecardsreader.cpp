@@ -39,11 +39,11 @@ TabulaCsvTimeCardsReader::TabulaCsvTimeCardsReader(QObject *parent)
 {
     causaliFerie << "FEAP" << "FEAC" << "F2AP" << "FSPR" << "SCIO";
     causaliMalattia << "MA" << "MAPR" << "MAPG" << "MACS" << "RICO" << "CSMA" << "INFO" << "INVR";
-    causaliCongedi << "PRMP" << "ANA" << "CONV" << "RIRA" << "RIAN" << "CCOM" << "MAAM"
-                   << "MAGI" << "DS" << "LUTT" << "MOEL" << "ASSA" << "ARCO" << "COMA" << "DISI"
-                   << "MATR" << "104G" << "AF10" << "AF30" << "AF0" << "MBA3" << "MBAM"
-                   << "GRAV" << "APRP" << "APOP" << "RGPP" << "ESCO" << "C104"
-                   << "UIL0"<< "AAR1";
+//    causaliCongedi << "PRMP" << "ANA" << "CONV" << "RIRA" << "RIAN" << "CCOM" << "MAAM"
+//                   << "MAGI" << "DS" << "LUTT" << "MOEL" << "ASSA" << "ARCO" << "COMA" << "DISI"
+//                   << "MATR" << "104G" << "AF10" << "AF30" << "AF0" << "MBA3" << "MBAM"
+//                   << "GRAV" << "APRP" << "APOP" << "RGPP" << "ESCO" << "C104"
+//                   << "UIL0"<< "AAR1";
     causaliRMP << "RMP" << "RHER";
     causaliRMC << "RMC";
     causaliDaValutare << "ECCR" << "RMC" << "GUAR" << "GREP";
@@ -220,7 +220,7 @@ void TabulaCsvTimeCardsReader::run()
             m_dipendente->setAnno(anno);
             m_dipendente->setMese(mese);
 
-            line.replace(QString::number(matricola),"").trimmed();
+            line = line.replace(QString::number(matricola),"").trimmed();
 
             QStringList sl = line.split("AOSC");
             m_dipendente->setNome(sl.at(0).trimmed());
@@ -316,7 +316,7 @@ void TabulaCsvTimeCardsReader::run()
                         m_dipendente->addMinutiFatti(inMinuti(campi.at(i+1).trimmed()));
                     else
                         m_dipendente->addFerie(QString::number(dataCorrente.day()));
-                } else if(causaliCongedi.contains(causale)) {
+                } /*else if(causaliCongedi.contains(causale)) {
                     if(!isRestDay) {
                         if(!campi.at(2).trimmed().isEmpty() || !campi.at(3).trimmed().isEmpty())  {
                             m_dipendente->addMinutiFatti(inMinuti(campi.at(10).trimmed()));
@@ -326,7 +326,7 @@ void TabulaCsvTimeCardsReader::run()
                             m_dipendente->addMinutiCongedo(inMinuti(campi.at(i+1).trimmed()));
 //                        }
                     }
-                } else if(causaliMalattia.contains(causale)) {
+                }*/ else if(causaliMalattia.contains(causale)) {
                     if(!isRestDay) {
                         if(!campi.at(2).trimmed().isEmpty() || !campi.at(3).trimmed().isEmpty())
                             m_dipendente->addMinutiFatti(inMinuti(campi.at(i+1).trimmed()));
@@ -337,8 +337,10 @@ void TabulaCsvTimeCardsReader::run()
                     if(!isRestDay) {
                         if(!campi.at(2).trimmed().isEmpty() || !campi.at(3).trimmed().isEmpty())
                             m_dipendente->addMinutiFatti(inMinuti(campi.at(i+1).trimmed()));
-                        else
+                        else {
                             m_dipendente->addAltraCausale(causale, QString::number(dataCorrente.day()), inMinuti(campi.at(i+1).trimmed()));
+                            m_dipendente->addMinutiFatti(inMinuti(campi.at(i+1).trimmed()));
+                        }
                     }
                 }
             }
