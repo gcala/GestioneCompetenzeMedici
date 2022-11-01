@@ -38,6 +38,7 @@ public:
     QString assenzeTotali() const;
     QString orarioGiornaliero();
     QString oreDovute();
+    int minutiDovuti() const;
     QString oreEffettuate();
     int oreRepPagate() const;
     QString differenzaOre();

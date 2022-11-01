@@ -77,6 +77,7 @@ public:
     QString assenzeTotali() const;
     QString orarioGiornaliero();
     QString oreDovute();
+    int minutiDovuti() const;
     QString oreEffettuate();
     int oreRepPagate() const;
     QString differenzaOre();
@@ -493,7 +494,12 @@ QString CompetenzaData::orarioGiornaliero()
 
 QString CompetenzaData::oreDovute()
 {
-    return inOrario((m_orarioGiornaliero >= 0 ? m_orarioGiornaliero : m_dipendente->minutiGiornalieri()) * giorniLavorati().toInt());
+    return inOrario(minutiDovuti());
+}
+
+int CompetenzaData::minutiDovuti() const
+{
+    return (m_orarioGiornaliero >= 0 ? m_orarioGiornaliero : m_dipendente->minutiGiornalieri()) * giorniLavorati().toInt();
 }
 
 QString CompetenzaData::oreEffettuate()
@@ -535,7 +541,7 @@ QString CompetenzaData::differenzaOreSenzaDmp()
                     + m_dipendente->minutiEccr()
                     + m_dipendente->minutiGrep()
                     + m_dipendente->minutiGuar()
-                    - ((m_orarioGiornaliero >= 0 ? m_orarioGiornaliero : m_dipendente->minutiGiornalieri()) * giorniLavorati().toInt()));
+                    - minutiDovuti());
 }
 
 int CompetenzaData::differenzaMin() const
@@ -545,7 +551,7 @@ int CompetenzaData::differenzaMin() const
            + m_dipendente->minutiGrep()
            + m_dipendente->minutiGuar()
            - dmp()
-           - ((m_orarioGiornaliero >= 0 ? m_orarioGiornaliero : m_dipendente->minutiGiornalieri()) * giorniLavorati().toInt());
+           - minutiDovuti();
 }
 
 QString CompetenzaData::deficitOrario()
@@ -555,7 +561,7 @@ QString CompetenzaData::deficitOrario()
             + m_dipendente->minutiGrep()
             + m_dipendente->minutiGuar()
             - dmp()
-            - ((m_orarioGiornaliero >= 0 ? m_orarioGiornaliero : m_dipendente->minutiGiornalieri()) * giorniLavorati().toInt());
+            - minutiDovuti();
 
     if( val < 0)
         return inOrario(abs(val));
@@ -569,7 +575,7 @@ QString CompetenzaData::deficitPuntuale()
             + m_dipendente->minutiEccr()
             + m_dipendente->minutiGrep()
             + m_dipendente->minutiGuar()
-            - ((m_orarioGiornaliero >= 0 ? m_orarioGiornaliero : m_dipendente->minutiGiornalieri()) * giorniLavorati().toInt());
+            - minutiDovuti();
 
     if( val < 0)
         return inOrario(abs(val));
