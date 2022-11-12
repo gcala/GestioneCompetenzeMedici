@@ -23,6 +23,7 @@ public:
     void addTotali(const TotaliCartellinoCompleto &totali);
     void aggiornaValori();
 
+    QList<GiornoCartellinoCompleto> giorni() const;
     TotaliCartellinoCompleto totali() const;
     int ordinarie() const;
     int recuperate() const;

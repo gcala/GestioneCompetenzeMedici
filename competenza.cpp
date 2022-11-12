@@ -462,6 +462,9 @@ int CompetenzaData::doctorId()
 
 QString CompetenzaData::giorniLavorati() const
 {
+    if(m_dipendente->riposi() > 100)
+        return QString();
+
     return QString::number(QDate(m_dipendente->anno(), m_dipendente->mese(), 1).daysInMonth()
             - m_dipendente->riposi()
             - m_dipendente->rmp().count()
@@ -499,6 +502,9 @@ QString CompetenzaData::oreDovute()
 
 int CompetenzaData::minutiDovuti() const
 {
+    if(m_dipendente->riposi() > 100) {
+        return m_dipendente->riposi();
+    }
     return (m_orarioGiornaliero >= 0 ? m_orarioGiornaliero : m_dipendente->minutiGiornalieri()) * giorniLavorati().toInt();
 }
 

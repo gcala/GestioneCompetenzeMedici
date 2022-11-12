@@ -139,9 +139,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&tabulaReader, SIGNAL(timeCardsRead()), this, SLOT(handleResults()));
     connect(&tabulaReader, SIGNAL(totalRows(int)), this, SLOT(setTotalRows(int)));
     connect(&tabulaReader, SIGNAL(currentRow(int)), this, SLOT(setCurrentRow(int)));
-    connect(&okularReader, SIGNAL(timeCardsRead()), this, SLOT(handleResults()));
-    connect(&okularReader, SIGNAL(totalRows(int)), this, SLOT(setTotalRows(int)));
-    connect(&okularReader, SIGNAL(currentRow(int)), this, SLOT(setCurrentRow(int)));
+    connect(&cartellinoReader, SIGNAL(timeCardsRead()), this, SLOT(handleResults()));
+    connect(&cartellinoReader, SIGNAL(totalRows(int)), this, SLOT(setTotalRows(int)));
+    connect(&cartellinoReader, SIGNAL(currentRow(int)), this, SLOT(setCurrentRow(int)));
     connect(&unitaCompetenzeExporter, SIGNAL(exportFinished(QString)), this, SLOT(exported(QString)));
     connect(&unitaCompetenzeExporter, SIGNAL(totalRows(int)), this, SLOT(setTotalRows(int)));
     connect(&unitaCompetenzeExporter, SIGNAL(currentRow(int)), this, SLOT(setCurrentRow(int)));
@@ -154,6 +154,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_nomiDialog = new NomiUnitaDialog;
     connect(&tabulaReader, SIGNAL( selectUnit(QString, int&) ), this, SLOT( associaUnita(QString, int &) ), Qt::BlockingQueuedConnection ) ;
+    connect(&cartellinoReader, SIGNAL( selectUnit(QString, int&) ), this, SLOT( associaUnita(QString, int &) ), Qt::BlockingQueuedConnection ) ;
 
 //    ui->unitaComboBox->setCurrentIndex(0);
 
@@ -170,20 +171,20 @@ MainWindow::~MainWindow()
 
 void MainWindow::askDbUserPassword()
 {
-    LoginDialog login(m_host, m_dbName, this);
-    login.setUsername(m_lastUsername);
-    login.setPassword(m_lastPassword);
-    login.disablePassButton(m_lastPassword.isEmpty());
+    LoginDialog login(Utilities::m_host, Utilities::m_dbName, this);
+    login.setUsername(Utilities::m_lastUsername);
+    login.setPassword(Utilities::m_lastPassword);
+    login.disablePassButton(Utilities::m_lastPassword.isEmpty());
     login.exec();
 
     if(login.canceled()) {
         return;
     }
 
-    m_lastUsername = login.username();
-    m_lastPassword = login.password();
+    Utilities::m_lastUsername = login.username();
+    Utilities::m_lastPassword = login.password();
 
-    m_driver = "QMYSQL";
+    Utilities::m_driver = "QMYSQL";
 
     setupDbConnectionParameters();
 
@@ -330,7 +331,7 @@ void MainWindow::on_actionApriDatabase_triggered()
         // be sure that a valid path was selected
         if( QFile::exists( fileName ) ) {
             currentDatabase.setFile(fileName);
-            m_driver = "QSQLITE";
+            Utilities::m_driver = "QSQLITE";
             saveSettings();
             needsBackup();
             setupDbConnectionParameters();
@@ -343,14 +344,14 @@ void MainWindow::on_actionApriDatabase_triggered()
 
     // ultima opzione: apri database remoto
     // salviamo innanzitutto host e database
-    m_host = databaseWizard->host();
-    m_dbName = databaseWizard->database();
-    m_driver = "QMYSQL";
-    m_useSSL = databaseWizard->useSSL();
-    m_certFile = databaseWizard->certFile();
-    m_keyFile = databaseWizard->keyFile();
-    m_lastUsername = databaseWizard->user();
-    m_lastPassword = databaseWizard->password();
+    Utilities::m_host = databaseWizard->host();
+    Utilities::m_dbName = databaseWizard->database();
+    Utilities::m_driver = "QMYSQL";
+    Utilities::m_useSSL = databaseWizard->useSSL();
+    Utilities::m_certFile = databaseWizard->certFile();
+    Utilities::m_keyFile = databaseWizard->keyFile();
+    Utilities::m_lastUsername = databaseWizard->user();
+    Utilities::m_lastPassword = databaseWizard->password();
     saveSettings();
 
     setupDbConnectionParameters();
@@ -362,13 +363,13 @@ void MainWindow::on_actionApriDatabase_triggered()
 void MainWindow::loadSettings()
 {
     QSettings settings;
-    m_driver = settings.value("lastDriver", "QSQLITE").toString();
-    m_host = settings.value("host", "").toString();
-    m_dbName = settings.value("dbName", "").toString();
-    m_certFile = settings.value("certFile", "").toString();
-    m_keyFile = settings.value("keyFile", "").toString();
-    m_useSSL = settings.value("useSSL", false).toBool();
-    m_lastUsername = settings.value("lastUsername", "").toString();
+    Utilities::m_driver = settings.value("lastDriver", "QSQLITE").toString();
+    Utilities::m_host = settings.value("host", "").toString();
+    Utilities::m_dbName = settings.value("dbName", "").toString();
+    Utilities::m_certFile = settings.value("certFile", "").toString();
+    Utilities::m_keyFile = settings.value("keyFile", "").toString();
+    Utilities::m_useSSL = settings.value("useSSL", false).toBool();
+    Utilities::m_lastUsername = settings.value("lastUsername", "").toString();
     currentDatabase.setFile(settings.value("lastDatabasePath", "").toString());
     printDialog->setPath(settings.value("exportPath", QDir::homePath()).toString());
     m_photosPath = settings.value("photosPath", "").toString();
@@ -395,13 +396,13 @@ void MainWindow::saveSettings()
     settings.setValue("photosPath", m_photosPath);
     settings.setValue("tabulaPath", m_tabulaPath);
     settings.setValue("javaPath", m_javaPath);
-    settings.setValue("lastDriver", m_driver);
-    settings.setValue("host", m_host);
-    settings.setValue("dbName", m_dbName);
-    settings.setValue("certFile", m_certFile);
-    settings.setValue("keyFile", m_keyFile);
-    settings.setValue("useSSL", m_useSSL);
-    settings.setValue("lastUsername", m_lastUsername);
+    settings.setValue("lastDriver", Utilities::m_driver);
+    settings.setValue("host", Utilities::m_host);
+    settings.setValue("dbName", Utilities::m_dbName);
+    settings.setValue("certFile", Utilities::m_certFile);
+    settings.setValue("keyFile", Utilities::m_keyFile);
+    settings.setValue("useSSL", Utilities::m_useSSL);
+    settings.setValue("lastUsername", Utilities::m_lastUsername);
     settings.setValue("windowGeometry", geometry());
     settings.setValue("isMaximized", isMaximized());
 }
@@ -708,15 +709,7 @@ void MainWindow::elaboraSommario()
 
 void MainWindow::setupDbConnectionParameters()
 {
-    The::dbManager()->setDriver(m_driver);
-    The::dbManager()->setHost(m_host);
-    The::dbManager()->setDbName(m_dbName);
-    The::dbManager()->setCert(m_certFile);
-    The::dbManager()->setKey(m_keyFile);
-    The::dbManager()->setSecure(m_useSSL);
-    The::dbManager()->setLocalDbFileName(currentDatabase.absoluteFilePath());
-    The::dbManager()->setUser(m_lastUsername);
-    The::dbManager()->setPass(m_lastPassword);
+    Utilities::m_localDbFileName = currentDatabase.absoluteFilePath();
 }
 
 void MainWindow::on_actionStampaCompetenzeDirigenti_triggered()
@@ -890,8 +883,9 @@ void MainWindow::tabulaFinished(int exitCode, QProcess::ExitStatus exitStatus)
     // be sure that a valid path was selected
     if( QFile::exists( fi.absolutePath() + QDir::separator() + "cartellini.csv" ) ) {
         // leggi cartellini
-        tabulaReader.setFile(fi.absolutePath() + QDir::separator() + "cartellini.csv");
-        tabulaReader.start();
+        cartellinoReader.setFile(fi.absolutePath() + QDir::separator() + "cartellini.csv");
+        cartellinoReader.setDriver(Utilities::m_driver);
+        cartellinoReader.start();
         msgLabel->setText("Importo i cartellini");
     } else {
         handleResults();
@@ -903,32 +897,6 @@ void MainWindow::tabulaError(QProcess::ProcessError error)
     QMessageBox::critical(nullptr, "Errore generazione file csv", "Si è verificato un errore durante la crezione del file CSV.\n"
                           "Codice dell'errore: " + QString::number(error), QMessageBox::Ok);
     handleResults();
-}
-
-void MainWindow::on_actionCaricaCsv_triggered()
-{
-    pdfFile.clear();
-    pdfFile = QFileDialog::getOpenFileName(this, tr("Seleziona file cartellini"),
-                                                        currentDatabase.absolutePath().isEmpty() ? QDir::homePath() : currentDatabase.absolutePath(),
-                                                        tr("CSV (*.csv)"));
-
-    if(pdfFile.isEmpty())
-        return;
-
-    // be sure that a valid path was selected
-    if( QFile::exists( pdfFile ) ) {
-        // leggi cartellini
-        m_currentMeseCompetenzeIndex = ui->meseCompetenzeCB->currentIndex();
-        m_currentUnitaCompetenzeIndex = ui->unitaCompetenzeCB->currentIndex();
-        m_currentDirigenteCompetenzeIndex = ui->dirigentiCompetenzeCB->currentIndex();
-
-        m_loadingTimeCards = true;
-        okularReader.setFile(pdfFile);
-        okularReader.start();
-        progressBar->setVisible(true);
-        msgLabel->setText("Importo i cartellini");
-        ui->competenzeWidget->setEnabled(false);
-    }
 }
 
 void MainWindow::minutiCambiati(int mins)
@@ -1013,14 +981,14 @@ void MainWindow::on_noteLine_textEdited(const QString &arg1)
 
 void MainWindow::on_actionConnettiDbRemoto_triggered()
 {
-    if(m_host.isEmpty() || m_dbName.isEmpty()) {
+    if(Utilities::m_host.isEmpty() || Utilities::m_dbName.isEmpty()) {
         QMessageBox::critical(this, "Errore Connessione", "I parametri per la connessione remota non sono corretti.\n"
                               "Aprire Impostazioni e configurare host e nome database.", QMessageBox::Cancel);
         return;
     }
 
-    if(m_useSSL) {
-        if(m_certFile.isEmpty() || m_keyFile.isEmpty() || !QFile::exists(m_certFile) || !QFile::exists(m_keyFile)) {
+    if(Utilities::m_useSSL) {
+        if(Utilities::m_certFile.isEmpty() || Utilities::m_keyFile.isEmpty() || !QFile::exists(Utilities::m_certFile) || !QFile::exists(Utilities::m_keyFile)) {
             QMessageBox::critical(this, "Errore Connessione", "I file Certificato/Chiave sono necessari per una connessione protetta.\n"
                                   "Aprire Impostazioni e configurare Certificato e Chiave.", QMessageBox::Cancel);
             return;
@@ -1032,15 +1000,15 @@ void MainWindow::on_actionConnettiDbRemoto_triggered()
 
 void MainWindow::delayedSetup()
 {
-    if(m_driver == "QMYSQL") {
-        if(m_host.isEmpty() || m_dbName.isEmpty()) {
+    if(Utilities::m_driver == "QMYSQL") {
+        if(Utilities::m_host.isEmpty() || Utilities::m_dbName.isEmpty()) {
             QMessageBox::warning(this, "Database non configurato",
                                  "Nessun database remoto configurato.\nAprire Impostazioni e indicare Host e Nome Database");
             ui->actionBackupDatabase->setEnabled(false);
             return;
         }
-        if(m_useSSL) {
-            if(m_certFile.isEmpty() || m_keyFile.isEmpty() || !QFile::exists(m_certFile) || !QFile::exists(m_keyFile)) {
+        if(Utilities::m_useSSL) {
+            if(Utilities::m_certFile.isEmpty() || Utilities::m_keyFile.isEmpty() || !QFile::exists(Utilities::m_certFile) || !QFile::exists(Utilities::m_keyFile)) {
                 QMessageBox::critical(this, "Errore Connessione", "I file Certificato/Chiave sono necessari per una connessione protetta.\n"
                                       "Aprire Impostazioni e configurare Certificato e Chiave.", QMessageBox::Cancel);
                 ui->actionBackupDatabase->setEnabled(false);
@@ -1051,7 +1019,7 @@ void MainWindow::delayedSetup()
         return;
     }
 
-    if(m_driver == "QSQLITE") {
+    if(Utilities::m_driver == "QSQLITE") {
         if(currentDatabase.fileName().isEmpty()) {
             QMessageBox::warning(this, "Nessun Database", "Nessun database configurato (primo avvio?)\nUsare il menu File per aprire un database esistente \no per crearne uno nuovo.");
             ui->actionBackupDatabase->setEnabled(false);

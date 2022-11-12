@@ -37,6 +37,7 @@ public:
 
     void setFile(const QString &);
     void setDbFile(const QString &file);
+    void setDriver(const QString &driver);
 
 protected:
     void run() override;
@@ -56,11 +57,14 @@ private:
     int m_matricola;
     bool m_timeCardBegin;
     Dipendente *m_dipendente;
+    QStringList causaliRMP;
+    QStringList causaliRMC;
 
     int mese2Int(const QString &mese);
     QString int2MeseBreve(const int &mese);
     GiornoCartellinoCompleto giorno(const QString &line);
     TotaliCartellinoCompleto totali(const QStringList &fields);
+    void valutaCausale(const QString &causale, const QDate & dataCorrente, const GiornoCartellinoCompleto &giorno, const QTime &orario, bool &guardia);
 };
 
 #endif // CARTELLINOCOMPLETOREADER_H

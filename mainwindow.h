@@ -8,7 +8,7 @@
 #define MAINWINDOW_H
 
 #include "tabulacsvtimecardsreader.h"
-#include "okularcsvtimecardsreader.h"
+#include "cartellinocompletoreader.h"
 #include "competenzeunitaexporter.h"
 #include "competenzedirigenteexporter.h"
 #include "deficitrecuperiexporter.h"
@@ -69,7 +69,6 @@ private slots:
     void rCalendarClicked(const QDate &date);
     void altreCalendarClicked(const QDate &date);
     void on_actionBackupDatabase_triggered();
-    void on_actionCaricaCsv_triggered();
     void minutiCambiati(int mins);
     void oreCambiate(int ore);
     void orarioGiornalieroCambiato(QTime orario);
@@ -108,14 +107,6 @@ private:
     QString m_photosPath;
     QString m_javaPath;
     QString m_tabulaPath;
-    QString m_driver;
-    QString m_host;
-    QString m_dbName;
-    QString m_certFile;
-    QString m_keyFile;
-    bool m_useSSL;
-    QString m_lastUsername;
-    QString m_lastPassword;
     int m_currentMeseCompetenzeIndex;
     int m_currentUnitaCompetenzeIndex;
     int m_currentDirigenteCompetenzeIndex;
@@ -170,7 +161,7 @@ private:
     QFileInfo currentDatabase;
     PrintDialog *printDialog;
     TabulaCsvTimeCardsReader tabulaReader;
-    OkularCsvTimeCardsReader okularReader;
+    CartellinoCompletoReader cartellinoReader;
     CompetenzeUnitaExporter unitaCompetenzeExporter;
     CompetenzeDirigenteExporter dirigenteCompetenzeExporter;
     DeficitRecuperiExporter deficitRecuperiExporter;

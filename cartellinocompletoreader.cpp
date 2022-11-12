@@ -26,6 +26,7 @@
 #include "cartellinocompleto.h"
 #include "giornocartellinocompleto.h"
 #include "totalicartellinocompleto.h"
+#include "sqldatabasemanager.h"
 
 #include <QDate>
 #include <QFile>
@@ -41,6 +42,8 @@ CartellinoCompletoReader::CartellinoCompletoReader(QObject *parent)
 {
     m_timeCardBegin = true;
     m_matricola = 0;
+    causaliRMP << "RMP" << "RHER";
+    causaliRMC << "RMC";
 }
 
 CartellinoCompletoReader::~CartellinoCompletoReader()
@@ -55,6 +58,11 @@ void CartellinoCompletoReader::setFile(const QString &file)
 void CartellinoCompletoReader::setDbFile(const QString &file)
 {
     m_dbFile = file;
+}
+
+void CartellinoCompletoReader::setDriver(const QString &driver)
+{
+    Utilities::m_driver = driver;
 }
 
 void CartellinoCompletoReader::run()
@@ -83,17 +91,23 @@ void CartellinoCompletoReader::run()
     int anno = 0;
     int mese = 0;
     QString tableName = "";
-    QDate dataCorrente;
     CartellinoCompleto *cartellino;
 
     int rowCount = 0;
+    bool ok = true;
 
-    Utilities::m_connectionName = "CompletoReader";
+    Utilities::m_connectionName = "CartellinoCompletoReader";
+    QSqlDatabase db = The::dbManager()->database(ok, Utilities::m_connectionName);
+
+    if(!ok) {
+        qDebug() << "Impossibile creare la connessione" << Utilities::m_connectionName;
+        emit timeCardsRead();
+        return;
+    }
+
     if(!QSqlDatabase::connectionNames().contains(Utilities::m_connectionName)) {
-        QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", Utilities::m_connectionName);
-        db.setDatabaseName(m_dbFile);
         if (!db.open()) {
-            qDebug() << QLatin1String("Impossibile connettersi al database Cartellini Orologio.") << db.lastError().text();
+            qDebug() << QLatin1String("Impossibile connettersi al database.") << db.lastError().text();
             emit timeCardsRead();
             return;
         }
@@ -265,6 +279,39 @@ void CartellinoCompletoReader::run()
                 ,  `scoperti` varchar(128) DEFAULT ''
                 )
                 */
+                m_dipendente->addRiposi(cartellino->totali().disponibile());
+                m_dipendente->addMinutiFatti(cartellino->totali().ordinario());
+                bool guarFound;
+                int daysCounter = 0;
+                for(const auto &giorno : cartellino->giorni()) {
+                    daysCounter++;
+                    guarFound = false;
+                    QDate dataCorrente(anno, mese, giorno.giorno());
+
+                    if(!giorno.causale1().isEmpty())
+                        valutaCausale(giorno.causale1(), dataCorrente, giorno, giorno.ore1(), guarFound);
+                    if(!giorno.causale2().isEmpty())
+                        valutaCausale(giorno.causale2(), dataCorrente, giorno, giorno.ore2(), guarFound);
+                    if(!giorno.causale3().isEmpty())
+                        valutaCausale(giorno.causale3(), dataCorrente, giorno, giorno.ore3(), guarFound);
+
+                    if(!guarFound) {
+                        if(giorno.indennita().toUpper() == "N") {
+                            if(giorno.giorno()-1>0)
+                                m_dipendente->addGuardiaNotturna(QString::number(giorno.giorno()-1));
+                        } else {
+                            if(dataCorrente.dayOfWeek() == 7) {
+                                if(cartellino->timbratureGiorno(giorno.giorno()).count() > 0 && cartellino->timbratureGiorno(giorno.giorno()).count()%2 == 0)
+                                    m_dipendente->addGuardiaDiurna(QString::number(giorno.giorno()));
+                            } else if(daysCounter == cartellino->giorni().count()) {
+                                // ultimo giorno nel cartellino
+                                if(cartellino->timbratureGiorno(giorno.giorno()).count() > 0 && cartellino->timbratureGiorno(giorno.giorno()).count()%2 == 1)
+                                    m_dipendente->addGuardiaNotturna(QString::number(giorno.giorno()));
+                            }
+                        }
+                    }
+                }
+                SqlQueries::addTimeCard(tableName, m_dipendente);
             }
         }
     }
@@ -322,4 +369,32 @@ TotaliCartellinoCompleto CartellinoCompletoReader::totali(const QStringList &fie
     totali.setSaldoMese(Utilities::inMinuti(fields.at(10)));
     totali.setTotale(Utilities::inMinuti(fields.at(11)));
     return totali;
+}
+
+void CartellinoCompletoReader::valutaCausale(const QString &causale, const QDate &dataCorrente, const GiornoCartellinoCompleto &giorno, const QTime &orario, bool &guardia)
+{
+    if(causale == "ECCR") {
+        m_dipendente->addMinutiEccr(orario.hour() * 60 + orario.minute());
+    } else if(causale == "GUAR") {
+        guardia = true;
+        m_dipendente->addMinutiGuar(orario.hour() * 60 + orario.minute());
+        if(dataCorrente.dayOfWeek() == 7) {
+            if(giorno.indennita().toUpper().isEmpty()) {
+                m_dipendente->addGuardiaDiurna(QString::number(giorno.giorno()));
+            }
+        } else if(giorno.indennita().toUpper() == "N") {
+            m_dipendente->addGuardiaNotturna(QString::number(giorno.giorno()-1));
+        }
+    } else if(causale == "GREP") {
+        m_dipendente->addMinutiGrep(orario.hour() * 60 + orario.minute());
+        if(giorno.repDiurna().isValid())
+            m_dipendente->addGrep(dataCorrente.day(), giorno.repDiurna().hour() * 60 + giorno.repDiurna().minute(), 1);  // diurno
+        if(giorno.repNotturna().isValid())
+            m_dipendente->addGrep(dataCorrente.day(), giorno.repNotturna().hour() * 60 + giorno.repNotturna().minute(), 0);  // notturno
+    } else if(causaliRMC.contains(causale)) {
+        m_dipendente->addMinutiRmc(orario.hour() * 60 + orario.minute());
+    } else {
+        m_dipendente->addAltraCausale(causale, QString::number(dataCorrente.day()), orario.hour() * 60 + orario.minute());
+        m_dipendente->addMinutiFatti(orario.hour() * 60 + orario.minute());
+    }
 }

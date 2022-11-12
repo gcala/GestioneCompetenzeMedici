@@ -460,7 +460,7 @@ bool SqlQueries::addTimeCard(const QString &tableName, const Dipendente *dipende
             return false;
     }
 
-    docId = doctorId(dipendente->matricola());
+//    docId = doctorId(dipendente->matricola());
 
     if(timeCardExists(tableName, docId)) {
         resetTimeCard(tableName, docId);

@@ -144,6 +144,11 @@ void CartellinoCompleto::aggiornaValori()
     }
 }
 
+QList<GiornoCartellinoCompleto> CartellinoCompleto::giorni() const
+{
+    return data->m_giorni;
+}
+
 TotaliCartellinoCompleto CartellinoCompleto::totali() const
 {
     return data->m_totali;

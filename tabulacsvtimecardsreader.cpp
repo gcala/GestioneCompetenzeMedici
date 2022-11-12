@@ -272,7 +272,7 @@ void TabulaCsvTimeCardsReader::run()
                         m_dipendente->addMinutiEccr(inMinuti(campi.at(i+1).trimmed()));
                     else if(causale == "GUAR")
                         m_dipendente->addMinutiGuar(inMinuti(campi.at(i+1).trimmed()));
-                    else if(causale == "GREP")  {
+                    else if(causale == "GREP") {
                         if(!campi.at(20).trimmed().isEmpty()) {
                             if(campi.at(20).trimmed() != "0") {
                                 QString s = campi.at(20).trimmed();

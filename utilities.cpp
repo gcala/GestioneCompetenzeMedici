@@ -9,6 +9,15 @@
 #include <QRegularExpression>
 
 QString Utilities::m_connectionName;
+QString Utilities::m_driver;
+QString Utilities::m_host;
+QString Utilities::m_dbName;
+QString Utilities::m_certFile;
+QString Utilities::m_keyFile;
+bool Utilities::m_useSSL;
+QString Utilities::m_localDbFileName;
+QString Utilities::m_lastUsername;
+QString Utilities::m_lastPassword;
 QDate Utilities::ccnl1618Date(2020,1,1);
 
 QString Utilities::inOrario(int value )
