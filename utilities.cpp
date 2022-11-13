@@ -48,6 +48,14 @@ int Utilities::inMinuti(QString orario)
     return (fields.at(0).toInt() * 60 + fields.at(1).toInt()) * (isNegative ? -1 : 1);
 }
 
+int Utilities::inMinuti(const QTime &orario)
+{
+    if(!orario.isValid() || orario.isNull())
+        return 0;
+
+    return orario.hour() * 60 + orario.minute();
+}
+
 int Utilities::mese2Int(const QString &mese)
 {
     if(mese == "Gennaio")

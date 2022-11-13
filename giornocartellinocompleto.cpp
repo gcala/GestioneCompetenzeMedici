@@ -1,5 +1,6 @@
 #include "giornocartellinocompleto.h"
 #include "timbratura.h"
+#include "utilities.h"
 
 #include <QTime>
 
@@ -305,3 +306,13 @@ QTime GiornoCartellinoCompleto::repNotturna() const
     return data->m_repNotturna;
 }
 
+int GiornoCartellinoCompleto::minutiCausale(const QString &causale) const
+{
+    if(data->m_causale1 == causale)
+        return Utilities::inMinuti(data->m_ore1);
+    if(data->m_causale2 == causale)
+        return Utilities::inMinuti(data->m_ore2);
+    if(data->m_causale3 == causale)
+        return Utilities::inMinuti(data->m_ore3);
+    return 0;
+}

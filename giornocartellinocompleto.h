@@ -42,6 +42,7 @@ public:
     QTime ore3() const;
     QTime repDiurna() const;
     QTime repNotturna() const;
+    int minutiCausale(const QString &causale) const;
 
     void setGiorno(const int &giorno);
     void setTurno(const int &turno);

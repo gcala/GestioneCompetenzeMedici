@@ -302,7 +302,8 @@ void CartellinoCompletoReader::run()
                         } else {
                             if(dataCorrente.dayOfWeek() == 7) {
                                 if(cartellino->timbratureGiorno(giorno.giorno()).count() > 0 && cartellino->timbratureGiorno(giorno.giorno()).count()%2 == 0)
-                                    m_dipendente->addGuardiaDiurna(QString::number(giorno.giorno()));
+                                    if(giorno.minutiCausale("ECCR") >= 660)
+                                        m_dipendente->addGuardiaDiurna(QString::number(giorno.giorno()));
                             } else if(daysCounter == cartellino->giorni().count()) {
                                 // ultimo giorno nel cartellino
                                 if(cartellino->timbratureGiorno(giorno.giorno()).count() > 0 && cartellino->timbratureGiorno(giorno.giorno()).count()%2 == 1)
@@ -374,27 +375,28 @@ TotaliCartellinoCompleto CartellinoCompletoReader::totali(const QStringList &fie
 void CartellinoCompletoReader::valutaCausale(const QString &causale, const QDate &dataCorrente, const GiornoCartellinoCompleto &giorno, const QTime &orario, bool &guardia)
 {
     if(causale == "ECCR") {
-        m_dipendente->addMinutiEccr(orario.hour() * 60 + orario.minute());
+        m_dipendente->addMinutiEccr(Utilities::inMinuti(orario));
     } else if(causale == "GUAR") {
         guardia = true;
-        m_dipendente->addMinutiGuar(orario.hour() * 60 + orario.minute());
+        m_dipendente->addMinutiGuar(Utilities::inMinuti(orario));
         if(dataCorrente.dayOfWeek() == 7) {
             if(giorno.indennita().toUpper().isEmpty()) {
-                m_dipendente->addGuardiaDiurna(QString::number(giorno.giorno()));
+                if( (Utilities::inMinuti(orario)) >= 660)
+                    m_dipendente->addGuardiaDiurna(QString::number(giorno.giorno()));
             }
         } else if(giorno.indennita().toUpper() == "N") {
             m_dipendente->addGuardiaNotturna(QString::number(giorno.giorno()-1));
         }
     } else if(causale == "GREP") {
-        m_dipendente->addMinutiGrep(orario.hour() * 60 + orario.minute());
+        m_dipendente->addMinutiGrep(Utilities::inMinuti(orario));
         if(giorno.repDiurna().isValid())
-            m_dipendente->addGrep(dataCorrente.day(), giorno.repDiurna().hour() * 60 + giorno.repDiurna().minute(), 1);  // diurno
+            m_dipendente->addGrep(dataCorrente.day(), Utilities::inMinuti(giorno.repDiurna()), 1);  // diurno
         if(giorno.repNotturna().isValid())
-            m_dipendente->addGrep(dataCorrente.day(), giorno.repNotturna().hour() * 60 + giorno.repNotturna().minute(), 0);  // notturno
+            m_dipendente->addGrep(dataCorrente.day(), Utilities::inMinuti(giorno.repNotturna()), 0);  // notturno
     } else if(causaliRMC.contains(causale)) {
-        m_dipendente->addMinutiRmc(orario.hour() * 60 + orario.minute());
+        m_dipendente->addMinutiRmc(Utilities::inMinuti(orario));
     } else {
-        m_dipendente->addAltraCausale(causale, QString::number(dataCorrente.day()), orario.hour() * 60 + orario.minute());
-        m_dipendente->addMinutiFatti(orario.hour() * 60 + orario.minute());
+        m_dipendente->addAltraCausale(causale, QString::number(dataCorrente.day()), Utilities::inMinuti(orario));
+        m_dipendente->addMinutiFatti(Utilities::inMinuti(orario));
     }
 }

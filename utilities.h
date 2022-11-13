@@ -20,6 +20,7 @@ public:
     static QString m_connectionName;
     static QDate ccnl1618Date;
     static int inMinuti(QString orario);
+    static int inMinuti(const QTime &orario);
     static int mese2Int(const QString &mese);
     static QString int2MeseBreve(const int &mese);
     static bool timbraturaValida(QString text);
