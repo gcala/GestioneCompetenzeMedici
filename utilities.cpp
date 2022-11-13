@@ -19,6 +19,7 @@ QString Utilities::m_localDbFileName;
 QString Utilities::m_lastUsername;
 QString Utilities::m_lastPassword;
 QDate Utilities::ccnl1618Date(2020,1,1);
+QTime Utilities::orarioInizioNotte(19,35);
 
 QString Utilities::inOrario(int value )
 {

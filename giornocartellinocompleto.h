@@ -43,6 +43,10 @@ public:
     QTime repDiurna() const;
     QTime repNotturna() const;
     int minutiCausale(const QString &causale) const;
+    int numeroTimbrature() const;
+    bool montoNotte() const;
+    bool smontoNotte() const;
+    Timbratura ultimaTimbraturaOrdinaria() const;
 
     void setGiorno(const int &giorno);
     void setTurno(const int &turno);

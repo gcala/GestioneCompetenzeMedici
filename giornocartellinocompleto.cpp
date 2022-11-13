@@ -34,12 +34,26 @@ public:
     QTime m_repNotturna;
 };
 
-GiornoCartellinoCompleto::GiornoCartellinoCompleto(QObject *parent) : QObject(parent), data(new GiornoCartellinoCompletoData)
+GiornoCartellinoCompleto::GiornoCartellinoCompleto(QObject *parent)
+    : QObject(parent)
+    , data(new GiornoCartellinoCompletoData)
 {
-
+    data->m_giorno = 0;
+    data->m_turno = 0;
+    data->m_ordinario = QTime(0,0);
+    data->m_assenza = QTime(0,0);
+    data->m_eccedenza = QTime(0,0);
+    data->m_daRecuperare = QTime(0,0);
+    data->m_recuperate = QTime(0,0);
+    data->m_ore1 = QTime(0,0);
+    data->m_ore2 = QTime(0,0);
+    data->m_ore3 = QTime(0,0);
+    data->m_repDiurna = QTime(0,0);
+    data->m_repNotturna = QTime(0,0);
 }
 
-GiornoCartellinoCompleto::GiornoCartellinoCompleto(const GiornoCartellinoCompleto &rhs) : data(rhs.data)
+GiornoCartellinoCompleto::GiornoCartellinoCompleto(const GiornoCartellinoCompleto &rhs)
+    : data(rhs.data)
 {
 
 }
@@ -315,4 +329,78 @@ int GiornoCartellinoCompleto::minutiCausale(const QString &causale) const
     if(data->m_causale3 == causale)
         return Utilities::inMinuti(data->m_ore3);
     return 0;
+}
+
+int GiornoCartellinoCompleto::numeroTimbrature() const
+{
+    int count = 0;
+    if(!data->m_entrata1.isEmpty())
+        count ++;
+    if(!data->m_uscita1.isEmpty())
+        count ++;
+    if(!data->m_entrata2.isEmpty())
+        count ++;
+    if(!data->m_uscita2.isEmpty())
+        count ++;
+    if(!data->m_entrata3.isEmpty())
+        count ++;
+    if(!data->m_uscita3.isEmpty())
+        count ++;
+    if(!data->m_entrata4.isEmpty())
+        count ++;
+    if(!data->m_uscita4.isEmpty())
+        count ++;
+    return count;
+}
+
+bool GiornoCartellinoCompleto::montoNotte() const
+{
+    bool ok = false;
+    if(numeroTimbrature() > 0) {
+        if(data->m_entrata1.isEmpty()) {
+            // può essere smonto notte precedente e monto notte corrente
+            if(numeroTimbrature() % 2 == 0) { // timbrature pari
+                if(ultimaTimbraturaOrdinaria().ora() >= Utilities::orarioInizioNotte)
+                    ok = true;
+            }
+        } else {
+            if(numeroTimbrature() % 2 == 1) {
+                // timbrature dispari
+                if(ultimaTimbraturaOrdinaria().ora() >= Utilities::orarioInizioNotte)
+                    ok = true;
+            }
+        }
+    }
+    return ok;
+}
+
+bool GiornoCartellinoCompleto::smontoNotte() const
+{
+    bool ok = false;
+    if(data->m_indennita.toUpper() == "N") {
+        ok = true;
+    }
+    return ok;
+}
+
+Timbratura GiornoCartellinoCompleto::ultimaTimbraturaOrdinaria() const
+{
+    Timbratura ultima;
+    if(!data->m_entrata1.isEmpty() && !data->m_entrata1.isIngressoRep() && !data->m_entrata1.isUscitaRep())
+        ultima = data->m_entrata1;
+    if(!data->m_uscita1.isEmpty() && !data->m_uscita1.isIngressoRep() && !data->m_uscita1.isUscitaRep())
+        ultima = data->m_uscita1;
+    if(!data->m_entrata2.isEmpty() && !data->m_entrata2.isIngressoRep() && !data->m_entrata2.isUscitaRep())
+        ultima = data->m_entrata2;
+    if(!data->m_uscita2.isEmpty() && !data->m_uscita2.isIngressoRep() && !data->m_uscita2.isUscitaRep())
+        ultima = data->m_uscita2;
+    if(!data->m_entrata3.isEmpty() && !data->m_entrata3.isIngressoRep() && !data->m_entrata3.isUscitaRep())
+        ultima = data->m_entrata3;
+    if(!data->m_uscita3.isEmpty() && !data->m_uscita3.isIngressoRep() && !data->m_uscita3.isUscitaRep())
+        ultima = data->m_uscita3;
+    if(!data->m_entrata4.isEmpty() && !data->m_entrata4.isIngressoRep() && !data->m_entrata4.isUscitaRep())
+        ultima = data->m_entrata4;
+    if(!data->m_uscita4.isEmpty() && !data->m_uscita4.isIngressoRep() && !data->m_uscita4.isUscitaRep())
+        ultima = data->m_uscita4;
+    return ultima;
 }

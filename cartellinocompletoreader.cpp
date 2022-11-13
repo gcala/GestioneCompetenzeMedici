@@ -251,34 +251,6 @@ void CartellinoCompletoReader::run()
                     cartellino->addTotali(totali(f));
                 }
 
-                // Inserimento dei nuovi valori
-                /*
-                CREATE TABLE `tc_202209` (
-                  `id` integer NOT NULL PRIMARY KEY AUTOINCREMENT
-                ,  `id_medico` integer NOT NULL
-                ,  `id_unita` integer NOT NULL
-                ,  `anno` integer NOT NULL
-                ,  `mese` integer NOT NULL
-                ,  `riposi` integer NOT NULL
-                ,  `minuti_giornalieri` integer NOT NULL
-                ,  `ferie` varchar(128) DEFAULT ''
-                ,  `congedi` varchar(128) DEFAULT ''
-                ,  `malattia` varchar(128) DEFAULT ''
-                ,  `rmp` varchar(128) DEFAULT ''
-                ,  `rmc` varchar(128) DEFAULT ''
-                ,  `altre_causali` varchar(400) DEFAULT ''
-                ,  `guardie_diurne` varchar(256) DEFAULT ''
-                ,  `guardie_notturne` varchar(128) DEFAULT ''
-                ,  `grep` varchar(512) DEFAULT ''
-                ,  `congedi_minuti` integer DEFAULT 0
-                ,  `eccr_minuti` integer DEFAULT 0
-                ,  `grep_minuti` integer DEFAULT 0
-                ,  `guar_minuti` integer DEFAULT 0
-                ,  `rmc_minuti` integer DEFAULT 0
-                ,  `minuti_fatti` integer DEFAULT 0
-                ,  `scoperti` varchar(128) DEFAULT ''
-                )
-                */
                 m_dipendente->addRiposi(cartellino->totali().disponibile());
                 m_dipendente->addMinutiFatti(cartellino->totali().ordinario());
                 bool guarFound;
@@ -289,16 +261,18 @@ void CartellinoCompletoReader::run()
                     QDate dataCorrente(anno, mese, giorno.giorno());
 
                     if(!giorno.causale1().isEmpty())
-                        valutaCausale(giorno.causale1(), dataCorrente, giorno, giorno.ore1(), guarFound);
+                        valutaCausale(giorno.causale1(), dataCorrente, giorno, giorno.ore1(), guarFound, daysCounter == cartellino->giorni().count());
                     if(!giorno.causale2().isEmpty())
-                        valutaCausale(giorno.causale2(), dataCorrente, giorno, giorno.ore2(), guarFound);
+                        valutaCausale(giorno.causale2(), dataCorrente, giorno, giorno.ore2(), guarFound, daysCounter == cartellino->giorni().count());
                     if(!giorno.causale3().isEmpty())
-                        valutaCausale(giorno.causale3(), dataCorrente, giorno, giorno.ore3(), guarFound);
+                        valutaCausale(giorno.causale3(), dataCorrente, giorno, giorno.ore3(), guarFound, daysCounter == cartellino->giorni().count());
 
                     if(!guarFound) {
                         if(giorno.indennita().toUpper() == "N") {
-                            if(giorno.giorno()-1>0)
-                                m_dipendente->addGuardiaNotturna(QString::number(giorno.giorno()-1));
+                            if(giorno.giorno()-1>0) {
+                                if(giorno.numeroTimbrature() > 0)
+                                    m_dipendente->addGuardiaNotturna(QString::number(giorno.giorno()-1));
+                            }
                         } else {
                             if(dataCorrente.dayOfWeek() == 7) {
                                 if(cartellino->timbratureGiorno(giorno.giorno()).count() > 0 && cartellino->timbratureGiorno(giorno.giorno()).count()%2 == 0)
@@ -306,7 +280,7 @@ void CartellinoCompletoReader::run()
                                         m_dipendente->addGuardiaDiurna(QString::number(giorno.giorno()));
                             } else if(daysCounter == cartellino->giorni().count()) {
                                 // ultimo giorno nel cartellino
-                                if(cartellino->timbratureGiorno(giorno.giorno()).count() > 0 && cartellino->timbratureGiorno(giorno.giorno()).count()%2 == 1)
+                                if(giorno.montoNotte())
                                     m_dipendente->addGuardiaNotturna(QString::number(giorno.giorno()));
                             }
                         }
@@ -372,7 +346,12 @@ TotaliCartellinoCompleto CartellinoCompletoReader::totali(const QStringList &fie
     return totali;
 }
 
-void CartellinoCompletoReader::valutaCausale(const QString &causale, const QDate &dataCorrente, const GiornoCartellinoCompleto &giorno, const QTime &orario, bool &guardia)
+void CartellinoCompletoReader::valutaCausale(const QString &causale,
+                                             const QDate &dataCorrente,
+                                             const GiornoCartellinoCompleto &giorno,
+                                             const QTime &orario,
+                                             bool &guardia,
+                                             const bool lastDay)
 {
     if(causale == "ECCR") {
         m_dipendente->addMinutiEccr(Utilities::inMinuti(orario));
@@ -381,17 +360,23 @@ void CartellinoCompletoReader::valutaCausale(const QString &causale, const QDate
         m_dipendente->addMinutiGuar(Utilities::inMinuti(orario));
         if(dataCorrente.dayOfWeek() == 7) {
             if(giorno.indennita().toUpper().isEmpty()) {
-                if( (Utilities::inMinuti(orario)) >= 660)
-                    m_dipendente->addGuardiaDiurna(QString::number(giorno.giorno()));
+                if(giorno.numeroTimbrature() % 2 == 0) {
+                    if( (Utilities::inMinuti(orario)) >= 660)
+                        m_dipendente->addGuardiaDiurna(QString::number(giorno.giorno()));
+                }
             }
         } else if(giorno.indennita().toUpper() == "N") {
             m_dipendente->addGuardiaNotturna(QString::number(giorno.giorno()-1));
+        } else if(lastDay) {
+            // ultimo giorno nel cartellino
+            if(giorno.montoNotte())
+                m_dipendente->addGuardiaNotturna(QString::number(giorno.giorno()));
         }
     } else if(causale == "GREP") {
         m_dipendente->addMinutiGrep(Utilities::inMinuti(orario));
-        if(giorno.repDiurna().isValid())
+        if(giorno.repDiurna().isValid() && giorno.repDiurna() > QTime(0,0))
             m_dipendente->addGrep(dataCorrente.day(), Utilities::inMinuti(giorno.repDiurna()), 1);  // diurno
-        if(giorno.repNotturna().isValid())
+        if(giorno.repNotturna().isValid() && giorno.repNotturna() > QTime(0,0))
             m_dipendente->addGrep(dataCorrente.day(), Utilities::inMinuti(giorno.repNotturna()), 0);  // notturno
     } else if(causaliRMC.contains(causale)) {
         m_dipendente->addMinutiRmc(Utilities::inMinuti(orario));

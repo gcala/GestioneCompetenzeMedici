@@ -34,6 +34,7 @@ public:
     static QString m_localDbFileName;
     static QString m_lastUsername;
     static QString m_lastPassword;
+    static QTime orarioInizioNotte;
 };
 
 #endif // UTILITIES_H

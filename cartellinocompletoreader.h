@@ -64,7 +64,7 @@ private:
     QString int2MeseBreve(const int &mese);
     GiornoCartellinoCompleto giorno(const QString &line);
     TotaliCartellinoCompleto totali(const QStringList &fields);
-    void valutaCausale(const QString &causale, const QDate & dataCorrente, const GiornoCartellinoCompleto &giorno, const QTime &orario, bool &guardia);
+    void valutaCausale(const QString &causale, const QDate & dataCorrente, const GiornoCartellinoCompleto &giorno, const QTime &orario, bool &guardia, const bool lastDay);
 };
 
 #endif // CARTELLINOCOMPLETOREADER_H
