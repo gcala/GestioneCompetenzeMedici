@@ -3,6 +3,7 @@
 #include "sqlqueries.h"
 #include "totalicartellinocompleto.h"
 
+#include <QTime>
 #include <QDebug>
 
 class CartellinoCompletoData : public QSharedData

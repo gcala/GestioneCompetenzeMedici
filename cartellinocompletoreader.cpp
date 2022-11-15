@@ -36,6 +36,7 @@
 #include <QApplication>
 #include <QSqlQuery>
 #include <QSqlError>
+#include <QRegularExpression>
 
 CartellinoCompletoReader::CartellinoCompletoReader(QObject *parent)
     : QThread(parent)

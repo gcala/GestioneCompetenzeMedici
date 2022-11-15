@@ -17,6 +17,7 @@
 #include <QDebug>
 #include <QSqlQuery>
 #include <QSqlError>
+#include <QRegularExpression>
 
 OkularCsvTimeCardsReader::OkularCsvTimeCardsReader(QObject *parent) :
     QThread(parent)

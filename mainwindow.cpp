@@ -156,8 +156,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&tabulaReader, SIGNAL( selectUnit(QString, int&) ), this, SLOT( associaUnita(QString, int &) ), Qt::BlockingQueuedConnection ) ;
     connect(&cartellinoReader, SIGNAL( selectUnit(QString, int&) ), this, SLOT( associaUnita(QString, int &) ), Qt::BlockingQueuedConnection ) ;
 
-//    ui->unitaComboBox->setCurrentIndex(0);
-
     QTimer::singleShot(500, this, SLOT(delayedSetup()));
 }
 

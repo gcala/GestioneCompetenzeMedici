@@ -18,6 +18,7 @@
 #include <QMessageBox>
 #include <QApplication>
 #include <QSqlError>
+#include <QRegularExpression>
 
 TabulaCsvTimeCardsReader::TabulaCsvTimeCardsReader(QObject *parent)
     : QThread(parent)
