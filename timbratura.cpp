@@ -41,35 +41,34 @@ Timbratura::Timbratura(QString text)
 
     data->m_text = text;
 
-    if(Utilities::timbraturaValida(text)) {
+    if(text.trimmed().isEmpty()) {
+        data->m_vuota = true;
+        data->m_valida = false;
+    }else if(Utilities::timbraturaValida(text)) {
         data->m_valida = true;
-        if(text.trimmed().isEmpty()) {
-            data->m_vuota = true;
-        } else {
-            QRegularExpression rx("(\\d\\d:\\d\\d)");
-            QRegularExpressionMatch match = rx.match(text);
-            if(match.hasMatch()) {
-                data->m_ora.fromString(match.captured(1), "hh:mm");
-                text.remove(rx);
-                if(text.contains("R")) {
-                    data->m_uscitaRep = true;
-                    text.remove("R");
-                }
-                if(text.contains("r")) {
-                    data->m_ingressoRep = true;
-                    text.remove("r");
-                }
-                if(text.contains("^") || text.contains("*")) {
-                    data->m_corretta = true;
-                    text.remove("^").remove("*");
-                }
-                if(text.contains("ø")) {
-                    data->m_annullata = true;
-                    text.remove("ø");
-                }
-            } else {
-                data->m_valida = false;
+        QRegularExpression rx("(\\d\\d:\\d\\d)");
+        QRegularExpressionMatch match = rx.match(text);
+        if(match.hasMatch()) {
+            data->m_ora = QTime::fromString(match.captured(1), "hh:mm");
+            text.remove(rx);
+            if(text.contains("R")) {
+                data->m_uscitaRep = true;
+                text.remove("R");
             }
+            if(text.contains("r")) {
+                data->m_ingressoRep = true;
+                text.remove("r");
+            }
+            if(text.contains("^") || text.contains("*")) {
+                data->m_corretta = true;
+                text.remove("^").remove("*");
+            }
+            if(text.contains("ø")) {
+                data->m_annullata = true;
+                text.remove("ø");
+            }
+        } else {
+            data->m_valida = false;
         }
     } else {
         data->m_valida = false;
