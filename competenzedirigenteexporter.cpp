@@ -118,7 +118,11 @@ void CompetenzeDirigenteExporter::run()
 
     QPdfWriter writer(m_path + QDir::separator() + fileName);
 
+#if QT_VERSION >= 0x060000
     writer.setPageSize(QPageSize::A4);
+#else
+    writer.setPageSize(QPagedPaintDevice::A4);
+#endif
     writer.setPageMargins(QMargins(30, 30, 30, 30));
     writer.setCreator("Gestione Competenze Medici");
 

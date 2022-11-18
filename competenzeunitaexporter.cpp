@@ -132,7 +132,11 @@ void CompetenzeUnitaExporter::run()
 
     QPdfWriter writer(m_path + QDir::separator() + pdfFileName);
 
+#if QT_VERSION >= 0x060000
     writer.setPageSize(QPageSize::A4);
+#else
+    writer.setPageSize(QPagedPaintDevice::A4);
+#endif
     writer.setPageMargins(QMargins(30, 30, 30, 30));
     writer.setPageOrientation(QPageLayout::Landscape);
     writer.setTitle(QString(pdfFileName).replace(".pdf", "").replace("_", " "));
