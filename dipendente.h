@@ -71,6 +71,7 @@ public:
     void addRmc(QString date);
     QStringList ferie() const;
     void addFerie(QString date);
+    void addNumGiorniCartellino(int num);
     QStringList scoperti() const;
     void addScoperto(QString date);
     QStringList congedi() const;
@@ -85,7 +86,10 @@ public:
     int minutiCongedi() const;
     void addMinutiCongedo(int minuti);
     int minutiGiornalieri() const;
+    int minutiGiornalieriVeri() const;
+    int numGiorniCartellino() const;
     void setMinutiGiornalieri(int minuti);
+    void setNumGiorniCartellino(int num);
     int minutiGrep() const;
     void addMinutiGrep(int minuti);
     int minutiEccr() const;

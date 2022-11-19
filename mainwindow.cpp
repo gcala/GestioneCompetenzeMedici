@@ -593,7 +593,7 @@ void MainWindow::populateCompetenzeTab()
     rCalendar->setDateRange(m_competenza->dataIniziale(), m_competenza->dataFinale());
     altreCalendar->setDateRange(m_competenza->dataIniziale(), m_competenza->dataFinale());
 
-    ui->workDaysLabel->setText(m_competenza->giorniLavorati());
+    ui->workDaysLabel->setText(QString::number(m_competenza->giorniLavorati()));
 
     ui->ferieLabel->setText(m_competenza->ferieCount());
     ferieCalendar->setDates(m_competenza->ferieDates());

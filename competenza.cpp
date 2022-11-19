@@ -8,6 +8,7 @@
 #include "dipendente.h"
 #include "sqlqueries.h"
 #include "almanac.h"
+#include "utilities.h"
 
 #include <QDebug>
 
@@ -72,8 +73,8 @@ public:
     QDate dataFinale() const;
     QString modTableName() const;
     int doctorId();
-    QString giorniLavorati() const;
-    QString giorniLavorativi() const;
+    int giorniLavorati() const;
+    int giorniLavorativi() const;
     QString assenzeTotali() const;
     QString orarioGiornaliero();
     QString oreDovute();
@@ -251,6 +252,9 @@ void CompetenzaData::buildDipendente()
     m_altreAssenze.clear();
     m_defaultAltreAssenze.clear();
 
+    if(m_id == 0)
+        return;
+
     const QVariantList query = SqlQueries::getDoctorTimecard(m_tableName, m_modTableName, m_id);
 
     if(query.isEmpty()) {
@@ -268,9 +272,13 @@ void CompetenzaData::buildDipendente()
     m_dipendente->setUnita(query.at(2).toInt());             // unità
     m_dipendente->addRiposi(query.at(3).toInt());            // riposi
     m_dipendente->setMinutiGiornalieri(query.at(4).toInt()); // orario giornaliero
-    if(!query.at(5).toString().trimmed().isEmpty()) {
-        foreach (QString f, query.at(5).toString().split(",")) { // ferie
-            m_dipendente->addFerie(f);
+    if(query.at(4).toInt() > Utilities::m_maxMinutiGiornalieri) {
+        m_dipendente->setNumGiorniCartellino(query.at(5).toInt());
+    } else {
+        if(!query.at(5).toString().trimmed().isEmpty()) {
+            foreach (QString f, query.at(5).toString().split(",")) { // ferie
+                m_dipendente->addFerie(f);
+            }
         }
     }
     if(!query.at(6).toString().trimmed().isEmpty()) {
@@ -402,10 +410,11 @@ void CompetenzaData::buildDipendente()
         }
     }
 
-    m_orarioGiornaliero = query.at(29).toInt();       // orario giornaliero
-    if(m_orarioGiornaliero >= 0) {
+    m_orarioGiornaliero = m_dipendente->minutiGiornalieri();
+    if(query.at(29).toInt() >= 0) {
         m_modded = true;
         m_orarioGiornalieroModded = true;
+        m_orarioGiornaliero = query.at(29).toInt();       // orario giornaliero
     }
     m_defaultOrarioGiornaliero = m_orarioGiornaliero;
 
@@ -460,24 +469,25 @@ int CompetenzaData::doctorId()
     return m_id;
 }
 
-QString CompetenzaData::giorniLavorati() const
+int CompetenzaData::giorniLavorati() const
 {
-    if(m_dipendente->riposi() > 100)
-        return QString();
+    if(m_dipendente->minutiGiornalieri() > Utilities::m_maxMinutiGiornalieri)
+        return 0;
 
-    return QString::number(QDate(m_dipendente->anno(), m_dipendente->mese(), 1).daysInMonth()
+    return QDate(m_dipendente->anno(), m_dipendente->mese(), 1).daysInMonth()
             - m_dipendente->riposi()
             - m_dipendente->rmp().count()
             - m_dipendente->ferie().count()
-//            - m_dipendente->congedi().count()
             - m_dipendente->malattia().count()
-//            - m_dipendente->altreCausaliCount()
-            - m_altreAssenze.count());
+            - m_altreAssenze.count();
 }
 
-QString CompetenzaData::giorniLavorativi() const
+int CompetenzaData::giorniLavorativi() const
 {
-    return QString::number(QDate(m_dipendente->anno(), m_dipendente->mese(), 1).daysInMonth() - m_dipendente->riposi());
+    if(m_dipendente->minutiGiornalieri() > Utilities::m_maxMinutiGiornalieri)
+        return m_dipendente->numGiorniCartellino() - m_dipendente->riposi();
+
+    return QDate(m_dipendente->anno(), m_dipendente->mese(), 1).daysInMonth() - m_dipendente->riposi();
 }
 
 QString CompetenzaData::assenzeTotali() const
@@ -492,6 +502,9 @@ QString CompetenzaData::assenzeTotali() const
 
 QString CompetenzaData::orarioGiornaliero()
 {
+    if(m_dipendente->minutiGiornalieri() > Utilities::m_maxMinutiGiornalieri)
+        return inOrario(m_dipendente->minutiGiornalieri() / (m_dipendente->numGiorniCartellino() - m_dipendente->riposi()));
+
     return inOrario((m_orarioGiornaliero >= 0 ? m_orarioGiornaliero : m_dipendente->minutiGiornalieri()));
 }
 
@@ -502,10 +515,10 @@ QString CompetenzaData::oreDovute()
 
 int CompetenzaData::minutiDovuti() const
 {
-    if(m_dipendente->riposi() > 100) {
-        return m_dipendente->riposi();
+    if(m_dipendente->minutiGiornalieri() > Utilities::m_maxMinutiGiornalieri) {
+        return m_dipendente->minutiGiornalieri();
     }
-    return (m_orarioGiornaliero >= 0 ? m_orarioGiornaliero : m_dipendente->minutiGiornalieri()) * giorniLavorati().toInt();
+    return (m_orarioGiornaliero >= 0 ? m_orarioGiornaliero : m_dipendente->minutiGiornalieri()) * giorniLavorati();
 }
 
 QString CompetenzaData::oreEffettuate()
@@ -523,9 +536,7 @@ int CompetenzaData::oreRepPagate() const
 
     int residuoOre = diffOreArrot;
 
-//    if(m_currentMonthYear < Utilities::ccnl1618Date) {
-        residuoOre -= (numOreGuarPagabili() + numGrFestPagabili() * 12);
-//    }
+    residuoOre -= (numOreGuarPagabili() + numGrFestPagabili() * 12);
 
     if(residuoOre <= 0)
         return 0;
@@ -982,27 +993,25 @@ QString CompetenzaData::oreGrep()
 
 int CompetenzaData::numGrFestPagabili() const
 {
-//    if(m_currentMonthYear < Utilities::ccnl1618Date) {
-        if(differenzaMin() <= 0)
-            return 0;
+    if(differenzaMin() <= 0)
+        return 0;
 
-        int numGrFest = 0;
+    int numGrFest = 0;
 
-        QMap<int, GuardiaType>::const_iterator i = guardiaNotturnaMap().constBegin();
-        while(i != guardiaNotturnaMap().constEnd()) {
-            if(i.value() == GuardiaType::GrandeFestivita)
-                numGrFest++;
-            i++;
+    QMap<int, GuardiaType>::const_iterator i = guardiaNotturnaMap().constBegin();
+    while(i != guardiaNotturnaMap().constEnd()) {
+        if(i.value() == GuardiaType::GrandeFestivita)
+            numGrFest++;
+        i++;
+    }
+
+    for(int i = numGrFest; i >= 0; i--) {
+        if((i * 12 * 60) <= differenzaMin()) {
+            numGrFest = i;
+            break;
         }
-
-        for(int i = numGrFest; i >= 0; i--) {
-            if((i * 12 * 60) <= differenzaMin()) {
-                numGrFest = i;
-                break;
-            }
-        }
-        return numGrFest;
-//    }
+    }
+    return numGrFest;
 
 //    const int minutiRimasti = differenzaMin() - oreRepPagate()*12;
 
@@ -1029,10 +1038,6 @@ int CompetenzaData::numGrFestPagabili() const
 
 int CompetenzaData::numOreGuarPagabili() const
 {
-//    if(m_currentMonthYear >= Utilities::ccnl1618Date) {
-//        return 0;
-//    }
-
     int totMin = differenzaMin(); // saldo minuti fine mese
 
     if(totMin <= 0) // se saldo <= 0
@@ -1247,6 +1252,9 @@ int CompetenzaData::numNottiRecuperabili()
     if(residuo <= maxMins)
         return residuo;
 
+    if(m_dipendente->minutiGiornalieri() == 0)
+        return 0;
+
     const int val = residuo / m_dipendente->minutiGiornalieri();
 
     if(val <= numNottiNonPagate) {
@@ -1258,13 +1266,11 @@ int CompetenzaData::numNottiRecuperabili()
 
 int CompetenzaData::numOreRecuperabili()
 {
-//    if(m_currentMonthYear < Utilities::ccnl1618Date) {
-        if(m_pagaStrGuardia)
-            return (numFestiviRecuperabili() + numNottiRecuperabili()) - m_recuperiMeseSuccessivo.first*m_recuperiMeseSuccessivo.second;
+    if(m_pagaStrGuardia)
+        return (numFestiviRecuperabili() + numNottiRecuperabili()) - m_recuperiMeseSuccessivo.first*m_recuperiMeseSuccessivo.second;
 
-        if(numOreGuarPagabili() != 0 || numGrFestPagabili() != 0)
-            return residuoOreNonPagate() - m_recuperiMeseSuccessivo.first*m_recuperiMeseSuccessivo.second;
-//    }
+    if(numOreGuarPagabili() != 0 || numGrFestPagabili() != 0)
+        return residuoOreNonPagate() - m_recuperiMeseSuccessivo.first*m_recuperiMeseSuccessivo.second;
 
     return residuoOreNonPagate();
 }
@@ -1273,20 +1279,16 @@ QString CompetenzaData::residuoOreNonRecuperabili()
 {
     int mins = 0;
 
-//    if(m_currentMonthYear < Utilities::ccnl1618Date) {
-        if(m_pagaStrGuardia){
-            mins = residuoOreNonPagate() - numFestiviRecuperabili() - numNottiRecuperabili();
-        } else {
-            mins = differenzaMin() - numOreRecuperabili() - oreRepPagate()*60;
-        }
+    if(m_pagaStrGuardia){
+        mins = residuoOreNonPagate() - numFestiviRecuperabili() - numNottiRecuperabili();
+    } else {
+        mins = differenzaMin() - numOreRecuperabili() - oreRepPagate()*60;
+    }
 
-        if(mins == 0) {
-            return "//";
-        }
-        return inOrario( mins );
-//    }
-
-//    return "//";
+    if(mins == 0) {
+        return "//";
+    }
+    return inOrario( mins );
 }
 
 int CompetenzaData::g_d_fer_F() const
@@ -1425,7 +1427,6 @@ QString CompetenzaData::oreStraordinarioGuardie() const
 
 bool CompetenzaData::isGuardieDiurneModded() const
 {
-//    return (m_modded || (m_guardiaDiurnaMap != m_defaultGDDates));
     return m_gdiurneModded;
 }
 
@@ -1693,12 +1694,12 @@ int Competenza::doctorId()
     return data->doctorId();
 }
 
-QString Competenza::giorniLavorati() const
+int Competenza::giorniLavorati() const
 {
     return data->giorniLavorati();
 }
 
-QString Competenza::giorniLavorativi() const
+int Competenza::giorniLavorativi() const
 {
     return data->giorniLavorativi();
 }

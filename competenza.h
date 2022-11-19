@@ -33,8 +33,8 @@ public:
     QDate dataFinale() const;
     QString modTableName() const;
     int doctorId();
-    QString giorniLavorati() const;
-    QString giorniLavorativi() const;
+    int giorniLavorati() const;
+    int giorniLavorativi() const;
     QString assenzeTotali() const;
     QString orarioGiornaliero();
     QString oreDovute();

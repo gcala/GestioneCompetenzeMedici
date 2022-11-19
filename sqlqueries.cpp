@@ -481,8 +481,11 @@ bool SqlQueries::addTimeCard(const QString &tableName, const Dipendente *dipende
     }
 
     query.bindValue(":riposi", dipendente->riposi());
-    query.bindValue(":minuti_giornalieri", dipendente->minutiGiornalieri());
-    query.bindValue(":ferie", dipendente->ferie().join(","));
+    query.bindValue(":minuti_giornalieri", dipendente->minutiGiornalieriVeri());
+    if(dipendente->minutiGiornalieriVeri() <= Utilities::m_maxMinutiGiornalieri)
+        query.bindValue(":ferie", dipendente->ferie().join(","));
+    else
+        query.bindValue(":ferie", dipendente->numGiorniCartellino());
     query.bindValue(":congedi", dipendente->congedi().join(","));
     query.bindValue(":malattia", dipendente->malattia().join(","));
     query.bindValue(":rmp", dipendente->rmp().join(","));

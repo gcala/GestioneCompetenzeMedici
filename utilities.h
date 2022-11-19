@@ -35,6 +35,7 @@ public:
     static QString m_lastUsername;
     static QString m_lastPassword;
     static QTime orarioInizioNotte;
+    static int m_maxMinutiGiornalieri;
 };
 
 #endif // UTILITIES_H

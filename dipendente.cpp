@@ -5,6 +5,7 @@
 */
 
 #include "dipendente.h"
+#include "utilities.h"
 
 #include <QDebug>
 
@@ -15,6 +16,7 @@ public:
         m_anno = 0;
         m_mese = 0;
         m_matricola = 0;
+        m_numGiorniCartellino = 0;
         resetProperties();
     }
 
@@ -42,6 +44,7 @@ public:
     void addRmc(QString date);
     QStringList ferie() const;
     void addFerie(QString date);
+    void addNumGiorniCartellino(int num);
     QStringList scoperti() const;
     void addScoperto(QString date);
     QStringList congedi() const;
@@ -58,7 +61,10 @@ public:
     int minutiAssenza() const;
     void addMinutiAssenza(int minuti);
     int minutiGiornalieri() const;
+    int minutiGiornalieriVeri() const;
+    int numGiorniCartellino() const;
     void setMinutiGiornalieri(int minuti);
+    void setNumGiorniCartellino(int num);
     int minutiGrep() const;
     void addMinutiGrep(int minuti);
     int minutiEccr() const;
@@ -82,6 +88,7 @@ private:
     QStringList m_rmp;
     QStringList m_rmc;
     QStringList m_ferie;
+    int m_numGiorniCartellino;
     QStringList m_scoperti;
     QStringList m_congedi;
     QStringList m_malattia;
@@ -218,6 +225,11 @@ void DipendenteData::addFerie(QString date)
     m_ferie.append(date);
 }
 
+void DipendenteData::addNumGiorniCartellino(int num)
+{
+    m_numGiorniCartellino = num;
+}
+
 QStringList DipendenteData::scoperti() const
 {
     return m_scoperti;
@@ -303,12 +315,29 @@ void DipendenteData::addMinutiCongedo(int minuti)
 
 int DipendenteData::minutiGiornalieri() const
 {
+    if(m_minutiGiornalieri > Utilities::m_maxMinutiGiornalieri)
+        return m_minutiGiornalieri / (m_numGiorniCartellino - m_riposi);
     return m_minutiGiornalieri;
+}
+
+int DipendenteData::minutiGiornalieriVeri() const
+{
+    return m_minutiGiornalieri;
+}
+
+int DipendenteData::numGiorniCartellino() const
+{
+    return m_numGiorniCartellino;
 }
 
 void DipendenteData::setMinutiGiornalieri(int minuti)
 {
     m_minutiGiornalieri = minuti;
+}
+
+void DipendenteData::setNumGiorniCartellino(int num)
+{
+    m_numGiorniCartellino = num;
 }
 
 int DipendenteData::minutiGrep() const
@@ -514,6 +543,11 @@ void Dipendente::addFerie(QString date)
     data->addFerie(date);
 }
 
+void Dipendente::addNumGiorniCartellino(int num)
+{
+    data->addNumGiorniCartellino(num);
+}
+
 QStringList Dipendente::scoperti() const
 {
     return data->scoperti();
@@ -584,9 +618,24 @@ int Dipendente::minutiGiornalieri() const
     return data->minutiGiornalieri();
 }
 
+int Dipendente::minutiGiornalieriVeri() const
+{
+    return data->minutiGiornalieriVeri();
+}
+
+int Dipendente::numGiorniCartellino() const
+{
+    return data->numGiorniCartellino();
+}
+
 void Dipendente::setMinutiGiornalieri(int minuti)
 {
     data->setMinutiGiornalieri(minuti);
+}
+
+void Dipendente::setNumGiorniCartellino(int num)
+{
+    data->setNumGiorniCartellino(num);
 }
 
 int Dipendente::minutiGrep() const

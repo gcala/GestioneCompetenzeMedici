@@ -221,7 +221,12 @@ void CartellinoCompletoReader::run()
                 if(fields.at(0).trimmed().contains("\"\""))
                     continue;
 
-                cartellino->addGiorno(giorno(line));
+                bool ok = false;
+                fields.at(0).toInt(&ok);
+                if(ok) {
+                    if(fields.at(0).toInt() <= QDate(anno,mese,1).daysInMonth())
+                        cartellino->addGiorno(giorno(line));
+                }
                 continue;
             }
 
@@ -253,7 +258,7 @@ void CartellinoCompletoReader::run()
                     cartellino->addTotali(totali(f));
                 }
 
-                m_dipendente->addRiposi(cartellino->totali().disponibile());
+                m_dipendente->setMinutiGiornalieri(cartellino->totali().disponibile());
                 m_dipendente->addMinutiFatti(cartellino->totali().ordinario());
                 bool guarFound;
                 int daysCounter = 0;
@@ -268,6 +273,10 @@ void CartellinoCompletoReader::run()
                         valutaCausale(giorno.causale2(), dataCorrente, giorno, giorno.ore2(), guarFound, daysCounter == cartellino->giorni().count());
                     if(!giorno.causale3().isEmpty())
                         valutaCausale(giorno.causale3(), dataCorrente, giorno, giorno.ore3(), guarFound, daysCounter == cartellino->giorni().count());
+
+                    if(giorno.tipo().toUpper() == "R" || giorno.tipo().toUpper() == "F") {
+                        m_dipendente->addRiposi(1);
+                    }
 
                     if(!guarFound) {
                         if(giorno.indennita().toUpper() == "N") {
@@ -288,6 +297,7 @@ void CartellinoCompletoReader::run()
                         }
                     }
                 }
+                m_dipendente->addNumGiorniCartellino(cartellino->giorni().count());
                 SqlQueries::addTimeCard(tableName, m_dipendente);
             }
         }

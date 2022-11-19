@@ -20,6 +20,7 @@ QString Utilities::m_lastUsername;
 QString Utilities::m_lastPassword;
 QDate Utilities::ccnl1618Date(2020,1,1);
 QTime Utilities::orarioInizioNotte(19,35);
+int Utilities::m_maxMinutiGiornalieri = 456;
 
 QString Utilities::inOrario(int value )
 {
