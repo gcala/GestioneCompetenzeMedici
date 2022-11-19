@@ -229,7 +229,7 @@ void DeficitRecuperiExporter::printCsv(const QString &fileName, const QString &m
             else
                 doctor.deficitPuntuale = m_competenza->deficitPuntuale();
 
-            if(m_competenza->numOreRecuperabili() == 0 && m_competenza->recuperiMesiSuccessivo().second == 0)
+            if(m_competenza->numOreRecuperabili() == 0 && m_competenza->recuperiMeseSuccessivo().second == 0)
                 doctor.oreRecuperabili = "00:00";
             else {
                 doctor.oreRecuperabili = Utilities::inOrario(m_competenza->numOreRecuperabili());

@@ -16,21 +16,25 @@
 
 class CompetenzaData;
 
+class Dipendente;
+
 class Competenza : public QObject
 {
     Q_OBJECT
     
 
 public:
-    explicit Competenza(const QString &tableName, const int id, QObject *parent = nullptr);
+    explicit Competenza(const QString &tableName, const int id);
     Competenza(const Competenza &);
     Competenza &operator=(const Competenza &);
+    bool operator==(const Competenza &rhs) const;
     ~Competenza();
 
     int badgeNumber() const;
     QString name() const;
     QDate dataIniziale() const;
     QDate dataFinale() const;
+    QString tableName() const;
     QString modTableName() const;
     int doctorId();
     int giorniLavorati() const;
@@ -100,7 +104,27 @@ public:
     int numNottiRecuperabili();
     int numOreRecuperabili();
     QString residuoOreNonRecuperabili();
-    QPair<int, int> recuperiMesiSuccessivo() const;
+    QPair<int, int> recuperiMeseSuccessivo() const;
+    Dipendente *dipendente() const;
+    QMap<int, GuardiaType> defaultGNDates() const;
+    QMap<int, GuardiaType> defaultGDDates() const;
+    QMap<QDate, ValoreRep> defaultRep() const;
+    int oreTot() const;
+    int dmpCalcolato() const;
+    int orarioGiornaliero() const;
+    int defaultDmp() const;
+    int defaultOrarioGiornaliero() const;
+    QString defaultNote() const;
+    QStringList altreAssenze() const;
+    QStringList defaultAltreAssenze() const;
+    bool modded() const;
+    bool gdiurneModded() const;
+    bool gnotturneModded() const;
+    bool repModded() const;
+    bool dmpModded() const;
+    bool orarioGiornalieroModded() const;
+    bool altreModded() const;
+    bool noteModded() const;
 
     int g_d_fer_F() const;
     int g_d_fer_S() const;
@@ -136,6 +160,22 @@ public slots:
 
 private:
     QSharedDataPointer<CompetenzaData> data;
+
+    QString m_tableName;
+    QString m_modTableName;
+    int m_id;
+    int m_unitaId;
+    const int m_arrotondamento;
+
+    void buildDipendente();
+    QString inOrario(int min);
+    GuardiaType tipoGuardia(const QString &day);
+    RepType tipoReperibilita(const int giorno, const int tipo);
+    void calcOreGuardia();
+    void getOrePagate();
+    void getRecuperiMeseSuccessivo();
+    int grFestCount() const;
+    void rimuoviAltreAssenzeDoppie();
 };
 
 #endif // COMPETENZA_H

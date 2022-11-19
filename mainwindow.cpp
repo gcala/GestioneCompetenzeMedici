@@ -692,10 +692,10 @@ void MainWindow::elaboraSommario()
     else
         ui->oreRecLabel->setStyleSheet("color: green;");
 
-    if(m_competenza->numOreRecuperabili() == 0 && m_competenza->recuperiMesiSuccessivo().second == 0)
+    if(m_competenza->numOreRecuperabili() == 0 && m_competenza->recuperiMeseSuccessivo().second == 0)
         ui->oreRecLabel->setText("//");
     else {
-        ui->oreRecLabel->setText(Utilities::inOrario(m_competenza->numOreRecuperabili()) + " (" + QString::number(m_competenza->recuperiMesiSuccessivo().second) + ")");
+        ui->oreRecLabel->setText(Utilities::inOrario(m_competenza->numOreRecuperabili()) + " (" + QString::number(m_competenza->recuperiMeseSuccessivo().second) + ")");
     }
 
     ui->oreNonRecLabel->setText(m_competenza->residuoOreNonRecuperabili());

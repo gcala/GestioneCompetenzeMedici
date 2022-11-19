@@ -15,170 +15,7 @@
 class CompetenzaData : public QSharedData
 {
 public:
-    CompetenzaData(const QString &tableName, const int id) :
-        m_arrotondamento(45),
-        m_tableName(tableName),
-        m_id(id)
-    {
-        if(m_tableName.isEmpty()) {
-            qDebug() << Q_FUNC_INFO << "ERROR :: la stringa tableName è vuota";
-            return;
-        }
-
-        m_modTableName = m_tableName;
-        m_modTableName.replace("_","m_");
-
-        m_g_d_fer_F = 0;
-        m_g_d_fer_S = 0;
-        m_g_d_fer_D = 0;
-        m_g_d_fes_F = 0;
-        m_g_d_fes_S = 0;
-        m_g_d_fes_D = 0;
-        m_g_n_fer_F = 0;
-        m_g_n_fer_S = 0;
-        m_g_n_fer_D = 0;
-        m_g_n_fes_F = 0;
-        m_g_n_fes_S = 0;
-        m_g_n_fes_D = 0;
-        m_totOreGuardie = 0;
-        m_dmp = 0;
-        m_pagaStrGuardia = true;
-        m_orarioGiornaliero = 0;
-        m_dmp_calcolato = 0;
-        m_defaultDmp = 0;
-        m_defaultOrarioGiornaliero = 0;
-        m_note.clear();
-        m_defaultNote.clear();
-        m_modded = false;
-        m_gdiurneModded = false;
-        m_gnotturneModded = false;
-        m_repModded = false;
-        m_dmpModded = false;
-        m_noteModded = false;
-        m_altreModded = false;
-        m_unitaId = -1;
-        m_orePagate = 0;
-
-        m_dipendente = new Dipendente;
-        m_dipendente->setAnno(m_tableName.split("_").last().left(4).toInt());
-        m_dipendente->setMese(m_tableName.split("_").last().right(2).toInt());
-        m_currentMonthYear.setDate(m_tableName.split("_").last().left(4).toInt(),m_tableName.split("_").last().right(2).toInt(),1);
-
-        buildDipendente();
-    }
-
-    int badgeNumber() const;
-    QString name() const;
-    QDate dataIniziale() const;
-    QDate dataFinale() const;
-    QString modTableName() const;
-    int doctorId();
-    int giorniLavorati() const;
-    int giorniLavorativi() const;
-    QString assenzeTotali() const;
-    QString orarioGiornaliero();
-    QString oreDovute();
-    int minutiDovuti() const;
-    QString oreEffettuate();
-    int oreRepPagate() const;
-    QString differenzaOre();
-    QString differenzaOreSenzaDmp();
-    int differenzaMin() const;
-    QString deficitOrario();
-    QString deficitPuntuale();
-    int minutiAltreCausali() const;
-    QString oreAltreCausali();
-    QString ferieCount() const;
-    QList<QDate> ferieDates() const;
-    QList<QDate> scopertiDates() const;
-    QString congediCount() const;
-    QList<QDate> congediDates() const;
-    QString malattiaCount() const;
-    QList<QDate> malattiaDates() const;
-    QString rmpCount() const;
-    QList<QDate> rmpDates() const;
-    QString rmcCount() const;
-    QList<QDate> rmcDates() const;
-    QList<QDate> gdDates() const;
-    QList<QDate> gnDates() const;
-    QList<QDate> altreCausaliDates() const;
-    QMap<QDate, ValoreRep> rep() const;
-    void setRep(const QMap<QDate, ValoreRep> &map);
-    QMap<int, GuardiaType> guardiaDiurnaMap() const;
-    QMap<int, GuardiaType> guardiaNotturnaMap() const;
-    void setDmp(const int &minutes);
-    void setPagaStrGuardia(const bool &ok);
-    void setOrarioGiornalieroMod(const int &minutes);
-    void setDmpCalcolato(const int &minutes);
-    int dmp() const;
-    bool pagaStrGuardia() const;
-    void setNote(const QString &note);
-    QString note() const;
-    QList<QDate> altreAssenzeDates() const;
-    void setAltreAssenze(const QList<QDate> &assenze);
-    bool isModded() const;
-    bool isRestorable() const;
-    void saveMods();
-    void addGuardiaDiurnaDay(int day);
-    void addGuardiaNotturnaDay(int day);
-    int orePagate() const;
-    int notte() const;
-    int numGuarDiurne() const;
-    QString repCount() const;
-    QString oreGrep();
-    int numGrFestPagabili() const;
-    int numOreGuarPagabili() const;
-    int numGuar() const;
-    int numGuarGFNonPag() const;
-    int numGuarNottPag() const;
-    int numOreGuarFesENot() const;
-    int numOreGuarFesONot() const;
-    int numOreGuarOrd() const;
-    int numOreRep(Reperibilita rep);
-    int residuoOreNonPagate();
-    int numFestiviRecuperabili();
-    int numNottiRecuperabili();
-    int numOreRecuperabili();
-    QString residuoOreNonRecuperabili();
-    QPair<int,int> recuperiMesiSuccessivo() const;
-
-    int g_d_fer_F() const;
-    int g_d_fer_S() const;
-    int g_d_fer_D() const;
-    int g_d_fes_F() const;
-    int g_d_fes_S() const;
-    int g_d_fes_D() const;
-    int g_n_fer_F() const;
-    int g_n_fer_S() const;
-    int g_n_fer_D() const;
-    int g_n_fes_F() const;
-    int g_n_fes_S() const;
-    int g_n_fes_D() const;
-    int totOreGuardie() const;
-
-    int r_d_fer();
-    int r_d_fes();
-    int r_n_fer();
-    int r_n_fes();
-
-    QString oreStraordinarioGuardie() const;
-    void rimuoviAltreAssenzeDoppie();
-    bool isGuardieDiurneModded() const;
-    bool isGuardieNotturneModded() const;
-    bool isReperibilitaModded() const;
-    bool isDmpModded() const;
-    bool isAltreModded() const;
-    bool isNoteModded() const;
-    bool isOrarioGiornalieroModded() const;
-
-private:
-    const int m_arrotondamento;
-    QString m_tableName;
-    QString m_modTableName;
-    int m_id;
-    int m_unitaId;
     int m_orePagate;
-    int m_oreTot;
     QPair<int,int> m_recuperiMeseSuccessivo;
     Dipendente *m_dipendente;
     QMap<int, GuardiaType> m_guardiaNotturnaMap;
@@ -187,7 +24,6 @@ private:
     QMap<int, GuardiaType> m_defaultGDDates;
     QMap<QDate, ValoreRep> m_rep;
     QMap<QDate, ValoreRep> m_defaultRep;
-    QDate m_currentMonthYear;
 
     int m_g_d_fer_F;
     int m_g_d_fer_S;
@@ -203,11 +39,11 @@ private:
     int m_g_n_fes_D;
     int m_totOreGuardie;
     int m_dmp;
-    bool m_pagaStrGuardia;
     int m_dmp_calcolato;
     int m_orarioGiornaliero;
     int m_defaultDmp;
     int m_defaultOrarioGiornaliero;
+    int m_oreTot;
     QString m_note;
     QString m_defaultNote;
     QStringList m_altreAssenze;
@@ -220,37 +56,152 @@ private:
     bool m_orarioGiornalieroModded;
     bool m_altreModded;
     bool m_noteModded;
-
-    void buildDipendente();
-    QString inOrario(int min);
-    GuardiaType tipoGuardia(const QString &day);
-    RepType tipoReperibilita(const int giorno, const int tipo);
-    void calcOreGuardia();
-    void getOrePagate();
-    void getRecuperiMeseSuccessivo();
-    int grFestCount() const;
+    bool m_pagaStrGuardia;
 };
 
-
-void CompetenzaData::buildDipendente()
+Competenza::Competenza(const QString &tableName, const int id)
+    : data(new CompetenzaData)
+    , m_tableName(tableName)
+    , m_id(id)
+    , m_arrotondamento(45)
 {
-    m_dipendente->resetProperties();
-    m_defaultDmp = -1;
-    m_defaultOrarioGiornaliero = 0;
-    m_defaultNote.clear();
+
+
+
+    if(m_tableName.isEmpty()) {
+        qDebug() << Q_FUNC_INFO << "ERROR :: la stringa tableName è vuota";
+        return;
+    }
+
+    m_modTableName = m_tableName;
+    m_modTableName.replace("_","m_");
     m_unitaId = -1;
-    m_orePagate = 0;
-    m_oreTot = 0;
-    m_recuperiMeseSuccessivo.first = 0;  // minuti giornalieri
-    m_recuperiMeseSuccessivo.second = 0; // num rmp
-    m_defaultGDDates.clear();
-    m_defaultGNDates.clear();
-    m_defaultRep.clear();
-    m_guardiaNotturnaMap.clear();
-    m_guardiaDiurnaMap.clear();
-    m_rep.clear();
-    m_altreAssenze.clear();
-    m_defaultAltreAssenze.clear();
+
+    data->m_g_d_fer_F = 0;
+    data->m_g_d_fer_S = 0;
+    data->m_g_d_fer_D = 0;
+    data->m_g_d_fes_F = 0;
+    data->m_g_d_fes_S = 0;
+    data->m_g_d_fes_D = 0;
+    data->m_g_n_fer_F = 0;
+    data->m_g_n_fer_S = 0;
+    data->m_g_n_fer_D = 0;
+    data->m_g_n_fes_F = 0;
+    data->m_g_n_fes_S = 0;
+    data->m_g_n_fes_D = 0;
+    data->m_totOreGuardie = 0;
+    data->m_dmp = 0;
+    data->m_pagaStrGuardia = true;
+    data->m_orarioGiornaliero = 0;
+    data->m_dmp_calcolato = 0;
+    data->m_defaultDmp = 0;
+    data->m_defaultOrarioGiornaliero = 0;
+    data->m_oreTot = 0;
+    data->m_note.clear();
+    data->m_defaultNote.clear();
+    data->m_modded = false;
+    data->m_gdiurneModded = false;
+    data->m_gnotturneModded = false;
+    data->m_repModded = false;
+    data->m_dmpModded = false;
+    data->m_noteModded = false;
+    data->m_altreModded = false;
+    data->m_orePagate = 0;
+
+    data->m_dipendente = new Dipendente;
+    data->m_dipendente->setAnno(m_tableName.split("_").last().left(4).toInt());
+    data->m_dipendente->setMese(m_tableName.split("_").last().right(2).toInt());
+
+    buildDipendente();
+}
+
+Competenza::Competenza(const Competenza &rhs)
+    : data(rhs.data)
+    , m_arrotondamento(45)
+{
+
+}
+
+Competenza &Competenza::operator=(const Competenza &rhs)
+{
+    if (this != &rhs)
+        data.operator=(rhs.data);
+    return *this;
+}
+
+bool Competenza::operator ==(const Competenza &rhs) const
+{
+    if(this == &rhs)
+        return true;
+
+    return data->m_orePagate == rhs.orePagate() &&
+            data->m_recuperiMeseSuccessivo == rhs.recuperiMeseSuccessivo() &&
+            data->m_dipendente == rhs.dipendente() &&
+            data->m_guardiaNotturnaMap == rhs.guardiaNotturnaMap() &&
+            data->m_guardiaDiurnaMap == rhs.guardiaDiurnaMap() &&
+            data->m_defaultGNDates == rhs.defaultGNDates() &&
+            data->m_defaultGDDates == rhs.defaultGDDates() &&
+            data->m_rep == rhs.rep() &&
+            data->m_oreTot == rhs.oreTot() &&
+            data->m_defaultRep == rhs.defaultRep() &&
+            data->m_g_d_fer_F == rhs.g_d_fer_F() &&
+            data->m_g_d_fer_S == rhs.g_d_fer_S() &&
+            data->m_g_d_fer_D == rhs.g_d_fer_D() &&
+            data->m_g_d_fes_F == rhs.g_d_fes_F() &&
+            data->m_g_d_fes_S == rhs.g_d_fes_S() &&
+            data->m_g_d_fes_D == rhs.g_d_fes_D() &&
+            data->m_g_n_fer_F == rhs.g_n_fer_F() &&
+            data->m_g_n_fer_S == rhs.g_n_fer_S() &&
+            data->m_g_n_fer_D == rhs.g_n_fer_D() &&
+            data->m_g_n_fes_F == rhs.g_n_fes_F() &&
+            data->m_g_n_fes_S == rhs.g_n_fes_S() &&
+            data->m_g_n_fes_D == rhs.g_n_fes_D() &&
+            data->m_totOreGuardie == rhs.totOreGuardie() &&
+            data->m_dmp == rhs.dmp() &&
+            data->m_pagaStrGuardia == rhs.pagaStrGuardia() &&
+            data->m_dmp_calcolato == rhs.dmpCalcolato() &&
+            data->m_orarioGiornaliero == rhs.orarioGiornaliero() &&
+            data->m_defaultDmp == rhs.defaultDmp() &&
+            data->m_defaultOrarioGiornaliero == rhs.defaultOrarioGiornaliero() &&
+            data->m_note == rhs.note() &&
+            data->m_defaultNote == rhs.defaultNote() &&
+            data->m_altreAssenze == rhs.altreAssenze() &&
+            data->m_defaultAltreAssenze == rhs.defaultAltreAssenze() &&
+            data->m_modded == rhs.modded() &&
+            data->m_gdiurneModded == rhs.gdiurneModded() &&
+            data->m_gnotturneModded == rhs.gnotturneModded() &&
+            data->m_repModded == rhs.repModded() &&
+            data->m_dmpModded == rhs.dmpModded() &&
+            data->m_orarioGiornalieroModded == rhs.orarioGiornalieroModded() &&
+            data->m_altreModded == rhs.altreModded() &&
+            data->m_noteModded == rhs.noteModded();
+}
+
+Competenza::~Competenza()
+{
+
+}
+
+
+void Competenza::buildDipendente()
+{
+    m_unitaId = -1;
+    data->m_oreTot = 0;
+    data->m_dipendente->resetProperties();
+    data->m_defaultDmp = -1;
+    data->m_defaultOrarioGiornaliero = 0;
+    data->m_defaultNote.clear();
+    data->m_orePagate = 0;
+    data->m_recuperiMeseSuccessivo.first = 0;  // minuti giornalieri
+    data->m_recuperiMeseSuccessivo.second = 0; // num rmp
+    data->m_defaultGDDates.clear();
+    data->m_defaultGNDates.clear();
+    data->m_defaultRep.clear();
+    data->m_guardiaNotturnaMap.clear();
+    data->m_guardiaDiurnaMap.clear();
+    data->m_rep.clear();
+    data->m_altreAssenze.clear();
+    data->m_defaultAltreAssenze.clear();
 
     if(m_id == 0)
         return;
@@ -267,165 +218,165 @@ void CompetenzaData::buildDipendente()
         return;
     }
 
-    m_dipendente->setNome(query.at(0).toString());           // nome
-    m_dipendente->setMatricola(query.at(1).toInt());         // matricola
-    m_dipendente->setUnita(query.at(2).toInt());             // unità
-    m_dipendente->addRiposi(query.at(3).toInt());            // riposi
-    m_dipendente->setMinutiGiornalieri(query.at(4).toInt()); // orario giornaliero
+    data->m_dipendente->setNome(query.at(0).toString());           // nome
+    data->m_dipendente->setMatricola(query.at(1).toInt());         // matricola
+    data->m_dipendente->setUnita(query.at(2).toInt());             // unità
+    data->m_dipendente->addRiposi(query.at(3).toInt());            // riposi
+    data->m_dipendente->setMinutiGiornalieri(query.at(4).toInt()); // orario giornaliero
     if(query.at(4).toInt() > Utilities::m_maxMinutiGiornalieri) {
-        m_dipendente->setNumGiorniCartellino(query.at(5).toInt());
+        data->m_dipendente->setNumGiorniCartellino(query.at(5).toInt());
     } else {
         if(!query.at(5).toString().trimmed().isEmpty()) {
-            foreach (QString f, query.at(5).toString().split(",")) { // ferie
-                m_dipendente->addFerie(f);
+            for(const auto &f : query.at(5).toString().split(",")) { // ferie
+                data->m_dipendente->addFerie(f);
             }
         }
     }
     if(!query.at(6).toString().trimmed().isEmpty()) {
-        foreach (QString f, query.at(6).toString().split(",")) { // congedi
-            m_dipendente->addCongedo(f);
+        for(const auto &f : query.at(6).toString().split(",")) { // congedi
+            data->m_dipendente->addCongedo(f);
         }
     }
     if(!query.at(7).toString().trimmed().isEmpty()) {
-        foreach (QString f, query.at(7).toString().split(",")) { // malattia
-            m_dipendente->addMalattia(f);
+        for(const auto &f : query.at(7).toString().split(",")) { // malattia
+            data->m_dipendente->addMalattia(f);
         }
     }
     if(!query.at(8).toString().trimmed().isEmpty()) {
-        foreach (QString f, query.at(8).toString().split(",")) { // rmp
-            m_dipendente->addRmp(f);
+        for(const auto &f : query.at(8).toString().split(",")) { // rmp
+            data->m_dipendente->addRmp(f);
         }
     }
     if(!query.at(9).toString().trimmed().isEmpty()) {
-        foreach (QString f, query.at(9).toString().split(",")) {  // rmc
-            m_dipendente->addRmc(f);
+        for(const auto &f : query.at(9).toString().split(",")) {  // rmc
+            data->m_dipendente->addRmc(f);
         }
     }
     if(!query.at(10).toString().trimmed().isEmpty()) {
-        foreach (QString f, query.at(10).toString().split(";")) { // altre causali
+        for(const auto &f : query.at(10).toString().split(";")) { // altre causali
             if(!f.isEmpty()) {
-                QStringList assenze = f.split(",");
-                m_dipendente->addAltraCausale(assenze.at(0),assenze.at(1),assenze.at(2).toInt());
+                const auto assenze = f.split(",");
+                data->m_dipendente->addAltraCausale(assenze.at(0),assenze.at(1),assenze.at(2).toInt());
             }
         }
     }
 
     if(!query.at(20).toString().trimmed().isEmpty()) {
-        foreach (QString f, query.at(20).toString().split(",")) { // guardie diurne mod
+        for(const auto &f : query.at(20).toString().split(",")) { // guardie diurne mod
             if(f == "0")
                 continue;
-            m_dipendente->addGuardiaDiurna(f);
+            data->m_dipendente->addGuardiaDiurna(f);
             addGuardiaDiurnaDay(f.toInt());
-            m_modded = true;
-            m_gdiurneModded = true;
+            data->m_modded = true;
+            data->m_gdiurneModded = true;
         }
     } else if(!query.at(11).toString().trimmed().isEmpty()) {
-        foreach (QString f, query.at(11).toString().split(",")) { // guardie diurne
-            m_dipendente->addGuardiaDiurna(f);
+        for(const auto &f : query.at(11).toString().split(",")) { // guardie diurne
+            data->m_dipendente->addGuardiaDiurna(f);
             addGuardiaDiurnaDay(f.toInt());
         }
     }
-    m_defaultGDDates = m_guardiaDiurnaMap;
+    data->m_defaultGDDates = data->m_guardiaDiurnaMap;
 
     if(!query.at(21).toString().trimmed().isEmpty()) {
-        foreach (QString f, query.at(21).toString().split(",")) { // guardie notturne mod
+        for(const auto &f : query.at(21).toString().split(",")) { // guardie notturne mod
             if(f == "0")
                 continue;
-            m_dipendente->addGuardiaNotturna(f);
+            data->m_dipendente->addGuardiaNotturna(f);
             addGuardiaNotturnaDay(f.toInt());
-            m_modded = true;
-            m_gnotturneModded = true;
+            data->m_modded = true;
+            data->m_gnotturneModded = true;
         }
     } else if(!query.at(12).toString().trimmed().isEmpty()) {
-        foreach (QString f, query.at(12).toString().split(",")) { // guardie notturne
-            m_dipendente->addGuardiaNotturna(f);
+        for(const auto &f : query.at(12).toString().split(",")) { // guardie notturne
+            data->m_dipendente->addGuardiaNotturna(f);
             addGuardiaNotturnaDay(f.toInt());
         }
     }
-    m_defaultGNDates = m_guardiaNotturnaMap;
+    data->m_defaultGNDates = data->m_guardiaNotturnaMap;
 
     if(!query.at(13).toString().trimmed().isEmpty()) {
-        foreach (QString f, query.at(13).toString().split(";")) { // grep
+        for(const auto &f : query.at(13).toString().split(";")) { // grep
             QStringList fields = f.split(",");
             if(fields.count() != 3)
                 continue;
-            m_dipendente->addGrep(fields.at(0).toInt(), fields.at(1).toInt(), fields.at(2).toInt());
+            data->m_dipendente->addGrep(fields.at(0).toInt(), fields.at(1).toInt(), fields.at(2).toInt());
         }
     }
 
-    m_dipendente->addMinutiCongedo(query.at(14).toInt());     // minuti di congedi
-    m_dipendente->addMinutiEccr(query.at(15).toInt());        // minuti di eccr
-    m_dipendente->addMinutiGrep(query.at(16).toInt());        // minuti di grep
-    m_dipendente->addMinutiGuar(query.at(17).toInt());        // minuti di guar
-    m_dipendente->addMinutiRmc(query.at(18).toInt());         // minuti di rmc
-    m_dipendente->addMinutiFatti(query.at(19).toInt());       // minuti fatti
+    data->m_dipendente->addMinutiCongedo(query.at(14).toInt());     // minuti di congedi
+    data->m_dipendente->addMinutiEccr(query.at(15).toInt());        // minuti di eccr
+    data->m_dipendente->addMinutiGrep(query.at(16).toInt());        // minuti di grep
+    data->m_dipendente->addMinutiGuar(query.at(17).toInt());        // minuti di guar
+    data->m_dipendente->addMinutiRmc(query.at(18).toInt());         // minuti di rmc
+    data->m_dipendente->addMinutiFatti(query.at(19).toInt());       // minuti fatti
 
     if(!query.at(22).toString().trimmed().isEmpty()) {        // turni reperibilita
-        foreach (QString f, query.at(22).toString().split(";")) {
+        for(const auto &f : query.at(22).toString().split(";")) {
             if(f == "0,0")
                 continue;
-            m_rep[QDate(m_dipendente->anno(), m_dipendente->mese(), f.split(",").first().toInt())] = static_cast<ValoreRep>(f.split(",").last().toInt());
-            m_modded = true;
-            m_repModded = true;
+            data->m_rep[QDate(data->m_dipendente->anno(), data->m_dipendente->mese(), f.split(",").first().toInt())] = static_cast<ValoreRep>(f.split(",").last().toInt());
+            data->m_modded = true;
+            data->m_repModded = true;
         }
     }
-    m_defaultRep = m_rep;
+    data->m_defaultRep = data->m_rep;
 
-    m_dmp = query.at(23).toInt();       // dmp
-    if(m_dmp >= 0) {
-        m_modded = true;
-        m_dmpModded = true;
+    data->m_dmp = query.at(23).toInt();       // dmp
+    if(data->m_dmp >= 0) {
+        data->m_modded = true;
+        data->m_dmpModded = true;
     }
-    m_defaultDmp = m_dmp;
+    data->m_defaultDmp = data->m_dmp;
 
-    m_dmp_calcolato = query.at(24).toInt();      // dmp_calcolato
+    data->m_dmp_calcolato = query.at(24).toInt();      // dmp_calcolato
 
     if(!query.at(25).toString().trimmed().isEmpty()) {        // altre assenze
-        foreach (QString f, query.at(25).toString().split(",")) {
+        for(const auto &f : query.at(25).toString().split(",")) {
             if(f == "0")
                 continue;
-            m_altreAssenze << f;
-            m_modded = true;
-            m_altreModded = true;
+            data->m_altreAssenze << f;
+            data->m_modded = true;
+            data->m_altreModded = true;
         }
     }
     rimuoviAltreAssenzeDoppie();
-    m_defaultAltreAssenze = m_altreAssenze;
+    data->m_defaultAltreAssenze = data->m_altreAssenze;
 
     m_unitaId = query.at(26).toInt();       // id unità
     if(m_unitaId < 0) {
         qDebug() << Q_FUNC_INFO << "ERROR :: unità non trovata";
     }
 
-    m_note = query.at(27).toString();       // nota
-    if(!m_note.isEmpty()) {
-        m_modded = true;
-        m_noteModded = true;
+    data->m_note = query.at(27).toString();       // nota
+    if(!data->m_note.isEmpty()) {
+        data->m_modded = true;
+        data->m_noteModded = true;
     }
-    m_defaultNote = m_note;
+    data->m_defaultNote = data->m_note;
 
     if(!query.at(28).toString().trimmed().isEmpty()) {
-        foreach (QString f, query.at(28).toString().split(",")) { // scoperti
-            m_dipendente->addScoperto(f);
+        for(const auto &f : query.at(28).toString().split(",")) { // scoperti
+            data->m_dipendente->addScoperto(f);
         }
     }
 
-    m_orarioGiornaliero = m_dipendente->minutiGiornalieri();
+    data->m_orarioGiornaliero = data->m_dipendente->minutiGiornalieri();
     if(query.at(29).toInt() >= 0) {
-        m_modded = true;
-        m_orarioGiornalieroModded = true;
-        m_orarioGiornaliero = query.at(29).toInt();       // orario giornaliero
+        data->m_modded = true;
+        data->m_orarioGiornalieroModded = true;
+        data->m_orarioGiornaliero = query.at(29).toInt();       // orario giornaliero
     }
-    m_defaultOrarioGiornaliero = m_orarioGiornaliero;
+    data->m_defaultOrarioGiornaliero = data->m_orarioGiornaliero;
 
-    m_pagaStrGuardia = query.at(30).toBool();
+    data->m_pagaStrGuardia = query.at(30).toBool();
 
     getOrePagate();
     getRecuperiMeseSuccessivo();
     calcOreGuardia();
 }
 
-QString CompetenzaData::inOrario(int mins)
+QString Competenza::inOrario(int mins)
 {
     QString sign;
     if(mins < 0) {
@@ -439,99 +390,107 @@ QString CompetenzaData::inOrario(int mins)
 }
 
 
-int CompetenzaData::badgeNumber() const
+int Competenza::badgeNumber() const
 {
-    return m_dipendente->matricola();
+    return data->m_dipendente->matricola();
 }
 
-QString CompetenzaData::name() const
+QString Competenza::name() const
 {
-    return m_dipendente->nome();
+    return data->m_dipendente->nome();
 }
 
-QDate CompetenzaData::dataIniziale() const
+QDate Competenza::dataIniziale() const
 {
-    return QDate(m_dipendente->anno(), m_dipendente->mese(), 1);
+    return QDate(data->m_dipendente->anno(), data->m_dipendente->mese(), 1);
 }
 
-QDate CompetenzaData::dataFinale() const
+QDate Competenza::dataFinale() const
 {
-    return QDate(m_dipendente->anno(), m_dipendente->mese(), QDate(m_dipendente->anno(), m_dipendente->mese(), 1).daysInMonth());
+    return QDate(data->m_dipendente->anno(), data->m_dipendente->mese(), QDate(data->m_dipendente->anno(), data->m_dipendente->mese(), 1).daysInMonth());
 }
 
-QString CompetenzaData::modTableName() const
+QString Competenza::tableName() const
+{
+    return m_tableName;
+}
+
+QString Competenza::modTableName() const
 {
     return m_modTableName;
 }
 
-int CompetenzaData::doctorId()
+int Competenza::doctorId()
 {
     return m_id;
 }
 
-int CompetenzaData::giorniLavorati() const
+int Competenza::giorniLavorati() const
 {
-    if(m_dipendente->minutiGiornalieri() > Utilities::m_maxMinutiGiornalieri)
+    if(data->m_dipendente->minutiGiornalieri() > Utilities::m_maxMinutiGiornalieri)
         return 0;
 
-    return QDate(m_dipendente->anno(), m_dipendente->mese(), 1).daysInMonth()
-            - m_dipendente->riposi()
-            - m_dipendente->rmp().count()
-            - m_dipendente->ferie().count()
-            - m_dipendente->malattia().count()
-            - m_altreAssenze.count();
+    return QDate(data->m_dipendente->anno(), data->m_dipendente->mese(), 1).daysInMonth()
+            - data->m_dipendente->riposi()
+            - data->m_dipendente->rmp().count()
+            - data->m_dipendente->ferie().count()
+            - data->m_dipendente->malattia().count()
+            - data->m_altreAssenze.count();
 }
 
-int CompetenzaData::giorniLavorativi() const
+int Competenza::giorniLavorativi() const
 {
-    if(m_dipendente->minutiGiornalieri() > Utilities::m_maxMinutiGiornalieri)
-        return m_dipendente->numGiorniCartellino() - m_dipendente->riposi();
+    if(data->m_dipendente->minutiGiornalieri() > Utilities::m_maxMinutiGiornalieri)
+        return data->m_dipendente->numGiorniCartellino() - data->m_dipendente->riposi();
 
-    return QDate(m_dipendente->anno(), m_dipendente->mese(), 1).daysInMonth() - m_dipendente->riposi();
+    return QDate(data->m_dipendente->anno(), data->m_dipendente->mese(), 1).daysInMonth() - data->m_dipendente->riposi();
 }
 
-QString CompetenzaData::assenzeTotali() const
+QString Competenza::assenzeTotali() const
 {
-    return QString::number(m_dipendente->rmp().count()
-            + m_dipendente->ferie().count()
-            + m_dipendente->congedi().count()
-            + m_dipendente->malattia().count()
-            + m_dipendente->altreCausaliCount()
-            + m_altreAssenze.count());
+    if(data->m_dipendente->minutiGiornalieriVeri() > Utilities::m_maxMinutiGiornalieri)
+        return QLatin1String();
+
+    return QString::number(data->m_dipendente->rmp().count()
+            + data->m_dipendente->ferie().count()
+            + data->m_dipendente->congedi().count()
+            + data->m_dipendente->malattia().count()
+            + data->m_dipendente->altreCausaliCount()
+            + data->m_altreAssenze.count());
 }
 
-QString CompetenzaData::orarioGiornaliero()
+QString Competenza::orarioGiornaliero()
 {
-    if(m_dipendente->minutiGiornalieri() > Utilities::m_maxMinutiGiornalieri)
-        return inOrario(m_dipendente->minutiGiornalieri() / (m_dipendente->numGiorniCartellino() - m_dipendente->riposi()));
+    if(data->m_dipendente->minutiGiornalieri() > Utilities::m_maxMinutiGiornalieri)
+        return inOrario(data->m_dipendente->minutiGiornalieri() / (data->m_dipendente->numGiorniCartellino() - data->m_dipendente->riposi()));
 
-    return inOrario((m_orarioGiornaliero >= 0 ? m_orarioGiornaliero : m_dipendente->minutiGiornalieri()));
+    return inOrario((data->m_orarioGiornaliero >= 0 ? data->m_orarioGiornaliero : data->m_dipendente->minutiGiornalieri()));
 }
 
-QString CompetenzaData::oreDovute()
+QString Competenza::oreDovute()
 {
     return inOrario(minutiDovuti());
 }
 
-int CompetenzaData::minutiDovuti() const
+int Competenza::minutiDovuti() const
 {
-    if(m_dipendente->minutiGiornalieri() > Utilities::m_maxMinutiGiornalieri) {
-        return m_dipendente->minutiGiornalieri();
+    if(data->m_dipendente->minutiGiornalieri() > Utilities::m_maxMinutiGiornalieri) {
+        return data->m_dipendente->minutiGiornalieri();
     }
-    return (m_orarioGiornaliero >= 0 ? m_orarioGiornaliero : m_dipendente->minutiGiornalieri()) * giorniLavorati();
+    return (data->m_orarioGiornaliero >= 0 ? data->m_orarioGiornaliero : data->m_dipendente->minutiGiornalieri()) * giorniLavorati();
 }
 
-QString CompetenzaData::oreEffettuate()
+QString Competenza::oreEffettuate()
 {
-    return inOrario(m_dipendente->minutiFatti() + m_dipendente->minutiEccr() + m_dipendente->minutiGrep() + m_dipendente->minutiGuar());
+    return inOrario(data->m_dipendente->minutiFatti() + data->m_dipendente->minutiEccr() + data->m_dipendente->minutiGrep() + data->m_dipendente->minutiGuar());
 }
 
-int CompetenzaData::oreRepPagate() const
+int Competenza::oreRepPagate() const
 {
-    if(m_dipendente->minutiGrep() == 0)
+    if(data->m_dipendente->minutiGrep() == 0)
         return 0;
 
-    const int oreGrep = m_dipendente->minutiGrep() % 60 <= m_arrotondamento ? m_dipendente->minutiGrep() / 60 : m_dipendente->minutiGrep() / 60 + 1;
+    const int oreGrep = data->m_dipendente->minutiGrep() % 60 <= m_arrotondamento ? data->m_dipendente->minutiGrep() / 60 : data->m_dipendente->minutiGrep() / 60 + 1;
     const int diffOreArrot = differenzaMin() % 60 <= m_arrotondamento ? differenzaMin() / 60 : differenzaMin() / 60 + 1;
 
     int residuoOre = diffOreArrot;
@@ -547,36 +506,36 @@ int CompetenzaData::oreRepPagate() const
     return residuoOre;
 }
 
-QString CompetenzaData::differenzaOre()
+QString Competenza::differenzaOre()
 {
     return inOrario(differenzaMin());
 }
 
-QString CompetenzaData::differenzaOreSenzaDmp()
+QString Competenza::differenzaOreSenzaDmp()
 {
-    return inOrario(m_dipendente->minutiFatti()
-                    + m_dipendente->minutiEccr()
-                    + m_dipendente->minutiGrep()
-                    + m_dipendente->minutiGuar()
+    return inOrario(data->m_dipendente->minutiFatti()
+                    + data->m_dipendente->minutiEccr()
+                    + data->m_dipendente->minutiGrep()
+                    + data->m_dipendente->minutiGuar()
                     - minutiDovuti());
 }
 
-int CompetenzaData::differenzaMin() const
+int Competenza::differenzaMin() const
 {
-    return m_dipendente->minutiFatti()
-           + m_dipendente->minutiEccr()
-           + m_dipendente->minutiGrep()
-           + m_dipendente->minutiGuar()
+    return data->m_dipendente->minutiFatti()
+           + data->m_dipendente->minutiEccr()
+           + data->m_dipendente->minutiGrep()
+           + data->m_dipendente->minutiGuar()
            - dmp()
            - minutiDovuti();
 }
 
-QString CompetenzaData::deficitOrario()
+QString Competenza::deficitOrario()
 {
-    int val = m_dipendente->minutiFatti()
-            + m_dipendente->minutiEccr()
-            + m_dipendente->minutiGrep()
-            + m_dipendente->minutiGuar()
+    int val = data->m_dipendente->minutiFatti()
+            + data->m_dipendente->minutiEccr()
+            + data->m_dipendente->minutiGrep()
+            + data->m_dipendente->minutiGuar()
             - dmp()
             - minutiDovuti();
 
@@ -586,12 +545,12 @@ QString CompetenzaData::deficitOrario()
     return "//";
 }
 
-QString CompetenzaData::deficitPuntuale()
+QString Competenza::deficitPuntuale()
 {
-    int val = m_dipendente->minutiFatti()
-            + m_dipendente->minutiEccr()
-            + m_dipendente->minutiGrep()
-            + m_dipendente->minutiGuar()
+    int val = data->m_dipendente->minutiFatti()
+            + data->m_dipendente->minutiEccr()
+            + data->m_dipendente->minutiGrep()
+            + data->m_dipendente->minutiGuar()
             - minutiDovuti();
 
     if( val < 0)
@@ -600,10 +559,10 @@ QString CompetenzaData::deficitPuntuale()
     return "//";
 }
 
-int CompetenzaData::minutiAltreCausali() const
+int Competenza::minutiAltreCausali() const
 {
      int countMinuti = 0;
-     QMap<QString, QPair<QStringList, int> > map = m_dipendente->altreCausali();
+     QMap<QString, QPair<QStringList, int> > map = data->m_dipendente->altreCausali();
      QMap<QString, QPair<QStringList, int>>::const_iterator i = map.constBegin();
      while (i != map.constEnd()) {
          countMinuti += i.value().second;
@@ -612,133 +571,133 @@ int CompetenzaData::minutiAltreCausali() const
      return countMinuti;
 }
 
-QString CompetenzaData::oreAltreCausali()
+QString Competenza::oreAltreCausali()
 {
     return inOrario(minutiAltreCausali());
 }
 
-QString CompetenzaData::ferieCount() const
+QString Competenza::ferieCount() const
 {
-    return QString::number(m_dipendente->ferie().count());
+    return QString::number(data->m_dipendente->ferie().count());
 }
 
-QList<QDate> CompetenzaData::ferieDates() const
+QList<QDate> Competenza::ferieDates() const
 {
     QList<QDate> dates;
-    foreach (QString s, m_dipendente->ferie()) {
-        QDate date(m_dipendente->anno(), m_dipendente->mese(), s.toInt());
+    for(const auto &s : data->m_dipendente->ferie()) {
+        QDate date(data->m_dipendente->anno(), data->m_dipendente->mese(), s.toInt());
         dates << date;
     }
 
     return dates;
 }
 
-QList<QDate> CompetenzaData::scopertiDates() const
+QList<QDate> Competenza::scopertiDates() const
 {
     QList<QDate> dates;
-    foreach (QString s, m_dipendente->scoperti()) {
-        QDate date(m_dipendente->anno(), m_dipendente->mese(), s.toInt());
+    for(const auto &s : data->m_dipendente->scoperti()) {
+        QDate date(data->m_dipendente->anno(), data->m_dipendente->mese(), s.toInt());
         dates << date;
     }
 
     return dates;
 }
 
-QString CompetenzaData::congediCount() const
+QString Competenza::congediCount() const
 {
-    return QString::number(m_dipendente->congedi().count());
+    return QString::number(data->m_dipendente->congedi().count());
 }
 
-QList<QDate> CompetenzaData::congediDates() const
+QList<QDate> Competenza::congediDates() const
 {
     QList<QDate> dates;
-    foreach (QString s, m_dipendente->congedi()) {
-        QDate date(m_dipendente->anno(), m_dipendente->mese(), s.toInt());
+    for(const auto &s : data->m_dipendente->congedi()) {
+        QDate date(data->m_dipendente->anno(), data->m_dipendente->mese(), s.toInt());
         dates << date;
     }
 
     return dates;
 }
 
-QString CompetenzaData::malattiaCount() const
+QString Competenza::malattiaCount() const
 {
-    return QString::number(m_dipendente->malattia().count());
+    return QString::number(data->m_dipendente->malattia().count());
 }
 
-QList<QDate> CompetenzaData::malattiaDates() const
+QList<QDate> Competenza::malattiaDates() const
 {
     QList<QDate> dates;
-    foreach (QString s, m_dipendente->malattia()) {
-        QDate date(m_dipendente->anno(), m_dipendente->mese(), s.toInt());
+    for(const auto &s : data->m_dipendente->malattia()) {
+        QDate date(data->m_dipendente->anno(), data->m_dipendente->mese(), s.toInt());
         dates << date;
     }
 
     return dates;
 }
 
-QString CompetenzaData::rmpCount() const
+QString Competenza::rmpCount() const
 {
-    return QString::number(m_dipendente->rmp().count());
+    return QString::number(data->m_dipendente->rmp().count());
 }
 
-QList<QDate> CompetenzaData::rmpDates() const
+QList<QDate> Competenza::rmpDates() const
 {
     QList<QDate> dates;
-    foreach (QString s, m_dipendente->rmp()) {
-        QDate date(m_dipendente->anno(), m_dipendente->mese(), s.toInt());
+    for(const auto &s : data->m_dipendente->rmp()) {
+        QDate date(data->m_dipendente->anno(), data->m_dipendente->mese(), s.toInt());
         dates << date;
     }
 
     return dates;
 }
 
-QString CompetenzaData::rmcCount() const
+QString Competenza::rmcCount() const
 {
-    return QString::number(m_dipendente->rmc().count());
+    return QString::number(data->m_dipendente->rmc().count());
 }
 
-QList<QDate> CompetenzaData::rmcDates() const
+QList<QDate> Competenza::rmcDates() const
 {
     QList<QDate> dates;
-    foreach (QString s, m_dipendente->rmc()) {
-        QDate date(m_dipendente->anno(), m_dipendente->mese(), s.toInt());
+    for(const auto &s : data->m_dipendente->rmc()) {
+        QDate date(data->m_dipendente->anno(), data->m_dipendente->mese(), s.toInt());
         dates << date;
     }
 
     return dates;
 }
 
-QList<QDate> CompetenzaData::gdDates() const
+QList<QDate> Competenza::gdDates() const
 {
     QList<QDate> dates;
-    foreach (QString s, m_dipendente->guardieDiurne()) {
-        QDate date(m_dipendente->anno(), m_dipendente->mese(), s.toInt());
+    for(const auto &s : data->m_dipendente->guardieDiurne()) {
+        QDate date(data->m_dipendente->anno(), data->m_dipendente->mese(), s.toInt());
         dates << date;
     }
 
     return dates;
 }
 
-QList<QDate> CompetenzaData::gnDates() const
+QList<QDate> Competenza::gnDates() const
 {
     QList<QDate> dates;
-    foreach (QString s, m_dipendente->guardieNotturne()) {
-        QDate date(m_dipendente->anno(), m_dipendente->mese(), s.toInt());
+    for(const auto &s : data->m_dipendente->guardieNotturne()) {
+        QDate date(data->m_dipendente->anno(), data->m_dipendente->mese(), s.toInt());
         dates << date;
     }
 
     return dates;
 }
 
-QList<QDate> CompetenzaData::altreCausaliDates() const
+QList<QDate> Competenza::altreCausaliDates() const
 {
     QList<QDate> dates;
-    QMap<QString, QPair<QStringList, int> > map = m_dipendente->altreCausali();
-    QMap<QString, QPair<QStringList, int>>::const_iterator i = map.constBegin();
+    const auto map = data->m_dipendente->altreCausali();
+    auto i = map.constBegin();
     while (i != map.constEnd()) {
-        const QStringList causaliDates = i.value().first;
-        for (auto &s : causaliDates) {
-            QDate date(m_dipendente->anno(), m_dipendente->mese(), s.toInt());
+        const auto causaliDates = i.value().first;
+        for (const auto &s : causaliDates) {
+            QDate date(data->m_dipendente->anno(), data->m_dipendente->mese(), s.toInt());
             dates << date;
         }
         ++i;
@@ -747,123 +706,123 @@ QList<QDate> CompetenzaData::altreCausaliDates() const
     return dates;
 }
 
-QMap<int, GuardiaType> CompetenzaData::guardiaDiurnaMap() const
+QMap<int, GuardiaType> Competenza::guardiaDiurnaMap() const
 {
-    return m_guardiaDiurnaMap;
+    return data->m_guardiaDiurnaMap;
 }
 
-QMap<int, GuardiaType> CompetenzaData::guardiaNotturnaMap() const
+QMap<int, GuardiaType> Competenza::guardiaNotturnaMap() const
 {
-    return m_guardiaNotturnaMap;
+    return data->m_guardiaNotturnaMap;
 }
 
-void CompetenzaData::setRep(const QMap<QDate, ValoreRep> &map)
+void Competenza::setRep(const QMap<QDate, ValoreRep> &map)
 {
-    m_rep = map;
+    data->m_rep = map;
 }
 
-QMap<QDate, ValoreRep> CompetenzaData::rep() const
+QMap<QDate, ValoreRep> Competenza::rep() const
 {
-    return m_rep;
+    return data->m_rep;
 }
 
-void CompetenzaData::setDmp(const int &minutes)
+void Competenza::setDmp(const int &minutes)
 {
-    m_dmp = minutes;
+    data->m_dmp = minutes;
 }
 
-void CompetenzaData::setPagaStrGuardia(const bool &ok)
+void Competenza::setPagaStrGuardia(const bool &ok)
 {
-    m_pagaStrGuardia = ok;
+    data->m_pagaStrGuardia = ok;
 }
 
-void CompetenzaData::setOrarioGiornalieroMod(const int &minutes)
+void Competenza::setOrarioGiornalieroMod(const int &minutes)
 {
-    m_orarioGiornaliero = minutes;
+    data->m_orarioGiornaliero = minutes;
 }
 
-void CompetenzaData::setDmpCalcolato(const int &minutes)
+void Competenza::setDmpCalcolato(const int &minutes)
 {
-    m_dmp_calcolato = minutes;
+    data->m_dmp_calcolato = minutes;
 }
 
-int CompetenzaData::dmp() const
+int Competenza::dmp() const
 {
-    if(m_dmp >= 0)
-        return m_dmp;
-    return m_dmp_calcolato;
+    if(data->m_dmp >= 0)
+        return data->m_dmp;
+    return data->m_dmp_calcolato;
 }
 
-bool CompetenzaData::pagaStrGuardia() const
+bool Competenza::pagaStrGuardia() const
 {
-    return m_pagaStrGuardia;
+    return data->m_pagaStrGuardia;
 }
 
-void CompetenzaData::setNote(const QString &note)
+void Competenza::setNote(const QString &note)
 {
-    m_note = note;
+    data->m_note = note;
 }
 
-QString CompetenzaData::note() const
+QString Competenza::note() const
 {
-    return m_note;
+    return data->m_note;
 }
 
-QList<QDate> CompetenzaData::altreAssenzeDates() const
+QList<QDate> Competenza::altreAssenzeDates() const
 {
     QList<QDate> dates;
-    foreach (QString s, m_altreAssenze) {
-        QDate date(m_dipendente->anno(), m_dipendente->mese(), s.toInt());
+    for(const auto &s : data->m_altreAssenze) {
+        QDate date(data->m_dipendente->anno(), data->m_dipendente->mese(), s.toInt());
         dates << date;
     }
 
     return dates;
 }
 
-void CompetenzaData::setAltreAssenze(const QList<QDate> &assenze)
+void Competenza::setAltreAssenze(const QList<QDate> &assenze)
 {
-    m_altreAssenze.clear();
-    foreach (QDate giorno, assenze) {
-        m_altreAssenze << QString::number(giorno.day());
+    data->m_altreAssenze.clear();
+    for(const auto &giorno : assenze) {
+        data->m_altreAssenze << QString::number(giorno.day());
     }
 }
 
-bool CompetenzaData::isModded() const
+bool Competenza::isModded() const
 {
-    return (m_dmp != m_defaultDmp ||
-            m_guardiaDiurnaMap != m_defaultGDDates ||
-            m_guardiaNotturnaMap != m_defaultGNDates ||
-            m_rep != m_defaultRep ||
-            m_altreAssenze != m_defaultAltreAssenze ||
-            m_note != m_defaultNote ||
-            m_orarioGiornaliero != m_defaultOrarioGiornaliero);
+    return (data->m_dmp != data->m_defaultDmp ||
+            data->m_guardiaDiurnaMap != data->m_defaultGDDates ||
+            data->m_guardiaNotturnaMap != data->m_defaultGNDates ||
+            data->m_rep != data->m_defaultRep ||
+            data->m_altreAssenze != data->m_defaultAltreAssenze ||
+            data->m_note != data->m_defaultNote ||
+            data->m_orarioGiornaliero != data->m_defaultOrarioGiornaliero);
 }
 
-bool CompetenzaData::isRestorable() const
+bool Competenza::isRestorable() const
 {
-    return (m_modded || isModded());
+    return (data->m_modded || isModded());
 }
 
-void CompetenzaData::saveMods()
+void Competenza::saveMods()
 {
     // salva dmp calcolato
-    if(m_dmp_calcolato >= 0) {
-        SqlQueries::saveMod(m_modTableName, "dmp_calcolato", m_id, m_dmp_calcolato);
+    if(data->m_dmp_calcolato >= 0) {
+        SqlQueries::saveMod(m_modTableName, "dmp_calcolato", m_id, data->m_dmp_calcolato);
     }
 
-    if(m_defaultNote != m_note) {
-        SqlQueries::saveMod(m_modTableName, "nota", m_id, m_note);
+    if(data->m_defaultNote != data->m_note) {
+        SqlQueries::saveMod(m_modTableName, "nota", m_id, data->m_note);
     }
 
-    if(m_defaultDmp != m_dmp) {
-        if(m_dmp == 0)
-            m_dmp = -1;
-        SqlQueries::saveMod(m_modTableName, "dmp", m_id, m_dmp);
+    if(data->m_defaultDmp != data->m_dmp) {
+        if(data->m_dmp == 0)
+            data->m_dmp = -1;
+        SqlQueries::saveMod(m_modTableName, "dmp", m_id, data->m_dmp);
     }
 
-    if(m_defaultGDDates != m_guardiaDiurnaMap) {
+    if(data->m_defaultGDDates != data->m_guardiaDiurnaMap) {
         QStringList list;
-        foreach (int n, m_guardiaDiurnaMap.keys()) {
+        for(const auto &n : data->m_guardiaDiurnaMap.keys()) {
             list << QString::number(n);
         }
         if(list.count() == 0)
@@ -871,9 +830,9 @@ void CompetenzaData::saveMods()
         SqlQueries::saveMod(m_modTableName, "guardie_diurne", m_id, list.join(","));
     }
 
-    if(m_defaultGNDates != m_guardiaNotturnaMap) {
+    if(data->m_defaultGNDates != data->m_guardiaNotturnaMap) {
         QStringList list;
-        foreach (int n, m_guardiaNotturnaMap.keys()) {
+        for(const auto &n : data->m_guardiaNotturnaMap.keys()) {
             list << QString::number(n);
         }
         if(list.count() == 0)
@@ -881,16 +840,16 @@ void CompetenzaData::saveMods()
         SqlQueries::saveMod(m_modTableName, "guardie_notturne", m_id, list.join(","));
     }
 
-    if(m_defaultAltreAssenze != m_altreAssenze) {
-        if(m_altreAssenze.count() == 0)
-            m_altreAssenze << "0";
-        SqlQueries::saveMod(m_modTableName, "altre_assenze", m_id, m_altreAssenze.join(","));
+    if(data->m_defaultAltreAssenze != data->m_altreAssenze) {
+        if(data->m_altreAssenze.count() == 0)
+            data->m_altreAssenze << "0";
+        SqlQueries::saveMod(m_modTableName, "altre_assenze", m_id, data->m_altreAssenze.join(","));
     }
 
-    if(m_defaultRep != m_rep) {
+    if(data->m_defaultRep != data->m_rep) {
         QStringList temp;
-        QMap<QDate, ValoreRep>::const_iterator i = m_rep.constBegin();
-        while (i != m_rep.constEnd()) {
+        auto i = data->m_rep.constBegin();
+        while (i != data->m_rep.constEnd()) {
             QString s = QString::number(i.key().day()) + "," + QString::number(i.value());
             temp << s;
             i++;
@@ -900,64 +859,64 @@ void CompetenzaData::saveMods()
         SqlQueries::saveMod(m_modTableName, "turni_reperibilita", m_id, temp.join(";"));
     }
 
-    if(m_defaultOrarioGiornaliero != m_orarioGiornaliero) {
-        SqlQueries::saveMod(m_modTableName, "orario_giornaliero", m_id, m_orarioGiornaliero);
+    if(data->m_defaultOrarioGiornaliero != data->m_orarioGiornaliero) {
+        SqlQueries::saveMod(m_modTableName, "orario_giornaliero", m_id, data->m_orarioGiornaliero);
     }
 
-    m_modded = true;
+    data->m_modded = true;
 }
 
-void CompetenzaData::addGuardiaDiurnaDay(int day)
+void Competenza::addGuardiaDiurnaDay(int day)
 {
-    if(m_guardiaDiurnaMap.keys().contains(day))
-        m_guardiaDiurnaMap.remove(day);
+    if(data->m_guardiaDiurnaMap.keys().contains(day))
+        data->m_guardiaDiurnaMap.remove(day);
     else
-        m_guardiaDiurnaMap[day] = tipoGuardia(QString::number(day));
+        data->m_guardiaDiurnaMap[day] = tipoGuardia(QString::number(day));
 
     calcOreGuardia();
 }
 
-void CompetenzaData::addGuardiaNotturnaDay(int day)
+void Competenza::addGuardiaNotturnaDay(int day)
 {
-    if(m_guardiaNotturnaMap.keys().contains(day))
-        m_guardiaNotturnaMap.remove(day);
+    if(data->m_guardiaNotturnaMap.keys().contains(day))
+        data->m_guardiaNotturnaMap.remove(day);
     else
-        m_guardiaNotturnaMap[day] = tipoGuardia(QString::number(day));
+        data->m_guardiaNotturnaMap[day] = tipoGuardia(QString::number(day));
 
     calcOreGuardia();
 }
 
-int CompetenzaData::orePagate() const
+int Competenza::orePagate() const
 {
-    return m_orePagate;
+    return data->m_orePagate;
 }
 
-int CompetenzaData::notte() const
+int Competenza::notte() const
 {
     int tot = 0;
-    QMap<int, GuardiaType>::const_iterator i = m_guardiaNotturnaMap.constBegin();
-    while (i != m_guardiaNotturnaMap.constEnd()) {
+    auto i = data->m_guardiaNotturnaMap.constBegin();
+    while (i != data->m_guardiaNotturnaMap.constEnd()) {
         if(i.value() != GuardiaType::GrandeFestivita)
-            tot += m_oreTot - m_orePagate;
+            tot += data->m_oreTot - data->m_orePagate;
         i++;
     }
 
     // somma eventuali grandi festività non pagate
-    tot += (grFestCount() - numGrFestPagabili()) * (m_oreTot - m_orePagate);
+    tot += (grFestCount() - numGrFestPagabili()) * (data->m_oreTot - data->m_orePagate);
 
     return tot;
 }
 
-int CompetenzaData::numGuarDiurne() const
+int Competenza::numGuarDiurne() const
 {
-    return  m_guardiaDiurnaMap.count();
+    return data->m_guardiaDiurnaMap.count();
 }
 
-QString CompetenzaData::repCount() const
+QString Competenza::repCount() const
 {
     float tot = 0.0;
-    QMap<QDate, ValoreRep>::const_iterator i = m_rep.constBegin();
-    while (i != m_rep.constEnd()) {
+    auto i = data->m_rep.constBegin();
+    while (i != data->m_rep.constEnd()) {
         switch (i.value()) {
         case ValoreRep::Mezzo:
             tot += 0.5;
@@ -983,22 +942,22 @@ QString CompetenzaData::repCount() const
     return tot == 0.0 ? "//" : QString::number(tot);
 }
 
-QString CompetenzaData::oreGrep()
+QString Competenza::oreGrep()
 {
-    if(m_dipendente->minutiGrep() == 0)
+    if(data->m_dipendente->minutiGrep() == 0)
         return QString();
 
-    return inOrario(m_dipendente->minutiGrep());
+    return inOrario(data->m_dipendente->minutiGrep());
 }
 
-int CompetenzaData::numGrFestPagabili() const
+int Competenza::numGrFestPagabili() const
 {
     if(differenzaMin() <= 0)
         return 0;
 
     int numGrFest = 0;
 
-    QMap<int, GuardiaType>::const_iterator i = guardiaNotturnaMap().constBegin();
+    auto i = guardiaNotturnaMap().constBegin();
     while(i != guardiaNotturnaMap().constEnd()) {
         if(i.value() == GuardiaType::GrandeFestivita)
             numGrFest++;
@@ -1036,7 +995,7 @@ int CompetenzaData::numGrFestPagabili() const
 //    return numGrFest;
 }
 
-int CompetenzaData::numOreGuarPagabili() const
+int Competenza::numOreGuarPagabili() const
 {
     int totMin = differenzaMin(); // saldo minuti fine mese
 
@@ -1050,7 +1009,7 @@ int CompetenzaData::numOreGuarPagabili() const
 
     // ore delle guardie notturne e delle eventuali grandi festività non pagate
     // m_orePagate: sono le ore pagate di ciascuna notte, varia da reparto a reparto
-    const int oreGuar = (numGuar()+numGuarGFNonPag()) * m_orePagate;
+    const int oreGuar = (numGuar()+numGuarGFNonPag()) * data->m_orePagate;
 
     if(oreGuar <= totMinArrot)
         return oreGuar;
@@ -1058,10 +1017,10 @@ int CompetenzaData::numOreGuarPagabili() const
     return totMinArrot;
 }
 
-int CompetenzaData::numGuar() const
+int Competenza::numGuar() const
 {
     int num = 0;
-    QMap<int, GuardiaType>::const_iterator i = guardiaNotturnaMap().constBegin();
+    auto i = guardiaNotturnaMap().constBegin();
     while(i != guardiaNotturnaMap().constEnd()) {
         if(i.value() != GuardiaType::GrandeFestivita)
             num++;
@@ -1072,28 +1031,28 @@ int CompetenzaData::numGuar() const
 }
 
 // numero guardie con grandi festività non pagate
-int CompetenzaData::numGuarGFNonPag() const
+int Competenza::numGuarGFNonPag() const
 {
     return grFestCount() - numGrFestPagabili();
 }
 
-int CompetenzaData::numGuarNottPag() const
+int Competenza::numGuarNottPag() const
 {
     return guardiaNotturnaMap().keys().count() - numGrFestPagabili();
 }
 
-int CompetenzaData::numOreGuarFesENot() const
+int Competenza::numOreGuarFesENot() const
 {
-    if(!m_pagaStrGuardia)
+    if(!data->m_pagaStrGuardia)
         return 0;
     if((g_n_fes_F() + g_n_fes_S() + g_n_fes_D()) >= numOreGuarPagabili())
         return numOreGuarPagabili();
     return (g_n_fes_F() + g_n_fes_S() + g_n_fes_D());
 }
 
-int CompetenzaData::numOreGuarFesONot() const
+int Competenza::numOreGuarFesONot() const
 {
-    if(!m_pagaStrGuardia)
+    if(!data->m_pagaStrGuardia)
         return 0;
 
     int restoOre = numOreGuarPagabili() - numOreGuarFesENot();
@@ -1105,9 +1064,9 @@ int CompetenzaData::numOreGuarFesONot() const
     return (g_n_fer_F() + g_n_fer_S() + g_n_fer_D() + g_d_fes_F() + g_d_fes_S() + g_d_fes_D());
 }
 
-int CompetenzaData::numOreGuarOrd() const
+int Competenza::numOreGuarOrd() const
 {
-    if(!m_pagaStrGuardia)
+    if(!data->m_pagaStrGuardia)
         return 0;
 
     int restoOre = numOreGuarPagabili() - numOreGuarFesONot() - numOreGuarFesENot();
@@ -1119,7 +1078,7 @@ int CompetenzaData::numOreGuarOrd() const
     return (g_d_fer_F() + g_d_fer_S() + g_d_fer_D());
 }
 
-int CompetenzaData::numOreRep(Reperibilita rep)
+int Competenza::numOreRep(Reperibilita rep)
 {
     int oreRepFesENot = r_n_fes() % 60 <= m_arrotondamento ? r_n_fes() / 60 :r_n_fes() / 60 + 1;
     if(oreRepFesENot >=  oreRepPagate())
@@ -1180,11 +1139,11 @@ int CompetenzaData::numOreRep(Reperibilita rep)
     }
 }
 
-int CompetenzaData::residuoOreNonPagate()
+int Competenza::residuoOreNonPagate()
 {
     int oreStrGuaPagate = 0;
 
-    if(m_pagaStrGuardia) {
+    if(data->m_pagaStrGuardia) {
         if(numOreGuarPagabili() != 0 || numGrFestPagabili() != 0)
             oreStrGuaPagate = numGrFestPagabili() * 12 + numOreGuarPagabili();
     }
@@ -1197,12 +1156,12 @@ int CompetenzaData::residuoOreNonPagate()
     return 0;
 }
 
-int CompetenzaData::numFestiviRecuperabili()
+int Competenza::numFestiviRecuperabili()
 {
     if(residuoOreNonPagate() == 0)
         return 0;
 
-    QList<QDate> dates = gdDates();
+    const auto dates = gdDates();
 
     int num = 0;
     for(QDate date : dates) {
@@ -1214,30 +1173,30 @@ int CompetenzaData::numFestiviRecuperabili()
     if(num == 0)
         return num;
 
-    const int maxMins = num*2*m_dipendente->minutiGiornalieri();
+    const int maxMins = num*2*data->m_dipendente->minutiGiornalieri();
 
     if(residuoOreNonPagate() <= maxMins)
         return residuoOreNonPagate();
 
-    if(m_dipendente->minutiGiornalieri() != 0) {
-        const int val = residuoOreNonPagate() / m_dipendente->minutiGiornalieri();
+    if(data->m_dipendente->minutiGiornalieri() != 0) {
+        const int val = residuoOreNonPagate() / data->m_dipendente->minutiGiornalieri();
 
         if(val <= num*2) {
-            return val*m_dipendente->minutiGiornalieri();
+            return val*data->m_dipendente->minutiGiornalieri();
         }
     }
 
-    return num*2*m_dipendente->minutiGiornalieri();
+    return num*2*data->m_dipendente->minutiGiornalieri();
 }
 
-int CompetenzaData::numNottiRecuperabili()
+int Competenza::numNottiRecuperabili()
 {
-    if(m_orePagate > 0)
+    if(data->m_orePagate > 0)
         return 0;
 
     const int residuo = residuoOreNonPagate() - numFestiviRecuperabili();
 
-    QList<QDate> dates = gnDates();
+    const auto dates = gnDates();
 
     if(dates.count() == 0)
         return 0;
@@ -1247,39 +1206,39 @@ int CompetenzaData::numNottiRecuperabili()
     if(numNottiNonPagate == 0)
         return 0;
 
-    const int maxMins = numNottiNonPagate*m_dipendente->minutiGiornalieri();
+    const int maxMins = numNottiNonPagate*data->m_dipendente->minutiGiornalieri();
 
     if(residuo <= maxMins)
         return residuo;
 
-    if(m_dipendente->minutiGiornalieri() == 0)
+    if(data->m_dipendente->minutiGiornalieri() == 0)
         return 0;
 
-    const int val = residuo / m_dipendente->minutiGiornalieri();
+    const int val = residuo / data->m_dipendente->minutiGiornalieri();
 
     if(val <= numNottiNonPagate) {
-        return val*m_dipendente->minutiGiornalieri();
+        return val*data->m_dipendente->minutiGiornalieri();
     }
 
-    return numNottiNonPagate*m_dipendente->minutiGiornalieri();
+    return numNottiNonPagate*data->m_dipendente->minutiGiornalieri();
 }
 
-int CompetenzaData::numOreRecuperabili()
+int Competenza::numOreRecuperabili()
 {
-    if(m_pagaStrGuardia)
-        return (numFestiviRecuperabili() + numNottiRecuperabili()) - m_recuperiMeseSuccessivo.first*m_recuperiMeseSuccessivo.second;
+    if(data->m_pagaStrGuardia)
+        return (numFestiviRecuperabili() + numNottiRecuperabili()) - data->m_recuperiMeseSuccessivo.first*data->m_recuperiMeseSuccessivo.second;
 
     if(numOreGuarPagabili() != 0 || numGrFestPagabili() != 0)
-        return residuoOreNonPagate() - m_recuperiMeseSuccessivo.first*m_recuperiMeseSuccessivo.second;
+        return residuoOreNonPagate() - data->m_recuperiMeseSuccessivo.first*data->m_recuperiMeseSuccessivo.second;
 
     return residuoOreNonPagate();
 }
 
-QString CompetenzaData::residuoOreNonRecuperabili()
+QString Competenza::residuoOreNonRecuperabili()
 {
     int mins = 0;
 
-    if(m_pagaStrGuardia){
+    if(data->m_pagaStrGuardia){
         mins = residuoOreNonPagate() - numFestiviRecuperabili() - numNottiRecuperabili();
     } else {
         mins = differenzaMin() - numOreRecuperabili() - oreRepPagate()*60;
@@ -1291,76 +1250,76 @@ QString CompetenzaData::residuoOreNonRecuperabili()
     return inOrario( mins );
 }
 
-int CompetenzaData::g_d_fer_F() const
+int Competenza::g_d_fer_F() const
 {
-    return m_g_d_fer_F;
+    return data->m_g_d_fer_F;
 }
 
-int CompetenzaData::g_d_fer_S() const
+int Competenza::g_d_fer_S() const
 {
-    return m_g_d_fer_S;
+    return data->m_g_d_fer_S;
 }
 
-int CompetenzaData::g_d_fer_D() const
+int Competenza::g_d_fer_D() const
 {
-    return m_g_d_fer_D;
+    return data->m_g_d_fer_D;
 }
 
-int CompetenzaData::g_d_fes_F() const
+int Competenza::g_d_fes_F() const
 {
-    return m_g_d_fes_F;
+    return data->m_g_d_fes_F;
 }
 
-int CompetenzaData::g_d_fes_S() const
+int Competenza::g_d_fes_S() const
 {
-    return m_g_d_fes_S;
+    return data->m_g_d_fes_S;
 }
 
-int CompetenzaData::g_d_fes_D() const
+int Competenza::g_d_fes_D() const
 {
-    return m_g_d_fes_D;
+    return data->m_g_d_fes_D;
 }
 
-int CompetenzaData::g_n_fer_F() const
+int Competenza::g_n_fer_F() const
 {
-    return m_g_n_fer_F;
+    return data->m_g_n_fer_F;
 }
 
-int CompetenzaData::g_n_fer_S() const
+int Competenza::g_n_fer_S() const
 {
-    return m_g_n_fer_S;
+    return data->m_g_n_fer_S;
 }
 
-int CompetenzaData::g_n_fer_D() const
+int Competenza::g_n_fer_D() const
 {
-    return m_g_n_fer_D;
+    return data->m_g_n_fer_D;
 }
 
-int CompetenzaData::g_n_fes_F() const
+int Competenza::g_n_fes_F() const
 {
-    return m_g_n_fes_F;
+    return data->m_g_n_fes_F;
 }
 
-int CompetenzaData::g_n_fes_S() const
+int Competenza::g_n_fes_S() const
 {
-    return m_g_n_fes_S;
+    return data->m_g_n_fes_S;
 }
 
-int CompetenzaData::g_n_fes_D() const
+int Competenza::g_n_fes_D() const
 {
-    return m_g_n_fes_D;
+    return data->m_g_n_fes_D;
 }
 
-int CompetenzaData::totOreGuardie() const
+int Competenza::totOreGuardie() const
 {
-    return m_totOreGuardie;
+    return data->m_totOreGuardie;
 }
 
-int CompetenzaData::r_d_fer()
+int Competenza::r_d_fer()
 {
     int minuti = 0;
-    auto i = m_dipendente->grep().constBegin();
-    while (i != m_dipendente->grep().constEnd()) {
+    auto i = data->m_dipendente->grep().constBegin();
+    while (i != data->m_dipendente->grep().constEnd()) {
         if(tipoReperibilita(i.key(), i.value().second) == RepType::FerDiu)
             minuti += i.value().first;
         i++;
@@ -1369,11 +1328,11 @@ int CompetenzaData::r_d_fer()
     return minuti;
 }
 
-int CompetenzaData::r_d_fes()
+int Competenza::r_d_fes()
 {
     int minuti = 0;
-    auto i = m_dipendente->grep().constBegin();
-    while (i != m_dipendente->grep().constEnd()) {
+    auto i = data->m_dipendente->grep().constBegin();
+    while (i != data->m_dipendente->grep().constEnd()) {
         if(tipoReperibilita(i.key(), i.value().second) == RepType::FesDiu)
             minuti += i.value().first;
         i++;
@@ -1382,11 +1341,11 @@ int CompetenzaData::r_d_fes()
     return minuti;
 }
 
-int CompetenzaData::r_n_fer()
+int Competenza::r_n_fer()
 {
     int minuti = 0;
-    auto i = m_dipendente->grep().constBegin();
-    while (i != m_dipendente->grep().constEnd()) {
+    auto i = data->m_dipendente->grep().constBegin();
+    while (i != data->m_dipendente->grep().constEnd()) {
         if(tipoReperibilita(i.key(), i.value().second) == RepType::FerNot)
             minuti += i.value().first;
         i++;
@@ -1395,11 +1354,11 @@ int CompetenzaData::r_n_fer()
     return minuti;
 }
 
-int CompetenzaData::r_n_fes()
+int Competenza::r_n_fes()
 {
     int minuti = 0;
-    auto i = m_dipendente->grep().constBegin();
-    while (i != m_dipendente->grep().constEnd()) {
+    auto i = data->m_dipendente->grep().constBegin();
+    while (i != data->m_dipendente->grep().constEnd()) {
         if(tipoReperibilita(i.key(), i.value().second) == RepType::FesNot)
             minuti += i.value().first;
         i++;
@@ -1408,7 +1367,7 @@ int CompetenzaData::r_n_fes()
     return minuti;
 }
 
-QString CompetenzaData::oreStraordinarioGuardie() const
+QString Competenza::oreStraordinarioGuardie() const
 {
     if(numOreGuarPagabili() == 0 && numGrFestPagabili() == 0)
         return "//";
@@ -1425,87 +1384,87 @@ QString CompetenzaData::oreStraordinarioGuardie() const
     return text;
 }
 
-bool CompetenzaData::isGuardieDiurneModded() const
+bool Competenza::isGuardieDiurneModded() const
 {
-    return m_gdiurneModded;
+    return data->m_gdiurneModded;
 }
 
-bool CompetenzaData::isGuardieNotturneModded() const
+bool Competenza::isGuardieNotturneModded() const
 {
-    return m_gnotturneModded;
+    return data->m_gnotturneModded;
 }
 
-bool CompetenzaData::isReperibilitaModded() const
+bool Competenza::isReperibilitaModded() const
 {
-    return m_repModded;
+    return data->m_repModded;
 }
 
-bool CompetenzaData::isDmpModded() const
+bool Competenza::isDmpModded() const
 {
-    return m_dmpModded;
+    return data->m_dmpModded;
 }
 
-bool CompetenzaData::isOrarioGiornalieroModded() const
+bool Competenza::isOrarioGiornalieroModded() const
 {
-    return m_orarioGiornalieroModded;
+    return data->m_orarioGiornalieroModded;
 }
 
-bool CompetenzaData::isNoteModded() const
+bool Competenza::isNoteModded() const
 {
-    return m_noteModded;
+    return data->m_noteModded;
 }
 
-bool CompetenzaData::isAltreModded() const
+bool Competenza::isAltreModded() const
 {
-    return m_altreModded;
+    return data->m_altreModded;
 }
 
-void CompetenzaData::rimuoviAltreAssenzeDoppie()
+void Competenza::rimuoviAltreAssenzeDoppie()
 {
     QStringList altreCausali;
 
-    QMap<QString, QPair<QStringList, int> >::const_iterator i = m_dipendente->altreCausali().constBegin();
-    while(i != m_dipendente->altreCausali().constEnd()) {
+    auto i = data->m_dipendente->altreCausali().constBegin();
+    while(i != data->m_dipendente->altreCausali().constEnd()) {
         altreCausali << i.value().first;
         i++;
     }
 
-    for(QString s : m_altreAssenze) {
-        if(m_dipendente->ferie().contains(s)) {
-            m_altreAssenze.removeOne(s);
+    for(QString s : data->m_altreAssenze) {
+        if(data->m_dipendente->ferie().contains(s)) {
+            data->m_altreAssenze.removeOne(s);
             continue;
         }
 
-        if(m_dipendente->congedi().contains(s)) {
-            m_altreAssenze.removeOne(s);
+        if(data->m_dipendente->congedi().contains(s)) {
+            data->m_altreAssenze.removeOne(s);
             continue;
         }
 
-        if(m_dipendente->malattia().contains(s)) {
-            m_altreAssenze.removeOne(s);
+        if(data->m_dipendente->malattia().contains(s)) {
+            data->m_altreAssenze.removeOne(s);
             continue;
         }
 
-        if(m_dipendente->rmc().contains(s)) {
-            m_altreAssenze.removeOne(s);
+        if(data->m_dipendente->rmc().contains(s)) {
+            data->m_altreAssenze.removeOne(s);
             continue;
         }
 
-        if(m_dipendente->rmp().contains(s)) {
-            m_altreAssenze.removeOne(s);
+        if(data->m_dipendente->rmp().contains(s)) {
+            data->m_altreAssenze.removeOne(s);
             continue;
         }
 
         if(altreCausali.contains(s)) {
-            m_altreAssenze.removeOne(s);
+            data->m_altreAssenze.removeOne(s);
             continue;
         }
     }
 }
 
-GuardiaType CompetenzaData::tipoGuardia(const QString &giorno)
+GuardiaType Competenza::tipoGuardia(const QString &giorno)
 {
-    QDate dataCorrente(m_dipendente->anno(), m_dipendente->mese(), giorno.toInt());
+    QDate dataCorrente(data->m_dipendente->anno(), data->m_dipendente->mese(), giorno.toInt());
 
     if(The::almanac()->isGrandeFestivita(dataCorrente.addDays(1)) || The::almanac()->isGrandeFestivita(dataCorrente)) {
         return GuardiaType::GrandeFestivita;
@@ -1518,9 +1477,9 @@ GuardiaType CompetenzaData::tipoGuardia(const QString &giorno)
     return GuardiaType::Feriale;
 }
 
-RepType CompetenzaData::tipoReperibilita(const int giorno, const int tipo)
+RepType Competenza::tipoReperibilita(const int giorno, const int tipo)
 {
-    QDate dataCorrente(m_dipendente->anno(), m_dipendente->mese(), giorno);
+    QDate dataCorrente(data->m_dipendente->anno(), data->m_dipendente->mese(), giorno);
 
     RepType value;
 
@@ -1547,43 +1506,43 @@ RepType CompetenzaData::tipoReperibilita(const int giorno, const int tipo)
     return value;
 }
 
-void CompetenzaData::calcOreGuardia()
+void Competenza::calcOreGuardia()
 {
-    m_g_d_fer_F = 0;
-    m_g_d_fer_S = 0;
-    m_g_d_fer_D = 0;
-    m_g_d_fes_F = 0;
-    m_g_d_fes_S = 0;
-    m_g_d_fes_D = 0;
-    m_g_n_fer_F = 0;
-    m_g_n_fer_S = 0;
-    m_g_n_fer_D = 0;
-    m_g_n_fes_F = 0;
-    m_g_n_fes_S = 0;
-    m_g_n_fes_D = 0;
-    m_totOreGuardie = 0;
+    data->m_g_d_fer_F = 0;
+    data->m_g_d_fer_S = 0;
+    data->m_g_d_fer_D = 0;
+    data->m_g_d_fes_F = 0;
+    data->m_g_d_fes_S = 0;
+    data->m_g_d_fes_D = 0;
+    data->m_g_n_fer_F = 0;
+    data->m_g_n_fer_S = 0;
+    data->m_g_n_fer_D = 0;
+    data->m_g_n_fes_F = 0;
+    data->m_g_n_fes_S = 0;
+    data->m_g_n_fes_D = 0;
+    data->m_totOreGuardie = 0;
 
-    QMap<int, GuardiaType>::const_iterator i = m_guardiaNotturnaMap.constBegin();
-    while (i != m_guardiaNotturnaMap.constEnd()) {
+    auto i = data->m_guardiaNotturnaMap.constBegin();
+    while (i != data->m_guardiaNotturnaMap.constEnd()) {
         switch (i.value()) {
         case GuardiaType::Sabato:
-            m_g_d_fer_S += 2;
-            m_g_d_fes_S += 2;
-            m_g_n_fer_S += 2;
-            m_g_n_fes_S += 6;
-            m_totOreGuardie += 12;
+            data->m_g_d_fer_S += 2;
+            data->m_g_d_fes_S += 2;
+            data->m_g_n_fer_S += 2;
+            data->m_g_n_fes_S += 6;
+            data->m_totOreGuardie += 12;
             break;
         case GuardiaType::Domenica:
-            m_g_d_fer_D += 2;
-            m_g_d_fes_D += 2;
-            m_g_n_fer_D += 6;
-            m_g_n_fes_D += 2;
-            m_totOreGuardie += 12;
+            data->m_g_d_fer_D += 2;
+            data->m_g_d_fes_D += 2;
+            data->m_g_n_fer_D += 6;
+            data->m_g_n_fes_D += 2;
+            data->m_totOreGuardie += 12;
             break;
         case GuardiaType::Feriale:
-            m_g_d_fer_F += 4;
-            m_g_n_fer_F += 8;
-            m_totOreGuardie += 12;
+            data->m_g_d_fer_F += 4;
+            data->m_g_n_fer_F += 8;
+            data->m_totOreGuardie += 12;
             break;
         default:
             break;
@@ -1591,565 +1550,150 @@ void CompetenzaData::calcOreGuardia()
         ++i;
     }
 
-    QMap<int, GuardiaType>::const_iterator i2 = m_guardiaDiurnaMap.constBegin();
-    while (i2 != m_guardiaDiurnaMap.constEnd()) {
-        m_g_d_fes_F += 12;
-        m_totOreGuardie += 12;
+    auto i2 = data->m_guardiaDiurnaMap.constBegin();
+    while (i2 != data->m_guardiaDiurnaMap.constEnd()) {
+        data->m_g_d_fes_F += 12;
+        data->m_totOreGuardie += 12;
         ++i2;
     }
 }
 
-void CompetenzaData::getOrePagate()
+void Competenza::getOrePagate()
 {
-    const QMap<QDate, QPair<int,int> > map = SqlQueries::getOrePagateFromUnit(m_unitaId);
+    const auto map = SqlQueries::getOrePagateFromUnit(m_unitaId);
 
     QMapIterator<QDate, QPair<int,int> > i(map);
     i.toBack();
     while (i.hasPrevious()) {
         i.previous();
-        QDate currDate(m_dipendente->anno(),m_dipendente->mese(),1);
+        QDate currDate(data->m_dipendente->anno(),data->m_dipendente->mese(),1);
         if(i.key() <= currDate) {
-            m_oreTot = i.value().first;
-            m_orePagate = i.value().second;
+            data->m_oreTot = i.value().first;
+            data->m_orePagate = i.value().second;
             break;
         }
     }
 }
 
-void CompetenzaData::getRecuperiMeseSuccessivo()
+void Competenza::getRecuperiMeseSuccessivo()
 {
-    m_recuperiMeseSuccessivo = SqlQueries::getRecuperiMeseSuccessivo(m_dipendente->anno(), m_dipendente->mese(), doctorId());
+    data->m_recuperiMeseSuccessivo = SqlQueries::getRecuperiMeseSuccessivo(data->m_dipendente->anno(), data->m_dipendente->mese(), doctorId());
 }
 
-QPair<int, int> CompetenzaData::recuperiMesiSuccessivo() const
+QPair<int, int> Competenza::recuperiMeseSuccessivo() const
 {
-    return m_recuperiMeseSuccessivo;
+    return data->m_recuperiMeseSuccessivo;
 }
 
-int CompetenzaData::grFestCount() const
+Dipendente * Competenza::dipendente() const
+{
+    return data->m_dipendente;
+}
+
+QMap<int, GuardiaType> Competenza::defaultGNDates() const
+{
+    return data->m_defaultGNDates;
+}
+
+QMap<int, GuardiaType> Competenza::defaultGDDates() const
+{
+    return data->m_defaultGDDates;
+}
+
+QMap<QDate, ValoreRep> Competenza::defaultRep() const
+{
+    return data->m_defaultRep;
+}
+
+int Competenza::oreTot() const
+{
+    return data->m_oreTot;
+}
+
+int Competenza::dmpCalcolato() const
+{
+    return data->m_dmp_calcolato;
+}
+
+int Competenza::orarioGiornaliero() const
+{
+    return data->m_orarioGiornaliero;
+}
+
+int Competenza::defaultDmp() const
+{
+    return data->m_defaultDmp;
+}
+
+int Competenza::defaultOrarioGiornaliero() const
+{
+    return data->m_defaultOrarioGiornaliero;
+}
+
+QString Competenza::defaultNote() const
+{
+    return data->m_defaultNote;
+}
+
+QStringList Competenza::altreAssenze() const
+{
+    return data->m_altreAssenze;
+}
+
+QStringList Competenza::defaultAltreAssenze() const
+{
+    return data->m_defaultAltreAssenze;
+}
+
+bool Competenza::modded() const
+{
+    return data->m_modded;
+}
+
+bool Competenza::gdiurneModded() const
+{
+    return data->m_gdiurneModded;
+}
+
+bool Competenza::gnotturneModded() const
+{
+    return data->m_gnotturneModded;
+}
+
+bool Competenza::repModded() const
+{
+    return data->m_repModded;
+}
+
+bool Competenza::dmpModded() const
+{
+    return data->m_dmpModded;
+}
+
+bool Competenza::orarioGiornalieroModded() const
+{
+    return data->m_orarioGiornalieroModded;
+}
+
+bool Competenza::altreModded() const
+{
+    return data->m_altreModded;
+}
+
+bool Competenza::noteModded() const
+{
+    return data->m_noteModded;
+}
+
+int Competenza::grFestCount() const
 {
     int numGrFest = 0;
 
-    QMap<int, GuardiaType>::const_iterator i = guardiaNotturnaMap().constBegin();
+    auto i = guardiaNotturnaMap().constBegin();
     while(i != guardiaNotturnaMap().constEnd()) {
         if(i.value() == GuardiaType::GrandeFestivita)
             numGrFest++;
         i++;
     }
     return numGrFest;
-}
-
-Competenza::Competenza(const QString &tableName, const int id, QObject *parent)
-    : QObject(parent)
-    , data(new CompetenzaData(tableName, id))
-{
-
-}
-
-Competenza::Competenza(const Competenza &rhs)
-    : data(rhs.data)
-{
-
-}
-
-Competenza &Competenza::operator=(const Competenza &rhs)
-{
-    if (this != &rhs)
-        data.operator=(rhs.data);
-    return *this;
-}
-
-Competenza::~Competenza()
-{
-
-}
-
-int Competenza::badgeNumber() const
-{
-    return data->badgeNumber();
-}
-
-QString Competenza::name() const
-{
-    return data->name();
-}
-
-QDate Competenza::dataIniziale() const
-{
-    return data->dataIniziale();
-}
-
-QDate Competenza::dataFinale() const
-{
-    return data->dataFinale();
-}
-
-QString Competenza::modTableName() const
-{
-    return data->modTableName();
-}
-
-int Competenza::doctorId()
-{
-    return data->doctorId();
-}
-
-int Competenza::giorniLavorati() const
-{
-    return data->giorniLavorati();
-}
-
-int Competenza::giorniLavorativi() const
-{
-    return data->giorniLavorativi();
-}
-
-QString Competenza::assenzeTotali() const
-{
-    return data->assenzeTotali();
-}
-
-QString Competenza::orarioGiornaliero()
-{
-    return data->orarioGiornaliero();
-}
-
-QString Competenza::oreDovute()
-{
-    return data->oreDovute();
-}
-
-QString Competenza::oreEffettuate()
-{
-    return data->oreEffettuate();
-}
-
-int Competenza::oreRepPagate() const
-{
-    return data->oreRepPagate();
-}
-
-QString Competenza::differenzaOre()
-{
-    return data->differenzaOre();
-}
-
-int Competenza::differenzaMin() const
-{
-    return data->differenzaMin();
-}
-
-QString Competenza::differenzaOreSenzaDmp()
-{
-    return data->differenzaOreSenzaDmp();
-}
-
-QString Competenza::deficitOrario()
-{
-    return data->deficitOrario();
-}
-
-QString Competenza::deficitPuntuale()
-{
-    return data->deficitPuntuale();
-}
-
-int Competenza::minutiAltreCausali() const
-{
-    return data->minutiAltreCausali();
-}
-
-QString Competenza::oreAltreCausali()
-{
-    return data->oreAltreCausali();
-}
-
-QString Competenza::ferieCount() const
-{
-    return data->ferieCount();
-}
-
-QList<QDate> Competenza::ferieDates() const
-{
-    return data->ferieDates();
-}
-
-QList<QDate> Competenza::scopertiDates() const
-{
-    return data->scopertiDates();
-}
-
-QString Competenza::congediCount() const
-{
-    return data->congediCount();
-}
-
-QList<QDate> Competenza::congediDates() const
-{
-    return data->congediDates();
-}
-
-QString Competenza::malattiaCount() const
-{
-    return data->malattiaCount();
-}
-
-QList<QDate> Competenza::malattiaDates() const
-{
-    return data->malattiaDates();
-}
-
-QString Competenza::rmpCount() const
-{
-    return data->rmpCount();
-}
-
-QList<QDate> Competenza::rmpDates() const
-{
-    return data->rmpDates();
-}
-
-QList<QDate> Competenza::altreCausaliDates() const
-{
-    return data->altreCausaliDates();
-}
-
-QString Competenza::rmcCount() const
-{
-    return data->rmcCount();
-}
-
-QList<QDate> Competenza::rmcDates() const
-{
-    return data->rmcDates();
-}
-
-QList<QDate> Competenza::gdDates() const
-{
-    return data->gdDates();
-}
-
-QList<QDate> Competenza::gnDates() const
-{
-    return data->gnDates();
-}
-
-QMap<int, GuardiaType> Competenza::guardiaDiurnaMap() const
-{
-    return data->guardiaDiurnaMap();
-}
-
-QMap<int, GuardiaType> Competenza::guardiaNotturnaMap() const
-{
-    return data->guardiaNotturnaMap();
-}
-
-void Competenza::addGuardiaDiurnaDay(int day)
-{
-    data->addGuardiaDiurnaDay(day);
-}
-
-void Competenza::addGuardiaNotturnaDay(int day)
-{
-    data->addGuardiaNotturnaDay(day);
-}
-
-void Competenza::setDmp(const int &minutes)
-{
-    data->setDmp(minutes);
-}
-
-void Competenza::setPagaStrGuardia(const bool &ok)
-{
-    data->setPagaStrGuardia(ok);
-}
-
-void Competenza::setOrarioGiornalieroMod(const int &minutes)
-{
-    data->setOrarioGiornalieroMod(minutes);
-}
-
-void Competenza::setDmpCalcolato(const int &minutes)
-{
-    data->setDmpCalcolato(minutes);
-}
-
-int Competenza::dmp() const
-{
-    return data->dmp();
-}
-
-bool Competenza::pagaStrGuardia() const
-{
-    return data->pagaStrGuardia();
-}
-
-void Competenza::setNote(const QString &note)
-{
-    data->setNote(note);
-}
-
-QString Competenza::note() const
-{
-    return data->note();
-}
-
-void Competenza::setRep(const QMap<QDate, ValoreRep> &map)
-{
-    data->setRep(map);
-}
-
-QMap<QDate, ValoreRep> Competenza::rep() const
-{
-    return data->rep();
-}
-
-QList<QDate> Competenza::altreAssenzeDates() const
-{
-    return data->altreAssenzeDates();
-}
-
-void Competenza::setAltreAssenze(const QList<QDate> &assenze)
-{
-    data->setAltreAssenze(assenze);
-}
-
-bool Competenza::isModded() const
-{
-    return data->isModded();
-}
-
-bool Competenza::isRestorable() const
-{
-    return data->isRestorable();
-}
-
-void Competenza::saveMods()
-{
-    data->saveMods();
-}
-
-int Competenza::orePagate() const
-{
-    return data->orePagate();
-}
-
-int Competenza::notte() const
-{
-    return data->notte();
-}
-
-int Competenza::numGuarDiurne() const
-{
-    return data->numGuarDiurne();
-}
-
-int Competenza::numGuarNottPag() const
-{
-    return data->numGuarNottPag();
-}
-
-QString Competenza::repCount() const
-{
-    return data->repCount();
-}
-
-QString Competenza::oreGrep()
-{
-    return data->oreGrep();
-}
-
-int Competenza::numGrFestPagabili() const
-{
-    return data->numGrFestPagabili();
-}
-
-int Competenza::numOreGuarPagabili() const
-{
-    return data->numOreGuarPagabili();
-}
-
-int Competenza::numGuar() const
-{
-    return data->numGuar();
-}
-
-int Competenza::numGuarGFNonPag() const
-{
-    return data->numGuarGFNonPag();
-}
-
-int Competenza::numOreGuarFesENot() const
-{
-    return data->numOreGuarFesENot();
-}
-
-int Competenza::numOreGuarFesONot() const
-{
-    return data->numOreGuarFesONot();
-}
-
-int Competenza::numOreGuarOrd() const
-{
-    return data->numOreGuarOrd();
-}
-
-int Competenza::numOreRep(Reperibilita rep)
-{
-    return data->numOreRep(rep);
-}
-
-int Competenza::residuoOreNonPagate()
-{
-    return data->residuoOreNonPagate();
-}
-
-int Competenza::numFestiviRecuperabili()
-{
-    return data->numFestiviRecuperabili();
-}
-
-int Competenza::numNottiRecuperabili()
-{
-    return data->numNottiRecuperabili();
-}
-
-int Competenza::numOreRecuperabili()
-{
-    return data->numOreRecuperabili();
-}
-
-QString Competenza::residuoOreNonRecuperabili()
-{
-    return data->residuoOreNonRecuperabili();
-}
-
-QPair<int,int> Competenza::recuperiMesiSuccessivo() const
-{
-    return data->recuperiMesiSuccessivo();
-}
-
-int Competenza::g_d_fer_F() const
-{
-    return data->g_d_fer_F();
-}
-
-int Competenza::g_d_fer_S() const
-{
-    return data->g_d_fer_S();
-}
-
-int Competenza::g_d_fer_D() const
-{
-    return data->g_d_fer_D();
-}
-
-int Competenza::g_d_fes_F() const
-{
-    return data->g_d_fes_F();
-}
-
-int Competenza::g_d_fes_S() const
-{
-    return data->g_d_fes_S();
-}
-
-int Competenza::g_d_fes_D() const
-{
-    return data->g_d_fes_D();
-}
-
-int Competenza::g_n_fer_F() const
-{
-    return data->g_n_fer_F();
-}
-
-int Competenza::g_n_fer_S() const
-{
-    return data->g_n_fer_S();
-}
-
-int Competenza::g_n_fer_D() const
-{
-    return data->g_n_fer_D();
-}
-
-int Competenza::g_n_fes_F() const
-{
-    return data->g_n_fes_F();
-}
-
-int Competenza::g_n_fes_S() const
-{
-    return data->g_n_fes_S();
-}
-
-int Competenza::g_n_fes_D() const
-{
-    return data->g_n_fes_D();
-}
-
-int Competenza::totOreGuardie() const
-{
-    return data->totOreGuardie();
-}
-
-int Competenza::r_d_fer()
-{
-    return data->r_d_fer();
-}
-
-int Competenza::r_d_fes()
-{
-    return data->r_d_fes();
-}
-
-int Competenza::r_n_fer()
-{
-    return data->r_n_fer();
-}
-
-int Competenza::r_n_fes()
-{
-    return data->r_n_fes();
-}
-
-QString Competenza::oreStraordinarioGuardie() const
-{
-    return data->oreStraordinarioGuardie();
-}
-
-bool Competenza::isGuardieDiurneModded() const
-{
-    return data->isGuardieDiurneModded();
-}
-
-bool Competenza::isGuardieNotturneModded() const
-{
-    return data->isGuardieNotturneModded();
-}
-
-bool Competenza::isReperibilitaModded() const
-{
-    return data->isReperibilitaModded();
-}
-
-bool Competenza::isDmpModded() const
-{
-    return data->isDmpModded();
-}
-
-bool Competenza::isAltreModded() const
-{
-    return data->isAltreModded();
-}
-
-bool Competenza::isNoteModded() const
-{
-    return data->isNoteModded();
-}
-
-bool Competenza::isOrarioGiornalieroModded() const
-{
-    return data->isOrarioGiornalieroModded();
 }
