@@ -17,34 +17,12 @@ class DipendenteData;
 class Dipendente : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY( int anno READ anno WRITE setAnno )
-    Q_PROPERTY( int mese READ mese WRITE setMese )
-    Q_PROPERTY( QString nome READ nome WRITE setNome )
-    Q_PROPERTY( int matricola READ matricola WRITE setMatricola )
-    Q_PROPERTY( int unita READ unita WRITE setUnita )
-    Q_PROPERTY( int riposi READ riposi )
-    Q_PROPERTY( QStringList guardieDiurne READ guardieDiurne )
-    Q_PROPERTY( QStringList guardieNotturne READ guardieNotturne )
-    Q_PROPERTY( QMultiMap<int, QPair<int, int> > grep READ grep )
-    Q_PROPERTY( QStringList rmp READ rmp )
-    Q_PROPERTY( QStringList rmc READ rmc )
-    Q_PROPERTY( QStringList ferie READ ferie )
-    Q_PROPERTY( QStringList congedi READ congedi )
-    Q_PROPERTY( QStringList malattia READ malattia )
-    Q_PROPERTY( QStringList scoperti READ scoperti )
-    Q_PROPERTY( QMap<QString, QPair<QStringList, int> > altreCausali READ altreCausali )
-    Q_PROPERTY( int minutiFatti READ minutiFatti WRITE addMinutiFatti )
-    Q_PROPERTY( int minutiCongedi READ minutiCongedi WRITE addMinutiCongedo )
-    Q_PROPERTY( int minutiGiornalieri READ minutiGiornalieri WRITE setMinutiGiornalieri )
-    Q_PROPERTY( int minutiGrep READ minutiGrep WRITE addMinutiGrep )
-    Q_PROPERTY( int minutiEccr READ minutiEccr WRITE addMinutiEccr )
-    Q_PROPERTY( int minutiGuar READ minutiGuar WRITE addMinutiGuar )
-    Q_PROPERTY( int minutiRmc READ minutiRmc WRITE addMinutiRmc )
 
 public:
-    explicit Dipendente(QObject *parent = nullptr);
+    explicit Dipendente();
     Dipendente(const Dipendente &);
     Dipendente &operator=(const Dipendente &);
+    bool operator==(const Dipendente &rhs) const;
     ~Dipendente();
 
     int anno() const;
