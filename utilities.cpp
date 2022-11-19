@@ -150,3 +150,21 @@ bool Utilities::timbraturaValida(QString text)
 
     return false;
 }
+
+QVector<int> Utilities::stringlistToVectorInt(const QStringList &list)
+{
+    QVector<int> values;
+    for(const auto &v : list) {
+        values << v.toInt();
+    }
+    return values;
+}
+
+QStringList Utilities::vectorIntToStringlist(const QVector<int> &values)
+{
+    QStringList list;
+    for(auto v : values) {
+        list << QString::number(v);
+    }
+    return list;
+}

@@ -24,8 +24,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
+        blinkinglabel.cpp \
         cartellinocompleto.cpp \
         cartellinocompletoreader.cpp \
+        causalewidget.cpp \
         dateeditdelegate.cpp \
         giornocartellinocompleto.cpp \
         main.cpp \
@@ -62,8 +64,10 @@ SOURCES += \
         switchunitdialog.cpp
 
 HEADERS += \
+        blinkinglabel.h \
         cartellinocompleto.h \
         cartellinocompletoreader.h \
+        causalewidget.h \
         dateeditdelegate.h \
         giornocartellinocompleto.h \
         mainwindow.h \
@@ -100,6 +104,7 @@ HEADERS += \
         switchunitdialog.h
 
 FORMS += \
+        causalewidget.ui \
         mainwindow.ui \
         insertdbvalues.ui \
         manageemployee.ui \

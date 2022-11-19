@@ -282,17 +282,17 @@ void CartellinoCompletoReader::run()
                         if(giorno.indennita().toUpper() == "N") {
                             if(giorno.giorno()-1>0) {
                                 if(giorno.numeroTimbrature() > 0)
-                                    m_dipendente->addGuardiaNotturna(QString::number(giorno.giorno()-1));
+                                    m_dipendente->addGuardiaNotturna(giorno.giorno()-1);
                             }
                         } else {
                             if(dataCorrente.dayOfWeek() == 7 || The::almanac()->isGrandeFestivita(dataCorrente)) {
                                 if(cartellino->timbratureGiorno(giorno.giorno()).count() > 0 && cartellino->timbratureGiorno(giorno.giorno()).count()%2 == 0)
                                     if(giorno.minutiCausale("ECCR") >= 660)
-                                        m_dipendente->addGuardiaDiurna(QString::number(giorno.giorno()));
+                                        m_dipendente->addGuardiaDiurna(giorno.giorno());
                             } else if(daysCounter == cartellino->giorni().count()) {
                                 // ultimo giorno nel cartellino
                                 if(giorno.montoNotte())
-                                    m_dipendente->addGuardiaNotturna(QString::number(giorno.giorno()));
+                                    m_dipendente->addGuardiaNotturna(giorno.giorno());
                             }
                         }
                     }
@@ -374,15 +374,15 @@ void CartellinoCompletoReader::valutaCausale(const QString &causale,
             if(giorno.indennita().toUpper().isEmpty()) {
                 if(giorno.numeroTimbrature() % 2 == 0) {
                     if( (Utilities::inMinuti(orario)) >= 660)
-                        m_dipendente->addGuardiaDiurna(QString::number(giorno.giorno()));
+                        m_dipendente->addGuardiaDiurna(giorno.giorno());
                 }
             }
         } else if(giorno.indennita().toUpper() == "N") {
-            m_dipendente->addGuardiaNotturna(QString::number(giorno.giorno()-1));
+            m_dipendente->addGuardiaNotturna(giorno.giorno()-1);
         } else if(lastDay) {
             // ultimo giorno nel cartellino
             if(giorno.montoNotte())
-                m_dipendente->addGuardiaNotturna(QString::number(giorno.giorno()));
+                m_dipendente->addGuardiaNotturna(giorno.giorno());
         }
     } else if(causale == "GREP") {
         m_dipendente->addMinutiGrep(Utilities::inMinuti(orario));

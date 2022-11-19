@@ -24,6 +24,8 @@ public:
     static int mese2Int(const QString &mese);
     static QString int2MeseBreve(const int &mese);
     static bool timbraturaValida(QString text);
+    static QVector<int> stringlistToVectorInt(const QStringList &list);
+    static QStringList vectorIntToStringlist(const QVector<int> &values);
 
     static QString m_driver;
     static QString m_host;

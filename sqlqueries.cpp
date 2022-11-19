@@ -483,24 +483,24 @@ bool SqlQueries::addTimeCard(const QString &tableName, const Dipendente *dipende
     query.bindValue(":riposi", dipendente->riposi());
     query.bindValue(":minuti_giornalieri", dipendente->minutiGiornalieriVeri());
     if(dipendente->minutiGiornalieriVeri() <= Utilities::m_maxMinutiGiornalieri)
-        query.bindValue(":ferie", dipendente->ferie().join(","));
+        query.bindValue(":ferie", Utilities::vectorIntToStringlist(dipendente->ferie()).join(","));
     else
         query.bindValue(":ferie", dipendente->numGiorniCartellino());
-    query.bindValue(":congedi", dipendente->congedi().join(","));
-    query.bindValue(":malattia", dipendente->malattia().join(","));
-    query.bindValue(":rmp", dipendente->rmp().join(","));
-    query.bindValue(":rmc", dipendente->rmc().join(","));
+    query.bindValue(":congedi", Utilities::vectorIntToStringlist(dipendente->congedi()).join(","));
+    query.bindValue(":malattia", Utilities::vectorIntToStringlist(dipendente->malattia()).join(","));
+    query.bindValue(":rmp", Utilities::vectorIntToStringlist(dipendente->rmp()).join(","));
+    query.bindValue(":rmc", Utilities::vectorIntToStringlist(dipendente->rmc()).join(","));
 
     QString altreCausali = "";
-    QMap<QString, QPair<QStringList, int> >::const_iterator i = dipendente->altreCausali().constBegin();
+    auto i = dipendente->altreCausali().constBegin();
     while (i != dipendente->altreCausali().constEnd()) {
-        altreCausali += i.key() + "," + i.value().first.join("~") + "," + QString::number(i.value().second) + ";";
+        altreCausali += i.key() + "," + Utilities::vectorIntToStringlist(i.value().first).join("~") + "," + QString::number(i.value().second) + ";";
         ++i;
     }
     query.bindValue(":altre_causali", altreCausali);
 
-    query.bindValue(":guardie_diurne", dipendente->guardieDiurne().join(","));
-    query.bindValue(":guardie_notturne", dipendente->guardieNotturne().join(","));
+    query.bindValue(":guardie_diurne", Utilities::vectorIntToStringlist(dipendente->guardieDiurne()).join(","));
+    query.bindValue(":guardie_notturne", Utilities::vectorIntToStringlist(dipendente->guardieNotturne()).join(","));
 
     QString grep = "";
     auto it = dipendente->grep().constBegin();
@@ -516,7 +516,7 @@ bool SqlQueries::addTimeCard(const QString &tableName, const Dipendente *dipende
     query.bindValue(":guar_minuti", dipendente->minutiGuar());
     query.bindValue(":rmc_minuti", dipendente->minutiRmc());
     query.bindValue(":minuti_fatti", dipendente->minutiFatti());
-    query.bindValue(":scoperti", dipendente->scoperti().join(","));
+    query.bindValue(":scoperti", Utilities::vectorIntToStringlist(dipendente->scoperti()).join(","));
 
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();

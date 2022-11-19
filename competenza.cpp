@@ -46,8 +46,8 @@ public:
     int m_oreTot;
     QString m_note;
     QString m_defaultNote;
-    QStringList m_altreAssenze;
-    QStringList m_defaultAltreAssenze;
+    QVector<int> m_altreAssenze;
+    QVector<int> m_defaultAltreAssenze;
     bool m_modded;
     bool m_gdiurneModded;
     bool m_gnotturneModded;
@@ -227,29 +227,49 @@ void Competenza::buildDipendente()
         data->m_dipendente->setNumGiorniCartellino(query.at(5).toInt());
     } else {
         if(!query.at(5).toString().trimmed().isEmpty()) {
-            for(const auto &f : query.at(5).toString().split(",")) { // ferie
-                data->m_dipendente->addFerie(f);
+            if(data->m_dipendente->minutiGiornalieriVeri() <= Utilities::m_maxMinutiGiornalieri) {
+                data->m_dipendente->addAltraCausale("FERIE",query.at(5).toString().replace(",","~"),data->m_dipendente->minutiGiornalieriVeri()*query.at(5).toString().split(",").count());
+            } else {
+                for(const auto &f : Utilities::stringlistToVectorInt(query.at(5).toString().split(","))) { // ferie
+                    data->m_dipendente->addFerie(f);
+                }
             }
         }
     }
     if(!query.at(6).toString().trimmed().isEmpty()) {
-        for(const auto &f : query.at(6).toString().split(",")) { // congedi
-            data->m_dipendente->addCongedo(f);
+        if(data->m_dipendente->minutiGiornalieriVeri() <= Utilities::m_maxMinutiGiornalieri) {
+            data->m_dipendente->addAltraCausale("CONGEDI",query.at(6).toString().replace(",","~"),data->m_dipendente->minutiGiornalieriVeri()*query.at(6).toString().split(",").count());
+        } else {
+            for(const auto &f : Utilities::stringlistToVectorInt(query.at(6).toString().split(","))) { // congedo
+                data->m_dipendente->addCongedo(f);
+            }
         }
     }
     if(!query.at(7).toString().trimmed().isEmpty()) {
-        for(const auto &f : query.at(7).toString().split(",")) { // malattia
-            data->m_dipendente->addMalattia(f);
+        if(data->m_dipendente->minutiGiornalieriVeri() <= Utilities::m_maxMinutiGiornalieri) {
+            data->m_dipendente->addAltraCausale("MALATTIA",query.at(7).toString().replace(",","~"),data->m_dipendente->minutiGiornalieriVeri()*query.at(7).toString().split(",").count());
+        } else {
+            for(const auto &f : Utilities::stringlistToVectorInt(query.at(7).toString().split(","))) { // malattia
+                data->m_dipendente->addMalattia(f);
+            }
         }
     }
     if(!query.at(8).toString().trimmed().isEmpty()) {
-        for(const auto &f : query.at(8).toString().split(",")) { // rmp
-            data->m_dipendente->addRmp(f);
+        if(data->m_dipendente->minutiGiornalieriVeri() <= Utilities::m_maxMinutiGiornalieri) {
+            data->m_dipendente->addAltraCausale("RMP",query.at(8).toString().replace(",","~"),data->m_dipendente->minutiGiornalieriVeri()*query.at(8).toString().split(",").count());
+        } else {
+            for(const auto &f : Utilities::stringlistToVectorInt(query.at(8).toString().split(","))) { // rmp
+                data->m_dipendente->addRmp(f);
+            }
         }
     }
     if(!query.at(9).toString().trimmed().isEmpty()) {
-        for(const auto &f : query.at(9).toString().split(",")) {  // rmc
-            data->m_dipendente->addRmc(f);
+        if(data->m_dipendente->minutiGiornalieriVeri() <= Utilities::m_maxMinutiGiornalieri) {
+            data->m_dipendente->addAltraCausale("RMC",query.at(9).toString().replace(",","~"),data->m_dipendente->minutiGiornalieriVeri()*query.at(9).toString().split(",").count());
+        } else {
+            for(const auto &f : Utilities::stringlistToVectorInt(query.at(9).toString().split(","))) { // rmc
+                data->m_dipendente->addRmc(f);
+            }
         }
     }
     if(!query.at(10).toString().trimmed().isEmpty()) {
@@ -262,35 +282,35 @@ void Competenza::buildDipendente()
     }
 
     if(!query.at(20).toString().trimmed().isEmpty()) {
-        for(const auto &f : query.at(20).toString().split(",")) { // guardie diurne mod
-            if(f == "0")
+        for(const auto &f : Utilities::stringlistToVectorInt(query.at(20).toString().split(","))) { // guardie diurne mod
+            if(f == 0)
                 continue;
             data->m_dipendente->addGuardiaDiurna(f);
-            addGuardiaDiurnaDay(f.toInt());
+            addGuardiaDiurnaDay(f);
             data->m_modded = true;
             data->m_gdiurneModded = true;
         }
     } else if(!query.at(11).toString().trimmed().isEmpty()) {
-        for(const auto &f : query.at(11).toString().split(",")) { // guardie diurne
+        for(const auto &f : Utilities::stringlistToVectorInt(query.at(11).toString().split(","))) { // guardie diurne
             data->m_dipendente->addGuardiaDiurna(f);
-            addGuardiaDiurnaDay(f.toInt());
+            addGuardiaDiurnaDay(f);
         }
     }
     data->m_defaultGDDates = data->m_guardiaDiurnaMap;
 
     if(!query.at(21).toString().trimmed().isEmpty()) {
-        for(const auto &f : query.at(21).toString().split(",")) { // guardie notturne mod
-            if(f == "0")
+        for(const auto &f : Utilities::stringlistToVectorInt(query.at(21).toString().split(","))) { // guardie notturne mod
+            if(f == 0)
                 continue;
             data->m_dipendente->addGuardiaNotturna(f);
-            addGuardiaNotturnaDay(f.toInt());
+            addGuardiaNotturnaDay(f);
             data->m_modded = true;
             data->m_gnotturneModded = true;
         }
     } else if(!query.at(12).toString().trimmed().isEmpty()) {
-        for(const auto &f : query.at(12).toString().split(",")) { // guardie notturne
+        for(const auto &f : Utilities::stringlistToVectorInt(query.at(12).toString().split(","))) { // guardie notturne
             data->m_dipendente->addGuardiaNotturna(f);
-            addGuardiaNotturnaDay(f.toInt());
+            addGuardiaNotturnaDay(f);
         }
     }
     data->m_defaultGNDates = data->m_guardiaNotturnaMap;
@@ -335,7 +355,7 @@ void Competenza::buildDipendente()
         for(const auto &f : query.at(25).toString().split(",")) {
             if(f == "0")
                 continue;
-            data->m_altreAssenze << f;
+            data->m_altreAssenze << f.toInt();
             data->m_modded = true;
             data->m_altreModded = true;
         }
@@ -356,7 +376,7 @@ void Competenza::buildDipendente()
     data->m_defaultNote = data->m_note;
 
     if(!query.at(28).toString().trimmed().isEmpty()) {
-        for(const auto &f : query.at(28).toString().split(",")) { // scoperti
+        for(const auto &f : Utilities::stringlistToVectorInt(query.at(28).toString().split(","))) { // scoperti
             data->m_dipendente->addScoperto(f);
         }
     }
@@ -562,8 +582,8 @@ QString Competenza::deficitPuntuale()
 int Competenza::minutiAltreCausali() const
 {
      int countMinuti = 0;
-     QMap<QString, QPair<QStringList, int> > map = data->m_dipendente->altreCausali();
-     QMap<QString, QPair<QStringList, int>>::const_iterator i = map.constBegin();
+     const auto map = data->m_dipendente->altreCausali();
+     auto i = map.constBegin();
      while (i != map.constEnd()) {
          countMinuti += i.value().second;
          ++i;
@@ -585,7 +605,7 @@ QList<QDate> Competenza::ferieDates() const
 {
     QList<QDate> dates;
     for(const auto &s : data->m_dipendente->ferie()) {
-        QDate date(data->m_dipendente->anno(), data->m_dipendente->mese(), s.toInt());
+        QDate date(data->m_dipendente->anno(), data->m_dipendente->mese(), s);
         dates << date;
     }
 
@@ -596,7 +616,7 @@ QList<QDate> Competenza::scopertiDates() const
 {
     QList<QDate> dates;
     for(const auto &s : data->m_dipendente->scoperti()) {
-        QDate date(data->m_dipendente->anno(), data->m_dipendente->mese(), s.toInt());
+        QDate date(data->m_dipendente->anno(), data->m_dipendente->mese(), s);
         dates << date;
     }
 
@@ -612,7 +632,7 @@ QList<QDate> Competenza::congediDates() const
 {
     QList<QDate> dates;
     for(const auto &s : data->m_dipendente->congedi()) {
-        QDate date(data->m_dipendente->anno(), data->m_dipendente->mese(), s.toInt());
+        QDate date(data->m_dipendente->anno(), data->m_dipendente->mese(), s);
         dates << date;
     }
 
@@ -628,7 +648,7 @@ QList<QDate> Competenza::malattiaDates() const
 {
     QList<QDate> dates;
     for(const auto &s : data->m_dipendente->malattia()) {
-        QDate date(data->m_dipendente->anno(), data->m_dipendente->mese(), s.toInt());
+        QDate date(data->m_dipendente->anno(), data->m_dipendente->mese(), s);
         dates << date;
     }
 
@@ -644,7 +664,7 @@ QList<QDate> Competenza::rmpDates() const
 {
     QList<QDate> dates;
     for(const auto &s : data->m_dipendente->rmp()) {
-        QDate date(data->m_dipendente->anno(), data->m_dipendente->mese(), s.toInt());
+        QDate date(data->m_dipendente->anno(), data->m_dipendente->mese(), s);
         dates << date;
     }
 
@@ -660,7 +680,7 @@ QList<QDate> Competenza::rmcDates() const
 {
     QList<QDate> dates;
     for(const auto &s : data->m_dipendente->rmc()) {
-        QDate date(data->m_dipendente->anno(), data->m_dipendente->mese(), s.toInt());
+        QDate date(data->m_dipendente->anno(), data->m_dipendente->mese(), s);
         dates << date;
     }
 
@@ -671,7 +691,7 @@ QList<QDate> Competenza::gdDates() const
 {
     QList<QDate> dates;
     for(const auto &s : data->m_dipendente->guardieDiurne()) {
-        QDate date(data->m_dipendente->anno(), data->m_dipendente->mese(), s.toInt());
+        QDate date(data->m_dipendente->anno(), data->m_dipendente->mese(), s);
         dates << date;
     }
 
@@ -682,7 +702,7 @@ QList<QDate> Competenza::gnDates() const
 {
     QList<QDate> dates;
     for(const auto &s : data->m_dipendente->guardieNotturne()) {
-        QDate date(data->m_dipendente->anno(), data->m_dipendente->mese(), s.toInt());
+        QDate date(data->m_dipendente->anno(), data->m_dipendente->mese(), s);
         dates << date;
     }
 
@@ -697,7 +717,7 @@ QList<QDate> Competenza::altreCausaliDates() const
     while (i != map.constEnd()) {
         const auto causaliDates = i.value().first;
         for (const auto &s : causaliDates) {
-            QDate date(data->m_dipendente->anno(), data->m_dipendente->mese(), s.toInt());
+            QDate date(data->m_dipendente->anno(), data->m_dipendente->mese(), s);
             dates << date;
         }
         ++i;
@@ -772,7 +792,7 @@ QList<QDate> Competenza::altreAssenzeDates() const
 {
     QList<QDate> dates;
     for(const auto &s : data->m_altreAssenze) {
-        QDate date(data->m_dipendente->anno(), data->m_dipendente->mese(), s.toInt());
+        QDate date(data->m_dipendente->anno(), data->m_dipendente->mese(), s);
         dates << date;
     }
 
@@ -783,7 +803,7 @@ void Competenza::setAltreAssenze(const QList<QDate> &assenze)
 {
     data->m_altreAssenze.clear();
     for(const auto &giorno : assenze) {
-        data->m_altreAssenze << QString::number(giorno.day());
+        data->m_altreAssenze << giorno.day();
     }
 }
 
@@ -842,8 +862,8 @@ void Competenza::saveMods()
 
     if(data->m_defaultAltreAssenze != data->m_altreAssenze) {
         if(data->m_altreAssenze.count() == 0)
-            data->m_altreAssenze << "0";
-        SqlQueries::saveMod(m_modTableName, "altre_assenze", m_id, data->m_altreAssenze.join(","));
+            data->m_altreAssenze << 0;
+        SqlQueries::saveMod(m_modTableName, "altre_assenze", m_id, Utilities::vectorIntToStringlist(data->m_altreAssenze).join(","));
     }
 
     if(data->m_defaultRep != data->m_rep) {
@@ -1421,7 +1441,7 @@ bool Competenza::isAltreModded() const
 
 void Competenza::rimuoviAltreAssenzeDoppie()
 {
-    QStringList altreCausali;
+    QVector<int> altreCausali;
 
     auto i = data->m_dipendente->altreCausali().constBegin();
     while(i != data->m_dipendente->altreCausali().constEnd()) {
@@ -1429,7 +1449,7 @@ void Competenza::rimuoviAltreAssenzeDoppie()
         i++;
     }
 
-    for(QString s : data->m_altreAssenze) {
+    for(int s : qAsConst(data->m_altreAssenze)) {
         if(data->m_dipendente->ferie().contains(s)) {
             data->m_altreAssenze.removeOne(s);
             continue;
@@ -1635,12 +1655,12 @@ QString Competenza::defaultNote() const
     return data->m_defaultNote;
 }
 
-QStringList Competenza::altreAssenze() const
+QVector<int> Competenza::altreAssenze() const
 {
     return data->m_altreAssenze;
 }
 
-QStringList Competenza::defaultAltreAssenze() const
+QVector<int> Competenza::defaultAltreAssenze() const
 {
     return data->m_defaultAltreAssenze;
 }

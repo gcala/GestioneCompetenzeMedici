@@ -18,17 +18,17 @@ public:
     int m_matricola;
     int m_unita;
     int m_riposi;
-    QStringList m_guardieDiurne;
-    QStringList m_guardieNotturne;
+    QVector<int> m_guardieDiurne;
+    QVector<int> m_guardieNotturne;
     QMultiMap<int, QPair<int, int> > m_grep;
-    QStringList m_rmp;
-    QStringList m_rmc;
-    QStringList m_ferie;
+    QVector<int> m_rmp;
+    QVector<int> m_rmc;
+    QVector<int> m_ferie;
     int m_numGiorniCartellino;
-    QStringList m_scoperti;
-    QStringList m_congedi;
-    QStringList m_malattia;
-    QMap<QString, QPair<QStringList, int> > m_altreCausali;
+    QVector<int> m_scoperti;
+    QVector<int> m_congedi;
+    QVector<int> m_malattia;
+    QMap<QString, QPair<QVector<int>, int> > m_altreCausali;
     int m_minutiFatti;
     int m_minutiCongedi;
     int m_minutiGiornalieriVeri;
@@ -175,24 +175,24 @@ void Dipendente::addRiposi(int num)
     data->m_riposi += num;
 }
 
-QStringList Dipendente::guardieDiurne() const
+QVector<int> Dipendente::guardieDiurne() const
 {
     return data->m_guardieDiurne;
 }
 
-void Dipendente::addGuardiaDiurna(QString date)
+void Dipendente::addGuardiaDiurna(int giorno)
 {
-    data->m_guardieDiurne.append(date);
+    data->m_guardieDiurne.append(giorno);
 }
 
-QStringList Dipendente::guardieNotturne() const
+QVector<int> Dipendente::guardieNotturne() const
 {
     return data->m_guardieNotturne;
 }
 
-void Dipendente::addGuardiaNotturna(QString date)
+void Dipendente::addGuardiaNotturna(int giorno)
 {
-    data->m_guardieNotturne.append(date);
+    data->m_guardieNotturne.append(giorno);
 }
 
 QMultiMap<int, QPair<int, int> > Dipendente::grep() const
@@ -208,34 +208,34 @@ void Dipendente::addGrep(int giorno, int minuti, int tipo)
     data->m_grep.insert(giorno,value);
 }
 
-QStringList Dipendente::rmp() const
+QVector<int> Dipendente::rmp() const
 {
     return data->m_rmp;
 }
 
-void Dipendente::addRmp(QString date)
+void Dipendente::addRmp(int giorno)
 {
-    data->m_rmp.append(date);
+    data->m_rmp.append(giorno);
 }
 
-QStringList Dipendente::rmc() const
+QVector<int> Dipendente::rmc() const
 {
     return data->m_rmc;
 }
 
-void Dipendente::addRmc(QString date)
+void Dipendente::addRmc(int giorno)
 {
-    data->m_rmc.append(date);
+    data->m_rmc.append(giorno);
 }
 
-QStringList Dipendente::ferie() const
+QVector<int> Dipendente::ferie() const
 {
     return data->m_ferie;
 }
 
-void Dipendente::addFerie(QString date)
+void Dipendente::addFerie(int giorno)
 {
-    data->m_ferie.append(date);
+    data->m_ferie.append(giorno);
 }
 
 void Dipendente::addNumGiorniCartellino(int num)
@@ -243,37 +243,37 @@ void Dipendente::addNumGiorniCartellino(int num)
     data->m_numGiorniCartellino = num;
 }
 
-QStringList Dipendente::scoperti() const
+QVector<int> Dipendente::scoperti() const
 {
     return data->m_scoperti;
 }
 
-void Dipendente::addScoperto(QString date)
+void Dipendente::addScoperto(int giorno)
 {
-    data->m_scoperti.append(date);
+    data->m_scoperti.append(giorno);
 }
 
-QStringList Dipendente::congedi() const
+QVector<int> Dipendente::congedi() const
 {
     return data->m_congedi;
 }
 
-void Dipendente::addCongedo(QString date)
+void Dipendente::addCongedo(int giorno)
 {
-    data->m_congedi.append(date);
+    data->m_congedi.append(giorno);
 }
 
-QStringList Dipendente::malattia() const
+QVector<int> Dipendente::malattia() const
 {
     return data->m_malattia;
 }
 
-void Dipendente::addMalattia(QString date)
+void Dipendente::addMalattia(int giorno)
 {
-    data->m_malattia.append(date);
+    data->m_malattia.append(giorno);
 }
 
-QMap<QString, QPair<QStringList, int> > Dipendente::altreCausali() const
+QMap<QString, QPair<QVector<int>, int> > Dipendente::altreCausali() const
 {
     return data->m_altreCausali;
 }
@@ -295,12 +295,12 @@ void Dipendente::addAltraCausale(QString causale, QString date, int minuti)
 {
     if(data->m_altreCausali.keys().contains(causale)) {
         auto value = data->m_altreCausali[causale];
-        value.first << date.split("~");
+        value.first << Utilities::stringlistToVectorInt(date.split("~"));
         value.second += minuti;
         data->m_altreCausali[causale] = value;
     } else {
-        QPair<QStringList, int> value;
-        value.first << date.split("~");
+        QPair<QVector<int>, int> value;
+        value.first << Utilities::stringlistToVectorInt(date.split("~"));
         value.second = minuti;
         data->m_altreCausali[causale] = value;
     }

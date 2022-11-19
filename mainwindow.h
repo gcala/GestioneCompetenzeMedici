@@ -30,6 +30,7 @@ class CalendarManagerRep;
 class QWidgetAction;
 class Competenza;
 class NomiUnitaDialog;
+class QHBoxLayout;
 
 class MainWindow : public QMainWindow
 {
@@ -66,7 +67,6 @@ private slots:
     void gdCalendarClicked(const QDate &date);
     void gnCalendarClicked(const QDate &date);
     void rCalendarClicked(const QDate &date);
-    void altreCalendarClicked(const QDate &date);
     void on_actionBackupDatabase_triggered();
     void minutiCambiati(int mins);
     void oreCambiate(int ore);
@@ -89,6 +89,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    QHBoxLayout *causaliLayout;
     bool unitaReadOnlyMode;
     bool dirigenteReadOnlyMode;
     int currentUnitaIndex;
@@ -121,30 +122,6 @@ private:
     QMenu *rCalendarMenu;
     CalendarManagerRep *rCalendar;
     QWidgetAction *rCalendarAction;
-
-    QMenu *ferieCalendarMenu;
-    CalendarManager *ferieCalendar;
-    QWidgetAction *ferieCalendarAction;
-
-    QMenu *congediCalendarMenu;
-    CalendarManager *congediCalendar;
-    QWidgetAction *congediCalendarAction;
-
-    QMenu *malattiaCalendarMenu;
-    CalendarManager *malattiaCalendar;
-    QWidgetAction *malattiaCalendarAction;
-
-    QMenu *rmpCalendarMenu;
-    CalendarManager *rmpCalendar;
-    QWidgetAction *rmpCalendarAction;
-
-    QMenu *rmcCalendarMenu;
-    CalendarManager *rmcCalendar;
-    QWidgetAction *rmcCalendarAction;
-
-    QMenu *altreCalendarMenu;
-    CalendarManager *altreCalendar;
-    QWidgetAction *altreCalendarAction;
 
     NomiUnitaDialog *m_nomiDialog;
 
@@ -187,6 +164,7 @@ private:
     void populateUnitaCompetenzeCB();
     void populateDirigentiCompetenzeCB();
     void populateCompetenzeTab();
+    void populateCausali();
     void mostraDifferenzaOre();
     void elaboraGuardie();
     void elaboraRep();

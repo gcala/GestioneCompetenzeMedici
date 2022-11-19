@@ -115,8 +115,8 @@ public:
     int defaultDmp() const;
     int defaultOrarioGiornaliero() const;
     QString defaultNote() const;
-    QStringList altreAssenze() const;
-    QStringList defaultAltreAssenze() const;
+    QVector<int> altreAssenze() const;
+    QVector<int> defaultAltreAssenze() const;
     bool modded() const;
     bool gdiurneModded() const;
     bool gnotturneModded() const;

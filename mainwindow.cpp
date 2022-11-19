@@ -23,6 +23,8 @@
 #include "switchunitdialog.h"
 #include "manageemployee.h"
 #include "manageunits.h"
+#include "causalewidget.h"
+#include "dipendente.h"
 
 #include <QtWidgets>
 #include <QDebug>
@@ -76,54 +78,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->rCalendarButton->setMenu(rCalendarMenu);
     connect(rCalendar, SIGNAL(clicked(QDate)), this, SLOT(rCalendarClicked(QDate)));
 
-    ferieCalendarMenu = new QMenu(ui->ferieCalendarButton);
-    ferieCalendar = new CalendarManager(ferieCalendarMenu);
-    ferieCalendarAction = new QWidgetAction(ferieCalendarMenu);
-    ferieCalendarAction->setDefaultWidget(ferieCalendar);
-    ferieCalendarMenu->addAction(ferieCalendarAction);
-    ui->ferieCalendarButton->setMenu(ferieCalendarMenu);
-    ferieCalendar->setSelectionMode(QCalendarWidget::NoSelection);
-
-    congediCalendarMenu = new QMenu(ui->congediCalendarButton);
-    congediCalendar = new CalendarManager(congediCalendarMenu);
-    congediCalendarAction = new QWidgetAction(congediCalendarMenu);
-    congediCalendarAction->setDefaultWidget(congediCalendar);
-    congediCalendarMenu->addAction(congediCalendarAction);
-    ui->congediCalendarButton->setMenu(congediCalendarMenu);
-    congediCalendar->setSelectionMode(QCalendarWidget::NoSelection);
-
-    malattiaCalendarMenu = new QMenu(ui->malattiaCalendarButton);
-    malattiaCalendar = new CalendarManager(malattiaCalendarMenu);
-    malattiaCalendarAction = new QWidgetAction(malattiaCalendarMenu);
-    malattiaCalendarAction->setDefaultWidget(malattiaCalendar);
-    malattiaCalendarMenu->addAction(malattiaCalendarAction);
-    ui->malattiaCalendarButton->setMenu(malattiaCalendarMenu);
-    malattiaCalendar->setSelectionMode(QCalendarWidget::NoSelection);
-
-    rmpCalendarMenu = new QMenu(ui->rmpCalendarButton);
-    rmpCalendar = new CalendarManager(rmpCalendarMenu);
-    rmpCalendarAction = new QWidgetAction(rmpCalendarMenu);
-    rmpCalendarAction->setDefaultWidget(rmpCalendar);
-    rmpCalendarMenu->addAction(rmpCalendarAction);
-    ui->rmpCalendarButton->setMenu(rmpCalendarMenu);
-    rmpCalendar->setSelectionMode(QCalendarWidget::NoSelection);
-
-    rmcCalendarMenu = new QMenu(ui->rmcCalendarButton);
-    rmcCalendar = new CalendarManager(rmcCalendarMenu);
-    rmcCalendarAction = new QWidgetAction(rmcCalendarMenu);
-    rmcCalendarAction->setDefaultWidget(rmcCalendar);
-    rmcCalendarMenu->addAction(rmcCalendarAction);
-    ui->rmcCalendarButton->setMenu(rmcCalendarMenu);
-    rmcCalendar->setSelectionMode(QCalendarWidget::NoSelection);
-
-    altreCalendarMenu = new QMenu(ui->altreCalendarButton);
-    altreCalendar = new CalendarManager(altreCalendarMenu);
-    altreCalendarAction = new QWidgetAction(altreCalendarMenu);
-    altreCalendarAction->setDefaultWidget(altreCalendar);
-    altreCalendarMenu->addAction(altreCalendarAction);
-    ui->altreCalendarButton->setMenu(altreCalendarMenu);
-    connect(altreCalendar, SIGNAL(clicked(QDate)), this, SLOT(altreCalendarClicked(QDate)));
-
     unitaReadOnlyMode = true;
     dirigenteReadOnlyMode = true;
     unitOp = UndefOp;
@@ -132,6 +86,11 @@ MainWindow::MainWindow(QWidget *parent) :
     printDialog = new PrintDialog(this);
     ui->sommV1->setVisible(false);
     ui->sommV2->setVisible(false);
+
+    causaliLayout = new QHBoxLayout(this);
+    ui->causaliGB->setLayout(causaliLayout);
+    causaliLayout->setContentsMargins(0,0,0,0);
+    causaliLayout->setSpacing(0);
 
     loadSettings();
     Utilities::m_connectionName = "";
@@ -232,12 +191,6 @@ void MainWindow::clearWidgets()
     ui->meseCompetenzeCB->clear();
     ui->unitaCompetenzeCB->clear();
     ui->dirigentiCompetenzeCB->clear();
-    ui->workDaysLabel->clear();
-    ui->ferieLabel->clear();
-    ui->congediLabel->clear();
-    ui->malattiaLabel->clear();
-    ui->rmpLabel->clear();
-    ui->altreLabel->clear();
 }
 
 void MainWindow::connectToDatabase()
@@ -561,6 +514,7 @@ void MainWindow::on_dirigentiCompetenzeCB_currentIndexChanged(int index)
 
     m_competenza = new Competenza(ui->meseCompetenzeCB->currentData(Qt::UserRole).toString(), ui->dirigentiCompetenzeCB->currentData(Qt::UserRole).toInt());
 
+    populateCausali();
     populateCompetenzeTab();
 
     ui->restoreCompetenzeButton->setEnabled(m_competenza->isRestorable());
@@ -579,44 +533,13 @@ void MainWindow::populateCompetenzeTab()
     font.setStrikeOut(!ui->pagaStrGuardiaCB->isChecked());
     ui->oreStraordinarioGuardieLabel->setFont(font);
 
-    ferieCalendar->setDateRange(m_competenza->dataIniziale(), m_competenza->dataFinale());
-    congediCalendar->setDateRange(m_competenza->dataIniziale(), m_competenza->dataFinale());
-    malattiaCalendar->setDateRange(m_competenza->dataIniziale(), m_competenza->dataFinale());
-    rmcCalendar->setDateRange(m_competenza->dataIniziale(), m_competenza->dataFinale());
-    rmpCalendar->setDateRange(m_competenza->dataIniziale(), m_competenza->dataFinale());
     gdCalendar->setDateRange(m_competenza->dataIniziale(), m_competenza->dataFinale());
     gnCalendar->setDateRange(m_competenza->dataIniziale(), m_competenza->dataFinale());
     rCalendar->setDateRange(m_competenza->dataIniziale(), m_competenza->dataFinale());
-    altreCalendar->setDateRange(m_competenza->dataIniziale(), m_competenza->dataFinale());
-
-    ui->workDaysLabel->setText(QString::number(m_competenza->giorniLavorati()));
-
-    ui->ferieLabel->setText(m_competenza->ferieCount());
-    ferieCalendar->setDates(m_competenza->ferieDates());
-
-    ui->congediLabel->setText(QString::number(m_competenza->altreCausaliDates().count()));
-    congediCalendar->setDates(m_competenza->altreCausaliDates());
-
-    ui->malattiaLabel->setText(m_competenza->malattiaCount());
-    malattiaCalendar->setDates(m_competenza->malattiaDates());
-
-    ui->rmpLabel->setText(m_competenza->rmpCount());
-    rmpCalendar->setDates(m_competenza->rmpDates());
-
-    ui->rmcLabel->setText(m_competenza->rmcCount());
-    rmcCalendar->setDates(m_competenza->rmcDates());
 
     gdCalendar->setDates(m_competenza->gdDates());
     gnCalendar->setDates(m_competenza->gnDates());
     rCalendar->setDates(m_competenza->rep());
-
-    if(m_competenza->altreAssenzeDates().count() > 0)
-        ui->altreLabel->setStyleSheet("color: red;");
-    else
-        ui->altreLabel->setStyleSheet("color: black;");
-    ui->altreLabel->setText(QString::number(m_competenza->altreAssenzeDates().count()));
-    altreCalendar->setDates(m_competenza->altreAssenzeDates());
-    altreCalendar->setScopertiDates(m_competenza->scopertiDates());
 
     elaboraSommario();
 
@@ -626,6 +549,38 @@ void MainWindow::populateCompetenzeTab()
     connect(ui->dmpMinsEdit, SIGNAL(valueChanged(int)), this, SLOT(minutiCambiati(int)));
     connect(ui->orarioGiornalieroEdit, SIGNAL(timeChanged(QTime)), this, SLOT(orarioGiornalieroCambiato(QTime)));
     connect(ui->pagaStrGuardiaCB, SIGNAL(toggled(bool)), SLOT(pagaStrGuardiaCambiato(bool)));
+}
+
+void MainWindow::populateCausali()
+{
+    QList<CausaleWidget *> wList = ui->causaliGB->findChildren< CausaleWidget *>();
+    foreach( CausaleWidget *l, wList ) {
+        l->deleteLater();
+    }
+    for (int i = 0; i < causaliLayout->count(); ++i) {
+        QLayoutItem *layoutItem = causaliLayout->itemAt(i);
+        if (layoutItem->spacerItem()) {
+            causaliLayout->removeItem(layoutItem);
+            // You could also use: layout->takeAt(i);
+            delete layoutItem;
+            --i;
+        }
+    }
+    const auto map = m_competenza->dipendente()->altreCausali(); // QMap<QString, int>
+    auto i = map.constBegin();
+
+    while (i != map.constEnd()) {
+        CausaleWidget *cw = new CausaleWidget(i.key(),
+                                              i.value().second,
+                                              m_competenza->dataIniziale().year(),
+                                              m_competenza->dataIniziale().month(),
+                                              i.value().first,
+                                              ui->causaliGB);
+
+        causaliLayout->addWidget(cw);
+        i++;
+    }
+    causaliLayout->addStretch(10);
 }
 
 void MainWindow::elaboraGuardie()
@@ -811,14 +766,6 @@ void MainWindow::rCalendarClicked(const QDate &date)
     Q_UNUSED(date)
     m_competenza->setRep(rCalendar->getDates());
     elaboraRep();
-    ui->saveCompetenzeButton->setEnabled(m_competenza->isModded());
-}
-
-void MainWindow::altreCalendarClicked(const QDate &date)
-{
-    Q_UNUSED(date)
-    m_competenza->setAltreAssenze(altreCalendar->getDates());
-    populateCompetenzeTab();
     ui->saveCompetenzeButton->setEnabled(m_competenza->isModded());
 }
 
