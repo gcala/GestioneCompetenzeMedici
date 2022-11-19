@@ -34,8 +34,6 @@ SOURCES += \
         manageunits.cpp \
         searchcombobox.cpp \
         insertdbvalues.cpp \
-        okularcsvtimecardsreader.cpp \
-        tabulacsvtimecardsreader.cpp \
         sqlqueries.cpp \
         dipendente.cpp \
         calendarmanager.cpp \
@@ -73,8 +71,6 @@ HEADERS += \
         manageunits.h \
         searchcombobox.h \
         insertdbvalues.h \
-        okularcsvtimecardsreader.h \
-        tabulacsvtimecardsreader.h \
         sqlqueries.h \
         dipendente.h \
         calendarmanager.h \

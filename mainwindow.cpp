@@ -136,12 +136,10 @@ MainWindow::MainWindow(QWidget *parent) :
     loadSettings();
     Utilities::m_connectionName = "";
 
-    connect(&tabulaReader, SIGNAL(timeCardsRead()), this, SLOT(handleResults()));
-    connect(&tabulaReader, SIGNAL(totalRows(int)), this, SLOT(setTotalRows(int)));
-    connect(&tabulaReader, SIGNAL(currentRow(int)), this, SLOT(setCurrentRow(int)));
     connect(&cartellinoReader, SIGNAL(timeCardsRead()), this, SLOT(handleResults()));
     connect(&cartellinoReader, SIGNAL(totalRows(int)), this, SLOT(setTotalRows(int)));
     connect(&cartellinoReader, SIGNAL(currentRow(int)), this, SLOT(setCurrentRow(int)));
+    connect(&cartellinoReader, SIGNAL( selectUnit(QString, int&) ), this, SLOT( associaUnita(QString, int &) ), Qt::BlockingQueuedConnection ) ;
     connect(&unitaCompetenzeExporter, SIGNAL(exportFinished(QString)), this, SLOT(exported(QString)));
     connect(&unitaCompetenzeExporter, SIGNAL(totalRows(int)), this, SLOT(setTotalRows(int)));
     connect(&unitaCompetenzeExporter, SIGNAL(currentRow(int)), this, SLOT(setCurrentRow(int)));
@@ -153,8 +151,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&dirigenteCompetenzeExporter, SIGNAL(currentRow(int)), this, SLOT(setCurrentRow(int)));
 
     m_nomiDialog = new NomiUnitaDialog;
-    connect(&tabulaReader, SIGNAL( selectUnit(QString, int&) ), this, SLOT( associaUnita(QString, int &) ), Qt::BlockingQueuedConnection ) ;
-    connect(&cartellinoReader, SIGNAL( selectUnit(QString, int&) ), this, SLOT( associaUnita(QString, int &) ), Qt::BlockingQueuedConnection ) ;
 
     QTimer::singleShot(500, this, SLOT(delayedSetup()));
 }

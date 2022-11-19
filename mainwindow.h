@@ -7,7 +7,6 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "tabulacsvtimecardsreader.h"
 #include "cartellinocompletoreader.h"
 #include "competenzeunitaexporter.h"
 #include "competenzedirigenteexporter.h"
@@ -160,7 +159,6 @@ private:
     QString lastDirigenteUnitaNome;
     QFileInfo currentDatabase;
     PrintDialog *printDialog;
-    TabulaCsvTimeCardsReader tabulaReader;
     CartellinoCompletoReader cartellinoReader;
     CompetenzeUnitaExporter unitaCompetenzeExporter;
     CompetenzeDirigenteExporter dirigenteCompetenzeExporter;
