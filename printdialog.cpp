@@ -7,6 +7,7 @@
 #include "printdialog.h"
 #include "ui_printdialog.h"
 #include "sqlqueries.h"
+#include "utilities.h"
 
 #include <QtWidgets>
 #include <QFileDialog>
@@ -229,10 +230,13 @@ void PrintDialog::on_browseButton_clicked()
 {
     QString dir = QFileDialog::getExistingDirectory( this,
                                                      tr( "Seleziona destinazione" ),
-                                                     ui->path->text().isEmpty() ? QDir::homePath() : ui->path->text(),
+                                                     Utilities::m_exportPath,
                                                      QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks );
 
     // be sure that a valid path was selected
-    if( QFile::exists( dir ) )
+    const QFileInfo fi(dir);
+    if( fi.exists() ) {
+        Utilities::m_exportPath = fi.absolutePath();
         ui->path->setText( dir );
+    }
 }

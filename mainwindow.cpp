@@ -317,6 +317,8 @@ void MainWindow::loadSettings()
     Utilities::m_keyFile = settings.value("keyFile", "").toString();
     Utilities::m_useSSL = settings.value("useSSL", false).toBool();
     Utilities::m_lastUsername = settings.value("lastUsername", "").toString();
+    Utilities::m_importPath = settings.value("importPath", QDir::homePath()).toString();
+    Utilities::m_exportPath = settings.value("exportPath", QDir::homePath()).toString();
     currentDatabase.setFile(settings.value("lastDatabasePath", "").toString());
     printDialog->setPath(settings.value("exportPath", QDir::homePath()).toString());
     m_photosPath = settings.value("photosPath", "").toString();
@@ -349,6 +351,8 @@ void MainWindow::saveSettings()
     settings.setValue("certFile", Utilities::m_certFile);
     settings.setValue("keyFile", Utilities::m_keyFile);
     settings.setValue("useSSL", Utilities::m_useSSL);
+    settings.setValue("importPath", Utilities::m_importPath);
+    settings.setValue("exportPath", Utilities::m_exportPath);
     settings.setValue("lastUsername", Utilities::m_lastUsername);
     settings.setValue("windowGeometry", geometry());
     settings.setValue("isMaximized", isMaximized());
@@ -358,11 +362,14 @@ void MainWindow::on_actionCaricaPdf_triggered()
 {
     pdfFile.clear();
     pdfFile = QFileDialog::getOpenFileName(this, tr("Seleziona pdf cartellini"),
-                                                    currentDatabase.absolutePath().isEmpty() ? QDir::homePath() : currentDatabase.absolutePath(),
+                                                    Utilities::m_importPath,
                                                     tr("PDF (*.pdf)"));
 
     if(pdfFile.isEmpty())
         return;
+
+    const QFileInfo fi(pdfFile);
+    Utilities::m_importPath = fi.absolutePath();
 
     if(QFile::exists(pdfFile)) {
         m_loadingTimeCards = true;
@@ -371,8 +378,6 @@ void MainWindow::on_actionCaricaPdf_triggered()
         progressBar->setMaximum(0);
         msgLabel->setText("Converto pdf in csv");
         ui->competenzeWidget->setEnabled(false);
-
-        QFileInfo fi(pdfFile);
 
         QStringList arguments;
         arguments << "-jar" << m_tabulaPath;

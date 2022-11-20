@@ -38,6 +38,8 @@ public:
     static QString m_lastPassword;
     static QTime orarioInizioNotte;
     static int m_maxMinutiGiornalieri;
+    static QString m_importPath;
+    static QString m_exportPath;
 };
 
 #endif // UTILITIES_H
