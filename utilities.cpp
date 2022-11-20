@@ -18,6 +18,8 @@ bool Utilities::m_useSSL;
 QString Utilities::m_localDbFileName;
 QString Utilities::m_lastUsername;
 QString Utilities::m_lastPassword;
+QString Utilities::m_importPath;
+QString Utilities::m_exportPath;
 QDate Utilities::ccnl1618Date(2020,1,1);
 QTime Utilities::orarioInizioNotte(19,35);
 int Utilities::m_maxMinutiGiornalieri = 456;
