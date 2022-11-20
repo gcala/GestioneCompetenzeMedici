@@ -1,3 +1,9 @@
+/*
+ *  SPDX-FileCopyrightText: 2017-2022 Giuseppe Calà <giuseppe.cala@mailbox.org>
+ * 
+ *  SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
 #ifndef BLINKINGLABEL_H
 #define BLINKINGLABEL_H
 
