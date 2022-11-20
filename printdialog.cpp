@@ -236,7 +236,7 @@ void PrintDialog::on_browseButton_clicked()
     // be sure that a valid path was selected
     const QFileInfo fi(dir);
     if( fi.exists() ) {
-        Utilities::m_exportPath = fi.absolutePath();
+        Utilities::m_exportPath = fi.absoluteFilePath();
         ui->path->setText( dir );
     }
 }

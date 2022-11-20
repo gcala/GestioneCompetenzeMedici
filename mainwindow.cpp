@@ -320,7 +320,7 @@ void MainWindow::loadSettings()
     Utilities::m_importPath = settings.value("importPath", QDir::homePath()).toString();
     Utilities::m_exportPath = settings.value("exportPath", QDir::homePath()).toString();
     currentDatabase.setFile(settings.value("lastDatabasePath", "").toString());
-    printDialog->setPath(settings.value("exportPath", QDir::homePath()).toString());
+    printDialog->setPath(Utilities::m_exportPath);
     m_photosPath = settings.value("photosPath", "").toString();
     m_tabulaPath = settings.value("tabulaPath", QApplication::applicationDirPath() + QDir::separator() + "tabula.jar").toString();
 #ifdef _WIN32
