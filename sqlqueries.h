@@ -66,6 +66,8 @@ public:
     static QVariantList getDoctorDataById(const int &idDoctor);
     static QPair<int,int> getRecuperiMeseSuccessivo(const int &anno, const int &mese, const int &doctorId);
     static void setUnitaMedico(const int &docId, const int &unitId);
+    static bool noStraordinario(int matricola);
+    static void enableDisableStraordinario(int matricola, bool enable);
 };
 
 #endif // SQLQUERIES_H

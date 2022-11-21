@@ -284,6 +284,11 @@ void CartellinoCompletoReader::run()
                 }
                 m_dipendente->addNumGiorniCartellino(cartellino->giorni().count());
                 SqlQueries::addTimeCard(tableName, m_dipendente);
+                if(SqlQueries::noStraordinario(m_matricola)) {
+                    const int id = SqlQueries::doctorId(m_matricola);
+                    const QString tableModName = "tcm_" + QString::number(anno) + QString::number(mese).rightJustified(2, '0');
+                    SqlQueries::saveMod(tableModName, "pagaStrGuar", id, 0);
+                }
             }
         }
     }

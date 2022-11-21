@@ -1001,6 +1001,7 @@ void MainWindow::pagaStrGuardiaCambiato(bool checked)
     table.replace("_","m_");
     int value = checked ? 1 : 0;
     SqlQueries::saveMod(table, "pagaStrGuar", ui->dirigentiCompetenzeCB->currentData(Qt::UserRole).toInt(), value);
+    SqlQueries::enableDisableStraordinario(m_competenza->dipendente()->matricola(), checked);
     elaboraSommario();
 }
 

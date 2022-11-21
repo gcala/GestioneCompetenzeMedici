@@ -1116,3 +1116,35 @@ void SqlQueries::setUnitaMedico(const int &docId, const int &unitId)
     }
 }
 
+bool SqlQueries::noStraordinario(int matricola)
+{
+    int count = 0;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
+    query.prepare("SELECT COUNT(*) FROM no_straordinario WHERE ci='" + QString::number(matricola) + "';");
+    if(!query.exec()) {
+        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
+    while(query.next()) {
+        count = query.value(0).toInt();
+    }
+
+    if(count <= 0)
+        return false;
+
+    return true;
+}
+
+void SqlQueries::enableDisableStraordinario(int matricola, bool enable)
+{
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
+    if(enable) {
+        query.prepare("DELETE FROM 'no_straordinario' WHERE ci=" + QString::number(matricola) + ";");
+    } else {
+        query.prepare("INSERT INTO no_straordinario (ci) VALUES (:ci);");
+        query.bindValue(":ci", matricola);
+    }
+    if(!query.exec()) {
+        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
+}
+
