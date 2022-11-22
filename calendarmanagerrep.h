@@ -46,7 +46,7 @@ protected:
 #endif
 
 private slots:
-    void dataSelezionata(const QDate &date);
+    void dataRightClicked(const QPoint &pos);
     void noSelected();
     void mezzoSelected();
     void unoSelected();

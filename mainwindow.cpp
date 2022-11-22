@@ -76,7 +76,7 @@ MainWindow::MainWindow(QWidget *parent) :
     rCalendarAction->setDefaultWidget(rCalendar);
     rCalendarMenu->addAction(rCalendarAction);
     ui->rCalendarButton->setMenu(rCalendarMenu);
-    connect(rCalendar, SIGNAL(clicked(QDate)), this, SLOT(rCalendarClicked(QDate)));
+    connect(rCalendar, SIGNAL(datesChanged()), this, SLOT(rCalendarClicked()));
 
     unitaReadOnlyMode = true;
     dirigenteReadOnlyMode = true;
@@ -766,9 +766,8 @@ void MainWindow::gnCalendarClicked(const QDate &date)
     ui->saveCompetenzeButton->setEnabled(m_competenza->isModded());
 }
 
-void MainWindow::rCalendarClicked(const QDate &date)
+void MainWindow::rCalendarClicked()
 {
-    Q_UNUSED(date)
     m_competenza->setRep(rCalendar->getDates());
     elaboraRep();
     ui->saveCompetenzeButton->setEnabled(m_competenza->isModded());

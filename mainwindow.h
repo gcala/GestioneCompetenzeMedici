@@ -66,7 +66,7 @@ private slots:
     void on_actionStampaCompetenzeUnita_triggered();
     void gdCalendarClicked(const QDate &date);
     void gnCalendarClicked(const QDate &date);
-    void rCalendarClicked(const QDate &date);
+    void rCalendarClicked();
     void on_actionBackupDatabase_triggered();
     void minutiCambiati(int mins);
     void oreCambiate(int ore);

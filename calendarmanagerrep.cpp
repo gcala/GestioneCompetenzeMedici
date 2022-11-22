@@ -9,6 +9,7 @@
 #include <QMenu>
 #include <QPainter>
 #include <QAbstractItemView>
+#include <QTableView>
 #include <QDebug>
 
 CalendarManagerRep::CalendarManagerRep(QWidget *parent)
@@ -18,8 +19,9 @@ CalendarManagerRep::CalendarManagerRep(QWidget *parent)
     m_outlinePen.setWidth(2);
     m_transparentBrush.setColor(Qt::transparent);
     setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader);
+    setContextMenuPolicy(Qt::CustomContextMenu);
 
-    connect(this, SIGNAL(clicked(QDate)), this, SLOT(dataSelezionata(QDate)));
+    connect(this, &QWidget::customContextMenuRequested,this, &CalendarManagerRep::dataRightClicked);
 
     setMinimumSize(400,400);
 }
@@ -79,25 +81,6 @@ void CalendarManagerRep::setDates(const QMap<QDate, ValoreRep> &dates)
     }
 }
 
-void CalendarManagerRep::dataSelezionata(const QDate &date)
-{
-    m_selectedDate = date;
-    QMenu menu;
-    menu.addAction("0",this, SLOT(noSelected()));
-    menu.addAction("½",this, SLOT(mezzoSelected()));
-    menu.addAction("1",this, SLOT(unoSelected()));
-    menu.addAction("1½",this, SLOT(unomezzoSelected()));
-    menu.addAction("2",this, SLOT(dueSelected()));
-    menu.exec(QCursor::pos());
-
-    auto view = this->findChild<QAbstractItemView*>();
-    if(view){
-        view->viewport()->update();
-    } else update(); // fallback
-
-    emit datesChanged();
-}
-
 void CalendarManagerRep::noSelected()
 {
     if(m_dates.keys().contains(m_selectedDate)) {
@@ -123,4 +106,73 @@ void CalendarManagerRep::unomezzoSelected()
 void CalendarManagerRep::dueSelected()
 {
     m_dates[m_selectedDate] = Due;
+}
+
+void CalendarManagerRep::dataRightClicked(const QPoint &pos)
+{
+    const QTableView* const view = findChild<const QTableView*>();
+    Q_ASSERT(view);
+    const QAbstractItemModel* const model = view->model();
+    const int startCol = verticalHeaderFormat()==QCalendarWidget::NoVerticalHeader ? 0:1;
+    const int startRow = horizontalHeaderFormat()==QCalendarWidget::NoHorizontalHeader ? 0:1;
+    const QModelIndex clickedIndex = view->indexAt(view->viewport()->mapFromGlobal(mapToGlobal(pos)));
+    if(clickedIndex.row() < startRow || clickedIndex.column() < startCol)
+        return;
+    QModelIndex firstIndex;
+    bool firstFound=false;
+    for(int i=startRow, maxI=model->rowCount();!firstFound && i<maxI;++i){
+        for(int j=startCol, maxJ=model->columnCount();!firstFound && j<maxJ;++j){
+            firstIndex = model->index(i,j);
+            if(firstIndex.data().toInt()==1)
+                firstFound =true;
+        }
+    }
+    const int lastDayMonth = QDate(yearShown(),monthShown(),1).addMonths(1).addDays(-1).day();
+    bool lastFound=false;
+    QModelIndex lastIndex;
+    for(int i=model->rowCount()-1, minI=firstIndex.row();!lastFound && i>=minI;--i){
+        for(int j=model->columnCount()-1;!lastFound && j>=startCol;--j){
+            lastIndex= model->index(i,j);
+            if(lastIndex.data().toInt()==lastDayMonth)
+                lastFound=true;
+        }
+    }
+
+    if(clickedIndex.row() < firstIndex.row() || clickedIndex.row() > lastIndex.row())
+        return;
+    if(clickedIndex.row() == firstIndex.row() && clickedIndex.column() < firstIndex.column())
+        return;
+    if(clickedIndex.row() == lastIndex.row() && clickedIndex.column() > firstIndex.column())
+        return;
+
+//    int monthShift = 0;
+//    int yearShift=0;
+//    if(clickedIndex.row()<firstIndex.row() || (clickedIndex.row()==firstIndex.row() && clickedIndex.column()<firstIndex.column())){
+//        if(monthShown()==1){
+//            yearShift=-1;
+//            monthShift=11;
+//        }
+//        else
+//            monthShift = -1;
+//    }
+//    else if(clickedIndex.row()>lastIndex.row() || (clickedIndex.row()==lastIndex.row() && clickedIndex.column()>lastIndex.column())){
+//        if(monthShown()==12){
+//            yearShift=1;
+//            monthShift=-11;
+//        }
+//        else
+//            monthShift = 1;
+//    }
+//    qDebug() << QDate(yearShown()+yearShift,monthShown()+monthShift,clickedIndex.data().toInt());
+    m_selectedDate = QDate(yearShown(),monthShown(),clickedIndex.data().toInt());
+
+    QMenu menu;
+    menu.addAction("0",this, SLOT(noSelected()));
+    menu.addAction("½",this, SLOT(mezzoSelected()));
+    menu.addAction("1",this, SLOT(unoSelected()));
+    menu.addAction("1½",this, SLOT(unomezzoSelected()));
+    menu.addAction("2",this, SLOT(dueSelected()));
+    menu.exec(QCursor::pos());
+    view->viewport()->update();
+    emit datesChanged();
 }
