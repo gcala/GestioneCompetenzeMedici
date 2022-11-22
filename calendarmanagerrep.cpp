@@ -5,6 +5,8 @@
 */
 
 #include "calendarmanagerrep.h"
+#include "reperibilitasemplificata.h"
+#include "almanac.h"
 
 #include <QMenu>
 #include <QPainter>
@@ -21,6 +23,7 @@ CalendarManagerRep::CalendarManagerRep(QWidget *parent)
     setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader);
     setContextMenuPolicy(Qt::CustomContextMenu);
 
+    connect(this, &QCalendarWidget::clicked,this, &CalendarManagerRep::dataLeftClicked);
     connect(this, &QWidget::customContextMenuRequested,this, &CalendarManagerRep::dataRightClicked);
 
     setMinimumSize(400,400);
@@ -47,6 +50,11 @@ QMap<QDate, ValoreRep> CalendarManagerRep::getDates() const
 void CalendarManagerRep::setDates(const QMap<QDate, ValoreRep> &dates)
 {
     m_dates = dates;
+}
+
+void CalendarManagerRep::setReperibilita(ReperibilitaSemplificata *reperibilita)
+{
+    m_reperibilita = reperibilita;
 }
 
 #if QT_VERSION >= 0x060000
@@ -106,6 +114,18 @@ void CalendarManagerRep::unomezzoSelected()
 void CalendarManagerRep::dueSelected()
 {
     m_dates[m_selectedDate] = Due;
+}
+
+ValoreRep CalendarManagerRep::repConvert(const double value)
+{
+    if(value == 0.5)
+        return Mezzo;
+    if(value == 1.0)
+        return Uno;
+    if(value == 1.5)
+        return UnoMezzo;
+    if(value == 2.0)
+        return Due;
 }
 
 void CalendarManagerRep::dataRightClicked(const QPoint &pos)
@@ -174,5 +194,42 @@ void CalendarManagerRep::dataRightClicked(const QPoint &pos)
     menu.addAction("2",this, SLOT(dueSelected()));
     menu.exec(QCursor::pos());
     view->viewport()->update();
+    emit datesChanged();
+}
+
+void CalendarManagerRep::dataLeftClicked(const QDate &date)
+{
+    m_selectedDate = date;
+
+    if(The::almanac()->isFestivo(date)) {
+        if(m_reperibilita->festivo() == 0.0) {
+            if(m_dates.keys().contains(m_selectedDate)) {
+                m_dates.remove(m_selectedDate);
+            }
+        } else {
+            m_dates[m_selectedDate] = repConvert(m_reperibilita->festivo());
+        }
+    } else if(The::almanac()->isSabato(date)) {
+        if(m_reperibilita->sabato() == 0.0) {
+            if(m_dates.keys().contains(m_selectedDate)) {
+                m_dates.remove(m_selectedDate);
+            }
+        } else {
+            m_dates[m_selectedDate] = repConvert(m_reperibilita->sabato());
+        }
+    } else {
+        if(m_reperibilita->feriale() == 0.0) {
+            if(m_dates.keys().contains(m_selectedDate)) {
+                m_dates.remove(m_selectedDate);
+            }
+        } else {
+            m_dates[m_selectedDate] = repConvert(m_reperibilita->feriale());
+        }
+    }
+    auto view = this->findChild<QAbstractItemView*>();
+    if(view){
+        view->viewport()->update();
+    } else update(); // fallback
+
     emit datesChanged();
 }

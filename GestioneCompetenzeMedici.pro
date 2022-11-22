@@ -34,6 +34,7 @@ SOURCES += \
         mainwindow.cpp \
         manageemployee.cpp \
         manageunits.cpp \
+        reperibilitasemplificata.cpp \
         searchcombobox.cpp \
         insertdbvalues.cpp \
         sqlqueries.cpp \
@@ -73,6 +74,7 @@ HEADERS += \
         mainwindow.h \
         manageemployee.h \
         manageunits.h \
+        reperibilitasemplificata.h \
         searchcombobox.h \
         insertdbvalues.h \
         sqlqueries.h \

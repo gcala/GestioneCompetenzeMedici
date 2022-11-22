@@ -31,6 +31,7 @@ class QWidgetAction;
 class Competenza;
 class NomiUnitaDialog;
 class QHBoxLayout;
+class ReperibilitaSemplificata;
 
 class MainWindow : public QMainWindow
 {
@@ -140,6 +141,7 @@ private:
     CompetenzeUnitaExporter unitaCompetenzeExporter;
     CompetenzeDirigenteExporter dirigenteCompetenzeExporter;
     DeficitRecuperiExporter deficitRecuperiExporter;
+    ReperibilitaSemplificata *m_reperibilita;
 
     QString backupFileName(const QString &time) const;
     void backupDatabase(const QString &time, bool quiet);

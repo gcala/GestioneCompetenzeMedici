@@ -29,6 +29,16 @@ bool Almanac::isGrandeFestivita(const QDate &date)
     return m_grandiFestivita.contains(date);
 }
 
+bool Almanac::isFestivo(const QDate &date)
+{
+    return isGrandeFestivita(date) || date.dayOfWeek() == 7;
+}
+
+bool Almanac::isSabato(const QDate &date)
+{
+    return date.dayOfWeek() == 6;
+}
+
 Almanac::Almanac()
 {
     if(m_grandiFestivita.isEmpty()) {

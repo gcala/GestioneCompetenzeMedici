@@ -10,7 +10,6 @@
 #include "defines.h"
 
 #include <QCalendarWidget>
-
 #include <QStringList>
 #include <QBrush>
 #include <QColor>
@@ -19,6 +18,8 @@
 #include <QDate>
 #include <QPen>
 #include <QMap>
+
+class ReperibilitaSemplificata;
 
 class CalendarManagerRep : public QCalendarWidget
 {
@@ -37,6 +38,7 @@ public:
 
     QMap<QDate, ValoreRep> getDates() const;
     void setDates(const QMap<QDate, ValoreRep> &dates);
+    void setReperibilita(ReperibilitaSemplificata *reperibilita);
 
 protected:
 #if QT_VERSION >= 0x060000
@@ -47,6 +49,7 @@ protected:
 
 private slots:
     void dataRightClicked(const QPoint &pos);
+    void dataLeftClicked(const QDate &date);
     void noSelected();
     void mezzoSelected();
     void unoSelected();
@@ -62,6 +65,8 @@ private:
 
     QPen m_outlinePen;
     QBrush m_transparentBrush;
+    ReperibilitaSemplificata *m_reperibilita;
+    ValoreRep repConvert(const double value);
 };
 
 #endif // CALENDARMANAGERREP_H

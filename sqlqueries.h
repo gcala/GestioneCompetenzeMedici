@@ -12,6 +12,7 @@
 #include <QSqlQueryModel>
 
 class Dipendente;
+class ReperibilitaSemplificata;
 
 class SqlQueries
 {
@@ -68,6 +69,7 @@ public:
     static void setUnitaMedico(const int &docId, const int &unitId);
     static bool noStraordinario(int matricola);
     static void enableDisableStraordinario(int matricola, bool enable);
+    static ReperibilitaSemplificata * reperibilita(int idUnita, int anno, int mese);
 };
 
 #endif // SQLQUERIES_H

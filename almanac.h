@@ -24,6 +24,8 @@ public:
     friend Almanac* The::almanac();
 
     bool isGrandeFestivita(const QDate &date);
+    bool isFestivo(const QDate &date);
+    bool isSabato(const QDate &date);
 
 signals:
 

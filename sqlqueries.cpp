@@ -9,6 +9,7 @@
 #include "competenza.h"
 #include "sqldatabasemanager.h"
 #include "utilities.h"
+#include "reperibilitasemplificata.h"
 
 #include <QSqlQuery>
 #include <QSqlError>
@@ -1146,5 +1147,25 @@ void SqlQueries::enableDisableStraordinario(int matricola, bool enable)
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
+}
+
+ReperibilitaSemplificata *SqlQueries::reperibilita(int idUnita, int anno, int mese)
+{
+    if(idUnita == 0 || anno == 0 || mese == 0)
+        return new ReperibilitaSemplificata();
+
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
+    query.prepare("SELECT * FROM reperibilita_semplificata WHERE id_unita=" + QString::number(idUnita) + " AND decorrenza <= " + QDate(anno, mese, 1).toString("yyyyMMdd") + " ORDER BY decorrenza DESC LIMIT 1;");
+    if(!query.exec()) {
+        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
+    while(query.next()) {
+        return new ReperibilitaSemplificata(idUnita,
+                                        QDate(anno, mese, 1),
+                                        query.value(2).toDouble(),
+                                        query.value(3).toDouble(),
+                                        query.value(4).toDouble());
+    }
+    return new ReperibilitaSemplificata();
 }
 

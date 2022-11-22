@@ -25,6 +25,7 @@
 #include "manageunits.h"
 #include "causalewidget.h"
 #include "dipendente.h"
+#include "reperibilitasemplificata.h"
 
 #include <QtWidgets>
 #include <QDebug>
@@ -243,6 +244,7 @@ void MainWindow::populateUnitaCompetenzeCB()
             list << l.at(1);
         }
     }
+    rCalendar->setReperibilita(m_reperibilita);
 }
 
 void MainWindow::populateDirigentiCompetenzeCB()
@@ -501,6 +503,10 @@ void MainWindow::on_unitaCompetenzeCB_currentIndexChanged(int index)
 {
     Q_UNUSED(index)
     populateDirigentiCompetenzeCB();
+    m_reperibilita = SqlQueries::reperibilita(ui->unitaCompetenzeCB->currentData(Qt::UserRole).toInt(),
+                                              ui->meseCompetenzeCB->currentData(Qt::UserRole).toString().mid(3,4).toInt(),
+                                              ui->meseCompetenzeCB->currentData(Qt::UserRole).toString().right(2).toInt());
+    rCalendar->setReperibilita(m_reperibilita);
 }
 
 void MainWindow::on_dirigentiCompetenzeCB_currentIndexChanged(int index)
