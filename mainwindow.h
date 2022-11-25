@@ -53,7 +53,7 @@ private slots:
     void tabulaFinished(int exitCode, QProcess::ExitStatus exitStatus);
     void tabulaError(QProcess::ProcessError error);
     void delayedSetup();
-    void associaUnita(const QString &, int &unitaId);
+    void associaUnita(const QString &nominativo, int &unitaId);
 
     void on_actionApriDatabase_triggered();
     void on_actionCaricaPdf_triggered();
