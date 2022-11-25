@@ -991,9 +991,9 @@ void MainWindow::delayedSetup()
     connectToDatabase();
 }
 
-void MainWindow::associaUnita(const QString &nome, int &unitaId)
+void MainWindow::associaUnita(const QString &nominativo, int &unitaId)
 {
-    m_nomiDialog->setUnitaLabel(nome);
+    m_nomiDialog->setUnitaLabel(nominativo);
     m_nomiDialog->exec();
     unitaId = m_nomiDialog->currentUnit();
 }

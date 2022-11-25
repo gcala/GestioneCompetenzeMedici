@@ -192,7 +192,7 @@ void CartellinoCompletoReader::run()
 
             int unitaId = SqlQueries::unitId(m_dipendente->matricola());
             if(unitaId == -1) {
-                emit selectUnit(m_dipendente->matricola(), unitaId);
+                emit selectUnit(m_dipendente->nome(), unitaId);
             }
 
             m_dipendente->setUnita(unitaId);

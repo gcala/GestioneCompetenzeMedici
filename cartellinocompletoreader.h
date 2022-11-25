@@ -34,7 +34,7 @@ signals:
     void currentRow(int);
     void showErrorMessage(QString, QString);
     void turnoNonTrovato(int matricola, int codice);
-    void selectUnit(int id, int& idUnit);
+    void selectUnit(const QString &nominativo, int& idUnit);
 
 private:
     QString fileName;
