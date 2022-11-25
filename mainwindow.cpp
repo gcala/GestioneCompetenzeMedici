@@ -484,11 +484,13 @@ void MainWindow::on_restoreCompetenzeButton_clicked()
 void MainWindow::on_meseCompetenzeCB_currentIndexChanged(int index)
 {
     Q_UNUSED(index)
-    int docIndex = ui->dirigentiCompetenzeCB->currentIndex();
-    int unitaIndex = ui->unitaCompetenzeCB->currentIndex();
+    const int unitaData = ui->unitaCompetenzeCB->currentData(Qt::UserRole).toInt();
+    const int docData = ui->dirigentiCompetenzeCB->currentData(Qt::UserRole).toInt();
     populateUnitaCompetenzeCB();
-    ui->unitaCompetenzeCB->setCurrentIndex(unitaIndex < 0 ? 0 : unitaIndex);
+    const int unitaIndex = ui->unitaCompetenzeCB->findData(unitaData, Qt::UserRole);
     ui->unitaCompetenzeCB->show();
+    ui->unitaCompetenzeCB->setCurrentIndex(unitaIndex < 0 ? 0 : unitaIndex);
+    const int docIndex = ui->dirigentiCompetenzeCB->findData(docData, Qt::UserRole);
     ui->dirigentiCompetenzeCB->setCurrentIndex(docIndex < 0 ? 0 : docIndex);
     ui->dirigentiCompetenzeCB->show();
     const QDate date(ui->meseCompetenzeCB->currentData(Qt::UserRole).toString().split("_").last().left(4).toInt(),
