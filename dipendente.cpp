@@ -17,7 +17,7 @@ public:
     QString m_nome;
     int m_matricola;
     int m_unita;
-    int m_riposi;
+    QVector<int> m_riposi;
     QVector<int> m_guardieDiurne;
     QVector<int> m_guardieNotturne;
     QMultiMap<int, QPair<int, int> > m_grep;
@@ -95,7 +95,7 @@ Dipendente::~Dipendente()
 
 void Dipendente::resetProperties()
 {
-    data->m_riposi = 0;
+    data->m_riposi.clear();
     data->m_minutiFatti = 0;
     data->m_minutiGiornalieriVeri = 0;
     data->m_minutiCongedi = 0;
@@ -165,14 +165,26 @@ void Dipendente::setUnita(int unita)
     data->m_unita = unita;
 }
 
-int Dipendente::riposi() const
+int Dipendente::riposiCount() const
+{
+    if(data->m_anno <= 2022 && data->m_mese <= 10) {
+        if(data->m_riposi.count() > 0)
+            return data->m_riposi.at(0);
+        else
+            return 0;
+    }
+
+    return data->m_riposi.count();
+}
+
+QVector<int> Dipendente::riposi() const
 {
     return data->m_riposi;
 }
 
-void Dipendente::addRiposi(int num)
+void Dipendente::addRiposo(int giorno)
 {
-    data->m_riposi += num;
+    data->m_riposi << giorno;
 }
 
 QVector<int> Dipendente::guardieDiurne() const
@@ -329,7 +341,7 @@ void Dipendente::addMinutiCongedo(int minuti)
 int Dipendente::minutiGiornalieri() const
 {
     if(data->m_minutiGiornalieriVeri > Utilities::m_maxMinutiGiornalieri)
-        return data->m_minutiGiornalieriVeri / (data->m_numGiorniCartellino - data->m_riposi);
+        return data->m_minutiGiornalieriVeri / (data->m_numGiorniCartellino - riposiCount());
     return data->m_minutiGiornalieriVeri;
 }
 
@@ -391,4 +403,9 @@ int Dipendente::minutiRmc() const
 void Dipendente::addMinutiRmc(int minuti)
 {
     data->m_minutiRmc += minuti;
+}
+
+void Dipendente::setRiposi(QVector<int> giorni)
+{
+    data->m_riposi = giorni;
 }

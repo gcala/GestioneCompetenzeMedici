@@ -481,7 +481,7 @@ bool SqlQueries::addTimeCard(const QString &tableName, const Dipendente *dipende
         query.bindValue(":mese", dipendente->mese());
     }
 
-    query.bindValue(":riposi", dipendente->riposi());
+    query.bindValue(":riposi", Utilities::vectorIntToStringlist(dipendente->riposi()).join(","));
     query.bindValue(":minuti_giornalieri", dipendente->minutiGiornalieriVeri());
     if(dipendente->minutiGiornalieriVeri() <= Utilities::m_maxMinutiGiornalieri)
         query.bindValue(":ferie", Utilities::vectorIntToStringlist(dipendente->ferie()).join(","));

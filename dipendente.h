@@ -35,8 +35,9 @@ public:
     void setMatricola(int matricola);
     int unita() const;
     void setUnita(int unita);
-    int riposi() const;
-    void addRiposi(int num);
+    int riposiCount() const;
+    QVector<int> riposi() const;
+    void addRiposo(int giorno);
     QVector<int> guardieDiurne() const;
     void addGuardiaDiurna(int giorno);
     QVector<int> guardieNotturne() const;
@@ -76,7 +77,7 @@ public:
     void addMinutiGuar(int minuti);
     int minutiRmc() const;
     void addMinutiRmc(int minuti);
-    void setRiposi(int minuti);
+    void setRiposi(QVector<int> giorni);
     void resetProperties();
 
 signals:

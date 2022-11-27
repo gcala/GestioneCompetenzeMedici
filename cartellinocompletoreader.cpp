@@ -260,7 +260,7 @@ void CartellinoCompletoReader::run()
                         valutaCausale(giorno.causale3(), dataCorrente, giorno, giorno.ore3(), guarFound, daysCounter == cartellino->giorni().count());
 
                     if(giorno.tipo().toUpper() == "R" || giorno.tipo().toUpper() == "F") {
-                        m_dipendente->addRiposi(1);
+                        m_dipendente->addRiposo(giorno.giorno());
                     }
 
                     if(!guarFound) {

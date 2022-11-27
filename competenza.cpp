@@ -221,14 +221,14 @@ void Competenza::buildDipendente()
     data->m_dipendente->setNome(query.at(0).toString());           // nome
     data->m_dipendente->setMatricola(query.at(1).toInt());         // matricola
     data->m_dipendente->setUnita(query.at(2).toInt());             // unità
-    data->m_dipendente->addRiposi(query.at(3).toInt());            // riposi
+    data->m_dipendente->setRiposi(Utilities::stringlistToVectorInt(query.at(3).toString().split(",")));            // riposi
     data->m_dipendente->setMinutiGiornalieri(query.at(4).toInt()); // orario giornaliero
     if(query.at(4).toInt() > Utilities::m_maxMinutiGiornalieri) {
         data->m_dipendente->setNumGiorniCartellino(query.at(5).toInt());
     } else {
         if(!query.at(5).toString().trimmed().isEmpty()) {
             if(data->m_dipendente->minutiGiornalieriVeri() <= Utilities::m_maxMinutiGiornalieri) {
-                data->m_dipendente->addAltraCausale("FERIE",query.at(5).toString().replace(",","~"),data->m_dipendente->minutiGiornalieriVeri()*query.at(5).toString().split(",").count());
+                data->m_dipendente->addAltraCausale("FERIE",query.at(5).toString().replace(",","~"), data->m_dipendente->minutiGiornalieriVeri()*query.at(5).toString().split(",").count());
             } else {
                 for(const auto &f : Utilities::stringlistToVectorInt(query.at(5).toString().split(","))) { // ferie
                     data->m_dipendente->addFerie(f);
@@ -330,6 +330,18 @@ void Competenza::buildDipendente()
     data->m_dipendente->addMinutiGuar(query.at(17).toInt());        // minuti di guar
     data->m_dipendente->addMinutiRmc(query.at(18).toInt());         // minuti di rmc
     data->m_dipendente->addMinutiFatti(query.at(19).toInt());       // minuti fatti
+
+    if(!query.at(5).toString().isEmpty()) { // ferie per retro-compatibilità
+        data->m_dipendente->addMinutiFatti(data->m_dipendente->minutiGiornalieriVeri()*query.at(5).toString().split(",").count());
+    }
+
+    if(!query.at(7).toString().trimmed().isEmpty()) { // malattia per retro-compatibilità
+        data->m_dipendente->addMinutiFatti(data->m_dipendente->minutiGiornalieriVeri()*query.at(7).toString().split(",").count());
+    }
+
+    if(!query.at(8).toString().trimmed().isEmpty()) { // RMP per retro-compatibilità
+        data->m_dipendente->addMinutiFatti(data->m_dipendente->minutiGiornalieriVeri()*query.at(8).toString().split(",").count());
+    }
 
     if(!query.at(22).toString().trimmed().isEmpty()) {        // turni reperibilita
         for(const auto &f : query.at(22).toString().split(";")) {
@@ -450,20 +462,31 @@ int Competenza::giorniLavorati() const
     if(data->m_dipendente->minutiGiornalieri() > Utilities::m_maxMinutiGiornalieri)
         return 0;
 
+    if(data->m_dipendente->riposi().count() == 1) {
+        return QDate(data->m_dipendente->anno(), data->m_dipendente->mese(), 1).daysInMonth()
+                - data->m_dipendente->riposi().at(0) // vecchio database il cui numero rappresenta il numero dei riposi
+                - data->m_dipendente->rmp().count()
+                - data->m_dipendente->ferie().count()
+                - data->m_dipendente->malattia().count()
+                - data->m_altreAssenze.count()
+                - data->m_dipendente->altreCausaliCount();
+    }
+
     return QDate(data->m_dipendente->anno(), data->m_dipendente->mese(), 1).daysInMonth()
-            - data->m_dipendente->riposi()
+            - data->m_dipendente->riposi().count()
             - data->m_dipendente->rmp().count()
             - data->m_dipendente->ferie().count()
             - data->m_dipendente->malattia().count()
-            - data->m_altreAssenze.count();
+            - data->m_altreAssenze.count()
+            - data->m_dipendente->altreCausaliCount();
 }
 
 int Competenza::giorniLavorativi() const
 {
     if(data->m_dipendente->minutiGiornalieri() > Utilities::m_maxMinutiGiornalieri)
-        return data->m_dipendente->numGiorniCartellino() - data->m_dipendente->riposi();
+        return data->m_dipendente->numGiorniCartellino() - data->m_dipendente->riposiCount();
 
-    return QDate(data->m_dipendente->anno(), data->m_dipendente->mese(), 1).daysInMonth() - data->m_dipendente->riposi();
+    return QDate(data->m_dipendente->anno(), data->m_dipendente->mese(), 1).daysInMonth() - data->m_dipendente->riposiCount();
 }
 
 QString Competenza::assenzeTotali() const
@@ -482,7 +505,7 @@ QString Competenza::assenzeTotali() const
 QString Competenza::orarioGiornaliero()
 {
     if(data->m_dipendente->minutiGiornalieri() > Utilities::m_maxMinutiGiornalieri)
-        return inOrario(data->m_dipendente->minutiGiornalieri() / (data->m_dipendente->numGiorniCartellino() - data->m_dipendente->riposi()));
+        return inOrario(data->m_dipendente->minutiGiornalieri() / (data->m_dipendente->numGiorniCartellino() - data->m_dipendente->riposiCount()));
 
     return inOrario((data->m_orarioGiornaliero >= 0 ? data->m_orarioGiornaliero : data->m_dipendente->minutiGiornalieri()));
 }
@@ -497,7 +520,7 @@ int Competenza::minutiDovuti() const
     if(data->m_dipendente->minutiGiornalieri() > Utilities::m_maxMinutiGiornalieri) {
         return data->m_dipendente->minutiGiornalieri();
     }
-    return (data->m_orarioGiornaliero >= 0 ? data->m_orarioGiornaliero : data->m_dipendente->minutiGiornalieri()) * giorniLavorati();
+    return (data->m_orarioGiornaliero >= 0 ? data->m_orarioGiornaliero : data->m_dipendente->minutiGiornalieri()) * giorniLavorativi();
 }
 
 QString Competenza::oreEffettuate()
