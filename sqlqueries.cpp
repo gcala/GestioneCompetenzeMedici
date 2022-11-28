@@ -325,7 +325,7 @@ bool SqlQueries::createTimeCardsTable(const QString &tableName)
                       "id_unita INT NOT NULL,"
                       "anno INT NOT NULL,"
                       "mese INT NOT NULL,"
-                      "riposi INT NOT NULL,"
+                      "riposi varchar(128) DEFAULT '',"
                       "minuti_giornalieri INT NOT NULL,"
                       "ferie varchar(128) DEFAULT '',"
                       "congedi varchar(128) DEFAULT '',"
