@@ -331,16 +331,18 @@ void Competenza::buildDipendente()
     data->m_dipendente->addMinutiRmc(query.at(18).toInt());         // minuti di rmc
     data->m_dipendente->addMinutiFatti(query.at(19).toInt());       // minuti fatti
 
-    if(!query.at(5).toString().isEmpty()) { // ferie per retro-compatibilità
-        data->m_dipendente->addMinutiFatti(data->m_dipendente->minutiGiornalieriVeri()*query.at(5).toString().split(",").count());
-    }
+    if(query.at(4).toInt() <= Utilities::m_maxMinutiGiornalieri) { // per retro-compatibilità
+        if(!query.at(5).toString().isEmpty()) { // ferie per retro-compatibilità
+            data->m_dipendente->addMinutiFatti(data->m_dipendente->minutiGiornalieriVeri()*query.at(5).toString().split(",").count());
+        }
 
-    if(!query.at(7).toString().trimmed().isEmpty()) { // malattia per retro-compatibilità
-        data->m_dipendente->addMinutiFatti(data->m_dipendente->minutiGiornalieriVeri()*query.at(7).toString().split(",").count());
-    }
+        if(!query.at(7).toString().trimmed().isEmpty()) { // malattia per retro-compatibilità
+            data->m_dipendente->addMinutiFatti(data->m_dipendente->minutiGiornalieriVeri()*query.at(7).toString().split(",").count());
+        }
 
-    if(!query.at(8).toString().trimmed().isEmpty()) { // RMP per retro-compatibilità
-        data->m_dipendente->addMinutiFatti(data->m_dipendente->minutiGiornalieriVeri()*query.at(8).toString().split(",").count());
+        if(!query.at(8).toString().trimmed().isEmpty()) { // RMP per retro-compatibilità
+            data->m_dipendente->addMinutiFatti(data->m_dipendente->minutiGiornalieriVeri()*query.at(8).toString().split(",").count());
+        }
     }
 
     if(!query.at(22).toString().trimmed().isEmpty()) {        // turni reperibilita
