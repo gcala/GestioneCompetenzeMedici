@@ -46,7 +46,6 @@ SOURCES += \
         calendarmanagerrep.cpp \
         printdialog.cpp \
         competenzeunitaexporter.cpp \
-        competenzedirigenteexporter.cpp \
         timbratura.cpp \
         totalicartellinocompleto.cpp \
         utilities.cpp \
@@ -87,7 +86,6 @@ HEADERS += \
         calendarmanagerrep.h \
         printdialog.h \
         competenzeunitaexporter.h \
-        competenzedirigenteexporter.h \
         timbratura.h \
         totalicartellinocompleto.h \
         utilities.h \

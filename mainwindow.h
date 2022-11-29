@@ -9,7 +9,6 @@
 
 #include "cartellinocompletoreader.h"
 #include "competenzeunitaexporter.h"
-#include "competenzedirigenteexporter.h"
 #include "deficitrecuperiexporter.h"
 
 #include <QMainWindow>
@@ -63,7 +62,6 @@ private slots:
     void on_meseCompetenzeCB_currentIndexChanged(int index);
     void on_unitaCompetenzeCB_currentIndexChanged(int index);
     void on_dirigentiCompetenzeCB_currentIndexChanged(int index);
-    void on_actionStampaCompetenzeDirigenti_triggered();
     void on_actionStampaCompetenzeUnita_triggered();
     void gdCalendarClicked(const QDate &date);
     void gnCalendarClicked(const QDate &date);
@@ -139,7 +137,6 @@ private:
     PrintDialog *printDialog;
     CartellinoCompletoReader cartellinoReader;
     CompetenzeUnitaExporter unitaCompetenzeExporter;
-    CompetenzeDirigenteExporter dirigenteCompetenzeExporter;
     DeficitRecuperiExporter deficitRecuperiExporter;
     ReperibilitaSemplificata *m_reperibilita;
 

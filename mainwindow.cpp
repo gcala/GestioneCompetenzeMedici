@@ -106,9 +106,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&deficitRecuperiExporter, SIGNAL(exportFinished(QString)), this, SLOT(exported(QString)));
     connect(&deficitRecuperiExporter, SIGNAL(totalRows(int)), this, SLOT(setTotalRows(int)));
     connect(&deficitRecuperiExporter, SIGNAL(currentRow(int)), this, SLOT(setCurrentRow(int)));
-    connect(&dirigenteCompetenzeExporter, SIGNAL(exportFinished(QString)), this, SLOT(exported(QString)));
-    connect(&dirigenteCompetenzeExporter, SIGNAL(totalRows(int)), this, SLOT(setTotalRows(int)));
-    connect(&dirigenteCompetenzeExporter, SIGNAL(currentRow(int)), this, SLOT(setCurrentRow(int)));
 
     m_nomiDialog = new NomiUnitaDialog;
 
@@ -419,7 +416,6 @@ void MainWindow::exported(const QString &file)
 {
     Utilities::m_connectionName = "";
     ui->actionStampaCompetenzeUnita->setEnabled(true);
-    ui->actionStampaCompetenzeDirigenti->setEnabled(true);
     ui->actionPrintDeficit->setEnabled(true);
     ui->competenzeWidget->setEnabled(true);
     progressBar->setVisible(false);
@@ -675,38 +671,8 @@ void MainWindow::setupDbConnectionParameters()
     Utilities::m_localDbFileName = currentDatabase.absoluteFilePath();
 }
 
-void MainWindow::on_actionStampaCompetenzeDirigenti_triggered()
-{
-    ui->actionStampaCompetenzeDirigenti->setEnabled(false);
-    ui->actionStampaCompetenzeUnita->setEnabled(false);
-    ui->actionPrintDeficit->setEnabled(false);
-    printDialog->setCurrentOp(PrintDialog::ToolOps::PrintDoctors);
-
-    printDialog->setCurrentMese(ui->meseCompetenzeCB->currentIndex());
-    printDialog->setCurrentUnita(ui->unitaCompetenzeCB->currentIndex() + 1);
-    printDialog->setCurrentDirigente(ui->dirigentiCompetenzeCB->currentIndex() + 1);
-
-    printDialog->exec();
-
-    if(!printDialog->proceed) {
-        exported(QString());
-        return;
-    }
-
-    progressBar->setVisible(true);
-    msgLabel->setText("Esportazione competenze dirigenti");
-
-    ui->competenzeWidget->setEnabled(false);
-    dirigenteCompetenzeExporter.setPath(printDialog->path());
-    dirigenteCompetenzeExporter.setTable(printDialog->currentMeseData());
-    dirigenteCompetenzeExporter.setUnita(printDialog->currentUnitaData());
-    dirigenteCompetenzeExporter.setDirigente(printDialog->currentDirigenteData());
-    dirigenteCompetenzeExporter.start();
-}
-
 void MainWindow::on_actionStampaCompetenzeUnita_triggered()
 {
-    ui->actionStampaCompetenzeDirigenti->setEnabled(false);
     ui->actionStampaCompetenzeUnita->setEnabled(false);
     ui->actionPrintDeficit->setEnabled(false);
     printDialog->setCurrentOp(PrintDialog::ToolOps::PrintUnits);
@@ -735,7 +701,6 @@ void MainWindow::on_actionStampaCompetenzeUnita_triggered()
 
 void MainWindow::on_actionPrintDeficit_triggered()
 {
-    ui->actionStampaCompetenzeDirigenti->setEnabled(false);
     ui->actionStampaCompetenzeUnita->setEnabled(false);
     ui->actionPrintDeficit->setEnabled(false);
     printDialog->setCurrentOp(PrintDialog::ToolOps::PrintDeficit);
