@@ -190,7 +190,7 @@ void CompetenzeUnitaExporter::run()
         int counter = 0;
 
         foreach (int dirigenteId, dirigentiIdList) {
-            m_competenza = new Competenza(m_timecard,dirigenteId);
+            m_competenza = new Competenza(m_timecard,dirigenteId, true /* esportazione */);
             if(counter != 0 && (counter%m_totalRows) == 0) {
                 counter = 0;
                 writer.newPage();

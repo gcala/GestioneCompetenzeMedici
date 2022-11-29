@@ -59,11 +59,12 @@ public:
     bool m_pagaStrGuardia;
 };
 
-Competenza::Competenza(const QString &tableName, const int id)
+Competenza::Competenza(const QString &tableName, const int id, bool isExporting)
     : data(new CompetenzaData)
     , m_tableName(tableName)
     , m_id(id)
     , m_arrotondamento(45)
+    , m_exporting(isExporting)
 {
 
 
@@ -406,7 +407,8 @@ void Competenza::buildDipendente()
     data->m_pagaStrGuardia = query.at(30).toBool();
 
     getOrePagate();
-    getRecuperiMeseSuccessivo();
+    if(!m_exporting)
+        getRecuperiMeseSuccessivo();
     calcOreGuardia();
 }
 

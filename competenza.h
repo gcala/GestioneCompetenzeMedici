@@ -24,7 +24,7 @@ class Competenza : public QObject
     
 
 public:
-    explicit Competenza(const QString &tableName, const int id);
+    explicit Competenza(const QString &tableName, const int id, bool isExporting = false);
     Competenza(const Competenza &);
     Competenza &operator=(const Competenza &);
     bool operator==(const Competenza &rhs) const;
@@ -166,6 +166,7 @@ private:
     int m_id;
     int m_unitaId;
     const int m_arrotondamento;
+    bool m_exporting;
 
     void buildDipendente();
     QString inOrario(int min);
