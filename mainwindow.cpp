@@ -629,8 +629,9 @@ void MainWindow::elaboraGuardie()
 
 void MainWindow::elaboraRep()
 {
+    QLocale loc;
     ui->rPainterWidget->setRepMap(m_competenza->rep());
-    ui->repLabel->setText(m_competenza->repCount());
+    ui->repLabel->setText(loc.toString(m_competenza->repCount(),'f',1));
 
     ui->r_d_fer->setText(Utilities::inOrario(m_competenza->r_d_fer()));
     ui->r_d_fes->setText(Utilities::inOrario(m_competenza->r_d_fes()));

@@ -955,9 +955,9 @@ int Competenza::numGuarDiurne() const
     return data->m_guardiaDiurnaMap.count();
 }
 
-QString Competenza::repCount() const
+double Competenza::repCount() const
 {
-    float tot = 0.0;
+    double tot = 0.0;
     auto i = data->m_rep.constBegin();
     while (i != data->m_rep.constEnd()) {
         switch (i.value()) {
@@ -982,7 +982,7 @@ QString Competenza::repCount() const
         i++;
     }
 
-    return tot == 0.0 ? "//" : QString::number(tot);
+    return tot;
 }
 
 QString Competenza::oreGrep()

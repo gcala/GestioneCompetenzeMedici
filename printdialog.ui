@@ -23,7 +23,6 @@
      <property name="font">
       <font>
        <pointsize>17</pointsize>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -214,7 +213,7 @@
          </font>
         </property>
         <property name="text">
-         <string>Stampa casi</string>
+         <string>Stampa totali</string>
         </property>
        </widget>
       </item>

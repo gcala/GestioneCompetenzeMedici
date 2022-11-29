@@ -1059,7 +1059,7 @@ void CompetenzeDirigenteExporter::printRep(QPainter &painter)
     const int sectionWidth = fm.horizontalAdvance("Rep") + 100;
 
     painter.setFont(bodyFontBold());
-    painter.drawText(QRect(0+sectionWidth,vOffset,6200,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, m_competenza->repCount());
+    painter.drawText(QRect(0+sectionWidth,vOffset,6200,m_rowHeight), Qt::AlignLeft | Qt::AlignBottom, QString::number(m_competenza->repCount()));
     painter.restore();
 }
 

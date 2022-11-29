@@ -89,7 +89,7 @@ public:
     int notte() const;
     int numGuarDiurne() const;
     int numGuarNottPag() const;
-    QString repCount() const;
+    double repCount() const;
     QString oreGrep();
     int numGrFestPagabili() const;
     int numOreGuarPagabili() const;

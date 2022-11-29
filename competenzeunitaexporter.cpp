@@ -17,6 +17,7 @@
 #include <QPdfWriter>
 #include <QPainter>
 #include <QSqlError>
+#include <cmath>
 
 CompetenzeUnitaExporter::CompetenzeUnitaExporter(QObject *parent)
     : QThread(parent)
@@ -210,33 +211,26 @@ void CompetenzeUnitaExporter::run()
             if(m_competenza->numOreRep(Reperibilita::FestivaENotturna) > 0) // 71
                 out << rowText.arg(m_competenza->badgeNumber()).arg("REP.NEF").arg(QString::number(m_competenza->numOreRep(Reperibilita::FestivaENotturna))) << "\n";
 
-//            if(m_currentMonthYear < Utilities::ccnl1618Date) {
-                if(m_competenza->numOreGuarOrd() > 0) // 73
-                    out << rowText.arg(m_competenza->badgeNumber()).arg("STR.ORD.GU").arg(QString::number(m_competenza->numOreGuarOrd())) << "\n";
+            if(m_competenza->numOreGuarOrd() > 0) // 73
+                out << rowText.arg(m_competenza->badgeNumber()).arg("STR.ORD.GU").arg(QString::number(m_competenza->numOreGuarOrd())) << "\n";
 
-                if(m_competenza->numOreGuarFesONot() > 0) // 75
-                    out << rowText.arg(m_competenza->badgeNumber()).arg("STR.NOF.GU").arg(QString::number(m_competenza->numOreGuarFesONot())) << "\n";
+            if(m_competenza->numOreGuarFesONot() > 0) // 75
+                out << rowText.arg(m_competenza->badgeNumber()).arg("STR.NOF.GU").arg(QString::number(m_competenza->numOreGuarFesONot())) << "\n";
 
-                if(m_competenza->numOreGuarFesENot() > 0) // 74
-                    out << rowText.arg(m_competenza->badgeNumber()).arg("STR.NEF.GU").arg(QString::number(m_competenza->numOreGuarFesENot())) << "\n";
-//            }
+            if(m_competenza->numOreGuarFesENot() > 0) // 74
+                out << rowText.arg(m_competenza->badgeNumber()).arg("STR.NEF.GU").arg(QString::number(m_competenza->numOreGuarFesENot())) << "\n";
+            double whole, fractional;
+            fractional = std::modf(m_competenza->repCount(), &whole);
+            if(whole > 0) // 25
+                out << rowText.arg(m_competenza->badgeNumber()).arg("IND.PR.REP").arg(QString::number(whole)) << "\n";
 
-            int val = m_competenza->repCount().split(".").first().toInt();
-            if(val > 0) // 25
-                out << rowText.arg(m_competenza->badgeNumber()).arg("IND.PR.REP").arg(QString::number(val)) << "\n";
-
-            if(m_competenza->repCount().contains(".")) // 40
+            if(fractional > 0.0) // 40
                 out << rowText.arg(m_competenza->badgeNumber()).arg("IND.REP.OR").arg("6") << "\n";
 
             if(m_competenza->numGrFestPagabili() > 0) { // 1571
                 out << rowText.arg(m_competenza->badgeNumber()).arg("GR.FES.NOT").arg(QString::number(m_competenza->numGrFestPagabili())) << "\n";
                 out << rowText.arg(m_competenza->badgeNumber()).arg("GUARD.NOT").arg("-" + QString::number(m_competenza->numGrFestPagabili())) << "\n";
             }
-
-//            if(m_currentMonthYear >= Utilities::ccnl1618Date) {
-//                if(m_competenza->numGuarDiurne() > 0) // GUARDIA DIURNA
-//                    out << rowText.arg(m_competenza->badgeNumber()).arg("GUARD.NOT").arg(QString::number(m_competenza->numGuarDiurne())) << "\n";
-//            }
 
             printBadge(painter, m_competenza->badgeNumber(),counter);
             printName(painter, m_competenza->name(),counter);
@@ -248,35 +242,26 @@ void CompetenzeUnitaExporter::run()
                 printNotturno(painter, 0,counter); // 26
             }
             printFestivo(painter, m_competenza->numGuarDiurne(),counter); // 62
-            printRepNumTurni(painter,m_competenza->repCount().split(".").first(),counter); // 25
-            printRepNumOre(painter,(m_competenza->repCount().contains(".") ? "6" : "//"),counter); //40
-            printStrRepartoOrdin(painter,"//",counter); // 66
-            printStrRepartoFesONott(painter,"//",counter); // 68
-            printStrRepartoFesENott(painter,"//",counter); // 67
+            fractional = std::modf(m_competenza->repCount(), &whole);
+            printRepNumTurni(painter, whole, counter); // 25
+            printRepNumOre(painter, fractional > 0.0 ? 6 : 0, counter); //40
+            printStrRepartoOrdin(painter,0,counter); // 66 solitamente nullo
+            printStrRepartoFesONott(painter,0,counter); // 68 solitamente nullo
+            printStrRepartoFesENott(painter,0,counter); // 67 solitamente nullo
 
-//            if(m_currentMonthYear < Utilities::ccnl1618Date) {
-                printNumGuarNott(painter, (m_competenza->numGuar() + m_competenza->numGuarGFNonPag() > 0 ? QString::number(m_competenza->numGuar() + m_competenza->numGuarGFNonPag()) : "//" ),counter); //1512
-//            } else {
-                printNumGuarDiur(painter, (m_competenza->numGuarDiurne() > 0 ? QString::number(m_competenza->numGuarDiurne()) : "//"), counter);
-//                printNumGuarNott(painter, (m_competenza->numGuarNottPag() > 0 ? QString::number(m_competenza->numGuarNottPag()) : "//" ),counter); //1512
-//            }
+            printNumGuarNott(painter, m_competenza->numGuar() + m_competenza->numGuarGFNonPag(), counter); //1512
+            printNumGuarDiur(painter, m_competenza->numGuarDiurne(), counter);
 
-            printNumGfFesNott(painter,m_competenza->numGrFestPagabili() > 0 ? QString::number(m_competenza->numGrFestPagabili()) : "//",counter); //1571
+            printNumGfFesNott(painter, m_competenza->numGrFestPagabili(),counter); //1571
 
-//            if(m_currentMonthYear < Utilities::ccnl1618Date) {
-                printNumOreGuarFesENot(painter,m_competenza->numOreGuarFesENot() > 0 ? QString::number(m_competenza->numOreGuarFesENot()) : "//",counter); // 74
-                printNumOreGuarFesONot(painter,m_competenza->numOreGuarFesONot() > 0 ? QString::number(m_competenza->numOreGuarFesONot()) : "//",counter); // 75
-                printNumOreGuarOrd(painter,m_competenza->numOreGuarOrd() > 0 ? QString::number(m_competenza->numOreGuarOrd()) : "//",counter); // 73
-//            } else {
-//                printNumOreGuarFesENot(painter,"//",counter); // 74
-//                printNumOreGuarFesONot(painter,"//",counter); // 75
-//                printNumOreGuarOrd(painter,"//",counter); // 73
-//            }
-            printNumOreRepFesENot(painter,m_competenza->numOreRep(Reperibilita::FestivaENotturna) > 0 ? QString::number(m_competenza->numOreRep(Reperibilita::FestivaENotturna)) : "//",counter); // 71
-            printNumOreRepFesONot(painter,m_competenza->numOreRep(Reperibilita::FestivaONotturna) > 0 ? QString::number(m_competenza->numOreRep(Reperibilita::FestivaONotturna)) : "//",counter); // 72
-            printNumOreRepOrd(painter,m_competenza->numOreRep(Reperibilita::Ordinaria) > 0 ? QString::number(m_competenza->numOreRep(Reperibilita::Ordinaria)) : "//",counter); // 70
+            printNumOreGuarFesENot(painter, m_competenza->numOreGuarFesENot(), counter); // 74
+            printNumOreGuarFesONot(painter, m_competenza->numOreGuarFesONot(), counter); // 75
+            printNumOreGuarOrd(painter, m_competenza->numOreGuarOrd(), counter); // 73
+            printNumOreRepFesENot(painter, m_competenza->numOreRep(Reperibilita::FestivaENotturna), counter); // 71
+            printNumOreRepFesONot(painter, m_competenza->numOreRep(Reperibilita::FestivaONotturna), counter); // 72
+            printNumOreRepOrd(painter, m_competenza->numOreRep(Reperibilita::Ordinaria), counter); // 70
             if(!m_competenza->note().isEmpty()) {
-                notes << m_competenza->badgeNumber() + " - " + m_competenza->name() + ": " + m_competenza->note();
+                notes << QString::number(m_competenza->badgeNumber()) + " - " + m_competenza->name() + ": " + m_competenza->note();
             }
             counter++;
         }
@@ -686,7 +671,7 @@ void CompetenzeUnitaExporter::printUnitaNumber(QPainter &painter, const int &id)
     painter.restore();
 }
 
-void CompetenzeUnitaExporter::printBadge(QPainter &painter, const int &text, int row)
+void CompetenzeUnitaExporter::printBadge(QPainter &painter, const int &text, const int row)
 {
     painter.save();
     painter.setPen(Qt::black);
@@ -695,7 +680,7 @@ void CompetenzeUnitaExporter::printBadge(QPainter &painter, const int &text, int
     painter.restore();
 }
 
-void CompetenzeUnitaExporter::printName(QPainter &painter, const QString &text, int row)
+void CompetenzeUnitaExporter::printName(QPainter &painter, const QString &text, const int row)
 {
     painter.save();
     painter.setPen(Qt::black);
@@ -704,7 +689,7 @@ void CompetenzeUnitaExporter::printName(QPainter &painter, const QString &text, 
     painter.restore();
 }
 
-void CompetenzeUnitaExporter::printDeficit(QPainter &painter, const QString &text, int row)
+void CompetenzeUnitaExporter::printDeficit(QPainter &painter, const QString &text, const int row)
 {
     painter.save();
     painter.setPen(Qt::black);
@@ -713,7 +698,7 @@ void CompetenzeUnitaExporter::printDeficit(QPainter &painter, const QString &tex
     painter.restore();
 }
 
-void CompetenzeUnitaExporter::printNotturno(QPainter &painter, const int value, int row)
+void CompetenzeUnitaExporter::printNotturno(QPainter &painter, const int value, const int row)
 {
     painter.save();
     painter.setPen(Qt::black);
@@ -723,13 +708,13 @@ void CompetenzeUnitaExporter::printNotturno(QPainter &painter, const int value, 
         painter.setBrush(Qt::lightGray);
         painter.drawRect(getRect(row, 16));
     } else {
-        m_casiIndennitaNotturna++;
+        m_casiIndennitaNotturna += value;
         painter.drawText(getRect(row, 16), Qt::AlignHCenter | Qt::AlignVCenter, QString::number(value));
     }
     painter.restore();
 }
 
-void CompetenzeUnitaExporter::printFestivo(QPainter &painter, const int value, int row)
+void CompetenzeUnitaExporter::printFestivo(QPainter &painter, const int value, const int row)
 {
     painter.save();
     painter.setPen(Qt::black);
@@ -739,114 +724,114 @@ void CompetenzeUnitaExporter::printFestivo(QPainter &painter, const int value, i
         painter.setBrush(Qt::lightGray);
         painter.drawRect(getRect(row, 15));
     } else {
-        m_casiIndennitaFestiva++;
+        m_casiIndennitaFestiva += value;
         painter.drawText(getRect(row, 15), Qt::AlignHCenter | Qt::AlignVCenter, QString::number(value));
     }
         painter.restore();
 }
 
-void CompetenzeUnitaExporter::printStrRepartoOrdin(QPainter &painter, const QString &text, int row)
+void CompetenzeUnitaExporter::printStrRepartoOrdin(QPainter &painter, const int value, const int row)
 {
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(badgeFont());
-    if(text.isEmpty() || text == "//") {
+    if(value == 0) {
         painter.setPen(Qt::NoPen);
         painter.setBrush(Qt::lightGray);
         painter.drawRect(getRect(row, 14));
     } else {
-        m_casiStrRepaOrd++;
-        painter.drawText(getRect(row, 14), Qt::AlignHCenter | Qt::AlignVCenter, text);
+        m_casiStrRepaOrd += value;
+        painter.drawText(getRect(row, 14), Qt::AlignHCenter | Qt::AlignVCenter, QString::number(value));
     }
     painter.restore();
 }
 
-void CompetenzeUnitaExporter::printStrRepartoFesONott(QPainter &painter, const QString &text, int row)
+void CompetenzeUnitaExporter::printStrRepartoFesONott(QPainter &painter, const int value, const int row)
 {
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(badgeFont());
-    if(text.isEmpty() || text == "//") {
+    if(value == 0) {
         painter.setPen(Qt::NoPen);
         painter.setBrush(Qt::lightGray);
         painter.drawRect(getRect(row, 13));
     } else {
-        m_casiStrRepaFesONott++;
-        painter.drawText(getRect(row, 13), Qt::AlignHCenter | Qt::AlignVCenter, text);
+        m_casiStrRepaFesONott += value;
+        painter.drawText(getRect(row, 13), Qt::AlignHCenter | Qt::AlignVCenter, QString::number(value));
     }
     painter.restore();
 }
 
-void CompetenzeUnitaExporter::printStrRepartoFesENott(QPainter &painter, const QString &text, int row)
+void CompetenzeUnitaExporter::printStrRepartoFesENott(QPainter &painter, const int value, const int row)
 {
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(badgeFont());
-    if(text.isEmpty() || text == "//") {
+    if(value == 0) {
         painter.setPen(Qt::NoPen);
         painter.setBrush(Qt::lightGray);
         painter.drawRect(getRect(row, 12));
     } else {
-        m_casiStrRepaFesENott++;
-        painter.drawText(getRect(row, 12), Qt::AlignHCenter | Qt::AlignVCenter, text);
+        m_casiStrRepaFesENott += value;
+        painter.drawText(getRect(row, 12), Qt::AlignHCenter | Qt::AlignVCenter, QString::number(value));
     }
     painter.restore();
 }
 
-void CompetenzeUnitaExporter::printRepNumTurni(QPainter &painter, const QString &text, int row)
+void CompetenzeUnitaExporter::printRepNumTurni(QPainter &painter, const int value, const int row)
 {
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(badgeFont());
-    if(text.isEmpty() || text == "0" || text == "//") {
+    if(value == 0) {
         painter.setPen(Qt::NoPen);
         painter.setBrush(Qt::lightGray);
         painter.drawRect(getRect(row, 5));
     } else {
-        m_casiRepeTurni++;
-        painter.drawText(getRect(row, 5), Qt::AlignHCenter | Qt::AlignVCenter, text);
+        m_casiRepeTurni += value;
+        painter.drawText(getRect(row, 5), Qt::AlignHCenter | Qt::AlignVCenter, QString::number(value));
     }
     painter.restore();
 }
 
-void CompetenzeUnitaExporter::printRepNumOre(QPainter &painter, const QString &text, int row)
+void CompetenzeUnitaExporter::printRepNumOre(QPainter &painter, const int value, const int row)
 {
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(badgeFont());
-    if(text.isEmpty() || text == "//") {
+    if(value == 0) {
         painter.setPen(Qt::NoPen);
         painter.setBrush(Qt::lightGray);
         painter.drawRect(getRect(row, 4));
     } else {
-        m_casiRepeOre++;
-        painter.drawText(getRect(row, 4), Qt::AlignHCenter | Qt::AlignVCenter, text);
+        m_casiRepeOre += value;
+        painter.drawText(getRect(row, 4), Qt::AlignHCenter | Qt::AlignVCenter, QString::number(value));
     }
     painter.restore();
 }
 
-void CompetenzeUnitaExporter::printNumGuarDiur(QPainter &painter, const QString &text, int row)
+void CompetenzeUnitaExporter::printNumGuarDiur(QPainter &painter, const int value, const int row)
 {
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(badgeFont());
-    if(text.isEmpty() || text == "//") {
+    if(value == 0) {
         painter.setPen(Qt::NoPen);
         painter.setBrush(Qt::lightGray);
         painter.drawRect(getRect(row, 3));
     } else {
-        m_casiGuarDiur++;
-        painter.drawText(getRect(row, 3), Qt::AlignHCenter | Qt::AlignVCenter, text);
+        m_casiGuarDiur += value;
+        painter.drawText(getRect(row, 3), Qt::AlignHCenter | Qt::AlignVCenter, QString::number(value));
     }
     painter.restore();
 }
 
-void CompetenzeUnitaExporter::printNumGuarNott(QPainter &painter, const QString &text, int row)
+void CompetenzeUnitaExporter::printNumGuarNott(QPainter &painter, const int value, const int row)
 {
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(badgeFont());
-    if(text.isEmpty() || text == "//") {
+    if(value == 0) {
         painter.setPen(Qt::NoPen);
         painter.setBrush(Qt::lightGray);
         if(m_currentMonthYear < Utilities::ccnl1618Date) {
@@ -855,23 +840,23 @@ void CompetenzeUnitaExporter::printNumGuarNott(QPainter &painter, const QString 
             painter.drawRect(getRect(row, 2));
         }
     } else {
-        m_casiGuarNott++;
+        m_casiGuarNott += value;
         if(m_currentMonthYear < Utilities::ccnl1618Date) {
-            painter.drawText(getRect(row, 3), Qt::AlignHCenter | Qt::AlignVCenter, text);
+            painter.drawText(getRect(row, 3), Qt::AlignHCenter | Qt::AlignVCenter, QString::number(value));
         } else {
-            painter.drawText(getRect(row, 2), Qt::AlignHCenter | Qt::AlignVCenter, text);
+            painter.drawText(getRect(row, 2), Qt::AlignHCenter | Qt::AlignVCenter, QString::number(value));
         }
 
     }
     painter.restore();
 }
 
-void CompetenzeUnitaExporter::printNumGfFesNott(QPainter &painter, const QString &text, int row)
+void CompetenzeUnitaExporter::printNumGfFesNott(QPainter &painter, const int value, const int row)
 {
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(badgeFont());
-    if(text.isEmpty() || text == "//") {
+    if(value == 0) {
         painter.setPen(Qt::NoPen);
         painter.setBrush(Qt::lightGray);
         if(m_currentMonthYear < Utilities::ccnl1618Date) {
@@ -880,108 +865,108 @@ void CompetenzeUnitaExporter::printNumGfFesNott(QPainter &painter, const QString
             painter.drawRect(getRect(row, 1));
         }
     } else {
-        m_casiGranFest++;
+        m_casiGranFest += value;
         if(m_currentMonthYear < Utilities::ccnl1618Date) {
-            painter.drawText(getRect(row, 2), Qt::AlignHCenter | Qt::AlignVCenter, text);
+            painter.drawText(getRect(row, 2), Qt::AlignHCenter | Qt::AlignVCenter, QString::number(value));
         } else {
-            painter.drawText(getRect(row, 1), Qt::AlignHCenter | Qt::AlignVCenter, text);
+            painter.drawText(getRect(row, 1), Qt::AlignHCenter | Qt::AlignVCenter, QString::number(value));
         }
     }
     painter.restore();
 }
 
-void CompetenzeUnitaExporter::printNumOreGuarFesENot(QPainter &painter, const QString &text, int row)
+void CompetenzeUnitaExporter::printNumOreGuarFesENot(QPainter &painter, const int value, const int row)
 {
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(badgeFont());
-    if(text.isEmpty() || text == "//") {
+    if(value == 0) {
         painter.setPen(Qt::NoPen);
         painter.setBrush(Qt::lightGray);
         painter.drawRect(getRect(row, 6));
     } else {
-        m_casiStrGuarFesENott++;
-        painter.drawText(getRect(row, 6), Qt::AlignHCenter | Qt::AlignVCenter, text);
+        m_casiStrGuarFesENott += value;
+        painter.drawText(getRect(row, 6), Qt::AlignHCenter | Qt::AlignVCenter, QString::number(value));
     }
     painter.restore();
 }
 
-void CompetenzeUnitaExporter::printNumOreGuarFesONot(QPainter &painter, const QString &text, int row)
+void CompetenzeUnitaExporter::printNumOreGuarFesONot(QPainter &painter, const int value, const int row)
 {
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(badgeFont());
-    if(text.isEmpty() || text == "//") {
+    if(value == 0) {
         painter.setPen(Qt::NoPen);
         painter.setBrush(Qt::lightGray);
         painter.drawRect(getRect(row, 7));
     } else {
-        m_casiStrGuarFesONott++;
-        painter.drawText(getRect(row, 7), Qt::AlignHCenter | Qt::AlignVCenter, text);
+        m_casiStrGuarFesONott += value;
+        painter.drawText(getRect(row, 7), Qt::AlignHCenter | Qt::AlignVCenter, QString::number(value));
     }
     painter.restore();
 }
 
-void CompetenzeUnitaExporter::printNumOreGuarOrd(QPainter &painter, const QString &text, int row)
+void CompetenzeUnitaExporter::printNumOreGuarOrd(QPainter &painter, const int value, const int row)
 {
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(badgeFont());
-    if(text.isEmpty() || text == "//") {
+    if(value == 0) {
         painter.setPen(Qt::NoPen);
         painter.setBrush(Qt::lightGray);
         painter.drawRect(getRect(row, 8));
     } else {
-        m_casiStrGuarOrd++;
-        painter.drawText(getRect(row, 8), Qt::AlignHCenter | Qt::AlignVCenter, text);
+        m_casiStrGuarOrd += value;
+        painter.drawText(getRect(row, 8), Qt::AlignHCenter | Qt::AlignVCenter, QString::number(value));
     }
     painter.restore();
 }
 
-void CompetenzeUnitaExporter::printNumOreRepFesENot(QPainter &painter, const QString &text, int row)
+void CompetenzeUnitaExporter::printNumOreRepFesENot(QPainter &painter, const int value, const int row)
 {
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(badgeFont());
-    if(text.isEmpty() || text == "//") {
+    if(value == 0) {
         painter.setPen(Qt::NoPen);
         painter.setBrush(Qt::lightGray);
         painter.drawRect(getRect(row, 9));
     } else {
-        m_casiStrRepeFesENott++;
-        painter.drawText(getRect(row, 9), Qt::AlignHCenter | Qt::AlignVCenter, text);
+        m_casiStrRepeFesENott += value;
+        painter.drawText(getRect(row, 9), Qt::AlignHCenter | Qt::AlignVCenter, QString::number(value));
     }
     painter.restore();
 }
 
-void CompetenzeUnitaExporter::printNumOreRepFesONot(QPainter &painter, const QString &text, int row)
+void CompetenzeUnitaExporter::printNumOreRepFesONot(QPainter &painter, const int value, const int row)
 {
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(badgeFont());
-    if(text.isEmpty() || text == "//") {
+    if(value == 0) {
         painter.setPen(Qt::NoPen);
         painter.setBrush(Qt::lightGray);
         painter.drawRect(getRect(row, 10));
     } else {
-        m_casiStrRepeFesONott++;
-        painter.drawText(getRect(row, 10), Qt::AlignHCenter | Qt::AlignVCenter, text);
+        m_casiStrRepeFesONott += value;
+        painter.drawText(getRect(row, 10), Qt::AlignHCenter | Qt::AlignVCenter, QString::number(value));
     }
     painter.restore();
 }
 
-void CompetenzeUnitaExporter::printNumOreRepOrd(QPainter &painter, const QString &text, int row)
+void CompetenzeUnitaExporter::printNumOreRepOrd(QPainter &painter, const int value, const int row)
 {
     painter.save();
     painter.setPen(Qt::black);
     painter.setFont(badgeFont());
-    if(text.isEmpty() || text == "//") {
+    if(value == 0) {
         painter.setPen(Qt::NoPen);
         painter.setBrush(Qt::lightGray);
         painter.drawRect(getRect(row, 11));
     } else {
-        m_casiStrRepeOrd++;
-        painter.drawText(getRect(row, 11), Qt::AlignHCenter | Qt::AlignVCenter, text);
+        m_casiStrRepeOrd += value;
+        painter.drawText(getRect(row, 11), Qt::AlignHCenter | Qt::AlignVCenter, QString::number(value));
     }
     painter.restore();
 }
