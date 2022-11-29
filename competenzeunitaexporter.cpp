@@ -9,6 +9,8 @@
 #include "competenza.h"
 #include "utilities.h"
 #include "sqldatabasemanager.h"
+#include "competenzepagate.h"
+#include "dipendente.h"
 
 #include <QDate>
 #include <QFile>
@@ -85,7 +87,7 @@ void CompetenzeUnitaExporter::run()
         }
     }
 
-    const QString printedData = QDateTime::currentDateTime().toString("dd/MM/yyyy hh:mm:ss");
+    const auto now = QDateTime::currentDateTime();
 
     QVector<int> unitaIdList;
     const QString s = m_timecard.split("_").last();
@@ -167,6 +169,10 @@ void CompetenzeUnitaExporter::run()
     m_casiGuarNott = 0;
     m_casiGranFest = 0;
 
+    if(!SqlQueries::tableExists("tcp_" + m_currentMonthYear.toString("yyyyMM"))) {
+        SqlQueries::createPagatoTable(m_currentMonthYear.year(), m_currentMonthYear.month());
+    }
+
     foreach (int unitaId, unitaIdList) {
         QStringList notes;
         currRow++;
@@ -177,7 +183,7 @@ void CompetenzeUnitaExporter::run()
         disegnaTabella(painter);
 
         if(m_printData)
-            printData(painter, printedData);
+            printData(painter, now.toString("dd/MM/yyyy hh:mm:ss"));
 
         QString unitaName = SqlQueries::getUnitaNomeCompleto(unitaId);
 
@@ -196,11 +202,37 @@ void CompetenzeUnitaExporter::run()
                 writer.newPage();
                 disegnaTabella(painter);
                 if(m_printData)
-                    printData(painter, printedData);
+                    printData(painter, now.toString("dd/MM/yyyy hh:mm:ss"));
                 printMonth(painter, mese);
                 printUnitaName(painter, unitaName);
                 printUnitaNumber(painter, unitaId);
             }
+            double whole, fractional;
+            fractional = std::modf(m_competenza->repCount(), &whole);
+
+            CompetenzePagate *pagato = new CompetenzePagate;
+
+            pagato->setCi(m_competenza->dipendente()->matricola());
+            pagato->setDeficit(m_competenza->deficitOrario() < 0 ? m_competenza->deficitOrario() : 0);
+            pagato->setIndNotturna(0); // 26 non si paga più?
+            pagato->setIndFestiva(m_competenza->numGuarDiurne()); // 62
+            pagato->setStr_reparto_ord(0); // 66 solitamente nullo
+            pagato->setStr_reparto_nof(0); // 68 solitamente nullo
+            pagato->setStr_reparto_nef(0); // 67 solitamente nullo
+            pagato->setStr_repe_ord(m_competenza->numOreRep(Reperibilita::Ordinaria)); // 70
+            pagato->setStr_repe_nof(m_competenza->numOreRep(Reperibilita::FestivaONotturna)); // 72
+            pagato->setStr_repe_nef(m_competenza->numOreRep(Reperibilita::FestivaENotturna)); // 71
+            pagato->setStr_guard_ord(m_competenza->numOreGuarOrd()); // 73
+            pagato->setStr_guard_ord(m_competenza->numOreGuarFesONot()); // 75
+            pagato->setStr_guard_ord(m_competenza->numOreGuarFesENot()); // 74
+            pagato->setTurni_repe(whole); // 25
+            pagato->setOre_repe(fractional > 0.0 ? 6 : 0); // 40
+            pagato->setGuard_diu(m_competenza->numGuarDiurne()); // 1512
+            pagato->setGuard_not(m_competenza->numGuar() + m_competenza->numGuarGFNonPag()); // 1571
+            pagato->setGrande_fes(m_competenza->numGrFestPagabili()); // 921
+            pagato->setData(now.date());
+
+            SqlQueries::saveCompetenzePagate(pagato, m_currentMonthYear.year(), m_currentMonthYear.month());
 
             if(m_competenza->numOreRep(Reperibilita::Ordinaria) > 0) // 70
                 out << rowText.arg(m_competenza->badgeNumber()).arg("REP.ORD").arg(QString::number(m_competenza->numOreRep(Reperibilita::Ordinaria))) << "\n";
@@ -219,8 +251,7 @@ void CompetenzeUnitaExporter::run()
 
             if(m_competenza->numOreGuarFesENot() > 0) // 74
                 out << rowText.arg(m_competenza->badgeNumber()).arg("STR.NEF.GU").arg(QString::number(m_competenza->numOreGuarFesENot())) << "\n";
-            double whole, fractional;
-            fractional = std::modf(m_competenza->repCount(), &whole);
+
             if(whole > 0) // 25
                 out << rowText.arg(m_competenza->badgeNumber()).arg("IND.PR.REP").arg(QString::number(whole)) << "\n";
 
@@ -234,7 +265,8 @@ void CompetenzeUnitaExporter::run()
 
             printBadge(painter, m_competenza->badgeNumber(),counter);
             printName(painter, m_competenza->name(),counter);
-            printDeficit(painter, m_competenza->deficitOrario(),counter);
+            printDeficit(painter, m_competenza->deficitOrario() < 0 ?
+                             Utilities::inOrario(abs(m_competenza->deficitOrario())) : "//",counter);
 
             if(m_currentMonthYear < Utilities::ccnl1618Date) {
                 printNotturno(painter, m_competenza->notte(),counter); // 26
@@ -242,17 +274,17 @@ void CompetenzeUnitaExporter::run()
                 printNotturno(painter, 0,counter); // 26
             }
             printFestivo(painter, m_competenza->numGuarDiurne(),counter); // 62
-            fractional = std::modf(m_competenza->repCount(), &whole);
+
             printRepNumTurni(painter, whole, counter); // 25
             printRepNumOre(painter, fractional > 0.0 ? 6 : 0, counter); //40
             printStrRepartoOrdin(painter,0,counter); // 66 solitamente nullo
             printStrRepartoFesONott(painter,0,counter); // 68 solitamente nullo
             printStrRepartoFesENott(painter,0,counter); // 67 solitamente nullo
 
-            printNumGuarNott(painter, m_competenza->numGuar() + m_competenza->numGuarGFNonPag(), counter); //1512
-            printNumGuarDiur(painter, m_competenza->numGuarDiurne(), counter);
+            printNumGuarNott(painter, m_competenza->numGuar() + m_competenza->numGuarGFNonPag(), counter); //1571
+            printNumGuarDiur(painter, m_competenza->numGuarDiurne(), counter); // 1512
 
-            printNumGfFesNott(painter, m_competenza->numGrFestPagabili(),counter); //1571
+            printNumGfFesNott(painter, m_competenza->numGrFestPagabili(), counter); // 921
 
             printNumOreGuarFesENot(painter, m_competenza->numOreGuarFesENot(), counter); // 74
             printNumOreGuarFesONot(painter, m_competenza->numOreGuarFesONot(), counter); // 75

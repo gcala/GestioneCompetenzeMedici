@@ -13,6 +13,7 @@
 
 class Dipendente;
 class ReperibilitaSemplificata;
+class CompetenzePagate;
 
 class SqlQueries
 {
@@ -24,6 +25,7 @@ public:
     static void createDoctorsTable();
     static void createUnitsPayedHoursTable();
     static void createUnitsRepTable();
+    static void createPagatoTable(int anno, int mese);
     static void insertUnit(const QString &id, const QString &raggruppamento, const QString &nome, const QString &breve);
     static void editUnit(const QString &id, const QString &raggruppamento, const QString &nome, const QString &breve);
     static bool insertDoctor(const int &matricola, const QString &nome, const QString &id_unita);
@@ -70,6 +72,9 @@ public:
     static bool noStraordinario(int matricola);
     static void enableDisableStraordinario(int matricola, bool enable);
     static ReperibilitaSemplificata * reperibilita(int idUnita, int anno, int mese);
+    static CompetenzePagate * competenzePagate(int ci, int anno, int mese);
+    static bool competenzePagateExists(int ci, int anno, int mese);
+    static void saveCompetenzePagate(CompetenzePagate *pagato, int anno, int mese);
 };
 
 #endif // SQLQUERIES_H

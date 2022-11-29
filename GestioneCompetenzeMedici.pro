@@ -28,6 +28,7 @@ SOURCES += \
         cartellinocompleto.cpp \
         cartellinocompletoreader.cpp \
         causalewidget.cpp \
+        competenzepagate.cpp \
         dateeditdelegate.cpp \
         giornocartellinocompleto.cpp \
         main.cpp \
@@ -68,6 +69,7 @@ HEADERS += \
         cartellinocompleto.h \
         cartellinocompletoreader.h \
         causalewidget.h \
+        competenzepagate.h \
         dateeditdelegate.h \
         giornocartellinocompleto.h \
         mainwindow.h \

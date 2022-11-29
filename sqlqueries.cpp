@@ -10,6 +10,7 @@
 #include "sqldatabasemanager.h"
 #include "utilities.h"
 #include "reperibilitasemplificata.h"
+#include "competenzepagate.h"
 
 #include <QSqlQuery>
 #include <QSqlError>
@@ -116,6 +117,64 @@ void SqlQueries::createUnitsRepTable()
                       "sabato FLOAT DEFAULT 0.0 NOT NULL,"
                       "prefestivo FLOAT DEFAULT 0.0 NOT NULL,"
                       "festivo FLOAT DEFAULT 0.0 NOT NULL,"
+                      "PRIMARY KEY (id));");
+    } else {
+        qDebug() << Q_FUNC_INFO << "Nessun database configurato. Esco";
+        return;
+    }
+
+    if(!query.exec()) {
+        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
+}
+
+void SqlQueries::createPagatoTable(int anno, int mese)
+{
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
+    if(The::dbManager()->driverName() == "QSQLITE") {
+        query.prepare("CREATE TABLE tcp_" + QString::number(anno) + QString::number(mese).rightJustified(2,'0') +
+                      "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+                      "ci INTEGER NOT NULL,"
+                      "deficit INTEGER NOT NULL,"
+                      "ind_not INTEGER NOT NULL DEFAULT (0),"
+                      "ind_fes INTEGER NOT NULL DEFAULT (0),"
+                      "str_reparto_ord INTEGER NOT NULL DEFAULT (0),"
+                      "str_reparto_nof INTEGER NOT NULL DEFAULT (0),"
+                      "str_reparto_nef INTEGER NOT NULL DEFAULT (0),"
+                      "str_repe_ord INTEGER NOT NULL DEFAULT (0),"
+                      "str_repe_nof INTEGER NOT NULL DEFAULT (0),"
+                      "str_repe_nef INTEGER NOT NULL DEFAULT (0),"
+                      "str_guard_ord INTEGER NOT NULL DEFAULT (0),"
+                      "str_guard_nof INTEGER NOT NULL DEFAULT (0),"
+                      "str_guard_nef INTEGER NOT NULL DEFAULT (0),"
+                      "turni_repe INTEGER NOT NULL DEFAULT (0),"
+                      "ore_repe INTEGER NOT NULL DEFAULT (0),"
+                      "guard_diu INTEGER NOT NULL DEFAULT (0),"
+                      "guard_not INTEGER NOT NULL DEFAULT (0),"
+                      "grande_fes INTEGER NOT NULL DEFAULT (0),"
+                      "data INTEGER NOT NULL DEFAULT (0));");
+    } else if(The::dbManager()->driverName() == "QMYSQL") {
+        query.prepare("CREATE TABLE tcp_" + QString::number(anno) + QString::number(mese).rightJustified(2,'0') + " "
+                      "(id INT NOT NULL AUTO_INCREMENT,"
+                      "ci INT NOT NULL,"
+                      "deficit INT DEFAULT 0 NOT NULL,"
+                      "ind_not INT DEFAULT 0 NOT NULL,"
+                      "ind_fes INT DEFAULT 0 NOT NULL,"
+                      "str_reparto_ord INT DEFAULT 0 NOT NULL,"
+                      "str_reparto_nof INT DEFAULT 0 NOT NULL,"
+                      "str_reparto_nef INT DEFAULT 0 NOT NULL,"
+                      "str_repe_ord INT DEFAULT 0 NOT NULL,"
+                      "str_repe_nof INT DEFAULT 0 NOT NULL,"
+                      "str_repe_nef INT DEFAULT 0 NOT NULL,"
+                      "str_guard_ord INT DEFAULT 0 NOT NULL,"
+                      "str_guard_nof INT DEFAULT 0 NOT NULL,"
+                      "str_guard_nef INT DEFAULT 0 NOT NULL,"
+                      "turni_repe INT DEFAULT 0 NOT NULL,"
+                      "ore_repe INT DEFAULT 0 NOT NULL,"
+                      "guard_diu INT DEFAULT 0 NOT NULL,"
+                      "guard_not INT DEFAULT 0 NOT NULL,"
+                      "grande_fes INT DEFAULT 0 NOT NULL,"
+                      "data INT DEFAULT 0 NOT NULL,"
                       "PRIMARY KEY (id));");
     } else {
         qDebug() << Q_FUNC_INFO << "Nessun database configurato. Esco";
@@ -1167,5 +1226,93 @@ ReperibilitaSemplificata *SqlQueries::reperibilita(int idUnita, int anno, int me
                                         query.value(4).toDouble());
     }
     return new ReperibilitaSemplificata();
+}
+
+CompetenzePagate *SqlQueries::competenzePagate(int ci, int anno, int mese)
+{
+    if(ci == 0 || anno == 0 || mese == 0)
+        return new CompetenzePagate();
+
+    CompetenzePagate *pagato = new CompetenzePagate;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
+    query.prepare("SELECT * FROM tcp_" + QString::number(anno) + QString::number(mese).rightJustified(2, '0') + " WHERE ci=" + QString::number(ci) + " ORDER BY data DESC LIMIT 1;");
+    if(!query.exec()) {
+        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
+    while(query.next()) {
+        pagato->setCi(query.value(1).toInt());
+        pagato->setDeficit(query.value(2).toInt());
+        pagato->setIndNotturna(query.value(3).toInt());
+        pagato->setIndFestiva(query.value(4).toInt());
+        pagato->setStr_reparto_ord(query.value(5).toInt());
+        pagato->setStr_reparto_nef(query.value(6).toInt());
+        pagato->setStr_reparto_nof(query.value(7).toInt());
+        pagato->setStr_repe_ord(query.value(8).toInt());
+        pagato->setStr_repe_nef(query.value(9).toInt());
+        pagato->setStr_repe_nof(query.value(10).toInt());
+        pagato->setStr_guard_ord(query.value(11).toInt());
+        pagato->setStr_guard_nef(query.value(12).toInt());
+        pagato->setStr_guard_nof(query.value(13).toInt());
+        pagato->setTurni_repe(query.value(14).toInt());
+        pagato->setOre_repe(query.value(15).toInt());
+        pagato->setGuard_diu(query.value(16).toInt());
+        pagato->setGuard_not(query.value(17).toInt());
+        pagato->setGrande_fes(query.value(18).toInt());
+        pagato->setData(QDate::fromString(query.value(19).toString(),"yyyyMMdd"));
+    }
+    return pagato;
+}
+
+bool SqlQueries::competenzePagateExists(int ci, int anno, int mese)
+{
+    int count = 0;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
+    query.prepare("SELECT COUNT(*) FROM tcp_" + QString::number(anno) + QString::number(mese).rightJustified(2, '0') + " WHERE ci='" + QString::number(ci) + "';");
+    if(!query.exec()) {
+        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
+    while(query.next()) {
+        count = query.value(0).toInt();
+    }
+
+    if(count <= 0)
+        return false;
+
+    return true;
+}
+
+void SqlQueries::saveCompetenzePagate(CompetenzePagate *pagato, int anno, int mese)
+{
+    if(pagato->ci() == 0 || anno == 0 || mese == 0) {
+        qDebug() << "ERROR: " << Q_FUNC_INFO << " : " << "ci: " << pagato->ci() << " - anno: " << anno << " - mese: " << mese;
+        return;
+    }
+
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
+    query.prepare("INSERT INTO tcp_" + QString::number(anno) + QString::number(mese).rightJustified(2, '0') + " "
+                  "(ci,deficit,ind_not,ind_fes,str_reparto_ord,str_reparto_nof,str_reparto_nef,str_repe_ord,str_repe_nof,str_repe_nef,str_guard_ord,str_guard_nof,str_guard_nef,turni_repe,ore_repe,guard_diu,guard_not,grande_fes,data) "
+                  "VALUES (:ci,:deficit,:ind_not,:ind_fes,:str_reparto_ord,:str_reparto_nof,:str_reparto_nef,:str_repe_ord,:str_repe_nof,:str_repe_nef,:str_guard_ord,:str_guard_nof,:str_guard_nef,:turni_repe,:ore_repe,:guard_diu,:guard_not,:grande_fes,:data);");
+    query.bindValue(":ci", pagato->ci());
+    query.bindValue(":deficit", pagato->deficit());
+    query.bindValue(":ind_not", pagato->indNotturna());
+    query.bindValue(":ind_fes", pagato->indFestiva());
+    query.bindValue(":str_reparto_ord", pagato->str_reparto_ord());
+    query.bindValue(":str_reparto_nof", pagato->str_reparto_nof());
+    query.bindValue(":str_reparto_nef", pagato->str_reparto_nef());
+    query.bindValue(":str_repe_ord", pagato->str_repe_ord());
+    query.bindValue(":str_repe_nof", pagato->str_repe_nof());
+    query.bindValue(":str_repe_nef", pagato->str_repe_nef());
+    query.bindValue(":str_guard_ord", pagato->str_guard_ord());
+    query.bindValue(":str_guard_nof", pagato->str_guard_nof());
+    query.bindValue(":str_guard_nef", pagato->str_guard_nef());
+    query.bindValue(":turni_repe", pagato->turni_repe());
+    query.bindValue(":ore_repe", pagato->ore_repe());
+    query.bindValue(":guard_diu", pagato->guard_diu());
+    query.bindValue(":guard_not", pagato->guard_not());
+    query.bindValue(":grande_fes", pagato->grande_fes());
+    query.bindValue(":data", pagato->dataElaborazione().toString("yyyyMMdd"));
+    if(!query.exec()) {
+        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
 }
 

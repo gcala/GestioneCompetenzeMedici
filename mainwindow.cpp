@@ -154,7 +154,8 @@ void MainWindow::mostraDifferenzaOre()
         ui->oreDifferenzaLabel->setStyleSheet("color:green;");
 
     ui->oreDifferenzaLabel->setText(m_competenza->differenzaOre());
-    ui->deficitOrarioLabel->setText(m_competenza->deficitOrario());
+    ui->deficitOrarioLabel->setText(m_competenza->deficitOrario() < 0 ?
+                                    Utilities::inOrario(abs(m_competenza->deficitOrario())) : "//");
 
     if(m_competenza->dmp() == 0) {
         ui->dmpHoursEdit->setValue(0);

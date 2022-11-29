@@ -48,7 +48,7 @@ public:
     QString differenzaOre();
     int differenzaMin() const;
     QString differenzaOreSenzaDmp();
-    QString deficitOrario();
+    int deficitOrario();
     QString deficitPuntuale();
     int minutiAltreCausali() const;
     QString oreAltreCausali();
@@ -169,7 +169,6 @@ private:
     bool m_exporting;
 
     void buildDipendente();
-    QString inOrario(int min);
     GuardiaType tipoGuardia(const QString &day);
     RepType tipoReperibilita(const int giorno, const int tipo);
     void calcOreGuardia();

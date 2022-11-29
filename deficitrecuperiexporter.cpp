@@ -150,7 +150,7 @@ void DeficitRecuperiExporter::printPdf(const QString &fileName, const QString &m
         foreach (int dirigenteId, dirigentiIdList) {
             m_competenza = new Competenza(m_timecard,dirigenteId);
 
-            if(m_competenza->deficitOrario() == "//")
+            if(m_competenza->deficitOrario() >= 0)
                 continue;
 
             Doctor doctor;
@@ -219,7 +219,7 @@ void DeficitRecuperiExporter::printCsv(const QString &fileName, const QString &m
             Doctor doctor;
             doctor.badge = m_competenza->badgeNumber();
             doctor.name = m_competenza->name();
-            if(m_competenza->deficitOrario() == "//")
+            if(m_competenza->deficitOrario() >= 0)
                 doctor.deficitProgressivo = "00:00";
             else
                 doctor.deficitProgressivo = m_competenza->deficitOrario();

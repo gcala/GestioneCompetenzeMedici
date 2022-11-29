@@ -412,20 +412,6 @@ void Competenza::buildDipendente()
     calcOreGuardia();
 }
 
-QString Competenza::inOrario(int mins)
-{
-    QString sign;
-    if(mins < 0) {
-        sign = "-";
-        mins *= -1;
-    }
-    int ore = mins / 60;
-    int min = mins - ore * 60;
-
-    return sign + QString::number(ore) + ":" + QString::number(min).rightJustified(2, '0');
-}
-
-
 int Competenza::badgeNumber() const
 {
     return data->m_dipendente->matricola();
@@ -509,14 +495,14 @@ QString Competenza::assenzeTotali() const
 QString Competenza::orarioGiornaliero()
 {
     if(data->m_dipendente->minutiGiornalieri() > Utilities::m_maxMinutiGiornalieri)
-        return inOrario(data->m_dipendente->minutiGiornalieri() / (data->m_dipendente->numGiorniCartellino() - data->m_dipendente->riposiCount()));
+        return Utilities::inOrario(data->m_dipendente->minutiGiornalieri() / (data->m_dipendente->numGiorniCartellino() - data->m_dipendente->riposiCount()));
 
-    return inOrario((data->m_orarioGiornaliero >= 0 ? data->m_orarioGiornaliero : data->m_dipendente->minutiGiornalieri()));
+    return Utilities::inOrario((data->m_orarioGiornaliero >= 0 ? data->m_orarioGiornaliero : data->m_dipendente->minutiGiornalieri()));
 }
 
 QString Competenza::oreDovute()
 {
-    return inOrario(minutiDovuti());
+    return Utilities::inOrario(minutiDovuti());
 }
 
 int Competenza::minutiDovuti() const
@@ -529,7 +515,7 @@ int Competenza::minutiDovuti() const
 
 QString Competenza::oreEffettuate()
 {
-    return inOrario(data->m_dipendente->minutiFatti() + data->m_dipendente->minutiEccr() + data->m_dipendente->minutiGrep() + data->m_dipendente->minutiGuar());
+    return Utilities::inOrario(data->m_dipendente->minutiFatti() + data->m_dipendente->minutiEccr() + data->m_dipendente->minutiGrep() + data->m_dipendente->minutiGuar());
 }
 
 int Competenza::oreRepPagate() const
@@ -555,12 +541,12 @@ int Competenza::oreRepPagate() const
 
 QString Competenza::differenzaOre()
 {
-    return inOrario(differenzaMin());
+    return Utilities::inOrario(differenzaMin());
 }
 
 QString Competenza::differenzaOreSenzaDmp()
 {
-    return inOrario(data->m_dipendente->minutiFatti()
+    return Utilities::inOrario(data->m_dipendente->minutiFatti()
                     + data->m_dipendente->minutiEccr()
                     + data->m_dipendente->minutiGrep()
                     + data->m_dipendente->minutiGuar()
@@ -577,19 +563,14 @@ int Competenza::differenzaMin() const
            - minutiDovuti();
 }
 
-QString Competenza::deficitOrario()
+int Competenza::deficitOrario()
 {
-    int val = data->m_dipendente->minutiFatti()
+    return data->m_dipendente->minutiFatti()
             + data->m_dipendente->minutiEccr()
             + data->m_dipendente->minutiGrep()
             + data->m_dipendente->minutiGuar()
             - dmp()
             - minutiDovuti();
-
-    if( val < 0)
-        return inOrario(abs(val));
-
-    return "//";
 }
 
 QString Competenza::deficitPuntuale()
@@ -601,7 +582,7 @@ QString Competenza::deficitPuntuale()
             - minutiDovuti();
 
     if( val < 0)
-        return inOrario(abs(val));
+        return Utilities::inOrario(abs(val));
 
     return "//";
 }
@@ -620,7 +601,7 @@ int Competenza::minutiAltreCausali() const
 
 QString Competenza::oreAltreCausali()
 {
-    return inOrario(minutiAltreCausali());
+    return Utilities::inOrario(minutiAltreCausali());
 }
 
 QString Competenza::ferieCount() const
@@ -994,7 +975,7 @@ QString Competenza::oreGrep()
     if(data->m_dipendente->minutiGrep() == 0)
         return QString();
 
-    return inOrario(data->m_dipendente->minutiGrep());
+    return Utilities::inOrario(data->m_dipendente->minutiGrep());
 }
 
 int Competenza::numGrFestPagabili() const
@@ -1294,7 +1275,7 @@ QString Competenza::residuoOreNonRecuperabili()
     if(mins == 0) {
         return "//";
     }
-    return inOrario( mins );
+    return Utilities::inOrario( mins );
 }
 
 int Competenza::g_d_fer_F() const
