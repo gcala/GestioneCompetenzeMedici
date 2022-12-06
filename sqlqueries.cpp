@@ -323,7 +323,7 @@ void SqlQueries::resetTimeCard(const QString &tableName, const int &doctorId)
                   "ferie=:ferie,congedi=:congedi,malattia=:malattia,rmp=:rmp,"
                   "rmc=:rmc,altre_causali=:altre_causali,guardie_diurne=:guardie_diurne,guardie_notturne=:guardie_notturne,"
                   "grep=:grep,congedi_minuti=:congedi_minuti,eccr_minuti=:eccr_minuti,grep_minuti=:grep_minuti,"
-                  "guar_minuti=:guar_minuti,rmc_minuti=:rmc_minuti,minuti_fatti=:minuti_fatti,scoperti=:scoperti "
+                  "guar_minuti=:guar_minuti,rmc_minuti=:rmc_minuti,minuti_fatti=:minuti_fatti,scoperti=:scoperti,indennita_festiva=:indennita_festiva,indennita_notturna=:indennita_notturna "
                   "WHERE id_medico=" + QString::number(doctorId) + ";");
     query.bindValue(":riposi", 0);
     query.bindValue(":minuti_giornalieri", 0);
@@ -343,6 +343,8 @@ void SqlQueries::resetTimeCard(const QString &tableName, const int &doctorId)
     query.bindValue(":rmc_minuti", 0);
     query.bindValue(":minuti_fatti", 0);
     query.bindValue(":scoperti", QString());
+    query.bindValue(":indennita_festiva", QString());
+    query.bindValue(":indennita_notturna", QString());
 
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
@@ -376,7 +378,9 @@ bool SqlQueries::createTimeCardsTable(const QString &tableName)
                       "guar_minuti INTEGER DEFAULT (0),"
                       "rmc_minuti INTEGER DEFAULT (0),"
                       "minuti_fatti INTEGER DEFAULT (0),"
-                      "scoperti TEXT DEFAULT '');");
+                      "scoperti TEXT DEFAULT '',"
+                      "indennita_festiva TEXT DEFAULT '',"
+                      "indennita_notturna TEXT DEFAULT '');");
     } else if(The::dbManager()->driverName() == "QMYSQL") {
         query.prepare("CREATE TABLE " + tableName + " "
                       "(id INT NOT NULL AUTO_INCREMENT,"
@@ -402,6 +406,8 @@ bool SqlQueries::createTimeCardsTable(const QString &tableName)
                       "rmc_minuti INT DEFAULT 0,"
                       "minuti_fatti INT DEFAULT 0,"
                       "scoperti varchar(128) DEFAULT '',"
+                      "indennita_festiva varchar(128) DEFAULT '',"
+                      "indennita_notturna varchar(128) DEFAULT '',"
                       "PRIMARY KEY (id));");
     } else {
         qDebug() << Q_FUNC_INFO << "Nessun database configurato. Esco";
@@ -529,11 +535,11 @@ bool SqlQueries::addTimeCard(const QString &tableName, const Dipendente *dipende
                       "ferie=:ferie,congedi=:congedi,malattia=:malattia,rmp=:rmp,"
                       "rmc=:rmc,altre_causali=:altre_causali,guardie_diurne=:guardie_diurne,guardie_notturne=:guardie_notturne,"
                       "grep=:grep,congedi_minuti=:congedi_minuti,eccr_minuti=:eccr_minuti,grep_minuti=:grep_minuti,"
-                      "guar_minuti=:guar_minuti,rmc_minuti=:rmc_minuti,minuti_fatti=:minuti_fatti,scoperti=:scoperti "
+                      "guar_minuti=:guar_minuti,rmc_minuti=:rmc_minuti,minuti_fatti=:minuti_fatti,scoperti=:scoperti,indennita_festiva=:indennita_festiva,indennita_notturna=:indennita_notturna "
                       "WHERE id_medico=" + QString::number(docId) + ";");
     } else {
-        query.prepare("INSERT INTO " + tableName + " (id_medico, id_unita, anno, mese, riposi, minuti_giornalieri, ferie, congedi, malattia, rmp, rmc, altre_causali, guardie_diurne, guardie_notturne, grep, congedi_minuti, eccr_minuti, grep_minuti, guar_minuti, rmc_minuti, minuti_fatti, scoperti) "
-                      "VALUES (:id_medico, :id_unita, :anno, :mese, :riposi, :minuti_giornalieri, :ferie, :congedi, :malattia, :rmp, :rmc, :altre_causali, :guardie_diurne, :guardie_notturne, :grep, :congedi_minuti, :eccr_minuti, :grep_minuti, :guar_minuti, :rmc_minuti, :minuti_fatti, :scoperti);");
+        query.prepare("INSERT INTO " + tableName + " (id_medico, id_unita, anno, mese, riposi, minuti_giornalieri, ferie, congedi, malattia, rmp, rmc, altre_causali, guardie_diurne, guardie_notturne, grep, congedi_minuti, eccr_minuti, grep_minuti, guar_minuti, rmc_minuti, minuti_fatti, scoperti, indennita_festiva, indennita_notturna) "
+                      "VALUES (:id_medico, :id_unita, :anno, :mese, :riposi, :minuti_giornalieri, :ferie, :congedi, :malattia, :rmp, :rmc, :altre_causali, :guardie_diurne, :guardie_notturne, :grep, :congedi_minuti, :eccr_minuti, :grep_minuti, :guar_minuti, :rmc_minuti, :minuti_fatti, :scoperti, :indennita_festiva, :indennita_notturna);");
         query.bindValue(":id_medico", QString::number(docId));
         query.bindValue(":id_unita", dipendente->unita());
         query.bindValue(":anno", dipendente->anno());
@@ -577,6 +583,8 @@ bool SqlQueries::addTimeCard(const QString &tableName, const Dipendente *dipende
     query.bindValue(":rmc_minuti", dipendente->minutiRmc());
     query.bindValue(":minuti_fatti", dipendente->minutiFatti());
     query.bindValue(":scoperti", Utilities::vectorIntToStringlist(dipendente->scoperti()).join(","));
+    query.bindValue(":indennita_festiva", Utilities::vectorIntToStringlist(dipendente->indennitaFestiva()).join(","));
+    query.bindValue(":indennita_notturna", Utilities::vectorIntToStringlist(dipendente->indennitaNotturna()).join(","));
 
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
@@ -805,8 +813,10 @@ QVariantList SqlQueries::getDoctorTimecard(const QString &tableName, const QStri
                   + tableName + ".id_unita,"
                   + modTableName + ".nota,"
                   + tableName + ".scoperti, "
-                  + modTableName + ".orario_giornaliero, "
-                  + modTableName + ".pagaStrGuar "
+                  + modTableName + ".orario_giornaliero,"
+                  + modTableName + ".pagaStrGuar,"
+                  + tableName + ".indennita_festiva,"
+                  + tableName + ".indennita_notturna "
                   + "FROM " + tableName + " LEFT JOIN medici ON medici.id=" + tableName + ".id_medico "
                   + "LEFT JOIN unita ON unita.id=" + tableName + ".id_unita "
                   + "LEFT JOIN " + modTableName + " ON " + modTableName + ".id_medico=" + tableName + ".id_medico "
@@ -849,6 +859,8 @@ QVariantList SqlQueries::getDoctorTimecard(const QString &tableName, const QStri
         result << query.value(28); // scoperti
         result << query.value(29); // orario_giornaliero
         result << query.value(30); // pagaStrGuar
+        result << query.value(31); // indennita_festiva
+        result << query.value(32); // indennita_notturna
     }
 
     return result;

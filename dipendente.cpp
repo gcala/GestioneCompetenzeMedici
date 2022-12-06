@@ -28,6 +28,8 @@ public:
     QVector<int> m_scoperti;
     QVector<int> m_congedi;
     QVector<int> m_malattia;
+    QVector<int> m_indennitaFestive;
+    QVector<int> m_indennitaNotturne;
     QMap<QString, QPair<QVector<int>, int> > m_altreCausali;
     int m_minutiFatti;
     int m_minutiCongedi;
@@ -76,6 +78,8 @@ bool Dipendente::operator==(const Dipendente &rhs) const
             data->m_ferie == rhs.ferie() &&
             data->m_numGiorniCartellino == rhs.numGiorniCartellino() &&
             data->m_scoperti == rhs.scoperti() &&
+            data->m_indennitaFestive == rhs.indennitaFestiva() &&
+            data->m_indennitaNotturne == rhs.indennitaNotturna() &&
             data->m_congedi == rhs.congedi() &&
             data->m_malattia == rhs.malattia() &&
             data->m_altreCausali == rhs.altreCausali() &&
@@ -113,6 +117,28 @@ void Dipendente::resetProperties()
     data->m_rmc.clear();
     data->m_rmp.clear();
     data->m_altreCausali.clear();
+    data->m_indennitaFestive.clear();
+    data->m_indennitaNotturne.clear();
+}
+
+QVector<int> Dipendente::indennitaFestiva() const
+{
+    return data->m_indennitaFestive;
+}
+
+void Dipendente::addIndennitaFestiva(int giorno)
+{
+    data->m_indennitaFestive <<  giorno;
+}
+
+QVector<int> Dipendente::indennitaNotturna() const
+{
+    return data->m_indennitaNotturne;
+}
+
+void Dipendente::addIndennitaNotturna(int giorno)
+{
+    data->m_indennitaNotturne <<  giorno;
 }
 
 int Dipendente::anno() const

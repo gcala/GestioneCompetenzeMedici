@@ -214,7 +214,7 @@ void Competenza::buildDipendente()
         return;
     }
 
-    if(query.size() != 31) {
+    if(query.size() != 33) {
         qDebug() << Q_FUNC_INFO << ":: ERRORE :: dimensione query non corretta";
         return;
     }
@@ -405,6 +405,18 @@ void Competenza::buildDipendente()
     data->m_defaultOrarioGiornaliero = data->m_orarioGiornaliero;
 
     data->m_pagaStrGuardia = query.at(30).toBool();
+
+    if(!query.at(31).toString().trimmed().isEmpty()) {
+        for(const auto &f : Utilities::stringlistToVectorInt(query.at(31).toString().split(","))) { // indennità festiva
+            data->m_dipendente->addIndennitaFestiva(f);
+        }
+    }
+
+    if(!query.at(32).toString().trimmed().isEmpty()) {
+        for(const auto &f : Utilities::stringlistToVectorInt(query.at(32).toString().split(","))) { // indennità notturna
+            data->m_dipendente->addIndennitaNotturna(f);
+        }
+    }
 
     getOrePagate();
     if(!m_exporting)

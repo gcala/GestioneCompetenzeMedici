@@ -271,9 +271,12 @@ void CartellinoCompletoReader::run()
                             }
                         } else {
                             if(dataCorrente.dayOfWeek() == 7 || The::almanac()->isGrandeFestivita(dataCorrente)) {
-                                if(cartellino->timbratureGiorno(giorno.giorno()).count() > 0 && cartellino->timbratureGiorno(giorno.giorno()).count()%2 == 0)
+                                if(cartellino->timbratureGiorno(giorno.giorno()).count() > 0 && cartellino->timbratureGiorno(giorno.giorno()).count()%2 == 0) {
                                     if(giorno.minutiCausale("ECCR") >= 660)
                                         m_dipendente->addGuardiaDiurna(giorno.giorno());
+                                    else
+                                        m_dipendente->addIndennitaFestiva(giorno.giorno());
+                                }
                             } else if(daysCounter == cartellino->giorni().count()) {
                                 // ultimo giorno nel cartellino
                                 if(giorno.montoNotte())
@@ -365,6 +368,8 @@ void CartellinoCompletoReader::valutaCausale(const QString &causale,
                 if(giorno.numeroTimbrature() % 2 == 0) {
                     if( (Utilities::inMinuti(orario)) >= 660)
                         m_dipendente->addGuardiaDiurna(giorno.giorno());
+                    else
+                        m_dipendente->addIndennitaFestiva(giorno.giorno());
                 }
             }
         } else if(giorno.indennita().toUpper() == "N") {

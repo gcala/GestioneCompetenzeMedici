@@ -79,6 +79,10 @@ public:
     void addMinutiRmc(int minuti);
     void setRiposi(QVector<int> giorni);
     void resetProperties();
+    QVector<int> indennitaFestiva() const;
+    void addIndennitaFestiva(int giorno);
+    QVector<int> indennitaNotturna() const;
+    void addIndennitaNotturna(int giorno);
 
 signals:
 
