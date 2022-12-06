@@ -380,10 +380,9 @@ void CartellinoCompletoReader::valutaCausale(const QString &causale,
             m_dipendente->addGrep(dataCorrente.day(), Utilities::inMinuti(giorno.repDiurna()), 1);  // diurno
         if(giorno.repNotturna().isValid() && giorno.repNotturna() > QTime(0,0))
             m_dipendente->addGrep(dataCorrente.day(), Utilities::inMinuti(giorno.repNotturna()), 0);  // notturno
-    } else if(causaliRMC.contains(causale)) {
-        m_dipendente->addMinutiRmc(Utilities::inMinuti(orario));
     } else {
         m_dipendente->addAltraCausale(causale, QString::number(dataCorrente.day()), Utilities::inMinuti(orario));
-        m_dipendente->addMinutiFatti(Utilities::inMinuti(orario));
+        if(!causaliRMC.contains(causale))
+            m_dipendente->addMinutiFatti(Utilities::inMinuti(orario));
     }
 }
