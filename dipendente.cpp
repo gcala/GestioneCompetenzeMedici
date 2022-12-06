@@ -167,14 +167,14 @@ void Dipendente::setUnita(int unita)
 
 int Dipendente::riposiCount() const
 {
-    if(data->m_anno <= 2022 && data->m_mese <= 10) {
-        if(data->m_riposi.count() > 0)
-            return data->m_riposi.at(0);
-        else
-            return 0;
+    if(data->m_minutiGiornalieriVeri > Utilities::m_maxMinutiGiornalieri) {
+        return data->m_riposi.count();
     }
 
-    return data->m_riposi.count();
+    if(data->m_riposi.count() > 0)
+        return data->m_riposi.at(0);
+
+    return 0;
 }
 
 QVector<int> Dipendente::riposi() const
