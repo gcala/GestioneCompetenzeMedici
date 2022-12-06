@@ -18,9 +18,9 @@ CausaleWidget::CausaleWidget(const QString &causale, const int &minuti, const in
     ui(new Ui::CausaleWidget)
 {
     ui->setupUi(this);
-    ui->label->setText(causale + " : " + Utilities::inOrario(minuti));
     m_giorni = giorni;
     m_causale = causale;
+    ui->label->setText(causale + " (" + QString::number(m_giorni.count()) + ")" + " : " + Utilities::inOrario(minuti));
     menu = new QMenu(ui->pushButton);
     calendar = new CalendarManager(menu);
     calendarAction = new QWidgetAction(menu);
@@ -53,5 +53,5 @@ QString CausaleWidget::causale() const
 
 void CausaleWidget::startBlinking(bool ok)
 {
-    ui->label->startBlinking(ok);
+//    ui->label->startBlinking(ok);
 }
