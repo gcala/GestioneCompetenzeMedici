@@ -36,9 +36,9 @@ void NomiUnitaDialog::populateUnits()
     ui->unitaCB->show();
 }
 
-void NomiUnitaDialog::setUnitaLabel(const QString &name)
+void NomiUnitaDialog::setNominativoLabel(const QString &name)
 {
-    ui->unitaLabel->setText(name);
+    ui->nominativoLabel->setText(name);
     m_unitId = -1;
 }
 

@@ -960,7 +960,7 @@ void MainWindow::delayedSetup()
 
 void MainWindow::associaUnita(const QString &nominativo, int &unitaId)
 {
-    m_nomiDialog->setUnitaLabel(nominativo);
+    m_nomiDialog->setNominativoLabel(nominativo);
     m_nomiDialog->exec();
     unitaId = m_nomiDialog->currentUnit();
 }

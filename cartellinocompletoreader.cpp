@@ -175,7 +175,7 @@ void CartellinoCompletoReader::run()
         if (match.hasMatch() && temp.contains("AOSC")) {
             int matricola;
             // riga con matricola;
-//            line = line.replace(",", "");
+            line = line.replace(",", "");
             if (match.hasMatch()) {
                 matricola = match.captured(0).trimmed().toInt();
             } else {
@@ -189,6 +189,11 @@ void CartellinoCompletoReader::run()
             m_dipendente->setMatricola(m_matricola);
             m_dipendente->setAnno(anno);
             m_dipendente->setMese(mese);
+
+            line = line.replace(QString::number(matricola),"").trimmed();
+
+            QStringList sl = line.split("AOSC");
+            m_dipendente->setNome(sl.at(0).trimmed());
 
             int unitaId = SqlQueries::unitId(m_dipendente->matricola());
             if(unitaId == -1) {

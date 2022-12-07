@@ -19,7 +19,6 @@
      <property name="font">
       <font>
        <pointsize>14</pointsize>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -42,10 +41,9 @@
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="unitaLabel">
+    <widget class="QLabel" name="nominativoLabel">
      <property name="font">
       <font>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
