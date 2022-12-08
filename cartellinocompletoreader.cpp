@@ -276,7 +276,7 @@ void CartellinoCompletoReader::run()
                             }
                         } else {
                             if(dataCorrente.dayOfWeek() == 7 || The::almanac()->isGrandeFestivita(dataCorrente)) {
-                                if(cartellino->timbratureGiorno(giorno.giorno()).count() > 0 && cartellino->timbratureGiorno(giorno.giorno()).count()%2 == 0) {
+                                if(giorno.causale1() == "ECCR" || giorno.causale2() == "ECCR" || giorno.causale3() == "ECCR") {
                                     if(giorno.minutiCausale("ECCR") >= 660)
                                         m_dipendente->addGuardiaDiurna(giorno.giorno());
                                     else

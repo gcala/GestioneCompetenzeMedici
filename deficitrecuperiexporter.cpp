@@ -156,7 +156,7 @@ void DeficitRecuperiExporter::printPdf(const QString &fileName, const QString &m
             Doctor doctor;
             doctor.badge = m_competenza->badgeNumber();
             doctor.name = m_competenza->name();
-            doctor.deficitProgressivo = m_competenza->deficitOrario();
+            doctor.deficitProgressivo = Utilities::inOrario(m_competenza->deficitOrario());
             doctor.deficitPuntuale = m_competenza->deficitPuntuale();
 
             doctors << doctor;
@@ -222,7 +222,7 @@ void DeficitRecuperiExporter::printCsv(const QString &fileName, const QString &m
             if(m_competenza->deficitOrario() >= 0)
                 doctor.deficitProgressivo = "00:00";
             else
-                doctor.deficitProgressivo = m_competenza->deficitOrario();
+                doctor.deficitProgressivo = Utilities::inOrario(m_competenza->deficitOrario());
 
             if(m_competenza->deficitPuntuale() == "//")
                 doctor.deficitPuntuale = "00:00";

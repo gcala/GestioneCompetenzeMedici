@@ -218,14 +218,6 @@ QStringList CartellinoCompleto::timbratureGiorno(const int giorno)
     QStringList list;
     for(const auto &g: qAsConst(data->m_giorni)) {
         if(g.giorno() == giorno) {
-//            list << g.entrata1().text();
-//            list << g.uscita1().text();
-//            list << g.entrata2().text();
-//            list << g.uscita2().text();
-//            list << g.entrata3().text();
-//            list << g.uscita3().text();
-//            list << g.entrata4().text();
-//            list << g.uscita4().text();
             // entrata1
             if(g.entrata1().text().isEmpty()) {
                 if(!g.uscita1().text().isEmpty()) {
