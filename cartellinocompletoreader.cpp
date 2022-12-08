@@ -193,7 +193,7 @@ void CartellinoCompletoReader::run()
             line = line.replace(QString::number(matricola),"").trimmed();
 
             QStringList sl = line.split("AOSC");
-            m_dipendente->setNome(sl.at(0).trimmed());
+            m_dipendente->setNome(sl.at(0).trimmed().replace("\"",""));
 
             int unitaId = SqlQueries::unitId(m_dipendente->matricola());
             if(unitaId == -1) {

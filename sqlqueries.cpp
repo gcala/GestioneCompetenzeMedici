@@ -222,7 +222,7 @@ void SqlQueries::editUnit(const QString &id,
     }
 }
 
-bool SqlQueries::insertDoctor(const int &matricola,
+int SqlQueries::insertDoctor(const int &matricola,
                               const QString &nome,
                               const QString &id_unita)
 {
@@ -235,9 +235,11 @@ bool SqlQueries::insertDoctor(const int &matricola,
 
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
-        return false;
+        return -1;
     }
-    return true;
+    if(query.lastInsertId().isValid())
+        return query.lastInsertId().toInt();
+    return -1;
 }
 
 void SqlQueries::editDoctor(const QString &id,
@@ -521,12 +523,13 @@ bool SqlQueries::addTimeCard(const QString &tableName, const Dipendente *dipende
     }
 
     if(docId == -1) {
-//        qDebug() << "---> INSERISCO" << dipendente->matricola() << dipendente->nome() << QString::number(unId);
-        if(!insertDoctor(dipendente->matricola(),dipendente->nome(),QString::number(dipendente->unita())))
-            return false;
+        docId = insertDoctor(dipendente->matricola(),dipendente->nome(),QString::number(dipendente->unita()));
     }
 
-//    docId = doctorId(dipendente->matricola());
+    if(docId == -1) {
+        qDebug() << "id dipendente -1";
+        return false;
+    }
 
     if(timeCardExists(tableName, docId)) {
         resetTimeCard(tableName, docId);
