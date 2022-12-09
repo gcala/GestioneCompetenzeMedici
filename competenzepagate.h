@@ -19,7 +19,7 @@ public:
     CompetenzePagate diff(const CompetenzePagate &old);
 
     int ci() const;
-    QDate dataElaborazione() const;
+    QDateTime dataElaborazione() const;
     int deficit() const;
     int indNotturna() const;
     int indFestiva() const;
@@ -39,7 +39,7 @@ public:
     int grande_fes() const;
 
     void setCi(const int ci);
-    void setData(const QDate &dataElaborazione);
+    void setDateTime(const QDateTime &dataElaborazione);
     void setDeficit(const int deficit);
     void setIndNotturna(const int indNotturna);
     void setIndFestiva(const int indFestiva);

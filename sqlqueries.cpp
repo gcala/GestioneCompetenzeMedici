@@ -1273,7 +1273,7 @@ CompetenzePagate *SqlQueries::competenzePagate(int ci, int anno, int mese)
         pagato->setGuard_diu(query.value(16).toInt());
         pagato->setGuard_not(query.value(17).toInt());
         pagato->setGrande_fes(query.value(18).toInt());
-        pagato->setData(QDate::fromString(query.value(19).toString(),"yyyyMMdd"));
+        pagato->setDateTime(QDateTime::fromString(query.value(19).toString(),"yyyyMMddhhmm"));
     }
     return pagato;
 }
@@ -1325,7 +1325,7 @@ void SqlQueries::saveCompetenzePagate(CompetenzePagate *pagato, int anno, int me
     query.bindValue(":guard_diu", pagato->guard_diu());
     query.bindValue(":guard_not", pagato->guard_not());
     query.bindValue(":grande_fes", pagato->grande_fes());
-    query.bindValue(":data", pagato->dataElaborazione().toString("yyyyMMdd"));
+    query.bindValue(":data", pagato->dataElaborazione().toString("yyyyMMddhhmm"));
     if(!query.exec()) {
         qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }

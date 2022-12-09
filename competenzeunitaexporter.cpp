@@ -230,7 +230,7 @@ void CompetenzeUnitaExporter::run()
             pagato->setGuard_diu(m_competenza->numGuarDiurne()); // 1512
             pagato->setGuard_not(m_competenza->numGuar() + m_competenza->numGuarGFNonPag()); // 1571
             pagato->setGrande_fes(m_competenza->numGrFestPagabili()); // 921
-            pagato->setData(now.date());
+            pagato->setDateTime(now);
 
             SqlQueries::saveCompetenzePagate(pagato, m_currentMonthYear.year(), m_currentMonthYear.month());
 

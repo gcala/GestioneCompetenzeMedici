@@ -6,7 +6,7 @@ class CompetenzePagateData : public QSharedData
 {
 public:
     int m_ci;
-    QDate m_data;
+    QDateTime m_data;
     int m_deficit;
     int m_indNotturna;
     int m_indFestiva;
@@ -31,7 +31,7 @@ CompetenzePagate::CompetenzePagate(QObject *parent)
     , data(new CompetenzePagateData)
 {
     data->m_ci = 0;
-    data->m_data = QDate(1900,1,1);
+    data->m_data = QDateTime(QDate(1900,1,1), QTime(0,0,0));
     data->m_deficit = 0;
     data->m_indNotturna = 0;
     data->m_indFestiva = 0;
@@ -99,7 +99,7 @@ CompetenzePagate CompetenzePagate::diff(const CompetenzePagate &old)
 {
     CompetenzePagate differenza;
     differenza.setCi(data->m_ci);
-    differenza.setData(data->m_data);
+    differenza.setDateTime(data->m_data);
     differenza.setDeficit(data->m_deficit - old.deficit());
     differenza.setIndNotturna(data->m_indNotturna - old.indNotturna());
     differenza.setIndFestiva(data->m_indFestiva - old.indFestiva());
@@ -125,7 +125,7 @@ int CompetenzePagate::ci() const
     return data->m_ci;
 }
 
-QDate CompetenzePagate::dataElaborazione() const
+QDateTime CompetenzePagate::dataElaborazione() const
 {
     return data->m_data;
 }
@@ -220,7 +220,7 @@ void CompetenzePagate::setCi(const int ci)
     data->m_ci = ci;
 }
 
-void CompetenzePagate::setData(const QDate &dataElaborazione)
+void CompetenzePagate::setDateTime(const QDateTime &dataElaborazione)
 {
     data->m_data = dataElaborazione;
 }
