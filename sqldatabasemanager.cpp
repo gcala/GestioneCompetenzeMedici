@@ -68,7 +68,7 @@ bool SQLiteDatabaseManager::createRemoteConnection()
     if(!QSqlDatabase::connectionNames().contains(Utilities::m_connectionName)) {
         QString opts = "MYSQL_OPT_RECONNECT=1;";
 
-        if(Utilities::m_useSSL) {
+        if(true) {
             if(Utilities::m_certFile.isEmpty() || Utilities::m_keyFile.isEmpty() || !QFile::exists(Utilities::m_certFile) || !QFile::exists(Utilities::m_keyFile)) {
                 QMessageBox::critical(nullptr, "Errore Connessione", "I file Certificato/Chiave sono necessari per una connessione protetta.\n"
                                                                "Aprire Impostazioni e configurare Certificato e Chiave.", QMessageBox::Cancel);
@@ -150,7 +150,7 @@ QSqlDatabase SQLiteDatabaseManager::database(bool &ok, const QString &connection
     if(Utilities::m_driver == "QMYSQL") {
         QString opts = "MYSQL_OPT_RECONNECT=1;";
 
-        if(Utilities::m_useSSL) {
+        if(true) {
             if(Utilities::m_certFile.isEmpty() || Utilities::m_keyFile.isEmpty() || !QFile::exists(Utilities::m_certFile) || !QFile::exists(Utilities::m_keyFile)) {
                 qDebug() << "I file Certificato/Chiave sono necessari per una connessione protetta.\nAprire Impostazioni e configurare Certificato e Chiave.";
                 ok = false;

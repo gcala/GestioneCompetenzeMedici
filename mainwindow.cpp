@@ -124,8 +124,8 @@ void MainWindow::askDbUserPassword()
 {
     LoginDialog login(Utilities::m_host, Utilities::m_dbName, this);
     login.setUsername(Utilities::m_lastUsername);
-    login.setPassword(Utilities::m_lastPassword);
-    login.disablePassButton(Utilities::m_lastPassword.isEmpty());
+//    login.setPassword(Utilities::m_lastPassword);
+//    login.disablePassButton(Utilities::m_lastPassword.isEmpty());
     login.exec();
 
     if(login.canceled()) {
@@ -200,8 +200,10 @@ void MainWindow::connectToDatabase()
     }
 
     QFileInfo fi(The::dbManager()->currentDatabaseName());
-
-    setWindowTitle("Gestione Competenze Medici - " + fi.completeBaseName());
+    if(Utilities::m_driver == "QMYSQL")
+        setWindowTitle("Gestione Competenze Medici - " + Utilities::m_dbName + "@" + Utilities::m_host);
+    else
+        setWindowTitle("Gestione Competenze Medici - " + fi.completeBaseName());
 
     populateMeseCompetenzeCB();
     m_nomiDialog->populateUnits();
@@ -288,23 +290,10 @@ void MainWindow::on_actionApriDatabase_triggered()
         }
         return;
     }
+    delete databaseWizard;
 
     // ultima opzione: apri database remoto
-    // salviamo innanzitutto host e database
-    Utilities::m_host = databaseWizard->host();
-    Utilities::m_dbName = databaseWizard->database();
-    Utilities::m_driver = "QMYSQL";
-    Utilities::m_useSSL = databaseWizard->useSSL();
-    Utilities::m_certFile = databaseWizard->certFile();
-    Utilities::m_keyFile = databaseWizard->keyFile();
-    Utilities::m_lastUsername = databaseWizard->user();
-    Utilities::m_lastPassword = databaseWizard->password();
-    saveSettings();
-
-    setupDbConnectionParameters();
-    connectToDatabase();
-
-    delete databaseWizard;
+    askDbUserPassword();
 }
 
 void MainWindow::loadSettings()
