@@ -519,8 +519,8 @@ QString Competenza::oreDovute()
 
 int Competenza::minutiDovuti() const
 {
-    if(data->m_dipendente->minutiGiornalieri() > Utilities::m_maxMinutiGiornalieri) {
-        return data->m_dipendente->minutiGiornalieri();
+    if(data->m_dipendente->minutiGiornalieriVeri() > Utilities::m_maxMinutiGiornalieri) {
+        return data->m_dipendente->minutiGiornalieriVeri();
     }
     return (data->m_orarioGiornaliero >= 0 ? data->m_orarioGiornaliero : data->m_dipendente->minutiGiornalieri()) * giorniLavorativi();
 }
