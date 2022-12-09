@@ -215,7 +215,7 @@ void CompetenzeUnitaExporter::run()
             pagato->setCi(m_competenza->dipendente()->matricola());
             pagato->setDeficit(m_competenza->deficitOrario() < 0 ? m_competenza->deficitOrario() : 0);
             pagato->setIndNotturna(0); // 26 non si paga più?
-            pagato->setIndFestiva(m_competenza->numGuarDiurne()); // 62
+            pagato->setIndFestiva(m_competenza->numGuarDiurne() + m_competenza->dipendente()->indennitaFestiva().count()); // 62
             pagato->setStr_reparto_ord(0); // 66 solitamente nullo
             pagato->setStr_reparto_nof(0); // 68 solitamente nullo
             pagato->setStr_reparto_nef(0); // 67 solitamente nullo
@@ -273,7 +273,7 @@ void CompetenzeUnitaExporter::run()
             } else {
                 printNotturno(painter, 0,counter); // 26
             }
-            printFestivo(painter, m_competenza->numGuarDiurne(),counter); // 62
+            printFestivo(painter, m_competenza->numGuarDiurne() + m_competenza->dipendente()->indennitaFestiva().count(),counter); // 62
 
             printRepNumTurni(painter, whole, counter); // 25
             printRepNumOre(painter, fractional > 0.0 ? 6 : 0, counter); //40
