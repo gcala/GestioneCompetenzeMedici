@@ -40,6 +40,8 @@ public:
     QMap<QString, int> causali() const;
     QMap<QString, QVector<int>> giorniCausali() const;
     QStringList timbratureGiorno(const int giorno);
+    GiornoCartellinoCompleto giorno(int giorno) const;
+    bool isLastDay(int giorno);
 
 signals:
 

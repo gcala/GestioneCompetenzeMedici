@@ -277,10 +277,25 @@ void CartellinoCompletoReader::run()
                         } else {
                             if(dataCorrente.dayOfWeek() == 7 || The::almanac()->isGrandeFestivita(dataCorrente)) {
                                 if(giorno.causale1() == "ECCR" || giorno.causale2() == "ECCR" || giorno.causale3() == "ECCR") {
-                                    if(giorno.minutiCausale("ECCR") >= 660)
-                                        m_dipendente->addGuardiaDiurna(giorno.giorno());
-                                    else
-                                        m_dipendente->addIndennitaFestiva(giorno.giorno());
+                                    if(cartellino->isLastDay(giorno.giorno())) {
+                                        if(giorno.numeroTimbrature() % 2 == 0) {
+                                            if(giorno.minutiCausale("ECCR") >= 660)
+                                                m_dipendente->addGuardiaDiurna(giorno.giorno());
+                                            else
+                                                m_dipendente->addIndennitaFestiva(giorno.giorno());
+                                        } else {
+                                            if(giorno.montoNotte())
+                                                m_dipendente->addGuardiaNotturna(giorno.giorno());
+                                        }
+                                    } else {
+                                        const auto g = cartellino->giorno(giorno.giorno()+1);
+                                        if(g.indennita().toUpper() != "N") {
+                                            if(giorno.minutiCausale("ECCR") >= 660)
+                                                m_dipendente->addGuardiaDiurna(giorno.giorno());
+                                            else
+                                                m_dipendente->addIndennitaFestiva(giorno.giorno());
+                                        }
+                                    }
                                 }
                             } else if(daysCounter == cartellino->giorni().count()) {
                                 // ultimo giorno nel cartellino

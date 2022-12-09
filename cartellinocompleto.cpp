@@ -43,8 +43,6 @@ CartellinoCompleto::CartellinoCompleto(int anno, int mese, int matricola)
     data->m_anno = anno;
     data->m_mese = mese;
     data->m_matricola = matricola;
-//    data->m_giorni = SqlQueries::getGiorniCartellinoCompleto(QString::number(anno) + QString::number(mese).rightJustified(2, '0'), matricola);
-//    data->m_totali = SqlQueries::getDisponibile(matricola, anno, mese);
     data->m_anno = 0;
     data->m_mese = 0;
     data->m_matricola = 0;
@@ -281,6 +279,20 @@ QStringList CartellinoCompleto::timbratureGiorno(const int giorno)
          }
     }
     return list;
+}
+
+GiornoCartellinoCompleto CartellinoCompleto::giorno(int giorno) const
+{
+    for(const auto &g : data->m_giorni) {
+        if(g.giorno() == giorno)
+            return g;
+    }
+    return GiornoCartellinoCompleto();
+}
+
+bool CartellinoCompleto::isLastDay(int giorno)
+{
+    return data->m_giorni.last().giorno() == giorno;
 }
 
 int CartellinoCompleto::arrotondamento(int minuti) const
