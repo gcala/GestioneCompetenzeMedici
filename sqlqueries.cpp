@@ -174,7 +174,7 @@ void SqlQueries::createPagatoTable(int anno, int mese)
                       "guard_diu INT DEFAULT 0 NOT NULL,"
                       "guard_not INT DEFAULT 0 NOT NULL,"
                       "grande_fes INT DEFAULT 0 NOT NULL,"
-                      "data INT DEFAULT 0 NOT NULL,"
+                      "data BIGINT DEFAULT 0 NOT NULL,"
                       "PRIMARY KEY (id));");
     } else {
         qDebug() << Q_FUNC_INFO << "Nessun database configurato. Esco";
