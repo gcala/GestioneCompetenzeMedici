@@ -20,7 +20,6 @@ namespace The {
     {
         if( !s_SQLiteDatabaseManager_instance ) {
             s_SQLiteDatabaseManager_instance = new SQLiteDatabaseManager();
-            Utilities::m_useSSL = false;
         }
 
         return s_SQLiteDatabaseManager_instance;

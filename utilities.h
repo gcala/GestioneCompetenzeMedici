@@ -32,7 +32,6 @@ public:
     static QString m_dbName;
     static QString m_certFile;
     static QString m_keyFile;
-    static bool m_useSSL;
     static QString m_localDbFileName;
     static QString m_lastUsername;
     static QString m_lastPassword;

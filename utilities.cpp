@@ -14,7 +14,6 @@ QString Utilities::m_host;
 QString Utilities::m_dbName;
 QString Utilities::m_certFile;
 QString Utilities::m_keyFile;
-bool Utilities::m_useSSL;
 QString Utilities::m_localDbFileName;
 QString Utilities::m_lastUsername;
 QString Utilities::m_lastPassword;

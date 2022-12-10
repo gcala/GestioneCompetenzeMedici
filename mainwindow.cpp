@@ -304,7 +304,6 @@ void MainWindow::loadSettings()
     Utilities::m_dbName = settings.value("dbName", "").toString();
     Utilities::m_certFile = settings.value("certFile", "").toString();
     Utilities::m_keyFile = settings.value("keyFile", "").toString();
-    Utilities::m_useSSL = settings.value("useSSL", false).toBool();
     Utilities::m_lastUsername = settings.value("lastUsername", "").toString();
     Utilities::m_importPath = settings.value("importPath", QDir::homePath()).toString();
     Utilities::m_exportPath = settings.value("exportPath", QDir::homePath()).toString();
@@ -339,7 +338,6 @@ void MainWindow::saveSettings()
     settings.setValue("dbName", Utilities::m_dbName);
     settings.setValue("certFile", Utilities::m_certFile);
     settings.setValue("keyFile", Utilities::m_keyFile);
-    settings.setValue("useSSL", Utilities::m_useSSL);
     settings.setValue("importPath", Utilities::m_importPath);
     settings.setValue("exportPath", Utilities::m_exportPath);
     settings.setValue("lastUsername", Utilities::m_lastUsername);
@@ -896,12 +894,10 @@ void MainWindow::on_actionConnettiDbRemoto_triggered()
         return;
     }
 
-    if(Utilities::m_useSSL) {
-        if(Utilities::m_certFile.isEmpty() || Utilities::m_keyFile.isEmpty() || !QFile::exists(Utilities::m_certFile) || !QFile::exists(Utilities::m_keyFile)) {
-            QMessageBox::critical(this, "Errore Connessione", "I file Certificato/Chiave sono necessari per una connessione protetta.\n"
+    if(Utilities::m_certFile.isEmpty() || Utilities::m_keyFile.isEmpty() || !QFile::exists(Utilities::m_certFile) || !QFile::exists(Utilities::m_keyFile)) {
+        QMessageBox::critical(this, "Errore Connessione", "I file Certificato/Chiave sono necessari per una connessione protetta.\n"
                                   "Aprire Impostazioni e configurare Certificato e Chiave.", QMessageBox::Cancel);
-            return;
-        }
+        return;
     }
 
     askDbUserPassword();
@@ -916,13 +912,11 @@ void MainWindow::delayedSetup()
             ui->actionBackupDatabase->setEnabled(false);
             return;
         }
-        if(Utilities::m_useSSL) {
-            if(Utilities::m_certFile.isEmpty() || Utilities::m_keyFile.isEmpty() || !QFile::exists(Utilities::m_certFile) || !QFile::exists(Utilities::m_keyFile)) {
-                QMessageBox::critical(this, "Errore Connessione", "I file Certificato/Chiave sono necessari per una connessione protetta.\n"
+        if(Utilities::m_certFile.isEmpty() || Utilities::m_keyFile.isEmpty() || !QFile::exists(Utilities::m_certFile) || !QFile::exists(Utilities::m_keyFile)) {
+            QMessageBox::critical(this, "Errore Connessione", "I file Certificato/Chiave sono necessari per una connessione protetta.\n"
                                       "Aprire Impostazioni e configurare Certificato e Chiave.", QMessageBox::Cancel);
-                ui->actionBackupDatabase->setEnabled(false);
-                return;
-            }
+            ui->actionBackupDatabase->setEnabled(false);
+            return;
         }
         askDbUserPassword();
         return;
