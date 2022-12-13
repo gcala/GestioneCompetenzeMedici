@@ -270,9 +270,16 @@ void CartellinoCompletoReader::run()
 
                     if(!guarFound) {
                         if(giorno.indennita().toUpper() == "N") {
-                            if(giorno.giorno()-1>0) {
-                                if(giorno.numeroTimbrature() > 0)
-                                    m_dipendente->addGuardiaNotturna(giorno.giorno()-1);
+                            if(giorno.giorno() -1 > 0) {
+                                if(giorno.numeroTimbrature() > 0) {
+                                    // controllare se c'è ECCR il giorno di inizio notte
+                                    if(cartellino->giorno(giorno.giorno()-1).minutiCausale("ECCR") > 0) {
+                                        m_dipendente->addGuardiaNotturna(giorno.giorno()-1);
+                                        if(giorno.numeroTimbrature() % 2 == 0 && cartellino->isLastDay(giorno.giorno()) && giorno.minutiCausale("ECCR") > 0) {
+                                            m_dipendente->addGuardiaNotturna(giorno.giorno());
+                                        }
+                                    }
+                                }
                             }
                         } else {
                             if(dataCorrente.dayOfWeek() == 7 || The::almanac()->isGrandeFestivita(dataCorrente)) {
@@ -299,7 +306,7 @@ void CartellinoCompletoReader::run()
                                 }
                             } else if(daysCounter == cartellino->giorni().count()) {
                                 // ultimo giorno nel cartellino
-                                if(giorno.montoNotte())
+                                if(giorno.montoNotte() && giorno.minutiCausale("ECCR") > 0)
                                     m_dipendente->addGuardiaNotturna(giorno.giorno());
                             }
                         }
