@@ -30,6 +30,8 @@ SOURCES += \
         causalewidget.cpp \
         competenzepagate.cpp \
         dateeditdelegate.cpp \
+        differenzedialog.cpp \
+        differenzeexporter.cpp \
         giornocartellinocompleto.cpp \
         main.cpp \
         mainwindow.cpp \
@@ -71,6 +73,8 @@ HEADERS += \
         causalewidget.h \
         competenzepagate.h \
         dateeditdelegate.h \
+        differenzedialog.h \
+        differenzeexporter.h \
         giornocartellinocompleto.h \
         mainwindow.h \
         manageemployee.h \
@@ -107,6 +111,7 @@ HEADERS += \
 
 FORMS += \
         causalewidget.ui \
+        differenzedialog.ui \
         mainwindow.ui \
         insertdbvalues.ui \
         manageemployee.ui \

@@ -2666,6 +2666,7 @@
    <addaction name="actionCaricaPdf"/>
    <addaction name="separator"/>
    <addaction name="actionStampaCompetenzeUnita"/>
+   <addaction name="actionGeneraFileModifiche"/>
    <addaction name="actionCambiaUnit"/>
    <addaction name="actionRicalcolaDeficit"/>
    <addaction name="actionTakeScreenshot"/>
@@ -2873,6 +2874,15 @@
    </property>
    <property name="toolTip">
     <string>Gestisci Dirigenti</string>
+   </property>
+  </action>
+  <action name="actionGeneraFileModifiche">
+   <property name="icon">
+    <iconset resource="assets.qrc">
+     <normaloff>:/icons/diff.svg</normaloff>:/icons/diff.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Genera File Modifiche</string>
    </property>
   </action>
  </widget>

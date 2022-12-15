@@ -43,5 +43,6 @@
         <file>icons/switch.svg</file>
         <file>icons/edit-bank.svg</file>
         <file>icons/edit-users.svg</file>
+        <file>icons/diff.svg</file>
     </qresource>
 </RCC>

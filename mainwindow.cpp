@@ -7,6 +7,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "printdialog.h"
+#include "differenzedialog.h"
 #include "sqlqueries.h"
 #include "calendarmanager.h"
 #include "calendarmanagerrep.h"
@@ -26,6 +27,7 @@
 #include "causalewidget.h"
 #include "dipendente.h"
 #include "reperibilitasemplificata.h"
+#include "differenzeexporter.h"
 
 #include <QtWidgets>
 #include <QDebug>
@@ -85,6 +87,7 @@ MainWindow::MainWindow(QWidget *parent) :
     dirigenteOp = UndefOp;
 
     printDialog = new PrintDialog(this);
+    differenzeDialog = new DifferenzeDialog(this);
     ui->sommV1->setVisible(false);
     ui->sommV2->setVisible(false);
 
@@ -106,6 +109,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&deficitRecuperiExporter, SIGNAL(exportFinished(QString)), this, SLOT(exported(QString)));
     connect(&deficitRecuperiExporter, SIGNAL(totalRows(int)), this, SLOT(setTotalRows(int)));
     connect(&deficitRecuperiExporter, SIGNAL(currentRow(int)), this, SLOT(setCurrentRow(int)));
+    connect(differenzeExporter, &DifferenzeExporter::exportFinished, this, &MainWindow::exported);
+    connect(differenzeExporter, &DifferenzeExporter::totalRows, this, &MainWindow::setTotalRows);
+    connect(differenzeExporter, &DifferenzeExporter::currentRow, this, &MainWindow::setCurrentRow);
+    connect(ui->actionGeneraFileModifiche, &QAction::triggered, this, &MainWindow::actionGeneraFileModificheTriggered);
 
     m_nomiDialog = new NomiUnitaDialog;
 
@@ -116,6 +123,7 @@ MainWindow::~MainWindow()
 {
     saveSettings();
     delete printDialog;
+    delete differenzeDialog;
     delete m_nomiDialog;
     delete ui;
 }
@@ -213,6 +221,7 @@ void MainWindow::populateMeseCompetenzeCB()
 {
     ui->meseCompetenzeCB->clear();
     printDialog->clearMese();
+    differenzeDialog->clearMese();
 
     const QStringList timeCards = SqlQueries::timecardsList();
 
@@ -223,6 +232,7 @@ void MainWindow::populateMeseCompetenzeCB()
         QString ss = (*i).split("_").last();
         ui->meseCompetenzeCB->addItem(QLocale().monthName((*i).right(2).toInt()) + " " + ss.left(4), *i);
         printDialog->addMese(QLocale().monthName((*i).right(2).toInt()) + " " + ss.left(4), *i);
+        differenzeDialog->addMese(QLocale().monthName((*i).right(2).toInt()) + " " + ss.left(4), *i);
     }
 }
 
@@ -309,6 +319,7 @@ void MainWindow::loadSettings()
     Utilities::m_exportPath = settings.value("exportPath", QDir::homePath()).toString();
     currentDatabase.setFile(settings.value("lastDatabasePath", "").toString());
     printDialog->setPath(Utilities::m_exportPath);
+    differenzeDialog->setPath(Utilities::m_exportPath);
     m_photosPath = settings.value("photosPath", "").toString();
     m_tabulaPath = settings.value("tabulaPath", QApplication::applicationDirPath() + QDir::separator() + "tabula.jar").toString();
 #ifdef _WIN32
@@ -403,8 +414,7 @@ void MainWindow::handleResults()
 void MainWindow::exported(const QString &file)
 {
     Utilities::m_connectionName = "";
-    ui->actionStampaCompetenzeUnita->setEnabled(true);
-    ui->actionPrintDeficit->setEnabled(true);
+    ui->mainToolBar->setEnabled(true);
     ui->competenzeWidget->setEnabled(true);
     progressBar->setVisible(false);
     msgLabel->setText("");
@@ -661,8 +671,7 @@ void MainWindow::setupDbConnectionParameters()
 
 void MainWindow::on_actionStampaCompetenzeUnita_triggered()
 {
-    ui->actionStampaCompetenzeUnita->setEnabled(false);
-    ui->actionPrintDeficit->setEnabled(false);
+    ui->mainToolBar->setEnabled(false);
     printDialog->setCurrentOp(PrintDialog::ToolOps::PrintUnits);
 
     printDialog->setCurrentMese(ui->meseCompetenzeCB->currentIndex());
@@ -687,10 +696,38 @@ void MainWindow::on_actionStampaCompetenzeUnita_triggered()
     unitaCompetenzeExporter.start();
 }
 
+void MainWindow::actionGeneraFileModificheTriggered()
+{
+    ui->mainToolBar->setEnabled(false);
+
+    differenzeDialog->setCurrentMese(ui->meseCompetenzeCB->currentIndex());
+    differenzeDialog->setCurrentUnita(ui->unitaCompetenzeCB->currentIndex() + 1);
+
+    differenzeDialog->exec();
+
+    if(!differenzeDialog->proceed) {
+        exported(QStringLiteral());
+        return;
+    }
+
+    exported(QStringLiteral());
+    return;
+
+//    progressBar->setVisible(true);
+//    msgLabel->setText("Esportazione modifiche");
+
+//    ui->competenzeWidget->setEnabled(false);
+//    differenzeExporter.setPath(differenzeDialog->path());
+//    differenzeExporter.setMese(differenzeDialog->currentMeseData());
+//    differenzeExporter.setUnita(differenzeDialog->currentUnitaData());
+//    differenzeExporter.setPrintCasi(differenzeDialog->storicizzaIsChecked());
+//    differenzeExporter.setPrintData(differenzeDialog->pdfIsChecked());
+//    differenzeExporter.start();
+}
+
 void MainWindow::on_actionPrintDeficit_triggered()
 {
-    ui->actionStampaCompetenzeUnita->setEnabled(false);
-    ui->actionPrintDeficit->setEnabled(false);
+    ui->mainToolBar->setEnabled(false);
     printDialog->setCurrentOp(PrintDialog::ToolOps::PrintDeficit);
 
     printDialog->setCurrentMese(ui->meseCompetenzeCB->currentIndex());
