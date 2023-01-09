@@ -75,6 +75,7 @@ public:
     static CompetenzePagate * competenzePagate(int ci, int anno, int mese);
     static bool competenzePagateExists(int ci, int anno, int mese);
     static void saveCompetenzePagate(CompetenzePagate *pagato, int anno, int mese);
+    static QString doctorName(int matricola);
 };
 
 #endif // SQLQUERIES_H

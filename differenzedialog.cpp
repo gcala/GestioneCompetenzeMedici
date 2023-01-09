@@ -12,7 +12,6 @@ DifferenzeDialog::DifferenzeDialog(QWidget *parent) :
     ui->setupUi(this);
 
     connect(ui->meseCB, &QComboBox::currentIndexChanged, this, &DifferenzeDialog::meseCurrentIndexChanged);
-    connect(ui->unitaCB, &QComboBox::currentIndexChanged, this, &DifferenzeDialog::unitaCurrentIndexChanged);
     connect(ui->saveButton, &QPushButton::clicked, [=] () {
         proceed = true;
         close();
@@ -76,24 +75,6 @@ bool DifferenzeDialog::storicizzaIsChecked() const
 bool DifferenzeDialog::pdfIsChecked() const
 {
     return ui->dataCB->isChecked();
-}
-
-void DifferenzeDialog::unitaCurrentIndexChanged(int index)
-{
-    Q_UNUSED(index)
-
-    if(ui->unitaCB->currentData(Qt::UserRole).toString().isEmpty())
-        return;
-
-    ui->dirigenteCB->clear();
-    ui->dirigenteCB->addItem("Tutti", -1);
-
-    QStringList query = SqlQueries::getDoctorDataFromUnitaInTimecard(ui->meseCB->currentData(Qt::UserRole).toString(), ui->unitaCB->currentData(Qt::UserRole).toInt());
-
-    for(const QString &s : query) {
-        QStringList l = s.split("~");
-        ui->dirigenteCB->addItem(l.at(1) + " - " + l.at(2), l.at(0));
-    }
 }
 
 void DifferenzeDialog::meseCurrentIndexChanged(int index)

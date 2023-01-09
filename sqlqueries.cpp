@@ -1331,3 +1331,17 @@ void SqlQueries::saveCompetenzePagate(CompetenzePagate *pagato, int anno, int me
     }
 }
 
+QString SqlQueries::doctorName(int matricola)
+{
+    QString name;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
+    query.prepare("SELECT nome FROM medici WHERE matricola=" + QString::number(matricola) + ";");
+    if(!query.exec()) {
+        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
+    while(query.next()) {
+        name = query.value(0).toString();
+    }
+    return name;
+}
+

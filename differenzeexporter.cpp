@@ -94,8 +94,8 @@ void DifferenzeExporter::run()
     m_currentMonthYear = QDate::fromString(s+"01", "yyyyMMdd");
     QDate date = m_currentMonthYear.addDays(m_currentMonthYear.daysInMonth()-1);
     QString mese = QLocale().monthName(date.month()) + " " + s.left(4);
-    QString pdfFileName = "Competenze_" + QString(mese).replace(" ","_");
-    QString csvFileName = "Competenze_" + QString(mese).replace(" ","_");
+    QString pdfFileName = "Differenze_Competenze_" + QString(mese).replace(" ","_");
+    QString csvFileName = "Differenze_Competenze_" + QString(mese).replace(" ","_");
 
     if(m_idUnita != -1) {
         unitaIdList << m_idUnita;
@@ -174,135 +174,135 @@ void DifferenzeExporter::run()
     }
 
     foreach (int unitaId, unitaIdList) {
-        QStringList notes;
-        currRow++;
-        emit currentRow(currRow);
-        if(!isFileStart)
-            writer.newPage();
-
-        disegnaTabella(painter);
-
-//        if(m_printPdf)
-//            printData(painter, now.toString("dd/MM/yyyy hh:mm:ss"));
-
-        QString unitaName = SqlQueries::getUnitaNomeCompleto(unitaId);
-
-        printMonth(painter, mese);
-        printUnitaName(painter, unitaName);
-        printUnitaNumber(painter, unitaId);
-
         QVector<int> dirigentiIdList = SqlQueries::getDoctorsIdsFromUnitInTimecard(m_timecard, unitaId);
 
-        int counter = 0;
+        QList<CompetenzePagate *> daPagare;
 
         foreach (int dirigenteId, dirigentiIdList) {
-            m_competenze = SqlQueries::competenzePagate(dirigenteId, );
-            if(counter != 0 && (counter%m_totalRows) == 0) {
-                counter = 0;
-                writer.newPage();
-                disegnaTabella(painter);
-                if(m_printData)
-                    printData(painter, now.toString("dd/MM/yyyy hh:mm:ss"));
-                printMonth(painter, mese);
-                printUnitaName(painter, unitaName);
-                printUnitaNumber(painter, unitaId);
-            }
+            m_competenzePagate = SqlQueries::competenzePagate(dirigenteId, m_currentMonthYear.year(), m_currentMonthYear.month());
+            m_competenze = new Competenza(m_timecard,dirigenteId, true /* esportazione */);
             double whole, fractional;
-            fractional = std::modf(m_competenza->repCount(), &whole);
+            fractional = std::modf(m_competenze->repCount(), &whole);
 
-            CompetenzePagate *pagato = new CompetenzePagate;
+            CompetenzePagate *competenzeDaPagare = new CompetenzePagate;
 
-            pagato->setCi(m_competenza->dipendente()->matricola());
-            pagato->setDeficit(m_competenza->deficitOrario() < 0 ? m_competenza->deficitOrario() : 0);
-            pagato->setIndNotturna(0); // 26 non si paga più?
-            pagato->setIndFestiva(m_competenza->numGuarDiurne() + m_competenza->dipendente()->indennitaFestiva().count()); // 62
-            pagato->setStr_reparto_ord(0); // 66 solitamente nullo
-            pagato->setStr_reparto_nof(0); // 68 solitamente nullo
-            pagato->setStr_reparto_nef(0); // 67 solitamente nullo
-            pagato->setStr_repe_ord(m_competenza->numOreRep(Reperibilita::Ordinaria)); // 70
-            pagato->setStr_repe_nof(m_competenza->numOreRep(Reperibilita::FestivaONotturna)); // 72
-            pagato->setStr_repe_nef(m_competenza->numOreRep(Reperibilita::FestivaENotturna)); // 71
-            pagato->setStr_guard_ord(m_competenza->numOreGuarOrd()); // 73
-            pagato->setStr_guard_ord(m_competenza->numOreGuarFesONot()); // 75
-            pagato->setStr_guard_ord(m_competenza->numOreGuarFesENot()); // 74
-            pagato->setTurni_repe(whole); // 25
-            pagato->setOre_repe(fractional > 0.0 ? 6 : 0); // 40
-            pagato->setGuard_diu(m_competenza->numGuarDiurne()); // 1512
-            pagato->setGuard_not(m_competenza->numGuar() + m_competenza->numGuarGFNonPag()); // 1571
-            pagato->setGrande_fes(m_competenza->numGrFestPagabili()); // 921
-            pagato->setDateTime(now);
+            competenzeDaPagare->setCi(m_competenze->dipendente()->matricola());
+            competenzeDaPagare->setDeficit(m_competenze->deficitOrario() < 0 ? m_competenze->deficitOrario() : 0);
+            competenzeDaPagare->setIndNotturna(0); // 26 non si paga più?
+            competenzeDaPagare->setIndFestiva(m_competenze->numGuarDiurne() + m_competenze->dipendente()->indennitaFestiva().count()); // 62
+            competenzeDaPagare->setStr_reparto_ord(0); // 66 solitamente nullo
+            competenzeDaPagare->setStr_reparto_nof(0); // 68 solitamente nullo
+            competenzeDaPagare->setStr_reparto_nef(0); // 67 solitamente nullo
+            competenzeDaPagare->setStr_repe_ord(m_competenze->numOreRep(Reperibilita::Ordinaria)); // 70
+            competenzeDaPagare->setStr_repe_nof(m_competenze->numOreRep(Reperibilita::FestivaONotturna)); // 72
+            competenzeDaPagare->setStr_repe_nef(m_competenze->numOreRep(Reperibilita::FestivaENotturna)); // 71
+            competenzeDaPagare->setStr_guard_ord(m_competenze->numOreGuarOrd()); // 73
+            competenzeDaPagare->setStr_guard_ord(m_competenze->numOreGuarFesONot()); // 75
+            competenzeDaPagare->setStr_guard_ord(m_competenze->numOreGuarFesENot()); // 74
+            competenzeDaPagare->setTurni_repe(whole); // 25
+            competenzeDaPagare->setOre_repe(fractional > 0.0 ? 6 : 0); // 40
+            competenzeDaPagare->setGuard_diu(m_competenze->numGuarDiurne()); // 1512
+            competenzeDaPagare->setGuard_not(m_competenze->numGuar() + m_competenze->numGuarGFNonPag()); // 1571
+            competenzeDaPagare->setGrande_fes(m_competenze->numGrFestPagabili()); // 921
+            competenzeDaPagare->setDateTime(now);
 
-            SqlQueries::saveCompetenzePagate(pagato, m_currentMonthYear.year(), m_currentMonthYear.month());
-
-            if(m_competenza->numOreRep(Reperibilita::Ordinaria) > 0) // 70
-                out << rowText.arg(m_competenza->badgeNumber()).arg("REP.ORD").arg(QString::number(m_competenza->numOreRep(Reperibilita::Ordinaria))) << "\n";
-
-            if(m_competenza->numOreRep(Reperibilita::FestivaONotturna) > 0) // 72
-                out << rowText.arg(m_competenza->badgeNumber()).arg("REP.NOF").arg(QString::number(m_competenza->numOreRep(Reperibilita::FestivaONotturna))) << "\n";
-
-            if(m_competenza->numOreRep(Reperibilita::FestivaENotturna) > 0) // 71
-                out << rowText.arg(m_competenza->badgeNumber()).arg("REP.NEF").arg(QString::number(m_competenza->numOreRep(Reperibilita::FestivaENotturna))) << "\n";
-
-            if(m_competenza->numOreGuarOrd() > 0) // 73
-                out << rowText.arg(m_competenza->badgeNumber()).arg("STR.ORD.GU").arg(QString::number(m_competenza->numOreGuarOrd())) << "\n";
-
-            if(m_competenza->numOreGuarFesONot() > 0) // 75
-                out << rowText.arg(m_competenza->badgeNumber()).arg("STR.NOF.GU").arg(QString::number(m_competenza->numOreGuarFesONot())) << "\n";
-
-            if(m_competenza->numOreGuarFesENot() > 0) // 74
-                out << rowText.arg(m_competenza->badgeNumber()).arg("STR.NEF.GU").arg(QString::number(m_competenza->numOreGuarFesENot())) << "\n";
-
-            if(whole > 0) // 25
-                out << rowText.arg(m_competenza->badgeNumber()).arg("IND.PR.REP").arg(QString::number(whole)) << "\n";
-
-            if(fractional > 0.0) // 40
-                out << rowText.arg(m_competenza->badgeNumber()).arg("IND.REP.OR").arg("6") << "\n";
-
-            if(m_competenza->numGrFestPagabili() > 0) { // 1571
-                out << rowText.arg(m_competenza->badgeNumber()).arg("GR.FES.NOT").arg(QString::number(m_competenza->numGrFestPagabili())) << "\n";
-                out << rowText.arg(m_competenza->badgeNumber()).arg("GUARD.NOT").arg("-" + QString::number(m_competenza->numGrFestPagabili())) << "\n";
-            }
-
-            printBadge(painter, m_competenza->badgeNumber(),counter);
-            printName(painter, m_competenza->name(),counter);
-            printDeficit(painter, m_competenza->deficitOrario() < 0 ?
-                             Utilities::inOrario(abs(m_competenza->deficitOrario())) : "//",counter);
-
-            if(m_currentMonthYear < Utilities::ccnl1618Date) {
-                printNotturno(painter, m_competenza->notte(),counter); // 26
-            } else {
-                printNotturno(painter, 0,counter); // 26
-            }
-            printFestivo(painter, m_competenza->numGuarDiurne() + m_competenza->dipendente()->indennitaFestiva().count(),counter); // 62
-
-            printRepNumTurni(painter, whole, counter); // 25
-            printRepNumOre(painter, fractional > 0.0 ? 6 : 0, counter); //40
-            printStrRepartoOrdin(painter,0,counter); // 66 solitamente nullo
-            printStrRepartoFesONott(painter,0,counter); // 68 solitamente nullo
-            printStrRepartoFesENott(painter,0,counter); // 67 solitamente nullo
-
-            printNumGuarNott(painter, m_competenza->numGuar() + m_competenza->numGuarGFNonPag(), counter); //1571
-            printNumGuarDiur(painter, m_competenza->numGuarDiurne(), counter); // 1512
-
-            printNumGfFesNott(painter, m_competenza->numGrFestPagabili(), counter); // 921
-
-            printNumOreGuarFesENot(painter, m_competenza->numOreGuarFesENot(), counter); // 74
-            printNumOreGuarFesONot(painter, m_competenza->numOreGuarFesONot(), counter); // 75
-            printNumOreGuarOrd(painter, m_competenza->numOreGuarOrd(), counter); // 73
-            printNumOreRepFesENot(painter, m_competenza->numOreRep(Reperibilita::FestivaENotturna), counter); // 71
-            printNumOreRepFesONot(painter, m_competenza->numOreRep(Reperibilita::FestivaONotturna), counter); // 72
-            printNumOreRepOrd(painter, m_competenza->numOreRep(Reperibilita::Ordinaria), counter); // 70
-            if(!m_competenza->note().isEmpty()) {
-                notes << QString::number(m_competenza->badgeNumber()) + " - " + m_competenza->name() + ": " + m_competenza->note();
-            }
-            counter++;
+            if(m_competenzePagate != competenzeDaPagare)
+                daPagare << competenzeDaPagare;
         }
-        printNote(painter, notes);
+        if(daPagare.count() > 0) {
+            QStringList notes;
+            currRow++;
+            emit currentRow(currRow);
+            if(!isFileStart)
+                writer.newPage();
+
+            disegnaTabella(painter);
+
+            printData(painter, now.toString("dd/MM/yyyy hh:mm:ss"));
+
+            QString unitaName = SqlQueries::getUnitaNomeCompleto(unitaId);
+
+            printMonth(painter, mese);
+            printUnitaName(painter, unitaName);
+            printUnitaNumber(painter, unitaId);
+            int counter = 0;
+            for(auto pag : daPagare) {
+                if(counter != 0 && (counter%m_totalRows) == 0) {
+                    counter = 0;
+                    writer.newPage();
+                    disegnaTabella(painter);
+                    printData(painter, now.toString("dd/MM/yyyy hh:mm:ss"));
+                    printMonth(painter, mese);
+                    printUnitaName(painter, unitaName);
+                    printUnitaNumber(painter, unitaId);
+                }
+
+                if(m_storicizza)
+                    SqlQueries::saveCompetenzePagate(pag, m_currentMonthYear.year(), m_currentMonthYear.month());
+
+                if(pag->str_repe_ord() > 0) // 70
+                    out << rowText.arg(pag->ci()).arg("REP.ORD").arg(QString::number(pag->str_repe_ord())) << "\n";
+
+                if(pag->str_repe_nof() > 0) // 72
+                    out << rowText.arg(pag->ci()).arg("REP.NOF").arg(QString::number(pag->str_repe_nof())) << "\n";
+
+                if(pag->str_repe_nef() > 0) // 71
+                    out << rowText.arg(pag->ci()).arg("REP.NEF").arg(QString::number(pag->str_repe_nef())) << "\n";
+
+                if(pag->str_guard_ord() > 0) // 73
+                    out << rowText.arg(pag->ci()).arg("STR.ORD.GU").arg(QString::number(pag->str_guard_ord())) << "\n";
+
+                if(pag->str_guard_ord() > 0) // 75
+                    out << rowText.arg(pag->ci()).arg("STR.NOF.GU").arg(QString::number(pag->str_guard_ord())) << "\n";
+
+                if(pag->str_guard_ord() > 0) // 74
+                    out << rowText.arg(pag->ci()).arg("STR.NEF.GU").arg(QString::number(pag->str_guard_ord())) << "\n";
+
+                if(pag->turni_repe() > 0) // 25
+                    out << rowText.arg(pag->ci()).arg("IND.PR.REP").arg(QString::number(pag->turni_repe())) << "\n";
+
+                if(pag->ore_repe() > 0) // 40
+                    out << rowText.arg(pag->ci()).arg("IND.REP.OR").arg(QString::number(pag->ore_repe())) << "\n";
+
+                if(pag->guard_not() > 0) { // 1571
+                    out << rowText.arg(pag->ci()).arg("GR.FES.NOT").arg(QString::number(pag->guard_not())) << "\n";
+                    out << rowText.arg(pag->ci()).arg("GUARD.NOT").arg("-" + QString::number(pag->guard_not())) << "\n";
+                }
+
+                printBadge(painter, pag->ci(),counter);
+                printName(painter, SqlQueries::doctorName(pag->ci()),counter);
+                printDeficit(painter, pag->deficit() < 0 ?
+                                 Utilities::inOrario(abs(pag->deficit())) : "//",counter);
+
+//                if(m_currentMonthYear < Utilities::ccnl1618Date) {
+//                    printNotturno(painter, m_competenza->notte(),counter); // 26
+//                } else {
+//                    printNotturno(painter, 0,counter); // 26
+//                }
+                printFestivo(painter, pag->indFestiva(), counter); // 62
+                printRepNumTurni(painter, pag->turni_repe(), counter); // 25
+                printRepNumOre(painter, pag->ore_repe(), counter); //40
+                printStrRepartoOrdin(painter,0,counter); // 66 solitamente nullo
+                printStrRepartoFesONott(painter,0,counter); // 68 solitamente nullo
+                printStrRepartoFesENott(painter,0,counter); // 67 solitamente nullo
+                printNumGuarNott(painter, pag->guard_not(), counter); //1571
+                printNumGuarDiur(painter, pag->guard_diu(), counter); // 1512
+                printNumGfFesNott(painter, pag->grande_fes(), counter); // 921
+                printNumOreGuarFesENot(painter, pag->str_guard_ord(), counter); // 74
+                printNumOreGuarFesONot(painter, pag->str_guard_ord(), counter); // 75
+                printNumOreGuarOrd(painter, pag->str_guard_ord(), counter); // 73
+                printNumOreRepFesENot(painter, pag->str_repe_nef(), counter); // 71
+                printNumOreRepFesONot(painter, pag->str_repe_nof(), counter); // 72
+                printNumOreRepOrd(painter, pag->str_repe_ord(), counter); // 70
+//                if(!m_competenza->note().isEmpty()) {
+//                    notes << QString::number(m_competenza->badgeNumber()) + " - " + m_competenza->name() + ": " + m_competenza->note();
+//                }
+                counter++;
+            }
+        }
+//        printNote(painter, notes);
         isFileStart = false;
     }
-
-    if(m_printCasi)
-        printCasi(painter);
 
     outFile.close();
 

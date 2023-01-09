@@ -11,6 +11,7 @@
 #include <QDate>
 
 class QPainter;
+class Competenza;
 class CompetenzePagate;
 
 class DifferenzeExporter : public QThread
@@ -38,7 +39,8 @@ private:
     QString m_path;
     int m_idUnita;
     QString m_timecard;
-    CompetenzePagate *m_competenze{};
+    Competenza *m_competenze{};
+    CompetenzePagate *m_competenzePagate{};
     QDate m_currentMonthYear;
 
     const int m_firstHeaderHeight;

@@ -28,7 +28,6 @@ public:
     bool pdfIsChecked() const;
 
 private slots:
-    void unitaCurrentIndexChanged(int index);
     void meseCurrentIndexChanged(int index);
     void browseButtonClicked();
 
