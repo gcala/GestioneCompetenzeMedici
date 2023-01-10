@@ -1345,3 +1345,17 @@ QString SqlQueries::doctorName(int matricola)
     return name;
 }
 
+int SqlQueries::doctorMatricola(int id)
+{
+    int matricola = 0;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
+    query.prepare("SELECT matricola FROM medici WHERE id=" + QString::number(id) + ";");
+    if(!query.exec()) {
+        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
+    while(query.next()) {
+        matricola = query.value(0).toInt();
+    }
+    return matricola;
+}
+

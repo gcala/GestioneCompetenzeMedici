@@ -11,7 +11,7 @@ DifferenzeDialog::DifferenzeDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    connect(ui->meseCB, &QComboBox::currentIndexChanged, this, &DifferenzeDialog::meseCurrentIndexChanged);
+    connect(ui->meseCB, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &DifferenzeDialog::meseCurrentIndexChanged);
     connect(ui->saveButton, &QPushButton::clicked, [=] () {
         proceed = true;
         close();

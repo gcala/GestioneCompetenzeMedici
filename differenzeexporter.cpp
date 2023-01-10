@@ -131,22 +131,22 @@ void DifferenzeExporter::run()
             ";%1;" +
             QString::number(date.addDays(1).year()) + ";" +
             QString::number(date.addDays(1).month()) + ";" +
-            QLocale().monthName(date.addDays(1).month(), QLocale::ShortFormat).toUpper() + ";%2;*;;%3;;;;;";
+            QLocale().monthName(date.addDays(1).month(), QLocale::ShortFormat).toUpper() + ";%2;%3;;%4;;;;;";
 
     QPdfWriter writer(m_path + QDir::separator() + pdfFileName);
-
-#if QT_VERSION >= 0x060000
-    writer.setPageSize(QPageSize::A4);
-#else
-    writer.setPageSize(QPagedPaintDevice::A4);
-#endif
-    writer.setPageMargins(QMargins(30, 30, 30, 30));
-    writer.setPageOrientation(QPageLayout::Landscape);
-    writer.setTitle(QString(pdfFileName).replace(".pdf", "").replace("_", " "));
-    writer.setCreator("Gestione Competenze Medici");
-
     QPainter painter(&writer);
-    painter.setRenderHint(QPainter::Antialiasing, true);
+    if(m_printPdf) {
+#if QT_VERSION >= 0x060000
+        writer.setPageSize(QPageSize::A4);
+#else
+        writer.setPageSize(QPagedPaintDevice::A4);
+#endif
+        writer.setPageMargins(QMargins(30, 30, 30, 30));
+        writer.setPageOrientation(QPageLayout::Landscape);
+        writer.setTitle(QString(pdfFileName).replace(".pdf", "").replace("_", " "));
+        writer.setCreator("Gestione Competenze Medici");
+        painter.setRenderHint(QPainter::Antialiasing, true);
+    }
 
     bool isFileStart = true;
 
@@ -179,7 +179,7 @@ void DifferenzeExporter::run()
         QList<CompetenzePagate *> daPagare;
 
         foreach (int dirigenteId, dirigentiIdList) {
-            m_competenzePagate = SqlQueries::competenzePagate(dirigenteId, m_currentMonthYear.year(), m_currentMonthYear.month());
+            m_competenzePagate = SqlQueries::competenzePagate(SqlQueries::doctorMatricola(dirigenteId), m_currentMonthYear.year(), m_currentMonthYear.month());
             m_competenze = new Competenza(m_timecard,dirigenteId, true /* esportazione */);
             double whole, fractional;
             fractional = std::modf(m_competenze->repCount(), &whole);
@@ -197,8 +197,8 @@ void DifferenzeExporter::run()
             competenzeDaPagare->setStr_repe_nof(m_competenze->numOreRep(Reperibilita::FestivaONotturna)); // 72
             competenzeDaPagare->setStr_repe_nef(m_competenze->numOreRep(Reperibilita::FestivaENotturna)); // 71
             competenzeDaPagare->setStr_guard_ord(m_competenze->numOreGuarOrd()); // 73
-            competenzeDaPagare->setStr_guard_ord(m_competenze->numOreGuarFesONot()); // 75
-            competenzeDaPagare->setStr_guard_ord(m_competenze->numOreGuarFesENot()); // 74
+            competenzeDaPagare->setStr_guard_nof(m_competenze->numOreGuarFesONot()); // 75
+            competenzeDaPagare->setStr_guard_nef(m_competenze->numOreGuarFesENot()); // 74
             competenzeDaPagare->setTurni_repe(whole); // 25
             competenzeDaPagare->setOre_repe(fractional > 0.0 ? 6 : 0); // 40
             competenzeDaPagare->setGuard_diu(m_competenze->numGuarDiurne()); // 1512
@@ -206,27 +206,49 @@ void DifferenzeExporter::run()
             competenzeDaPagare->setGrande_fes(m_competenze->numGrFestPagabili()); // 921
             competenzeDaPagare->setDateTime(now);
 
-            if(m_competenzePagate != competenzeDaPagare)
-                daPagare << competenzeDaPagare;
+            if(m_competenzePagate != competenzeDaPagare) {
+                CompetenzePagate *differenzaCompetenze = new CompetenzePagate;
+                differenzaCompetenze->setCi(m_competenze->dipendente()->matricola());
+                differenzaCompetenze->setDeficit(m_competenze->deficitOrario() < 0 ? m_competenze->deficitOrario() : 0);
+                differenzaCompetenze->setIndNotturna(0); // 26 non si paga più
+                differenzaCompetenze->setIndFestiva(competenzeDaPagare->indFestiva() - m_competenzePagate->indFestiva()); // 62
+                differenzaCompetenze->setStr_reparto_ord(0); // 66 solitamente nullo
+                differenzaCompetenze->setStr_reparto_nof(0); // 68 solitamente nullo
+                differenzaCompetenze->setStr_reparto_nef(0); // 67 solitamente nullo
+                differenzaCompetenze->setStr_repe_ord(competenzeDaPagare->str_repe_ord() - m_competenzePagate->str_repe_ord()); // 70
+                differenzaCompetenze->setStr_repe_nof(competenzeDaPagare->str_repe_nof() - m_competenzePagate->str_repe_nof()); // 72
+                differenzaCompetenze->setStr_repe_nef(competenzeDaPagare->str_repe_nef() - m_competenzePagate->str_repe_nef()); // 71
+                differenzaCompetenze->setStr_guard_ord(competenzeDaPagare->str_guard_ord() - m_competenzePagate->str_guard_ord()); // 73
+                differenzaCompetenze->setStr_guard_nof(competenzeDaPagare->str_guard_nof() - m_competenzePagate->str_guard_nof()); // 75
+                differenzaCompetenze->setStr_guard_nef(competenzeDaPagare->str_guard_nef() - m_competenzePagate->str_guard_nef()); // 74
+                differenzaCompetenze->setTurni_repe(competenzeDaPagare->turni_repe() - m_competenzePagate->turni_repe()); // 25
+                differenzaCompetenze->setOre_repe(competenzeDaPagare->ore_repe() - m_competenzePagate->ore_repe()); // 40
+                differenzaCompetenze->setGuard_diu(competenzeDaPagare->guard_diu() - m_competenzePagate->guard_diu()); // 1512
+                differenzaCompetenze->setGuard_not(competenzeDaPagare->guard_not() - m_competenzePagate->guard_not()); // 1571
+                differenzaCompetenze->setGrande_fes(competenzeDaPagare->grande_fes() - m_competenzePagate->grande_fes()); // 921
+                differenzaCompetenze->setDateTime(now);
+                daPagare << differenzaCompetenze;
+            }
         }
         if(daPagare.count() > 0) {
             QStringList notes;
             currRow++;
             emit currentRow(currRow);
-            if(!isFileStart)
-                writer.newPage();
-
-            disegnaTabella(painter);
-
-            printData(painter, now.toString("dd/MM/yyyy hh:mm:ss"));
-
             QString unitaName = SqlQueries::getUnitaNomeCompleto(unitaId);
 
-            printMonth(painter, mese);
-            printUnitaName(painter, unitaName);
-            printUnitaNumber(painter, unitaId);
+            if(m_printPdf) {
+                if(!isFileStart)
+                    writer.newPage();
+
+                disegnaTabella(painter);
+                printData(painter, now.toString("dd/MM/yyyy hh:mm:ss"));
+                printMonth(painter, mese);
+                printUnitaName(painter, unitaName);
+                printUnitaNumber(painter, unitaId);
+            }
+
             int counter = 0;
-            for(auto pag : daPagare) {
+            for(auto pag : qAsConst(daPagare)) {
                 if(counter != 0 && (counter%m_totalRows) == 0) {
                     counter = 0;
                     writer.newPage();
@@ -240,33 +262,44 @@ void DifferenzeExporter::run()
                 if(m_storicizza)
                     SqlQueries::saveCompetenzePagate(pag, m_currentMonthYear.year(), m_currentMonthYear.month());
 
+
+                if(pag->indFestiva() > 0) // 62
+                    out << rowText.arg(pag->ci()).arg("IND.FES").arg("*").arg(QString::number(pag->indFestiva())) << "\n";
+
+                if(pag->guard_diu() > 0) // 1512
+                    out << rowText.arg(pag->ci()).arg("GUARD.NOT").arg("1").arg(QString::number(pag->guard_diu())) << "\n";
+
+                if(pag->grande_fes() > 0) { // 921
+                    out << rowText.arg(pag->ci()).arg("GR.FES.NOT").arg("*").arg(QString::number(pag->grande_fes())) << "\n";
+                    out << rowText.arg(pag->ci()).arg("GUARD.NOT").arg("*").arg("-" + QString::number(pag->grande_fes())) << "\n";
+                }
+
                 if(pag->str_repe_ord() > 0) // 70
-                    out << rowText.arg(pag->ci()).arg("REP.ORD").arg(QString::number(pag->str_repe_ord())) << "\n";
+                    out << rowText.arg(pag->ci()).arg("REP.ORD").arg("*").arg(QString::number(pag->str_repe_ord())) << "\n";
 
                 if(pag->str_repe_nof() > 0) // 72
-                    out << rowText.arg(pag->ci()).arg("REP.NOF").arg(QString::number(pag->str_repe_nof())) << "\n";
+                    out << rowText.arg(pag->ci()).arg("REP.NOF").arg("*").arg(QString::number(pag->str_repe_nof())) << "\n";
 
                 if(pag->str_repe_nef() > 0) // 71
-                    out << rowText.arg(pag->ci()).arg("REP.NEF").arg(QString::number(pag->str_repe_nef())) << "\n";
+                    out << rowText.arg(pag->ci()).arg("REP.NEF").arg("*").arg(QString::number(pag->str_repe_nef())) << "\n";
 
                 if(pag->str_guard_ord() > 0) // 73
-                    out << rowText.arg(pag->ci()).arg("STR.ORD.GU").arg(QString::number(pag->str_guard_ord())) << "\n";
+                    out << rowText.arg(pag->ci()).arg("STR.ORD.GU").arg("*").arg(QString::number(pag->str_guard_ord())) << "\n";
 
-                if(pag->str_guard_ord() > 0) // 75
-                    out << rowText.arg(pag->ci()).arg("STR.NOF.GU").arg(QString::number(pag->str_guard_ord())) << "\n";
+                if(pag->str_guard_nof() > 0) // 75
+                    out << rowText.arg(pag->ci()).arg("STR.NOF.GU").arg("*").arg(QString::number(pag->str_guard_nof())) << "\n";
 
-                if(pag->str_guard_ord() > 0) // 74
-                    out << rowText.arg(pag->ci()).arg("STR.NEF.GU").arg(QString::number(pag->str_guard_ord())) << "\n";
+                if(pag->str_guard_nef() > 0) // 74
+                    out << rowText.arg(pag->ci()).arg("STR.NEF.GU").arg("*").arg(QString::number(pag->str_guard_nef())) << "\n";
 
                 if(pag->turni_repe() > 0) // 25
-                    out << rowText.arg(pag->ci()).arg("IND.PR.REP").arg(QString::number(pag->turni_repe())) << "\n";
+                    out << rowText.arg(pag->ci()).arg("IND.PR.REP").arg("*").arg(QString::number(pag->turni_repe())) << "\n";
 
                 if(pag->ore_repe() > 0) // 40
-                    out << rowText.arg(pag->ci()).arg("IND.REP.OR").arg(QString::number(pag->ore_repe())) << "\n";
+                    out << rowText.arg(pag->ci()).arg("IND.REP.OR").arg("*").arg(QString::number(pag->ore_repe())) << "\n";
 
                 if(pag->guard_not() > 0) { // 1571
-                    out << rowText.arg(pag->ci()).arg("GR.FES.NOT").arg(QString::number(pag->guard_not())) << "\n";
-                    out << rowText.arg(pag->ci()).arg("GUARD.NOT").arg("-" + QString::number(pag->guard_not())) << "\n";
+                    out << rowText.arg(pag->ci()).arg("GUARD.NOT").arg("*").arg("-" + QString::number(pag->guard_not())) << "\n";
                 }
 
                 printBadge(painter, pag->ci(),counter);
@@ -274,11 +307,11 @@ void DifferenzeExporter::run()
                 printDeficit(painter, pag->deficit() < 0 ?
                                  Utilities::inOrario(abs(pag->deficit())) : "//",counter);
 
-//                if(m_currentMonthYear < Utilities::ccnl1618Date) {
-//                    printNotturno(painter, m_competenza->notte(),counter); // 26
-//                } else {
-//                    printNotturno(painter, 0,counter); // 26
-//                }
+                if(m_currentMonthYear < Utilities::ccnl1618Date) {
+                    printNotturno(painter, 0,counter); // 26
+                } else {
+                    printNotturno(painter, 0,counter); // 26
+                }
                 printFestivo(painter, pag->indFestiva(), counter); // 62
                 printRepNumTurni(painter, pag->turni_repe(), counter); // 25
                 printRepNumOre(painter, pag->ore_repe(), counter); //40

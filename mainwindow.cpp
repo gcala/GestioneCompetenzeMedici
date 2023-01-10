@@ -99,6 +99,8 @@ MainWindow::MainWindow(QWidget *parent) :
     loadSettings();
     Utilities::m_connectionName = "";
 
+    differenzeExporter = new DifferenzeExporter;
+
     connect(&cartellinoReader, SIGNAL(timeCardsRead()), this, SLOT(handleResults()));
     connect(&cartellinoReader, SIGNAL(totalRows(int)), this, SLOT(setTotalRows(int)));
     connect(&cartellinoReader, SIGNAL(currentRow(int)), this, SLOT(setCurrentRow(int)));
@@ -710,19 +712,19 @@ void MainWindow::actionGeneraFileModificheTriggered()
         return;
     }
 
-    exported(QStringLiteral());
-    return;
+//    exported(QStringLiteral());
+//    return;
 
-//    progressBar->setVisible(true);
-//    msgLabel->setText("Esportazione modifiche");
+    progressBar->setVisible(true);
+    msgLabel->setText("Esportazione modifiche");
 
-//    ui->competenzeWidget->setEnabled(false);
-//    differenzeExporter.setPath(differenzeDialog->path());
-//    differenzeExporter.setMese(differenzeDialog->currentMeseData());
-//    differenzeExporter.setUnita(differenzeDialog->currentUnitaData());
-//    differenzeExporter.setPrintCasi(differenzeDialog->storicizzaIsChecked());
-//    differenzeExporter.setPrintData(differenzeDialog->pdfIsChecked());
-//    differenzeExporter.start();
+    ui->competenzeWidget->setEnabled(false);
+    differenzeExporter->setPath(differenzeDialog->path());
+    differenzeExporter->setMese(differenzeDialog->currentMeseData());
+    differenzeExporter->setUnita(differenzeDialog->currentUnitaData());
+    differenzeExporter->setStoricizza(differenzeDialog->storicizzaIsChecked());
+    differenzeExporter->setPrintPdf(differenzeDialog->pdfIsChecked());
+    differenzeExporter->start();
 }
 
 void MainWindow::on_actionPrintDeficit_triggered()
