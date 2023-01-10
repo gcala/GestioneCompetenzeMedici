@@ -223,8 +223,8 @@ void CompetenzeUnitaExporter::run()
             pagato->setStr_repe_nof(m_competenza->numOreRep(Reperibilita::FestivaONotturna)); // 72
             pagato->setStr_repe_nef(m_competenza->numOreRep(Reperibilita::FestivaENotturna)); // 71
             pagato->setStr_guard_ord(m_competenza->numOreGuarOrd()); // 73
-            pagato->setStr_guard_ord(m_competenza->numOreGuarFesONot()); // 75
-            pagato->setStr_guard_ord(m_competenza->numOreGuarFesENot()); // 74
+            pagato->setStr_guard_nof(m_competenza->numOreGuarFesONot()); // 75
+            pagato->setStr_guard_nef(m_competenza->numOreGuarFesENot()); // 74
             pagato->setTurni_repe(whole); // 25
             pagato->setOre_repe(fractional > 0.0 ? 6 : 0); // 40
             pagato->setGuard_diu(m_competenza->numGuarDiurne()); // 1512
