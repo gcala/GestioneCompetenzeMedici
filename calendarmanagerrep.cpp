@@ -147,14 +147,14 @@ void CalendarManagerRep::dataRightClicked(const QPoint &pos)
                 firstFound =true;
         }
     }
-    const int lastDayMonth = QDate(yearShown(),monthShown(),1).addMonths(1).addDays(-1).day();
-    bool lastFound=false;
+    const int lastDayMonth = QDate(yearShown(),monthShown(),1).daysInMonth();
+    bool lastFound = false;
     QModelIndex lastIndex;
-    for(int i=model->rowCount()-1, minI=firstIndex.row();!lastFound && i>=minI;--i){
-        for(int j=model->columnCount()-1;!lastFound && j>=startCol;--j){
-            lastIndex= model->index(i,j);
-            if(lastIndex.data().toInt()==lastDayMonth)
-                lastFound=true;
+    for(int i = model->rowCount()-1, minI = firstIndex.row(); !lastFound && i >= minI; --i){
+        for(int j = model->columnCount()-1; !lastFound && j >= startCol; --j){
+            lastIndex = model->index(i,j);
+            if(lastIndex.data().toInt() == lastDayMonth)
+                lastFound = true;
         }
     }
 
@@ -162,7 +162,7 @@ void CalendarManagerRep::dataRightClicked(const QPoint &pos)
         return;
     if(clickedIndex.row() == firstIndex.row() && clickedIndex.column() < firstIndex.column())
         return;
-    if(clickedIndex.row() == lastIndex.row() && clickedIndex.column() > firstIndex.column())
+    if(clickedIndex.row() == lastIndex.row() && clickedIndex.column() > lastIndex.column())
         return;
 
 //    int monthShift = 0;
