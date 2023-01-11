@@ -9,13 +9,15 @@ public:
     double m_feriale;
     double m_sabato;
     double m_festivo;
+    bool m_prefestivo;
 };
 
 ReperibilitaSemplificata::ReperibilitaSemplificata(int idUnita,
                                                    QDate decorrenza,
                                                    double feriale,
                                                    double sabato,
-                                                   double festivo)
+                                                   double festivo,
+                                                   bool prefestivo)
     : data(new ReperibilitaSemplificataData)
 {
     data->m_idUnita = idUnita;
@@ -23,6 +25,7 @@ ReperibilitaSemplificata::ReperibilitaSemplificata(int idUnita,
     data->m_feriale = feriale;
     data->m_sabato = sabato;
     data->m_festivo = festivo;
+    data->m_prefestivo = prefestivo;
 }
 
 ReperibilitaSemplificata::ReperibilitaSemplificata(const ReperibilitaSemplificata &rhs)
@@ -47,7 +50,8 @@ bool ReperibilitaSemplificata::operator==(const ReperibilitaSemplificata &rhs) c
             data->m_decorrenza == rhs.decorrenza() &&
             data->m_feriale == rhs.feriale() &&
             data->m_sabato == rhs.sabato() &&
-            data->m_festivo == rhs.festivo();
+            data->m_festivo == rhs.festivo() &&
+            data->m_prefestivo == rhs.prefestivo();
 }
 
 ReperibilitaSemplificata::~ReperibilitaSemplificata()
@@ -78,4 +82,9 @@ double ReperibilitaSemplificata::sabato() const
 double ReperibilitaSemplificata::festivo() const
 {
     return data->m_festivo;
+}
+
+bool ReperibilitaSemplificata::prefestivo() const
+{
+    return data->m_prefestivo;
 }

@@ -1238,7 +1238,8 @@ ReperibilitaSemplificata *SqlQueries::reperibilita(int idUnita, int anno, int me
                                         QDate(anno, mese, 1),
                                         query.value(2).toDouble(),
                                         query.value(3).toDouble(),
-                                        query.value(4).toDouble());
+                                        query.value(4).toDouble(),
+                                        query.value(5).toBool());
     }
     return new ReperibilitaSemplificata();
 }

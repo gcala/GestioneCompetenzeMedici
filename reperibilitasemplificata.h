@@ -15,7 +15,8 @@ public:
                                       QDate decorrenza = QDate(2017,9,1),
                                       double feriale = 0.0,
                                       double sabato = 0.0,
-                                      double festivo = 0.0);
+                                      double festivo = 0.0,
+                                      bool prefestivo = false);
     ReperibilitaSemplificata(const ReperibilitaSemplificata &);
     ReperibilitaSemplificata &operator=(const ReperibilitaSemplificata &);
     bool operator==(const ReperibilitaSemplificata &rhs) const;
@@ -26,6 +27,7 @@ public:
     double feriale() const;
     double sabato() const;
     double festivo() const;
+    bool prefestivo() const;
 
 signals:
 
