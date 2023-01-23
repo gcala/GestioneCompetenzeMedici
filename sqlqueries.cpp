@@ -951,6 +951,21 @@ QVector<int> SqlQueries::getUnitaIdsInTimecard(const QString &timecard)
     return ids;
 }
 
+QVector<int> SqlQueries::getUnitaIdsAll()
+{
+    QVector<int> ids;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
+    query.prepare("SELECT id FROM unita;");
+    if(!query.exec()) {
+        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
+    while(query.next()) {
+        ids << query.value(0).toInt();
+    }
+
+    return ids;
+}
+
 int SqlQueries::getDoctorUnitaIdFromTimecard(const QString &timecard, const int &doctorId)
 {
     int id = -1;
@@ -1070,6 +1085,23 @@ QStringList SqlQueries::getUnitaDataFromTimecard(const QString &timecard)
 
     while(query.next()) {
         result << query.value(0).toString() + "~" + query.value(1).toString() + "~" + query.value(2).toString();
+    }
+
+    return result;
+}
+
+QStringList SqlQueries::getUnitaDataAll()
+{
+    QStringList result;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
+    query.prepare("SELECT id,nome FROM unita;");
+    if(!query.exec()) {
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        return result;
+    }
+
+    while(query.next()) {
+        result << query.value(0).toString() + "~" + query.value(1).toString();
     }
 
     return result;

@@ -8,6 +8,7 @@
 #include "ui_mainwindow.h"
 #include "printdialog.h"
 #include "differenzedialog.h"
+#include "competenzeexporterdialog.h"
 #include "sqlqueries.h"
 #include "calendarmanager.h"
 #include "calendarmanagerrep.h"
@@ -28,6 +29,7 @@
 #include "dipendente.h"
 #include "reperibilitasemplificata.h"
 #include "differenzeexporter.h"
+#include "competenzeexporter.h"
 
 #include <QtWidgets>
 #include <QDebug>
@@ -88,6 +90,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     printDialog = new PrintDialog(this);
     differenzeDialog = new DifferenzeDialog(this);
+    competenzeExporterDialog = new CompetenzeExporterDialog(this);
     ui->sommV1->setVisible(false);
     ui->sommV2->setVisible(false);
 
@@ -100,6 +103,7 @@ MainWindow::MainWindow(QWidget *parent) :
     Utilities::m_connectionName = "";
 
     differenzeExporter = new DifferenzeExporter;
+    competenzeExporter = new CompetenzeExporter;
 
     connect(&cartellinoReader, SIGNAL(timeCardsRead()), this, SLOT(handleResults()));
     connect(&cartellinoReader, SIGNAL(totalRows(int)), this, SLOT(setTotalRows(int)));
@@ -114,7 +118,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(differenzeExporter, &DifferenzeExporter::exportFinished, this, &MainWindow::exported);
     connect(differenzeExporter, &DifferenzeExporter::totalRows, this, &MainWindow::setTotalRows);
     connect(differenzeExporter, &DifferenzeExporter::currentRow, this, &MainWindow::setCurrentRow);
+    connect(competenzeExporter, &CompetenzeExporter::exportFinished, this, &MainWindow::exported);
+    connect(competenzeExporter, &CompetenzeExporter::totalRows, this, &MainWindow::setTotalRows);
+    connect(competenzeExporter, &CompetenzeExporter::currentRow, this, &MainWindow::setCurrentRow);
     connect(ui->actionGeneraFileModifiche, &QAction::triggered, this, &MainWindow::actionGeneraFileModificheTriggered);
+    connect(ui->actionGeneraCompetenze, &QAction::triggered, this, &MainWindow::actionGeneraCompetenzeTriggered);
 
     m_nomiDialog = new NomiUnitaDialog;
 
@@ -126,6 +134,7 @@ MainWindow::~MainWindow()
     saveSettings();
     delete printDialog;
     delete differenzeDialog;
+    delete competenzeExporterDialog;
     delete m_nomiDialog;
     delete ui;
 }
@@ -224,6 +233,7 @@ void MainWindow::populateMeseCompetenzeCB()
     ui->meseCompetenzeCB->clear();
     printDialog->clearMese();
     differenzeDialog->clearMese();
+    competenzeExporterDialog->clearMese();
 
     const QStringList timeCards = SqlQueries::timecardsList();
 
@@ -235,6 +245,7 @@ void MainWindow::populateMeseCompetenzeCB()
         ui->meseCompetenzeCB->addItem(QLocale().monthName((*i).right(2).toInt()) + " " + ss.left(4), *i);
         printDialog->addMese(QLocale().monthName((*i).right(2).toInt()) + " " + ss.left(4), *i);
         differenzeDialog->addMese(QLocale().monthName((*i).right(2).toInt()) + " " + ss.left(4), *i);
+        competenzeExporterDialog->addMese(QLocale().monthName((*i).right(2).toInt()) + " " + ss.left(4), *i);
     }
 }
 
@@ -322,6 +333,7 @@ void MainWindow::loadSettings()
     currentDatabase.setFile(settings.value("lastDatabasePath", "").toString());
     printDialog->setPath(Utilities::m_exportPath);
     differenzeDialog->setPath(Utilities::m_exportPath);
+    competenzeExporterDialog->setPath(Utilities::m_exportPath);
     m_photosPath = settings.value("photosPath", "").toString();
     m_tabulaPath = settings.value("tabulaPath", QApplication::applicationDirPath() + QDir::separator() + "tabula.jar").toString();
 #ifdef _WIN32
@@ -725,6 +737,32 @@ void MainWindow::actionGeneraFileModificheTriggered()
     differenzeExporter->setStoricizza(differenzeDialog->storicizzaIsChecked());
     differenzeExporter->setPrintPdf(differenzeDialog->pdfIsChecked());
     differenzeExporter->start();
+}
+
+void MainWindow::actionGeneraCompetenzeTriggered()
+{
+    ui->mainToolBar->setEnabled(false);
+
+    competenzeExporterDialog->setCurrentMese(ui->meseCompetenzeCB->currentIndex());
+    competenzeExporterDialog->setCurrentUnita(ui->unitaCompetenzeCB->currentIndex() + 1);
+
+    competenzeExporterDialog->exec();
+
+    if(!competenzeExporterDialog->proceed) {
+        exported(QStringLiteral());
+        return;
+    }
+
+    progressBar->setVisible(true);
+    msgLabel->setText("Esportazione competenze");
+
+    ui->competenzeWidget->setEnabled(false);
+    competenzeExporter->setPath(competenzeExporterDialog->path());
+    competenzeExporter->setMeseDa(competenzeExporterDialog->meseDa());
+    competenzeExporter->setMeseA(competenzeExporterDialog->meseA());
+    competenzeExporter->setUnita(competenzeExporterDialog->currentUnitaData());
+    competenzeExporter->setMatricole(competenzeExporterDialog->matricole());
+    competenzeExporter->start();
 }
 
 void MainWindow::on_actionPrintDeficit_triggered()

@@ -56,6 +56,7 @@ public:
     static QPair<int, QString> getMatricolaNome(const int &doctorId);
     static QString getUnitaNomeBreve(const int &id);
     static QVector<int> getUnitaIdsInTimecard(const QString &timecard);
+    static QVector<int> getUnitaIdsAll();
     static int getDoctorUnitaIdFromTimecard(const QString &timecard, const int &doctorId);
     static QString getUnitaNomeCompleto(const int &id);
     static QVector<int> getDoctorsIdsFromUnitInTimecard(const QString &timecard, const int &unitId);
@@ -64,6 +65,7 @@ public:
     static void setUnitaOrePagateModel(QSqlQueryModel *model, const int &idUnita);
     static void setUnitaReperibilitaModel(QSqlQueryModel *model, const int &idUnita);
     static QStringList getUnitaDataFromTimecard(const QString &timecard);
+    static QStringList getUnitaDataAll();
     static QStringList getDoctorDataFromUnitaInTimecard(const QString &timecard, const int &idUnita);
     static QVariantList getUnitaDataById(const int &idUnita);
     static QVariantList getDoctorDataById(const int &idDoctor);

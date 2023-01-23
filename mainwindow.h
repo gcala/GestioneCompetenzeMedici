@@ -25,6 +25,7 @@ class QProgressBar;
 class QSqlQueryModel;
 class PrintDialog;
 class DifferenzeDialog;
+class CompetenzeExporterDialog;
 class CalendarManager;
 class CalendarManagerRep;
 class QWidgetAction;
@@ -33,6 +34,7 @@ class NomiUnitaDialog;
 class QHBoxLayout;
 class ReperibilitaSemplificata;
 class DifferenzeExporter;
+class CompetenzeExporter;
 
 class MainWindow : public QMainWindow
 {
@@ -88,6 +90,7 @@ private slots:
     void on_editUnitButton_clicked();
     void on_actionManageUnits_triggered();
     void actionGeneraFileModificheTriggered();
+    void actionGeneraCompetenzeTriggered();
 
 private:
     Ui::MainWindow *ui;
@@ -139,10 +142,12 @@ private:
     QFileInfo currentDatabase;
     PrintDialog *printDialog;
     DifferenzeDialog *differenzeDialog;
+    CompetenzeExporterDialog *competenzeExporterDialog;
     CartellinoCompletoReader cartellinoReader;
     CompetenzeUnitaExporter unitaCompetenzeExporter;
     DeficitRecuperiExporter deficitRecuperiExporter;
     DifferenzeExporter *differenzeExporter;
+    CompetenzeExporter *competenzeExporter;
     ReperibilitaSemplificata *m_reperibilita;
 
     QString backupFileName(const QString &time) const;

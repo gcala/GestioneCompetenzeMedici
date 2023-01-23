@@ -2671,6 +2671,7 @@
    <addaction name="actionRicalcolaDeficit"/>
    <addaction name="actionTakeScreenshot"/>
    <addaction name="actionPrintDeficit"/>
+   <addaction name="actionGeneraCompetenze"/>
    <addaction name="separator"/>
    <addaction name="actionManageUnits"/>
    <addaction name="actionManageDirigenti"/>
@@ -2883,6 +2884,15 @@
    </property>
    <property name="text">
     <string>Genera File Modifiche</string>
+   </property>
+  </action>
+  <action name="actionGeneraCompetenze">
+   <property name="icon">
+    <iconset resource="assets.qrc">
+     <normaloff>:/icons/text-csv.svg</normaloff>:/icons/text-csv.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Genera Competenze</string>
    </property>
   </action>
  </widget>

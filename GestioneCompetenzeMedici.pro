@@ -28,6 +28,8 @@ SOURCES += \
         cartellinocompleto.cpp \
         cartellinocompletoreader.cpp \
         causalewidget.cpp \
+        competenzeexporter.cpp \
+        competenzeexporterdialog.cpp \
         competenzepagate.cpp \
         dateeditdelegate.cpp \
         differenzedialog.cpp \
@@ -71,6 +73,8 @@ HEADERS += \
         cartellinocompleto.h \
         cartellinocompletoreader.h \
         causalewidget.h \
+        competenzeexporter.h \
+        competenzeexporterdialog.h \
         competenzepagate.h \
         dateeditdelegate.h \
         differenzedialog.h \
@@ -111,6 +115,7 @@ HEADERS += \
 
 FORMS += \
         causalewidget.ui \
+        competenzeexporterdialog.ui \
         differenzedialog.ui \
         mainwindow.ui \
         insertdbvalues.ui \
