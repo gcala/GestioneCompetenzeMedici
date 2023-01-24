@@ -59,6 +59,7 @@ public:
     void addMalattia(int giorno);
     QMap<QString, QPair<QVector<int>, int> > altreCausali() const;
     void addAltraCausale(QString causale, QString date, int minuti);
+    int minutiCausale(const QString &causale);
     int altreCausaliCount() const;
     int minutiFatti() const;
     void addMinutiFatti(int minuti);

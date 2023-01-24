@@ -675,7 +675,7 @@ void MainWindow::elaboraSommario()
         ui->oreRecLabel->setText(Utilities::inOrario(m_competenza->numOreRecuperabili()) + " (" + QString::number(m_competenza->recuperiMeseSuccessivo().second) + ")");
     }
 
-    ui->oreNonRecLabel->setText(m_competenza->residuoOreNonRecuperabili());
+    ui->oreNonRecLabel->setText(m_competenza->minutiNonRecuperabili() > 0 ? Utilities::inOrario(m_competenza->minutiNonRecuperabili()) : "//");
 }
 
 void MainWindow::setupDbConnectionParameters()

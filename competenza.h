@@ -103,7 +103,7 @@ public:
     int numFestiviRecuperabili();
     int numNottiRecuperabili();
     int numOreRecuperabili();
-    QString residuoOreNonRecuperabili();
+    int minutiNonRecuperabili();
     QPair<int, int> recuperiMeseSuccessivo() const;
     Dipendente *dipendente() const;
     QMap<int, GuardiaType> defaultGNDates() const;
@@ -125,6 +125,7 @@ public:
     bool orarioGiornalieroModded() const;
     bool altreModded() const;
     bool noteModded() const;
+    int minutiRecuperati() const;
 
     int g_d_fer_F() const;
     int g_d_fer_S() const;

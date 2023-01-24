@@ -12,9 +12,12 @@
 #include "competenza.h"
 #include "dipendente.h"
 
+#include <cmath>
 #include <QDate>
 #include <QFile>
 #include <QDir>
+#include <QDebug>
+
 
 CompetenzeExporter::CompetenzeExporter(QObject *parent)
     : QThread{parent}
@@ -75,7 +78,7 @@ void CompetenzeExporter::run()
     QVector<int> unitaIdList;
     const QString s1 = m_timecardDa.split("_").last();
     m_daMonthYear = QDate::fromString(s1+"01", "yyyyMMdd");
-    const QString s2 = m_timecardDa.split("_").last();
+    const QString s2 = m_timecardA.split("_").last();
     m_aMonthYear = QDate::fromString(s2+"01", "yyyyMMdd");
 //    QDate date = m_currentMonthYear.addDays(m_currentMonthYear.daysInMonth()-1);
 //    QString mese = QLocale().monthName(date.month()) + " " + s.left(4);
@@ -104,23 +107,27 @@ void CompetenzeExporter::run()
     QTextStream out(&outFile);
 
     out << "UNITA;" << "ANNO;" << "MESE;" << "MATRICOLA;" << "NOMINATIVO;"
-        << "SALDO;" << "RESIDUO;" << "NON RECUP.;"
+        << "SALDO;" << "RESIDUO;" << "NON RECUP.;" << "RECUPERATE;"
         << "STR.REPE.ORD;" << "STR.REPE.NOF;" << "STR.REPE.NEF;"
         << "STR.GUAR.ORD;" << "STR.GUAR.NOF;" << "STR.GUAR.NEF;"
         << "TURN.REPE;" << "ORE REPE;" << "GUA.DIU.;" << "GUA.NOT.;" << "GR.FES.;" << "NOTE"
         << "\n";
 
     int currRow = 0;
+    const auto v = Utilities::monthsTo(m_daMonthYear, m_aMonthYear);
+    emit totalRows(Utilities::monthsTo(m_daMonthYear, m_aMonthYear));
 
     QDate currentMonthYear = m_daMonthYear;
 
     while(currentMonthYear <= m_aMonthYear) {
-        for(int unitaId : unitaIdList) {
+        currRow++;
+        emit currentRow(currRow);
+        for(int unitaId : qAsConst(unitaIdList)) {
             QVector<int> dirigentiIdList = SqlQueries::getDoctorsIdsFromUnitInTimecard("tc_" + currentMonthYear.toString("yyyyMM"), unitaId);
             if(dirigentiIdList.count() > 0) {
-                for(int dirigenteId : dirigentiIdList) {
+                for(int dirigenteId : qAsConst(dirigentiIdList)) {
                     if(m_matricole.count() > 0) {
-                        if(!m_matricole.contains(dirigenteId))
+                        if(!m_matricole.contains(SqlQueries::doctorMatricola(dirigenteId)))
                             continue;
                     }
                     m_competenze = new Competenza("tc_" + currentMonthYear.toString("yyyyMM"), dirigenteId, true /* esportazione */);
@@ -133,7 +140,8 @@ void CompetenzeExporter::run()
                         << SqlQueries::doctorName(m_competenze->dipendente()->matricola()) << ";"
                         << Utilities::inOrario(m_competenze->differenzaMin()) << ";"
                         << Utilities::inOrario(m_competenze->residuoOreNonPagate()) << ";"
-                        << m_competenze->residuoOreNonRecuperabili() << ";"
+                        << Utilities::inOrario(m_competenze->minutiNonRecuperabili()) << ";"
+                        << Utilities::inOrario(m_competenze->dipendente()->minutiCausale("RMP")) << ";"
                         << m_competenze->numOreRep(Reperibilita::Ordinaria) << ";" // 70
                         << m_competenze->numOreRep(Reperibilita::FestivaONotturna) << ";" // 72
                         << m_competenze->numOreRep(Reperibilita::FestivaENotturna) << ";" // 71

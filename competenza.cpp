@@ -1274,20 +1274,17 @@ int Competenza::numOreRecuperabili()
     return residuoOreNonPagate();
 }
 
-QString Competenza::residuoOreNonRecuperabili()
+int Competenza::minutiNonRecuperabili()
 {
-    int mins = 0;
+    int minuti = 0;
 
     if(data->m_pagaStrGuardia){
-        mins = residuoOreNonPagate() - numFestiviRecuperabili() - numNottiRecuperabili();
+        minuti = residuoOreNonPagate() - numFestiviRecuperabili() - numNottiRecuperabili();
     } else {
-        mins = differenzaMin() - numOreRecuperabili() - oreRepPagate()*60;
+        minuti = differenzaMin() - numOreRecuperabili() - oreRepPagate()*60;
     }
 
-    if(mins == 0) {
-        return "//";
-    }
-    return Utilities::inOrario( mins );
+    return minuti;
 }
 
 int Competenza::g_d_fer_F() const
@@ -1723,6 +1720,11 @@ bool Competenza::altreModded() const
 bool Competenza::noteModded() const
 {
     return data->m_noteModded;
+}
+
+int Competenza::minutiRecuperati() const
+{
+    return data->m_dipendente->rmp().count() * data->m_dipendente->minutiGiornalieri();
 }
 
 int Competenza::grFestCount() const

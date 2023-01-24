@@ -169,3 +169,19 @@ QStringList Utilities::vectorIntToStringlist(const QVector<int> &values)
     }
     return list;
 }
+
+int Utilities::monthsTo(const QDate &start, const QDate &end)
+{
+    int value = 0;
+    if(start.year() == end.year()) {
+        return end.month() - start.month() + 1;
+    } else {
+        value += 12 - start.month() + 1;
+        for(int i = start.year() +1; i < end.year(); i++) {
+            value += 12;
+        }
+        value += end.month();
+    }
+
+   return value;
+}

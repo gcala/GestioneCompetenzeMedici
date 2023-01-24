@@ -235,10 +235,10 @@ void DeficitRecuperiExporter::printCsv(const QString &fileName, const QString &m
                 doctor.oreRecuperabili = Utilities::inOrario(m_competenza->numOreRecuperabili());
             }
 
-            if(m_competenza->residuoOreNonRecuperabili() == "//")
+            if(m_competenza->minutiNonRecuperabili() == 0)
                 doctor.oreNonRecuperabili = "00:00";
             else {
-                doctor.oreNonRecuperabili = m_competenza->residuoOreNonRecuperabili();
+                doctor.oreNonRecuperabili = Utilities::inOrario(m_competenza->minutiNonRecuperabili());
             }
 
             doctor.ferie = m_competenza->ferieDates();

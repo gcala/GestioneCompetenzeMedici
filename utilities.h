@@ -26,6 +26,7 @@ public:
     static bool timbraturaValida(QString text);
     static QVector<int> stringlistToVectorInt(const QStringList &list);
     static QStringList vectorIntToStringlist(const QVector<int> &values);
+    static int monthsTo(const QDate &start, const QDate &end);
 
     static QString m_driver;
     static QString m_host;

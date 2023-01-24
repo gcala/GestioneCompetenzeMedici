@@ -344,6 +344,13 @@ void Dipendente::addAltraCausale(QString causale, QString date, int minuti)
     }
 }
 
+int Dipendente::minutiCausale(const QString &causale)
+{
+    if(data->m_altreCausali.keys().contains(causale))
+        return data->m_altreCausali.value(causale).second;
+    return 0;
+}
+
 int Dipendente::minutiFatti() const
 {
     return data->m_minutiFatti;
