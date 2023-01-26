@@ -337,12 +337,28 @@ void Competenza::buildDipendente()
             data->m_dipendente->addMinutiFatti(data->m_dipendente->minutiGiornalieriVeri()*query.at(5).toString().split(",").count());
         }
 
+        if(!query.at(6).toString().trimmed().isEmpty()) { // congedi per retro-compatibilità
+            data->m_dipendente->addMinutiFatti(data->m_dipendente->minutiGiornalieriVeri()*query.at(6).toString().split(",").count());
+        }
+
         if(!query.at(7).toString().trimmed().isEmpty()) { // malattia per retro-compatibilità
             data->m_dipendente->addMinutiFatti(data->m_dipendente->minutiGiornalieriVeri()*query.at(7).toString().split(",").count());
         }
 
         if(!query.at(8).toString().trimmed().isEmpty()) { // RMP per retro-compatibilità
             data->m_dipendente->addMinutiFatti(data->m_dipendente->minutiGiornalieriVeri()*query.at(8).toString().split(",").count());
+        }
+        const auto annomese = m_tableName.split('_').last();
+        const QDate mesecorrente(annomese.left(4).toInt(), annomese.right(2).toInt(),1);
+        if(!query.at(10).toString().trimmed().isEmpty()) { // altre causali per retrocompatibilità
+            for(const auto &f : query.at(10).toString().split(";")) {
+                if(!f.isEmpty()) {
+                    const auto assenze = f.split(",");
+                    if(assenze.at(0) == "CV04" || assenze.at(0) == "CV05" || assenze.at(0) == "CV03" || assenze.at(0) == "CV01") {
+                        data->m_dipendente->addMinutiFatti(assenze.at(2).toInt());
+                    }
+                }
+            }
         }
     }
 
