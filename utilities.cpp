@@ -154,20 +154,16 @@ bool Utilities::timbraturaValida(QString text)
 
 QVector<int> Utilities::stringlistToVectorInt(const QStringList &list)
 {
-    QVector<int> values;
-    for(const auto &v : list) {
-        values << v.toInt();
-    }
-    return values;
+    QVector<int> result;
+    std::transform(list.begin(), list.end(), std::back_inserter(result), [](const QString &s) { return s.toInt(); });
+    return result;
 }
 
 QStringList Utilities::vectorIntToStringlist(const QVector<int> &values)
 {
-    QStringList list;
-    for(auto v : values) {
-        list << QString::number(v);
-    }
-    return list;
+    QStringList result;
+    std::transform(values.begin(), values.end(), std::back_inserter(result), [](int i) { return QString::number(i); });
+    return result;
 }
 
 int Utilities::monthsTo(const QDate &start, const QDate &end)
