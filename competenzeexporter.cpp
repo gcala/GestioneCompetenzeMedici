@@ -142,9 +142,9 @@ void CompetenzeExporter::run()
                         << Utilities::inOrario(m_competenze->residuoOreNonPagate()) << ";"
                         << Utilities::inOrario(m_competenze->minutiNonRecuperabili()) << ";"
                         << Utilities::inOrario(m_competenze->dipendente()->minutiCausale("RMP")) << ";"
-                        << m_competenze->numOreRep(Reperibilita::Ordinaria) << ";" // 70
-                        << m_competenze->numOreRep(Reperibilita::FestivaONotturna) << ";" // 72
-                        << m_competenze->numOreRep(Reperibilita::FestivaENotturna) << ";" // 71
+                        << m_competenze->numOreRep(Utilities::Reperibilita::Ordinaria) << ";" // 70
+                        << m_competenze->numOreRep(Utilities::Reperibilita::FestivaONotturna) << ";" // 72
+                        << m_competenze->numOreRep(Utilities::Reperibilita::FestivaENotturna) << ";" // 71
                         << m_competenze->numOreGuarOrd() << ";" // 73
                         << m_competenze->numOreGuarFesONot() << ";" // 75
                         << m_competenze->numOreGuarFesENot() << ";" // 74

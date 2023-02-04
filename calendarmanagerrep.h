@@ -7,7 +7,7 @@
 #ifndef CALENDARMANAGERREP_H
 #define CALENDARMANAGERREP_H
 
-#include "defines.h"
+#include "utilities.h"
 
 #include <QCalendarWidget>
 #include <QStringList>
@@ -36,8 +36,8 @@ public:
     void setColor(const QColor &color);
     QColor getColor() const;
 
-    QMap<QDate, ValoreRep> getDates() const;
-    void setDates(const QMap<QDate, ValoreRep> &dates);
+    QMap<QDate, Utilities::ValoreRep> getDates() const;
+    void setDates(const QMap<QDate, Utilities::ValoreRep> &dates);
     void setReperibilita(ReperibilitaSemplificata *reperibilita);
 
 protected:
@@ -60,13 +60,13 @@ signals:
     void datesChanged();
 
 private:
-    QMap<QDate, ValoreRep> m_dates;
+    QMap<QDate, Utilities::ValoreRep> m_dates;
     QDate m_selectedDate;
 
     QPen m_outlinePen;
     QBrush m_transparentBrush;
     ReperibilitaSemplificata *m_reperibilita;
-    ValoreRep repConvert(const double value);
+    Utilities::ValoreRep repConvert(const double value);
 };
 
 #endif // CALENDARMANAGERREP_H

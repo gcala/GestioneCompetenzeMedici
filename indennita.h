@@ -7,7 +7,7 @@
 #ifndef INDENNITA_H
 #define INDENNITA_H
 
-#include "defines.h"
+#include "utilities.h"
 
 #include <QObject>
 #include <QSharedDataPointer>
@@ -27,10 +27,10 @@ public:
     QString voce(int unita) const ;
     QString sub(int unita) const ;
 
-    void setTipo(VoceIndennita tipo);
+    void setTipo(Utilities::VoceIndennita tipo);
     void setMap(QMap<int, QPair<QString, QString>> map);
     void addItem(int unita, const QString &voce, const QString &sub);
-    VoceIndennita tipo() const;
+    Utilities::VoceIndennita tipo() const;
     QMap<int, QPair<QString, QString>> map() const;
 
 signals:

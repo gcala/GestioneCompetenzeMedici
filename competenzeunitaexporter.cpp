@@ -219,9 +219,9 @@ void CompetenzeUnitaExporter::run()
             pagato->setStr_reparto_ord(0); // 66 solitamente nullo
             pagato->setStr_reparto_nof(0); // 68 solitamente nullo
             pagato->setStr_reparto_nef(0); // 67 solitamente nullo
-            pagato->setStr_repe_ord(m_competenza->numOreRep(Reperibilita::Ordinaria)); // 70
-            pagato->setStr_repe_nof(m_competenza->numOreRep(Reperibilita::FestivaONotturna)); // 72
-            pagato->setStr_repe_nef(m_competenza->numOreRep(Reperibilita::FestivaENotturna)); // 71
+            pagato->setStr_repe_ord(m_competenza->numOreRep(Utilities::Reperibilita::Ordinaria)); // 70
+            pagato->setStr_repe_nof(m_competenza->numOreRep(Utilities::Reperibilita::FestivaONotturna)); // 72
+            pagato->setStr_repe_nef(m_competenza->numOreRep(Utilities::Reperibilita::FestivaENotturna)); // 71
             pagato->setStr_guard_ord(m_competenza->numOreGuarOrd()); // 73
             pagato->setStr_guard_nof(m_competenza->numOreGuarFesONot()); // 75
             pagato->setStr_guard_nef(m_competenza->numOreGuarFesENot()); // 74
@@ -234,14 +234,14 @@ void CompetenzeUnitaExporter::run()
 
             SqlQueries::saveCompetenzePagate(pagato, m_currentMonthYear.year(), m_currentMonthYear.month());
 
-            if(m_competenza->numOreRep(Reperibilita::Ordinaria) > 0) // 70
-                out << rowText.arg(m_competenza->badgeNumber()).arg("REP.ORD").arg(QString::number(m_competenza->numOreRep(Reperibilita::Ordinaria))) << "\n";
+            if(m_competenza->numOreRep(Utilities::Reperibilita::Ordinaria) > 0) // 70
+                out << rowText.arg(m_competenza->badgeNumber()).arg("REP.ORD").arg(QString::number(m_competenza->numOreRep(Utilities::Reperibilita::Ordinaria))) << "\n";
 
-            if(m_competenza->numOreRep(Reperibilita::FestivaONotturna) > 0) // 72
-                out << rowText.arg(m_competenza->badgeNumber()).arg("REP.NOF").arg(QString::number(m_competenza->numOreRep(Reperibilita::FestivaONotturna))) << "\n";
+            if(m_competenza->numOreRep(Utilities::Reperibilita::FestivaONotturna) > 0) // 72
+                out << rowText.arg(m_competenza->badgeNumber()).arg("REP.NOF").arg(QString::number(m_competenza->numOreRep(Utilities::Reperibilita::FestivaONotturna))) << "\n";
 
-            if(m_competenza->numOreRep(Reperibilita::FestivaENotturna) > 0) // 71
-                out << rowText.arg(m_competenza->badgeNumber()).arg("REP.NEF").arg(QString::number(m_competenza->numOreRep(Reperibilita::FestivaENotturna))) << "\n";
+            if(m_competenza->numOreRep(Utilities::Reperibilita::FestivaENotturna) > 0) // 71
+                out << rowText.arg(m_competenza->badgeNumber()).arg("REP.NEF").arg(QString::number(m_competenza->numOreRep(Utilities::Reperibilita::FestivaENotturna))) << "\n";
 
             if(m_competenza->numOreGuarOrd() > 0) // 73
                 out << rowText.arg(m_competenza->badgeNumber()).arg("STR.ORD.GU").arg(QString::number(m_competenza->numOreGuarOrd())) << "\n";
@@ -289,9 +289,9 @@ void CompetenzeUnitaExporter::run()
             printNumOreGuarFesENot(painter, m_competenza->numOreGuarFesENot(), counter); // 74
             printNumOreGuarFesONot(painter, m_competenza->numOreGuarFesONot(), counter); // 75
             printNumOreGuarOrd(painter, m_competenza->numOreGuarOrd(), counter); // 73
-            printNumOreRepFesENot(painter, m_competenza->numOreRep(Reperibilita::FestivaENotturna), counter); // 71
-            printNumOreRepFesONot(painter, m_competenza->numOreRep(Reperibilita::FestivaONotturna), counter); // 72
-            printNumOreRepOrd(painter, m_competenza->numOreRep(Reperibilita::Ordinaria), counter); // 70
+            printNumOreRepFesENot(painter, m_competenza->numOreRep(Utilities::Reperibilita::FestivaENotturna), counter); // 71
+            printNumOreRepFesONot(painter, m_competenza->numOreRep(Utilities::Reperibilita::FestivaONotturna), counter); // 72
+            printNumOreRepOrd(painter, m_competenza->numOreRep(Utilities::Reperibilita::Ordinaria), counter); // 70
             if(!m_competenza->note().isEmpty()) {
                 notes << QString::number(m_competenza->badgeNumber()) + " - " + m_competenza->name() + ": " + m_competenza->note();
             }

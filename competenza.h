@@ -7,7 +7,7 @@
 #ifndef COMPETENZA_H
 #define COMPETENZA_H
 
-#include "defines.h"
+#include "utilities.h"
 
 #include <QObject>
 #include <QSharedDataPointer>
@@ -66,12 +66,12 @@ public:
     QList<QDate> gdDates() const;
     QList<QDate> gnDates() const;
     QList<QDate> altreCausaliDates() const;
-    QMap<int, GuardiaType> guardiaDiurnaMap() const;
-    QMap<int, GuardiaType> guardiaNotturnaMap() const;
+    QMap<int, Utilities::GuardiaType> guardiaDiurnaMap() const;
+    QMap<int, Utilities::GuardiaType> guardiaNotturnaMap() const;
     void addGuardiaDiurnaDay(int day);
     void addGuardiaNotturnaDay(int day);
-    void setRep(const QMap<QDate, ValoreRep> &map);
-    QMap<QDate, ValoreRep> rep() const;
+    void setRep(const QMap<QDate, Utilities::ValoreRep> &map);
+    QMap<QDate, Utilities::ValoreRep> rep() const;
     void setDmp(const int &minutes);
     void setPagaStrGuardia(const bool &ok);
     void setOrarioGiornalieroMod(const int &minutes);
@@ -98,7 +98,7 @@ public:
     int numOreGuarFesENot() const;
     int numOreGuarFesONot() const;
     int numOreGuarOrd() const;
-    int numOreRep(Reperibilita rep);
+    int numOreRep(Utilities::Reperibilita rep);
     int residuoOreNonPagate();
     int numFestiviRecuperabili();
     int numNottiRecuperabili();
@@ -106,9 +106,9 @@ public:
     int minutiNonRecuperabili();
     QPair<int, int> recuperiMeseSuccessivo() const;
     Dipendente *dipendente() const;
-    QMap<int, GuardiaType> defaultGNDates() const;
-    QMap<int, GuardiaType> defaultGDDates() const;
-    QMap<QDate, ValoreRep> defaultRep() const;
+    QMap<int, Utilities::GuardiaType> defaultGNDates() const;
+    QMap<int, Utilities::GuardiaType> defaultGDDates() const;
+    QMap<QDate, Utilities::ValoreRep> defaultRep() const;
     int oreTot() const;
     int dmpCalcolato() const;
     int orarioGiornaliero() const;
@@ -170,8 +170,8 @@ private:
     bool m_exporting;
 
     void buildDipendente();
-    GuardiaType tipoGuardia(const QString &day);
-    RepType tipoReperibilita(const int giorno, const int tipo);
+    Utilities::GuardiaType tipoGuardia(const QString &day);
+    Utilities::RepType tipoReperibilita(const int giorno, const int tipo);
     void calcOreGuardia();
     void getOrePagate();
     void getRecuperiMeseSuccessivo();

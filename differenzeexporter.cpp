@@ -193,9 +193,9 @@ void DifferenzeExporter::run()
             competenzeDaPagare->setStr_reparto_ord(0); // 66 solitamente nullo
             competenzeDaPagare->setStr_reparto_nof(0); // 68 solitamente nullo
             competenzeDaPagare->setStr_reparto_nef(0); // 67 solitamente nullo
-            competenzeDaPagare->setStr_repe_ord(m_competenze->numOreRep(Reperibilita::Ordinaria)); // 70
-            competenzeDaPagare->setStr_repe_nof(m_competenze->numOreRep(Reperibilita::FestivaONotturna)); // 72
-            competenzeDaPagare->setStr_repe_nef(m_competenze->numOreRep(Reperibilita::FestivaENotturna)); // 71
+            competenzeDaPagare->setStr_repe_ord(m_competenze->numOreRep(Utilities::Reperibilita::Ordinaria)); // 70
+            competenzeDaPagare->setStr_repe_nof(m_competenze->numOreRep(Utilities::Reperibilita::FestivaONotturna)); // 72
+            competenzeDaPagare->setStr_repe_nef(m_competenze->numOreRep(Utilities::Reperibilita::FestivaENotturna)); // 71
             competenzeDaPagare->setStr_guard_ord(m_competenze->numOreGuarOrd()); // 73
             competenzeDaPagare->setStr_guard_nof(m_competenze->numOreGuarFesONot()); // 75
             competenzeDaPagare->setStr_guard_nef(m_competenze->numOreGuarFesENot()); // 74

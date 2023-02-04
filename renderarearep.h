@@ -7,7 +7,7 @@
 #ifndef RENDERAREAREP_H
 #define RENDERAREAREP_H
 
-#include "defines.h"
+#include "utilities.h"
 
 #include <QBrush>
 #include <QPen>
@@ -26,7 +26,7 @@ public:
     QSize minimumSizeHint() const override;
     QSize sizeHint() const override;
 
-    void setRepMap(const QMap<QDate, ValoreRep> &repMap);
+    void setRepMap(const QMap<QDate, Utilities::ValoreRep> &repMap);
 
 public slots:
 
@@ -34,7 +34,7 @@ protected:
     void paintEvent(QPaintEvent *event) override;
 
 private:
-    QMap<QDate, ValoreRep> m_repMap;
+    QMap<QDate, Utilities::ValoreRep> m_repMap;
     QList<QDate> m_grandiFestivita;
     int year;
 

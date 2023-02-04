@@ -7,7 +7,7 @@
 #ifndef RENDERAREA_H
 #define RENDERAREA_H
 
-#include "defines.h"
+#include "utilities.h"
 
 #include <QBrush>
 #include <QPen>
@@ -25,7 +25,7 @@ public:
     QSize minimumSizeHint() const override;
     QSize sizeHint() const override;
 
-    void setGuardiaMap(const QMap<int, GuardiaType> &guardiaMap);
+    void setGuardiaMap(const QMap<int, Utilities::GuardiaType> &guardiaMap);
     void setDiurna(const bool ok);
     void setMeseAnno(const int &mese, const int &anno);
 
@@ -35,7 +35,7 @@ protected:
     void paintEvent(QPaintEvent *event) override;
 
 private:
-    QMap<int, GuardiaType> m_guardiaMap;
+    QMap<int, Utilities::GuardiaType> m_guardiaMap;
     bool m_diurna;
     int m_mese;
     int m_anno;

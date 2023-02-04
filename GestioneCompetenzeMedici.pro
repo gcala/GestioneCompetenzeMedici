@@ -94,7 +94,6 @@ HEADERS += \
         competenza.h \
         renderarea.h \
         renderarearep.h \
-        defines.h \
         calendarmanagerrep.h \
         printdialog.h \
         competenzeunitaexporter.h \

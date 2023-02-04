@@ -11,7 +11,7 @@
 class IndennitaData : public QSharedData
 {
 public:
-    VoceIndennita m_tipo;
+    Utilities::VoceIndennita m_tipo;
     QMap<int, QPair<QString, QString>> m_map;
 
 };
@@ -64,7 +64,7 @@ QString Indennita::sub(int unita) const
     return data->m_map.value(0).second;
 }
 
-void Indennita::setTipo(VoceIndennita tipo)
+void Indennita::setTipo(Utilities::VoceIndennita tipo)
 {
     data->m_tipo = tipo;
 }
@@ -79,7 +79,7 @@ void Indennita::addItem(int unita, const QString &voce, const QString &sub)
     data->m_map.insert(unita, qMakePair(voce, sub));
 }
 
-VoceIndennita Indennita::tipo() const
+Utilities::VoceIndennita Indennita::tipo() const
 {
     return data->m_tipo;
 }

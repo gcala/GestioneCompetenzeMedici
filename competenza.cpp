@@ -18,12 +18,12 @@ public:
     int m_orePagate;
     QPair<int,int> m_recuperiMeseSuccessivo;
     Dipendente *m_dipendente;
-    QMap<int, GuardiaType> m_guardiaNotturnaMap;
-    QMap<int, GuardiaType> m_guardiaDiurnaMap;
-    QMap<int, GuardiaType> m_defaultGNDates;
-    QMap<int, GuardiaType> m_defaultGDDates;
-    QMap<QDate, ValoreRep> m_rep;
-    QMap<QDate, ValoreRep> m_defaultRep;
+    QMap<int, Utilities::GuardiaType> m_guardiaNotturnaMap;
+    QMap<int, Utilities::GuardiaType> m_guardiaDiurnaMap;
+    QMap<int, Utilities::GuardiaType> m_defaultGNDates;
+    QMap<int, Utilities::GuardiaType> m_defaultGDDates;
+    QMap<QDate, Utilities::ValoreRep> m_rep;
+    QMap<QDate, Utilities::ValoreRep> m_defaultRep;
 
     int m_g_d_fer_F;
     int m_g_d_fer_S;
@@ -366,7 +366,7 @@ void Competenza::buildDipendente()
         for(const auto &f : query.at(22).toString().split(";")) {
             if(f == "0,0")
                 continue;
-            data->m_rep[QDate(data->m_dipendente->anno(), data->m_dipendente->mese(), f.split(",").first().toInt())] = static_cast<ValoreRep>(f.split(",").last().toInt());
+            data->m_rep[QDate(data->m_dipendente->anno(), data->m_dipendente->mese(), f.split(",").first().toInt())] = static_cast<Utilities::ValoreRep>(f.split(",").last().toInt());
             data->m_modded = true;
             data->m_repModded = true;
         }
@@ -762,22 +762,22 @@ QList<QDate> Competenza::altreCausaliDates() const
     return dates;
 }
 
-QMap<int, GuardiaType> Competenza::guardiaDiurnaMap() const
+QMap<int, Utilities::GuardiaType> Competenza::guardiaDiurnaMap() const
 {
     return data->m_guardiaDiurnaMap;
 }
 
-QMap<int, GuardiaType> Competenza::guardiaNotturnaMap() const
+QMap<int, Utilities::GuardiaType> Competenza::guardiaNotturnaMap() const
 {
     return data->m_guardiaNotturnaMap;
 }
 
-void Competenza::setRep(const QMap<QDate, ValoreRep> &map)
+void Competenza::setRep(const QMap<QDate, Utilities::ValoreRep> &map)
 {
     data->m_rep = map;
 }
 
-QMap<QDate, ValoreRep> Competenza::rep() const
+QMap<QDate, Utilities::ValoreRep> Competenza::rep() const
 {
     return data->m_rep;
 }
@@ -952,7 +952,7 @@ int Competenza::notte() const
     int tot = 0;
     auto i = data->m_guardiaNotturnaMap.constBegin();
     while (i != data->m_guardiaNotturnaMap.constEnd()) {
-        if(i.value() != GuardiaType::GrandeFestivita)
+        if(i.value() != Utilities::GuardiaType::GrandeFestivita)
             tot += data->m_oreTot - data->m_orePagate;
         i++;
     }
@@ -974,19 +974,19 @@ double Competenza::repCount() const
     auto i = data->m_rep.constBegin();
     while (i != data->m_rep.constEnd()) {
         switch (i.value()) {
-        case ValoreRep::Mezzo:
+        case Utilities::ValoreRep::Mezzo:
             tot += 0.5;
             break;
-        case ValoreRep::Uno:
+        case Utilities::ValoreRep::Uno:
             tot += 1.0;
             break;
-        case ValoreRep::UnoMezzo:
+        case Utilities::ValoreRep::UnoMezzo:
             tot += 1.5;
             break;
-        case ValoreRep::Due:
+        case Utilities::ValoreRep::Due:
             tot += 2.0;
             break;
-        case ValoreRep::DueMezzo:
+        case Utilities::ValoreRep::DueMezzo:
             tot += 2.5;
             break;
         default:
@@ -1015,7 +1015,7 @@ int Competenza::numGrFestPagabili() const
 
     auto i = guardiaNotturnaMap().constBegin();
     while(i != guardiaNotturnaMap().constEnd()) {
-        if(i.value() == GuardiaType::GrandeFestivita)
+        if(i.value() == Utilities::GuardiaType::GrandeFestivita)
             numGrFest++;
         i++;
     }
@@ -1078,7 +1078,7 @@ int Competenza::numGuar() const
     int num = 0;
     auto i = guardiaNotturnaMap().constBegin();
     while(i != guardiaNotturnaMap().constEnd()) {
-        if(i.value() != GuardiaType::GrandeFestivita)
+        if(i.value() != Utilities::GuardiaType::GrandeFestivita)
             num++;
         i++;
     }
@@ -1134,7 +1134,7 @@ int Competenza::numOreGuarOrd() const
     return (g_d_fer_F() + g_d_fer_S() + g_d_fer_D());
 }
 
-int Competenza::numOreRep(Reperibilita rep)
+int Competenza::numOreRep(Utilities::Reperibilita rep)
 {
     int oreRepFesENot = r_n_fes() % 60 <= m_arrotondamento ? r_n_fes() / 60 :r_n_fes() / 60 + 1;
     if(oreRepFesENot >=  oreRepPagate())
@@ -1183,10 +1183,10 @@ int Competenza::numOreRep(Reperibilita rep)
     }
 
     switch (rep) {
-    case Reperibilita::Ordinaria:
+    case Utilities::Reperibilita::Ordinaria:
         return oreRepOrd;
         break;
-    case Reperibilita::FestivaENotturna:
+    case Utilities::Reperibilita::FestivaENotturna:
         return oreRepFesENot;
         break;
     default:
@@ -1373,7 +1373,7 @@ int Competenza::r_d_fer()
     int minuti = 0;
     auto i = data->m_dipendente->grep().constBegin();
     while (i != data->m_dipendente->grep().constEnd()) {
-        if(tipoReperibilita(i.key(), i.value().second) == RepType::FerDiu)
+        if(tipoReperibilita(i.key(), i.value().second) == Utilities::RepType::FerDiu)
             minuti += i.value().first;
         i++;
     }
@@ -1386,7 +1386,7 @@ int Competenza::r_d_fes()
     int minuti = 0;
     auto i = data->m_dipendente->grep().constBegin();
     while (i != data->m_dipendente->grep().constEnd()) {
-        if(tipoReperibilita(i.key(), i.value().second) == RepType::FesDiu)
+        if(tipoReperibilita(i.key(), i.value().second) == Utilities::RepType::FesDiu)
             minuti += i.value().first;
         i++;
     }
@@ -1399,7 +1399,7 @@ int Competenza::r_n_fer()
     int minuti = 0;
     auto i = data->m_dipendente->grep().constBegin();
     while (i != data->m_dipendente->grep().constEnd()) {
-        if(tipoReperibilita(i.key(), i.value().second) == RepType::FerNot)
+        if(tipoReperibilita(i.key(), i.value().second) == Utilities::RepType::FerNot)
             minuti += i.value().first;
         i++;
     }
@@ -1412,7 +1412,7 @@ int Competenza::r_n_fes()
     int minuti = 0;
     auto i = data->m_dipendente->grep().constBegin();
     while (i != data->m_dipendente->grep().constEnd()) {
-        if(tipoReperibilita(i.key(), i.value().second) == RepType::FesNot)
+        if(tipoReperibilita(i.key(), i.value().second) == Utilities::RepType::FesNot)
             minuti += i.value().first;
         i++;
     }
@@ -1515,44 +1515,44 @@ void Competenza::rimuoviAltreAssenzeDoppie()
     }
 }
 
-GuardiaType Competenza::tipoGuardia(const QString &giorno)
+Utilities::GuardiaType Competenza::tipoGuardia(const QString &giorno)
 {
     QDate dataCorrente(data->m_dipendente->anno(), data->m_dipendente->mese(), giorno.toInt());
 
     if(The::almanac()->isGrandeFestivita(dataCorrente.addDays(1)) || The::almanac()->isGrandeFestivita(dataCorrente)) {
-        return GuardiaType::GrandeFestivita;
+        return Utilities::GuardiaType::GrandeFestivita;
     } else if(dataCorrente.addDays(1).dayOfWeek() == 1) {
-        return GuardiaType::Domenica;
+        return Utilities::GuardiaType::Domenica;
     } else if(dataCorrente.addDays(1).dayOfWeek() == 7) {
-        return GuardiaType::Sabato;
+        return Utilities::GuardiaType::Sabato;
     }
 
-    return GuardiaType::Feriale;
+    return Utilities::GuardiaType::Feriale;
 }
 
-RepType Competenza::tipoReperibilita(const int giorno, const int tipo)
+Utilities::RepType Competenza::tipoReperibilita(const int giorno, const int tipo)
 {
     QDate dataCorrente(data->m_dipendente->anno(), data->m_dipendente->mese(), giorno);
 
-    RepType value;
+    Utilities::RepType value;
 
     if(tipo == 0) { // notturno
         if(The::almanac()->isGrandeFestivita(dataCorrente.addDays(1)) || The::almanac()->isGrandeFestivita(dataCorrente)) {
-            value = RepType::FesNot;
+            value = Utilities::RepType::FesNot;
         } else if(dataCorrente.addDays(1).dayOfWeek() == 1) { // domenica
-            value = RepType::FerNot;
+            value = Utilities::RepType::FerNot;
         } else if(dataCorrente.addDays(1).dayOfWeek() == 7) { // sabato
-            value = RepType::FesNot;
+            value = Utilities::RepType::FesNot;
         } else {
-            value = RepType::FerNot;
+            value = Utilities::RepType::FerNot;
         }
     } else { // diurno
         if(The::almanac()->isGrandeFestivita(dataCorrente)) {
-            value = RepType::FesDiu;
+            value = Utilities::RepType::FesDiu;
         } else if(dataCorrente.dayOfWeek() == 7) {
-            value = RepType::FesDiu;
+            value = Utilities::RepType::FesDiu;
         } else {
-            value = RepType::FerDiu;
+            value = Utilities::RepType::FerDiu;
         }
     }
 
@@ -1578,21 +1578,21 @@ void Competenza::calcOreGuardia()
     auto i = data->m_guardiaNotturnaMap.constBegin();
     while (i != data->m_guardiaNotturnaMap.constEnd()) {
         switch (i.value()) {
-        case GuardiaType::Sabato:
+        case Utilities::GuardiaType::Sabato:
             data->m_g_d_fer_S += 2;
             data->m_g_d_fes_S += 2;
             data->m_g_n_fer_S += 2;
             data->m_g_n_fes_S += 6;
             data->m_totOreGuardie += 12;
             break;
-        case GuardiaType::Domenica:
+        case Utilities::GuardiaType::Domenica:
             data->m_g_d_fer_D += 2;
             data->m_g_d_fes_D += 2;
             data->m_g_n_fer_D += 6;
             data->m_g_n_fes_D += 2;
             data->m_totOreGuardie += 12;
             break;
-        case GuardiaType::Feriale:
+        case Utilities::GuardiaType::Feriale:
             data->m_g_d_fer_F += 4;
             data->m_g_n_fer_F += 8;
             data->m_totOreGuardie += 12;
@@ -1643,17 +1643,17 @@ Dipendente * Competenza::dipendente() const
     return data->m_dipendente;
 }
 
-QMap<int, GuardiaType> Competenza::defaultGNDates() const
+QMap<int, Utilities::GuardiaType> Competenza::defaultGNDates() const
 {
     return data->m_defaultGNDates;
 }
 
-QMap<int, GuardiaType> Competenza::defaultGDDates() const
+QMap<int, Utilities::GuardiaType> Competenza::defaultGDDates() const
 {
     return data->m_defaultGDDates;
 }
 
-QMap<QDate, ValoreRep> Competenza::defaultRep() const
+QMap<QDate, Utilities::ValoreRep> Competenza::defaultRep() const
 {
     return data->m_defaultRep;
 }
@@ -1749,7 +1749,7 @@ int Competenza::grFestCount() const
 
     auto i = guardiaNotturnaMap().constBegin();
     while(i != guardiaNotturnaMap().constEnd()) {
-        if(i.value() == GuardiaType::GrandeFestivita)
+        if(i.value() == Utilities::GuardiaType::GrandeFestivita)
             numGrFest++;
         i++;
     }

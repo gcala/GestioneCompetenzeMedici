@@ -16,6 +16,53 @@ private:
     Utilities(){}
 
 public:
+    enum GuardiaType
+        {
+            Feriale,
+            Sabato,
+            Domenica,
+            GrandeFestivita
+        };
+
+    enum ValoreRep
+        {
+            Mezzo,
+            Uno,
+            UnoMezzo,
+            Due,
+            DueMezzo
+        };
+
+    enum RepType
+        {
+            FerDiu,
+            FesDiu,
+            FerNot,
+            FesNot
+        };
+
+    enum Reperibilita {
+        Ordinaria,
+        FestivaONotturna,
+        FestivaENotturna
+    };
+
+    enum VoceIndennita {
+        IndennitaFestiva,
+        IndennitaNotturna,
+        GuardiaDiurna,
+        GuardiaNotturna,
+        GranFestivita,
+        StraordinarioReperibilitaOrd,
+        StraordinarioReperibilitaNof,
+        StraordinarioReperibilitaNef,
+        StraordinarioGuardiaOrd,
+        StraordinarioGuardiaNof,
+        StraordinarioGuardiaNef,
+        TurniReperibilita,
+        OreReperibilita
+    };
+
     static QString inOrario(int value);
     static QString m_connectionName;
     static QDate ccnl1618Date;
@@ -41,5 +88,11 @@ public:
     static QString m_importPath;
     static QString m_exportPath;
 };
+
+Q_DECLARE_METATYPE(Utilities::GuardiaType)
+Q_DECLARE_METATYPE(Utilities::ValoreRep)
+Q_DECLARE_METATYPE(Utilities::RepType)
+Q_DECLARE_METATYPE(Utilities::Reperibilita)
+Q_DECLARE_METATYPE(Utilities::VoceIndennita)
 
 #endif // UTILITIES_H

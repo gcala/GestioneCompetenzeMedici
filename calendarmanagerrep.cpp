@@ -42,12 +42,12 @@ QColor CalendarManagerRep::getColor() const
     return ( m_outlinePen.color() );
 }
 
-QMap<QDate, ValoreRep> CalendarManagerRep::getDates() const
+QMap<QDate, Utilities::ValoreRep> CalendarManagerRep::getDates() const
 {
     return m_dates;
 }
 
-void CalendarManagerRep::setDates(const QMap<QDate, ValoreRep> &dates)
+void CalendarManagerRep::setDates(const QMap<QDate, Utilities::ValoreRep> &dates)
 {
     m_dates = dates;
 }
@@ -74,13 +74,13 @@ void CalendarManagerRep::setReperibilita(ReperibilitaSemplificata *reperibilita)
         painter->setBrush(m_transparentBrush);
         painter->drawRect(rect.adjusted(4,4,-5,-5));
         switch(m_dates[date]) {
-        case Mezzo:
+        case Utilities::ValoreRep::Mezzo:
             painter->drawText(rect.adjusted(4,4,-5,-5), Qt::AlignRight | Qt::AlignTop,"½");
             break;
-        case Uno:
+        case Utilities::ValoreRep::Uno:
             painter->drawText(rect.adjusted(4,4,-5,-5), Qt::AlignRight | Qt::AlignTop,"1");
             break;
-        case UnoMezzo:
+        case Utilities::ValoreRep::UnoMezzo:
             painter->drawText(rect.adjusted(4,4,-5,-5), Qt::AlignRight | Qt::AlignTop,"1½");
             break;
         default:
@@ -98,34 +98,34 @@ void CalendarManagerRep::noSelected()
 
 void CalendarManagerRep::mezzoSelected()
 {
-    m_dates[m_selectedDate] = Mezzo;
+    m_dates[m_selectedDate] = Utilities::ValoreRep::Mezzo;
 }
 
 void CalendarManagerRep::unoSelected()
 {
-    m_dates[m_selectedDate] = Uno;
+    m_dates[m_selectedDate] = Utilities::ValoreRep::Uno;
 }
 
 void CalendarManagerRep::unomezzoSelected()
 {
-    m_dates[m_selectedDate] = UnoMezzo;
+    m_dates[m_selectedDate] = Utilities::ValoreRep::UnoMezzo;
 }
 
 void CalendarManagerRep::dueSelected()
 {
-    m_dates[m_selectedDate] = Due;
+    m_dates[m_selectedDate] = Utilities::ValoreRep::Due;
 }
 
-ValoreRep CalendarManagerRep::repConvert(const double value)
+Utilities::ValoreRep CalendarManagerRep::repConvert(const double value)
 {
     if(value == 0.5)
-        return Mezzo;
+        return Utilities::ValoreRep::Mezzo;
     if(value == 1.0)
-        return Uno;
+        return Utilities::ValoreRep::Uno;
     if(value == 1.5)
-        return UnoMezzo;
+        return Utilities::ValoreRep::UnoMezzo;
     if(value == 2.0)
-        return Due;
+        return Utilities::ValoreRep::Due;
 }
 
 void CalendarManagerRep::dataRightClicked(const QPoint &pos)
