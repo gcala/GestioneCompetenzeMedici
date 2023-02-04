@@ -35,6 +35,7 @@ SOURCES += \
         differenzedialog.cpp \
         differenzeexporter.cpp \
         giornocartellinocompleto.cpp \
+        indennita.cpp \
         main.cpp \
         mainwindow.cpp \
         manageemployee.cpp \
@@ -80,6 +81,7 @@ HEADERS += \
         differenzedialog.h \
         differenzeexporter.h \
         giornocartellinocompleto.h \
+        indennita.h \
         mainwindow.h \
         manageemployee.h \
         manageunits.h \

@@ -38,5 +38,21 @@ enum Reperibilita {
     FestivaENotturna
 };
 
+enum VoceIndennita {
+    IndennitaFestiva,
+    IndennitaNotturna,
+    GuardiaDiurna,
+    GuardiaNotturna,
+    GranFestivita,
+    StraordinarioReperibilitaOrd,
+    StraordinarioReperibilitaNof,
+    StraordinarioReperibilitaNef,
+    StraordinarioGuardiaOrd,
+    StraordinarioGuardiaNof,
+    StraordinarioGuardiaNef,
+    TurniReperibilita,
+    OreReperibilita
+};
+
 
 #endif // GUARDIA_ENUM_H
