@@ -11,6 +11,7 @@
 #include "sqldatabasemanager.h"
 #include "competenzepagate.h"
 #include "dipendente.h"
+#include "indennita.h"
 
 #include <QDate>
 #include <QFile>
@@ -124,6 +125,8 @@ void DifferenzeExporter::run()
         << "ARR;" << "QTA;"
         << "IMP;" << "SEDE_DEL;" << "ANNO_DEL;"
         << "NUMERO_DEL;" << "DELIBERA" << "\n";
+
+    const auto indennita = SqlQueries::getIndennita(m_currentMonthYear.year(), m_currentMonthYear.month());
 
     const QString rowText =
             "LVARIDE;" +
@@ -264,42 +267,81 @@ void DifferenzeExporter::run()
 
 
                 if(pag->indFestiva() > 0) // 62
-                    out << rowText.arg(pag->ci()).arg("IND.FES").arg("*").arg(QString::number(pag->indFestiva())) << "\n";
+                    out << rowText.arg(pag->ci())
+                           .arg(indennita.voce(Utilities::IndennitaFestiva, unitaId))
+                           .arg(indennita.sub(Utilities::IndennitaFestiva, unitaId))
+                           .arg(QString::number(pag->indFestiva())) << "\n";
 
                 if(pag->guard_diu() > 0) // 1512
-                    out << rowText.arg(pag->ci()).arg("GUARD.NOT").arg("1").arg(QString::number(pag->guard_diu())) << "\n";
+                    out << rowText.arg(pag->ci())
+                           .arg(indennita.voce(Utilities::GuardiaDiurna, unitaId))
+                           .arg(indennita.sub(Utilities::GuardiaDiurna, unitaId))
+                           .arg(QString::number(pag->guard_diu())) << "\n";
 
                 if(pag->grande_fes() > 0) { // 921
-                    out << rowText.arg(pag->ci()).arg("GR.FES.NOT").arg("*").arg(QString::number(pag->grande_fes())) << "\n";
-                    out << rowText.arg(pag->ci()).arg("GUARD.NOT").arg("*").arg("-" + QString::number(pag->grande_fes())) << "\n";
+                    out << rowText.arg(pag->ci())
+                           .arg(indennita.voce(Utilities::GranFestivita, unitaId))
+                           .arg(indennita.sub(Utilities::GranFestivita, unitaId))
+                           .arg(QString::number(pag->grande_fes())) << "\n";
+                    out << rowText.arg(pag->ci())
+                           .arg(indennita.voce(Utilities::GuardiaNotturna, unitaId))
+                           .arg(indennita.sub(Utilities::GuardiaNotturna, unitaId))
+                           .arg("-" + QString::number(pag->grande_fes())) << "\n";
                 }
 
                 if(pag->str_repe_ord() > 0) // 70
-                    out << rowText.arg(pag->ci()).arg("REP.ORD").arg("*").arg(QString::number(pag->str_repe_ord())) << "\n";
+                    out << rowText.arg(pag->ci())
+                           .arg(indennita.voce(Utilities::StraordinarioReperibilitaOrd, unitaId))
+                           .arg(indennita.sub(Utilities::StraordinarioReperibilitaOrd, unitaId))
+                           .arg(QString::number(pag->str_repe_ord())) << "\n";
 
                 if(pag->str_repe_nof() > 0) // 72
-                    out << rowText.arg(pag->ci()).arg("REP.NOF").arg("*").arg(QString::number(pag->str_repe_nof())) << "\n";
+                    out << rowText.arg(pag->ci())
+                           .arg(indennita.voce(Utilities::StraordinarioReperibilitaNof, unitaId))
+                           .arg(indennita.sub(Utilities::StraordinarioReperibilitaNof, unitaId))
+                           .arg(QString::number(pag->str_repe_nof())) << "\n";
 
                 if(pag->str_repe_nef() > 0) // 71
-                    out << rowText.arg(pag->ci()).arg("REP.NEF").arg("*").arg(QString::number(pag->str_repe_nef())) << "\n";
+                    out << rowText.arg(pag->ci())
+                           .arg(indennita.voce(Utilities::StraordinarioReperibilitaNef, unitaId))
+                           .arg(indennita.sub(Utilities::StraordinarioReperibilitaNef, unitaId))
+                           .arg(QString::number(pag->str_repe_nef())) << "\n";
 
                 if(pag->str_guard_ord() > 0) // 73
-                    out << rowText.arg(pag->ci()).arg("STR.ORD.GU").arg("*").arg(QString::number(pag->str_guard_ord())) << "\n";
+                    out << rowText.arg(pag->ci())
+                           .arg(indennita.voce(Utilities::StraordinarioGuardiaOrd, unitaId))
+                           .arg(indennita.sub(Utilities::StraordinarioGuardiaOrd, unitaId))
+                           .arg(QString::number(pag->str_guard_ord())) << "\n";
 
                 if(pag->str_guard_nof() > 0) // 75
-                    out << rowText.arg(pag->ci()).arg("STR.NOF.GU").arg("*").arg(QString::number(pag->str_guard_nof())) << "\n";
+                    out << rowText.arg(pag->ci())
+                           .arg(indennita.voce(Utilities::StraordinarioGuardiaNof, unitaId))
+                           .arg(indennita.sub(Utilities::StraordinarioGuardiaNof, unitaId))
+                           .arg(QString::number(pag->str_guard_nof())) << "\n";
 
                 if(pag->str_guard_nef() > 0) // 74
-                    out << rowText.arg(pag->ci()).arg("STR.NEF.GU").arg("*").arg(QString::number(pag->str_guard_nef())) << "\n";
+                    out << rowText.arg(pag->ci())
+                           .arg(indennita.voce(Utilities::StraordinarioGuardiaNef, unitaId))
+                           .arg(indennita.sub(Utilities::StraordinarioGuardiaNef, unitaId))
+                           .arg(QString::number(pag->str_guard_nef())) << "\n";
 
                 if(pag->turni_repe() > 0) // 25
-                    out << rowText.arg(pag->ci()).arg("IND.PR.REP").arg("*").arg(QString::number(pag->turni_repe())) << "\n";
+                    out << rowText.arg(pag->ci())
+                           .arg(indennita.voce(Utilities::TurniReperibilita, unitaId))
+                           .arg(indennita.sub(Utilities::TurniReperibilita, unitaId))
+                           .arg(QString::number(pag->turni_repe())) << "\n";
 
                 if(pag->ore_repe() > 0) // 40
-                    out << rowText.arg(pag->ci()).arg("IND.REP.OR").arg("*").arg(QString::number(pag->ore_repe())) << "\n";
+                    out << rowText.arg(pag->ci())
+                           .arg(indennita.voce(Utilities::OreReperibilita, unitaId))
+                           .arg(indennita.sub(Utilities::OreReperibilita, unitaId))
+                           .arg(QString::number(pag->ore_repe())) << "\n";
 
                 if(pag->guard_not() > 0) { // 1571
-                    out << rowText.arg(pag->ci()).arg("GUARD.NOT").arg("*").arg("-" + QString::number(pag->guard_not())) << "\n";
+                    out << rowText.arg(pag->ci())
+                           .arg(indennita.voce(Utilities::GuardiaNotturna, unitaId))
+                           .arg(indennita.sub(Utilities::GuardiaNotturna, unitaId))
+                           .arg("-" + QString::number(pag->guard_not())) << "\n";
                 }
 
                 printBadge(painter, pag->ci(),counter);

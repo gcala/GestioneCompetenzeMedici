@@ -24,14 +24,12 @@ public:
     bool operator==(const Indennita &rhs) const;
     ~Indennita();
 
-    QString voce(int unita) const ;
-    QString sub(int unita) const ;
+    QString voce(Utilities::VoceIndennita tipo, int unita) const ;
+    QString sub(Utilities::VoceIndennita tipo, int unita) const ;
 
-    void setTipo(Utilities::VoceIndennita tipo);
-    void setMap(QMap<int, QPair<QString, QString>> map);
-    void addItem(int unita, const QString &voce, const QString &sub);
-    Utilities::VoceIndennita tipo() const;
-    QMap<int, QPair<QString, QString>> map() const;
+    void setMap(QMap<Utilities::VoceIndennita, QMap<int, QPair<QString, QString>>> map);
+    void addItem(Utilities::VoceIndennita tipo, int unita, const QString &voce, const QString &sub);
+    QMap<Utilities::VoceIndennita, QMap<int, QPair<QString, QString>>> map() const;
 
 signals:
 

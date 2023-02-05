@@ -12,7 +12,7 @@ class IndennitaData : public QSharedData
 {
 public:
     Utilities::VoceIndennita m_tipo;
-    QMap<int, QPair<QString, QString>> m_map;
+    QMap<Utilities::VoceIndennita, QMap<int, QPair<QString, QString>>> m_map;
 
 };
 
@@ -41,8 +41,7 @@ bool Indennita::operator==(const Indennita &rhs) const
     if(this == &rhs)
         return true;
 
-    return data->m_tipo == rhs.tipo() &&
-            data->m_map == rhs.map();
+    return data->m_map == rhs.map();
 }
 
 Indennita::~Indennita()
@@ -50,41 +49,47 @@ Indennita::~Indennita()
 
 }
 
-QString Indennita::voce(int unita) const
+QString Indennita::voce(Utilities::VoceIndennita tipo, int unita) const
 {
-    if(data->m_map.keys().contains(unita))
-        return data->m_map.value(unita).first;
-    return data->m_map.value(0).first;
+    if(data->m_map.keys().contains(tipo)) {
+        const auto val = data->m_map.value(tipo);
+        if(val.keys().contains(unita))
+            return val.value(unita).first;
+        return val.value(0).first;
+    }
+    return QStringLiteral();
 }
 
-QString Indennita::sub(int unita) const
+QString Indennita::sub(Utilities::VoceIndennita tipo, int unita) const
 {
-    if(data->m_map.keys().contains(unita))
-        return data->m_map.value(unita).second;
-    return data->m_map.value(0).second;
+    if(data->m_map.keys().contains(tipo)) {
+        const auto val = data->m_map.value(tipo);
+        if(val.keys().contains(unita))
+            return val.value(unita).second;
+        return val.value(0).second;
+    }
+    return QStringLiteral();
 }
 
-void Indennita::setTipo(Utilities::VoceIndennita tipo)
-{
-    data->m_tipo = tipo;
-}
-
-void Indennita::setMap(QMap<int, QPair<QString, QString> > map)
+void Indennita::setMap(QMap<Utilities::VoceIndennita, QMap<int, QPair<QString, QString> > > map)
 {
     data->m_map = map;
 }
 
-void Indennita::addItem(int unita, const QString &voce, const QString &sub)
+void Indennita::addItem(Utilities::VoceIndennita tipo, int unita, const QString &voce, const QString &sub)
 {
-    data->m_map.insert(unita, qMakePair(voce, sub));
+    if(data->m_map.keys().contains(tipo)) {
+        auto val = data->m_map.value(tipo);
+        val.insert(unita, qMakePair(voce, sub));
+        data->m_map[tipo] = val;
+    } else {
+        QMap<int, QPair<QString, QString> > val;
+        val.insert(unita, qMakePair(voce, sub));
+        data->m_map[tipo] = val;
+    }
 }
 
-Utilities::VoceIndennita Indennita::tipo() const
-{
-    return data->m_tipo;
-}
-
-QMap<int, QPair<QString, QString> > Indennita::map() const
+QMap<Utilities::VoceIndennita, QMap<int, QPair<QString, QString> > > Indennita::map() const
 {
     return data->m_map;
 }

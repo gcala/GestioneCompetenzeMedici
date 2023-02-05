@@ -179,5 +179,99 @@ int Utilities::monthsTo(const QDate &start, const QDate &end)
         value += end.month();
     }
 
-   return value;
+    return value;
+}
+
+QString Utilities::indennitaName(const Utilities::VoceIndennita id)
+{
+    QString name;
+    switch (id) {
+    case Utilities::VoceIndennita::GranFestivita:
+        name = "GrandeFestivita";
+        break;
+    case Utilities::VoceIndennita::GuardiaDiurna:
+        name = "GuardiaDiurna";
+        break;
+    case Utilities::VoceIndennita::GuardiaNotturna:
+        name = "GuardiaNotturna";
+        break;
+    case Utilities::VoceIndennita::IndennitaFestiva:
+        name = "IndennitaFestiva";
+        break;
+    case Utilities::VoceIndennita::IndennitaNotturna:
+        name = "IndennitaNotturna";
+        break;
+    case Utilities::VoceIndennita::StraordinarioGuardiaNef:
+        name = "StraordinarioGuardiaNef";
+        break;
+    case Utilities::VoceIndennita::StraordinarioGuardiaNof:
+        name = "StraordinarioGuardiaNof";
+        break;
+    case Utilities::VoceIndennita::StraordinarioGuardiaOrd:
+        name = "StraordinarioGuardiaOrd";
+        break;
+    case Utilities::VoceIndennita::StraordinarioReperibilitaNef:
+        name = "StraordinarioReperibilitaNef";
+        break;
+    case Utilities::VoceIndennita::StraordinarioReperibilitaNof:
+        name = "StraordinarioReperibilitaNof";
+        break;
+    case Utilities::VoceIndennita::StraordinarioReperibilitaOrd:
+        name = "StraordinarioReperibilitaOrd";
+        break;
+    case Utilities::VoceIndennita::TurniReperibilita:
+        name = "TurniReperibilita";
+        break;
+    case Utilities::VoceIndennita::OreReperibilita:
+        name = "OreReperibilita";
+        break;
+    default:
+        name = "Indefinita";
+    }
+
+    return name;
+}
+
+Utilities::VoceIndennita Utilities::indennitaEnum(const QString &name)
+{
+    if(name == "GrandeFestivita")
+        return Utilities::VoceIndennita::GranFestivita;
+
+    if(name == "GuardiaDiurna")
+        return Utilities::VoceIndennita::GuardiaDiurna;
+
+    if(name == "GuardiaNotturna")
+        return Utilities::VoceIndennita::GuardiaNotturna;
+
+    if(name == "IndennitaFestiva")
+        return Utilities::VoceIndennita::IndennitaFestiva;
+
+    if(name == "IndennitaNotturna")
+        return Utilities::VoceIndennita::IndennitaNotturna;
+
+    if(name == "StraordinarioGuardiaNef")
+        return Utilities::VoceIndennita::StraordinarioGuardiaNef;
+
+    if(name == "StraordinarioGuardiaNof")
+        return Utilities::VoceIndennita::StraordinarioGuardiaNof;
+
+    if(name == "StraordinarioGuardiaOrd")
+        return Utilities::VoceIndennita::StraordinarioGuardiaOrd;
+
+    if(name == "StraordinarioReperibilitaNef")
+        return Utilities::VoceIndennita::StraordinarioReperibilitaNef;
+
+    if(name == "StraordinarioReperibilitaNof")
+        return Utilities::VoceIndennita::StraordinarioReperibilitaNof;
+
+    if(name == "StraordinarioReperibilitaOrd")
+        return Utilities::VoceIndennita::StraordinarioReperibilitaOrd;
+
+    if(name == "TurniReperibilita")
+        return Utilities::VoceIndennita::TurniReperibilita;
+
+    if(name == "OreReperibilita")
+        return Utilities::VoceIndennita::OreReperibilita;
+
+    return Utilities::VoceIndennita::Indefinita;
 }

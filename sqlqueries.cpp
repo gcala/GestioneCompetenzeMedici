@@ -11,6 +11,7 @@
 #include "utilities.h"
 #include "reperibilitasemplificata.h"
 #include "competenzepagate.h"
+#include "indennita.h"
 
 #include <QSqlQuery>
 #include <QSqlError>
@@ -1293,14 +1294,14 @@ CompetenzePagate *SqlQueries::competenzePagate(int ci, int anno, int mese)
         pagato->setIndNotturna(query.value(3).toInt());
         pagato->setIndFestiva(query.value(4).toInt());
         pagato->setStr_reparto_ord(query.value(5).toInt());
-        pagato->setStr_reparto_nef(query.value(6).toInt());
-        pagato->setStr_reparto_nof(query.value(7).toInt());
+        pagato->setStr_reparto_nof(query.value(6).toInt());
+        pagato->setStr_reparto_nef(query.value(7).toInt());
         pagato->setStr_repe_ord(query.value(8).toInt());
-        pagato->setStr_repe_nef(query.value(9).toInt());
-        pagato->setStr_repe_nof(query.value(10).toInt());
+        pagato->setStr_repe_nof(query.value(9).toInt());
+        pagato->setStr_repe_nef(query.value(10).toInt());
         pagato->setStr_guard_ord(query.value(11).toInt());
-        pagato->setStr_guard_nef(query.value(12).toInt());
-        pagato->setStr_guard_nof(query.value(13).toInt());
+        pagato->setStr_guard_nof(query.value(12).toInt());
+        pagato->setStr_guard_nef(query.value(13).toInt());
         pagato->setTurni_repe(query.value(14).toInt());
         pagato->setOre_repe(query.value(15).toInt());
         pagato->setGuard_diu(query.value(16).toInt());
@@ -1390,5 +1391,19 @@ int SqlQueries::doctorMatricola(int id)
         matricola = query.value(0).toInt();
     }
     return matricola;
+}
+
+Indennita SqlQueries::getIndennita(int anno, int mese)
+{
+    Indennita indennita;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
+    query.prepare("SELECT * FROM voci_paga;");
+    if(!query.exec()) {
+        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
+    while(query.next()) {
+        indennita.addItem(Utilities::indennitaEnum(query.value(2).toString()), query.value(1).toInt(), query.value(4).toString(), query.value(5).toString());
+    }
+    return indennita;
 }
 

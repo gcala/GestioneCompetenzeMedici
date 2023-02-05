@@ -48,6 +48,7 @@ public:
     };
 
     enum VoceIndennita {
+        Indefinita,
         IndennitaFestiva,
         IndennitaNotturna,
         GuardiaDiurna,
@@ -74,6 +75,8 @@ public:
     static QVector<int> stringlistToVectorInt(const QStringList &list);
     static QStringList vectorIntToStringlist(const QVector<int> &values);
     static int monthsTo(const QDate &start, const QDate &end);
+    static QString indennitaName(const Utilities::VoceIndennita id);
+    static Utilities::VoceIndennita indennitaEnum(const QString &name);
 
     static QString m_driver;
     static QString m_host;

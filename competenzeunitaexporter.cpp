@@ -11,6 +11,7 @@
 #include "sqldatabasemanager.h"
 #include "competenzepagate.h"
 #include "dipendente.h"
+#include "indennita.h"
 
 #include <QDate>
 #include <QFile>
@@ -125,13 +126,15 @@ void CompetenzeUnitaExporter::run()
         << "IMP;" << "SEDE_DEL;" << "ANNO_DEL;"
         << "NUMERO_DEL;" << "DELIBERA" << "\n";
 
+    const auto indennita = SqlQueries::getIndennita(m_currentMonthYear.year(), m_currentMonthYear.month());
+
     const QString rowText =
             "LVARIDE;" +
             date.toString("dd/MM/yyyy") +
             ";%1;" +
             QString::number(date.addDays(1).year()) + ";" +
             QString::number(date.addDays(1).month()) + ";" +
-            QLocale().monthName(date.addDays(1).month(), QLocale::ShortFormat).toUpper() + ";%2;*;;%3;;;;;";
+            QLocale().monthName(date.addDays(1).month(), QLocale::ShortFormat).toUpper() + ";%2;%3;;%4;;;;;";
 
     QPdfWriter writer(m_path + QDir::separator() + pdfFileName);
 
@@ -235,32 +238,62 @@ void CompetenzeUnitaExporter::run()
             SqlQueries::saveCompetenzePagate(pagato, m_currentMonthYear.year(), m_currentMonthYear.month());
 
             if(m_competenza->numOreRep(Utilities::Reperibilita::Ordinaria) > 0) // 70
-                out << rowText.arg(m_competenza->badgeNumber()).arg("REP.ORD").arg(QString::number(m_competenza->numOreRep(Utilities::Reperibilita::Ordinaria))) << "\n";
+                out << rowText.arg(m_competenza->badgeNumber())
+                       .arg(indennita.voce(Utilities::StraordinarioReperibilitaOrd, unitaId))
+                       .arg(indennita.sub(Utilities::StraordinarioReperibilitaOrd, unitaId))
+                       .arg(QString::number(m_competenza->numOreRep(Utilities::Reperibilita::Ordinaria))) << "\n";
 
             if(m_competenza->numOreRep(Utilities::Reperibilita::FestivaONotturna) > 0) // 72
-                out << rowText.arg(m_competenza->badgeNumber()).arg("REP.NOF").arg(QString::number(m_competenza->numOreRep(Utilities::Reperibilita::FestivaONotturna))) << "\n";
+                out << rowText.arg(m_competenza->badgeNumber())
+                       .arg(indennita.voce(Utilities::StraordinarioReperibilitaNof, unitaId))
+                       .arg(indennita.sub(Utilities::StraordinarioReperibilitaNof, unitaId))
+                       .arg(QString::number(m_competenza->numOreRep(Utilities::Reperibilita::FestivaONotturna))) << "\n";
 
             if(m_competenza->numOreRep(Utilities::Reperibilita::FestivaENotturna) > 0) // 71
-                out << rowText.arg(m_competenza->badgeNumber()).arg("REP.NEF").arg(QString::number(m_competenza->numOreRep(Utilities::Reperibilita::FestivaENotturna))) << "\n";
+                out << rowText.arg(m_competenza->badgeNumber())
+                       .arg(indennita.voce(Utilities::StraordinarioReperibilitaNef, unitaId))
+                       .arg(indennita.sub(Utilities::StraordinarioReperibilitaNef, unitaId))
+                       .arg(QString::number(m_competenza->numOreRep(Utilities::Reperibilita::FestivaENotturna))) << "\n";
 
             if(m_competenza->numOreGuarOrd() > 0) // 73
-                out << rowText.arg(m_competenza->badgeNumber()).arg("STR.ORD.GU").arg(QString::number(m_competenza->numOreGuarOrd())) << "\n";
+                out << rowText.arg(m_competenza->badgeNumber())
+                       .arg(indennita.voce(Utilities::StraordinarioGuardiaOrd, unitaId))
+                       .arg(indennita.sub(Utilities::StraordinarioGuardiaOrd, unitaId))
+                       .arg(QString::number(m_competenza->numOreGuarOrd())) << "\n";
 
             if(m_competenza->numOreGuarFesONot() > 0) // 75
-                out << rowText.arg(m_competenza->badgeNumber()).arg("STR.NOF.GU").arg(QString::number(m_competenza->numOreGuarFesONot())) << "\n";
+                out << rowText.arg(m_competenza->badgeNumber())
+                       .arg(indennita.voce(Utilities::StraordinarioGuardiaNof, unitaId))
+                       .arg(indennita.sub(Utilities::StraordinarioGuardiaNof, unitaId))
+                       .arg(QString::number(m_competenza->numOreGuarFesONot())) << "\n";
 
             if(m_competenza->numOreGuarFesENot() > 0) // 74
-                out << rowText.arg(m_competenza->badgeNumber()).arg("STR.NEF.GU").arg(QString::number(m_competenza->numOreGuarFesENot())) << "\n";
+                out << rowText.arg(m_competenza->badgeNumber())
+                       .arg(indennita.voce(Utilities::StraordinarioGuardiaNef, unitaId))
+                       .arg(indennita.sub(Utilities::StraordinarioGuardiaNef, unitaId))
+                       .arg(QString::number(m_competenza->numOreGuarFesENot())) << "\n";
 
             if(whole > 0) // 25
-                out << rowText.arg(m_competenza->badgeNumber()).arg("IND.PR.REP").arg(QString::number(whole)) << "\n";
+                out << rowText.arg(m_competenza->badgeNumber())
+                       .arg(indennita.voce(Utilities::TurniReperibilita, unitaId))
+                       .arg(indennita.sub(Utilities::TurniReperibilita, unitaId))
+                       .arg(QString::number(whole)) << "\n";
 
             if(fractional > 0.0) // 40
-                out << rowText.arg(m_competenza->badgeNumber()).arg("IND.REP.OR").arg("6") << "\n";
+                out << rowText.arg(m_competenza->badgeNumber())
+                       .arg(indennita.voce(Utilities::OreReperibilita, unitaId))
+                       .arg(indennita.sub(Utilities::OreReperibilita, unitaId))
+                       .arg("6") << "\n";
 
             if(m_competenza->numGrFestPagabili() > 0) { // 1571
-                out << rowText.arg(m_competenza->badgeNumber()).arg("GR.FES.NOT").arg(QString::number(m_competenza->numGrFestPagabili())) << "\n";
-                out << rowText.arg(m_competenza->badgeNumber()).arg("GUARD.NOT").arg("-" + QString::number(m_competenza->numGrFestPagabili())) << "\n";
+                out << rowText.arg(m_competenza->badgeNumber())
+                       .arg(indennita.voce(Utilities::GranFestivita, unitaId))
+                       .arg(indennita.sub(Utilities::GranFestivita, unitaId))
+                       .arg(QString::number(m_competenza->numGrFestPagabili())) << "\n";
+                out << rowText.arg(m_competenza->badgeNumber())
+                       .arg(indennita.voce(Utilities::GuardiaNotturna, unitaId))
+                       .arg(indennita.sub(Utilities::GuardiaNotturna, unitaId))
+                       .arg("-" + QString::number(m_competenza->numGrFestPagabili())) << "\n";
             }
 
             printBadge(painter, m_competenza->badgeNumber(),counter);

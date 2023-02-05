@@ -14,6 +14,7 @@
 class Dipendente;
 class ReperibilitaSemplificata;
 class CompetenzePagate;
+class Indennita;
 
 class SqlQueries
 {
@@ -79,6 +80,7 @@ public:
     static void saveCompetenzePagate(CompetenzePagate *pagato, int anno, int mese);
     static QString doctorName(int matricola);
     static int doctorMatricola(int id);
+    static Indennita getIndennita(int anno, int mese);
 };
 
 #endif // SQLQUERIES_H
