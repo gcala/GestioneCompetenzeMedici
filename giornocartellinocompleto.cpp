@@ -384,15 +384,15 @@ int GiornoCartellinoCompleto::numeroTimbratureOrdinarie() const
 bool GiornoCartellinoCompleto::montoNotte() const
 {
     bool ok = false;
-    if(numeroTimbrature() > 0) {
+    if(numeroTimbratureOrdinarie() > 0) {
         if(data->m_entrata1.isEmpty()) {
             // può essere smonto notte precedente e monto notte corrente
-            if(numeroTimbrature() % 2 == 0) { // timbrature pari
+            if(numeroTimbratureOrdinarie() % 2 == 0) { // timbrature pari
                 if(ultimaTimbraturaOrdinaria().ora() >= Utilities::orarioInizioNotte)
                     ok = true;
             }
         } else {
-            if(numeroTimbrature() % 2 == 1) {
+            if(numeroTimbratureOrdinarie() % 2 == 1) {
                 // timbrature dispari
                 if(ultimaTimbraturaOrdinaria().ora() >= Utilities::orarioInizioNotte)
                     ok = true;
