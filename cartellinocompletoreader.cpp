@@ -259,7 +259,7 @@ void CartellinoCompletoReader::run()
                     guarFound = false;
                     QDate dataCorrente(anno, mese, giorno.giorno());
 
-                    if(giorno.numeroTimbrature() > 0 &&
+                    if(giorno.numeroTimbratureOrdinarie() > 0 &&
                             Utilities::inMinuti(giorno.ordinario()) == 0 &&
                             giorno.causale1().isEmpty() &&
                             giorno.causale2().isEmpty() &&
