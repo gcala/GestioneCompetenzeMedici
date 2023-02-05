@@ -29,6 +29,7 @@ protected:
 
 signals:
     void timeCardsRead();
+    void anomalieFound(QString);
     void timeCardsError(QString);
     void totalRows(int);
     void currentRow(int);

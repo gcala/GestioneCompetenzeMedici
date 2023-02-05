@@ -109,6 +109,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&cartellinoReader, SIGNAL(totalRows(int)), this, SLOT(setTotalRows(int)));
     connect(&cartellinoReader, SIGNAL(currentRow(int)), this, SLOT(setCurrentRow(int)));
     connect(&cartellinoReader, SIGNAL( selectUnit(QString, int&) ), this, SLOT( associaUnita(QString, int &) ), Qt::BlockingQueuedConnection ) ;
+    connect(&cartellinoReader, &CartellinoCompletoReader::anomalieFound, this, &MainWindow::openFile);
     connect(&unitaCompetenzeExporter, SIGNAL(exportFinished(QString)), this, SLOT(exported(QString)));
     connect(&unitaCompetenzeExporter, SIGNAL(totalRows(int)), this, SLOT(setTotalRows(int)));
     connect(&unitaCompetenzeExporter, SIGNAL(currentRow(int)), this, SLOT(setCurrentRow(int)));
@@ -433,6 +434,12 @@ void MainWindow::exported(const QString &file)
     progressBar->setVisible(false);
     msgLabel->setText("");
 
+    if(!file.isEmpty())
+        QDesktopServices::openUrl(QUrl::fromLocalFile(file));
+}
+
+void MainWindow::openFile(const QString &file)
+{
     if(!file.isEmpty())
         QDesktopServices::openUrl(QUrl::fromLocalFile(file));
 }

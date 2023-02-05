@@ -115,6 +115,8 @@ void CartellinoCompletoReader::run()
     bool isFileStart = true;
     QDate currentYearMonth(1900,1,1);
 
+    QStringList anomalie;
+
     while(!in.atEnd()) {
         currRow++;
         emit currentRow(currRow);
@@ -257,6 +259,16 @@ void CartellinoCompletoReader::run()
                     guarFound = false;
                     QDate dataCorrente(anno, mese, giorno.giorno());
 
+                    if(giorno.numeroTimbrature() > 0 &&
+                            Utilities::inMinuti(giorno.ordinario()) == 0 &&
+                            giorno.causale1().isEmpty() &&
+                            giorno.causale2().isEmpty() &&
+                            giorno.causale2().isEmpty() &&
+                            giorno.indennita() != "N") {
+                        const QString s = QString::number(m_matricola) + ";" + m_dipendente->nome() + ";" + dataCorrente.toString("dd/MM/yyyy");
+                        anomalie << s;
+                    }
+
                     if(!giorno.causale1().isEmpty())
                         valutaCausale(giorno.causale1(), dataCorrente, giorno, giorno.ore1(), guarFound, daysCounter == cartellino->giorni().count());
                     if(!giorno.causale2().isEmpty())
@@ -323,8 +335,28 @@ void CartellinoCompletoReader::run()
         }
     }
 
+    const auto now = QDateTime::currentDateTime();
+    const QString destFile = Utilities::m_exportPath + QDir::separator() + "Anomalie_" + now.toString("yyyyMMdd_hhmmss");
+
+    if(anomalie.size() > 0) {
+        QFile outFile(destFile);
+        if(!outFile.open(QIODevice::WriteOnly)) {
+            qDebug() << "Impossibile aprire il file di destinazione:\n\n" + destFile;
+            return;
+        }
+
+        QTextStream out(&outFile);
+        out << "CI;NOMINATIVO;GIORNO\n";
+        for(const auto &s : anomalie) {
+            out << s << "\n";
+        }
+        outFile.close();
+    }
+
     file.close();
     QFile::remove(fileName);
+    if(anomalie.count() > 0)
+        emit anomalieFound(destFile);
     emit timeCardsRead();
 }
 

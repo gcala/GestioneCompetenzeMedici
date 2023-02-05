@@ -50,6 +50,7 @@ public:
 private slots:
     void handleResults();
     void exported(const QString &file);
+    void openFile(const QString &file);
     void computed();
     void setTotalRows(int);
     void setCurrentRow(int);
