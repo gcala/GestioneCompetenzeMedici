@@ -359,6 +359,28 @@ int GiornoCartellinoCompleto::numeroTimbrature() const
     return count;
 }
 
+int GiornoCartellinoCompleto::numeroTimbratureOrdinarie() const
+{
+    int count = 0;
+    if(!data->m_entrata1.isEmpty() && !data->m_entrata1.isIngressoRep() && !data->m_entrata1.isUscitaRep())
+        count ++;
+    if(!data->m_uscita1.isEmpty() && !data->m_uscita1.isIngressoRep() && !data->m_uscita1.isUscitaRep())
+        count ++;
+    if(!data->m_entrata2.isEmpty() && !data->m_entrata2.isIngressoRep() && !data->m_entrata2.isUscitaRep())
+        count ++;
+    if(!data->m_uscita2.isEmpty() && !data->m_uscita2.isIngressoRep() && !data->m_uscita2.isUscitaRep())
+        count ++;
+    if(!data->m_entrata3.isEmpty() && !data->m_entrata3.isIngressoRep() && !data->m_entrata3.isUscitaRep())
+        count ++;
+    if(!data->m_uscita3.isEmpty() && !data->m_uscita3.isIngressoRep() && !data->m_uscita3.isUscitaRep())
+        count ++;
+    if(!data->m_entrata4.isEmpty() && !data->m_entrata4.isIngressoRep() && !data->m_entrata4.isUscitaRep())
+        count ++;
+    if(!data->m_uscita4.isEmpty() && !data->m_uscita4.isIngressoRep() && !data->m_uscita4.isUscitaRep())
+        count ++;
+    return count;
+}
+
 bool GiornoCartellinoCompleto::montoNotte() const
 {
     bool ok = false;

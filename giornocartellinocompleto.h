@@ -50,6 +50,7 @@ public:
     QTime repNotturna() const;
     int minutiCausale(const QString &causale) const;
     int numeroTimbrature() const;
+    int numeroTimbratureOrdinarie() const;
     bool montoNotte() const;
     bool smontoNotte() const;
     Timbratura ultimaTimbraturaOrdinaria() const;

@@ -283,11 +283,11 @@ void CartellinoCompletoReader::run()
                     if(!guarFound) {
                         if(giorno.indennita().toUpper() == "N") {
                             if(giorno.giorno() -1 > 0) {
-                                if(giorno.numeroTimbrature() > 0) {
+                                if(giorno.numeroTimbratureOrdinarie() > 0) {
                                     // controllare se c'è ECCR il giorno di inizio notte
                                     if(cartellino->giorno(giorno.giorno()-1).minutiCausale("ECCR") > 0 || cartellino->giorno(giorno.giorno()-1).minutiCausale("GUAR") > 0) {
                                         m_dipendente->addGuardiaNotturna(giorno.giorno()-1);
-                                        if(giorno.numeroTimbrature() % 2 == 0 && cartellino->isLastDay(giorno.giorno()) && giorno.minutiCausale("ECCR") > 0) {
+                                        if(giorno.numeroTimbratureOrdinarie() % 2 == 0 && cartellino->isLastDay(giorno.giorno()) && giorno.minutiCausale("ECCR") > 0) {
                                             m_dipendente->addGuardiaNotturna(giorno.giorno());
                                         }
                                     }
@@ -297,7 +297,7 @@ void CartellinoCompletoReader::run()
                             if(dataCorrente.dayOfWeek() == 7 || The::almanac()->isGrandeFestivita(dataCorrente)) {
                                 if(giorno.causale1() == "ECCR" || giorno.causale2() == "ECCR" || giorno.causale3() == "ECCR") {
                                     if(cartellino->isLastDay(giorno.giorno())) {
-                                        if(giorno.numeroTimbrature() % 2 == 0) {
+                                        if(giorno.numeroTimbratureOrdinarie() % 2 == 0) {
                                             if(giorno.minutiCausale("ECCR") >= 660)
                                                 m_dipendente->addGuardiaDiurna(giorno.giorno());
                                             else
@@ -424,7 +424,7 @@ void CartellinoCompletoReader::valutaCausale(const QString &causale,
         m_dipendente->addMinutiGuar(Utilities::inMinuti(orario));
         if(dataCorrente.dayOfWeek() == 7 || The::almanac()->isGrandeFestivita(dataCorrente)) {
             if(giorno.indennita().toUpper().isEmpty()) {
-                if(giorno.numeroTimbrature() % 2 == 0) {
+                if(giorno.numeroTimbratureOrdinarie() % 2 == 0) {
                     if( (Utilities::inMinuti(orario)) >= 660)
                         m_dipendente->addGuardiaDiurna(giorno.giorno());
                     else
