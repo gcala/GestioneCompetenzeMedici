@@ -7,15 +7,15 @@
 #include "databasewizard.h"
 #include "ui_databasewizard.h"
 #include "sqldatabasemanager.h"
-#include "sqlqueries.h"
+//#include "sqlqueries.h"
 
 #include <QtWidgets>
 #include <QDebug>
 
 DatabaseWizard::DatabaseWizard(int page, QWidget *parent)
-    : m_startPage(page)
-    , QDialog(parent)
+    : QDialog(parent)
     , ui(new Ui::DatabaseWizard)
+    , m_startPage(page)
 {
     ui->setupUi(this);
     ui->createButton->setEnabled(false);
@@ -23,8 +23,6 @@ DatabaseWizard::DatabaseWizard(int page, QWidget *parent)
     ui->stackedWidget->setCurrentIndex(m_startPage);
     m_openDb = false;
     m_canceled = true;
-    m_revealPass = false;
-    on_useSSL_toggled(false);
 }
 
 DatabaseWizard::~DatabaseWizard()
@@ -55,16 +53,6 @@ QString DatabaseWizard::database() const
 QString DatabaseWizard::user() const
 {
     return ui->userLine->text().trimmed();
-}
-
-QString DatabaseWizard::password() const
-{
-    return ui->passLine->text().trimmed();
-}
-
-bool DatabaseWizard::useSSL() const
-{
-    return ui->useSSL->isChecked();
 }
 
 QString DatabaseWizard::certFile() const
@@ -166,10 +154,10 @@ void DatabaseWizard::on_createButton_clicked()
     if(!The::dbManager()->createLocalConnection(file))
         return;
 
-    SqlQueries::createUnitsTable();
-    SqlQueries::createUnitsPayedHoursTable();
-    SqlQueries::createDoctorsTable();
-    SqlQueries::createUnitsRepTable();
+    // SqlQueries::createUnitsTable();
+    // SqlQueries::createUnitsPayedHoursTable();
+    // SqlQueries::createDoctorsTable();
+    // SqlQueries::createUnitsRepTable();
 
     close();
 }
@@ -177,7 +165,7 @@ void DatabaseWizard::on_createButton_clicked()
 void DatabaseWizard::on_dbName_textChanged(const QString &arg1)
 {
     if(!arg1.isEmpty() && !ui->dbDest->text().isEmpty())
-        ui->createButton->setEnabled(true);
+        ui->createButton->setEnabled(false);
     else
         ui->createButton->setEnabled(false);
 }
@@ -185,7 +173,7 @@ void DatabaseWizard::on_dbName_textChanged(const QString &arg1)
 void DatabaseWizard::on_dbDest_textChanged(const QString &arg1)
 {
     if(!arg1.isEmpty() && !ui->dbName->text().isEmpty())
-        ui->createButton->setEnabled(true);
+        ui->createButton->setEnabled(false);
     else
         ui->createButton->setEnabled(false);
 }
@@ -205,7 +193,7 @@ void DatabaseWizard::on_openRemoteDbButton_clicked()
 
 void DatabaseWizard::on_hostLine_textChanged(const QString &arg1)
 {
-    if(!arg1.trimmed().isEmpty() && !ui->dbLine->text().trimmed().isEmpty() && !ui->userLine->text().trimmed().isEmpty() && !ui->passLine->text().trimmed().isEmpty()) {
+    if(!arg1.trimmed().isEmpty() && !ui->dbLine->text().trimmed().isEmpty() && !ui->userLine->text().trimmed().isEmpty()) {
         ui->remoteDbSave->setEnabled(true);
     } else {
         ui->remoteDbSave->setEnabled(false);
@@ -214,7 +202,7 @@ void DatabaseWizard::on_hostLine_textChanged(const QString &arg1)
 
 void DatabaseWizard::on_dbLine_textChanged(const QString &arg1)
 {
-    if(!arg1.trimmed().isEmpty() && !ui->hostLine->text().trimmed().isEmpty() && !ui->userLine->text().trimmed().isEmpty() && !ui->passLine->text().trimmed().isEmpty()) {
+    if(!arg1.trimmed().isEmpty() && !ui->hostLine->text().trimmed().isEmpty() && !ui->userLine->text().trimmed().isEmpty()) {
         ui->remoteDbSave->setEnabled(true);
     } else {
         ui->remoteDbSave->setEnabled(false);
@@ -223,16 +211,7 @@ void DatabaseWizard::on_dbLine_textChanged(const QString &arg1)
 
 void DatabaseWizard::on_userLine_textChanged(const QString &arg1)
 {
-    if(!arg1.trimmed().isEmpty() && !ui->hostLine->text().trimmed().isEmpty() && !ui->dbLine->text().trimmed().isEmpty() && !ui->passLine->text().trimmed().isEmpty()) {
-        ui->remoteDbSave->setEnabled(true);
-    } else {
-        ui->remoteDbSave->setEnabled(false);
-    }
-}
-
-void DatabaseWizard::on_passLine_textChanged(const QString &arg1)
-{
-    if(!arg1.trimmed().isEmpty() && !ui->hostLine->text().trimmed().isEmpty() && !ui->userLine->text().trimmed().isEmpty() && !ui->dbLine->text().trimmed().isEmpty()) {
+    if(!arg1.trimmed().isEmpty() && !ui->hostLine->text().trimmed().isEmpty() && !ui->dbLine->text().trimmed().isEmpty()) {
         ui->remoteDbSave->setEnabled(true);
     } else {
         ui->remoteDbSave->setEnabled(false);
@@ -252,6 +231,26 @@ void DatabaseWizard::on_remoteDbBack_clicked()
 
 void DatabaseWizard::on_remoteDbSave_clicked()
 {
+    if(ui->hostLine->text().trimmed().isEmpty()) {
+        QMessageBox::critical(this, "Host non specificato", "È necessario indicare un server host per il database remoto", QMessageBox::Ok);
+        return;
+    }
+    if(ui->dbLine->text().trimmed().isEmpty()) {
+        QMessageBox::critical(this, "Database non specificato", "È necessario indicare il nome del database remoto", QMessageBox::Ok);
+        return;
+    }
+    if(ui->userLine->text().trimmed().isEmpty()) {
+        QMessageBox::critical(this, "Nome utente non specificato", "È necessario indicare il nome utente con cui connettersi", QMessageBox::Ok);
+        return;
+    }
+    if(ui->certLine->text().trimmed().isEmpty()) {
+        QMessageBox::critical(this, "File certificato non selezionato", "È necessario il file del certificato di sicurezza", QMessageBox::Ok);
+        return;
+    }
+    if(ui->keyLine->text().trimmed().isEmpty()) {
+        QMessageBox::critical(this, "File chiave non selezionata", "È necessario il file con la chiave di sicurezza", QMessageBox::Ok);
+        return;
+    }
     m_canceled = false;
     close();
 }
@@ -260,30 +259,6 @@ void DatabaseWizard::on_cancelOpenButton_clicked()
 {
     m_canceled = true;
     close();
-}
-
-void DatabaseWizard::on_revealButton_clicked()
-{
-    m_revealPass = !m_revealPass;
-    if(m_revealPass) {
-        ui->revealButton->setIcon(QIcon(":/icons/password-show-off.svg"));
-        ui->passLine->setEchoMode(QLineEdit::Normal);
-    } else {
-        ui->revealButton->setIcon(QIcon(":/icons/password-show-on.svg"));
-        ui->passLine->setEchoMode(QLineEdit::Password);
-    }
-}
-
-void DatabaseWizard::on_useSSL_toggled(bool checked)
-{
-    ui->certButton->setEnabled(checked);
-    ui->keyButton->setEnabled(checked);
-
-    ui->certLabel->setEnabled(checked);
-    ui->keyLabel->setEnabled(checked);
-
-    ui->certLine->setEnabled(checked);
-    ui->keyLine->setEnabled(checked);
 }
 
 void DatabaseWizard::on_certButton_clicked()

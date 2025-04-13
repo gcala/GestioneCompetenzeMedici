@@ -5,10 +5,11 @@
 */
 
 #include "deficitrecuperiexporter.h"
-#include "sqlqueries.h"
+//#include "sqlqueries.h"
 #include "competenza.h"
 #include "sqldatabasemanager.h"
 #include "utilities.h"
+#include "apiservice.h"
 
 #include <QDate>
 #include <QFile>
@@ -94,9 +95,12 @@ void DeficitRecuperiExporter::run()
 
     if(m_idUnita != -1) {
         unitaIdList << m_idUnita;
-        fileName += "_" + QString::number(m_idUnita) + "_" + SqlQueries::getUnitaNomeBreve(m_idUnita);
+        fileName += "_" + QString::number(m_idUnita) + "_" + ApiService::instance().getUnitaDataById(m_idUnita).breve;
     } else {
-        unitaIdList << SqlQueries::getUnitaIdsInTimecard(m_timecard);
+        const auto units = ApiService::instance().getUnitaDataFromTimecard(m_timecard);
+        for(const auto u : units) {
+            unitaIdList << u.idUnita;
+        }
     }
 
     emit totalRows(unitaIdList.count());
@@ -115,7 +119,11 @@ void DeficitRecuperiExporter::printPdf(const QString &fileName, const QString &m
 {
     QPdfWriter writer(m_path + QDir::separator() + fileName);
 
+#if QT_VERSION >= 0x060000
     writer.setPageSize(QPageSize::A4);
+#else
+    writer.setPageSize(QPagedPaintDevice::A4);
+#endif
     writer.setPageMargins(QMargins(30, 30, 30, 30));
     writer.setPageOrientation(QPageLayout::Portrait);
     writer.setTitle("Deficit " + QString(mese));
@@ -135,9 +143,10 @@ void DeficitRecuperiExporter::printPdf(const QString &fileName, const QString &m
         currRow++;
         emit currentRow(currRow);
 
-        QString unitaName = SqlQueries::getUnitaNomeCompleto(unitaId);
+        QString unitaName = ApiService::instance().getUnitaNomeCompleto(unitaId);
 
-        QVector<int> dirigentiIdList = SqlQueries::getDoctorsIdsFromUnitInTimecard(m_timecard, unitaId);
+        qDebug() << "2 ------------->" << m_timecard;
+        QVector<int> dirigentiIdList = ApiService::instance().getDoctorsIdsFromUnitInTimecard(m_timecard, unitaId);
 
         int counter = 0;
 
@@ -146,13 +155,13 @@ void DeficitRecuperiExporter::printPdf(const QString &fileName, const QString &m
         foreach (int dirigenteId, dirigentiIdList) {
             m_competenza = new Competenza(m_timecard,dirigenteId);
 
-            if(m_competenza->deficitOrario() == "//")
+            if(m_competenza->deficitOrario() >= 0)
                 continue;
 
             Doctor doctor;
             doctor.badge = m_competenza->badgeNumber();
             doctor.name = m_competenza->name();
-            doctor.deficitProgressivo = m_competenza->deficitOrario();
+            doctor.deficitProgressivo = Utilities::inOrario(m_competenza->deficitOrario());
             doctor.deficitPuntuale = m_competenza->deficitPuntuale();
 
             doctors << doctor;
@@ -200,9 +209,10 @@ void DeficitRecuperiExporter::printCsv(const QString &fileName, const QString &m
         currRow++;
         emit currentRow(currRow);
 
-        QString unitaName = SqlQueries::getUnitaNomeCompleto(unitaId);
+        QString unitaName = ApiService::instance().getUnitaNomeCompleto(unitaId);
 
-        QVector<int> dirigentiIdList = SqlQueries::getDoctorsIdsFromUnitInTimecard(m_timecard, unitaId);
+        qDebug() << "3 ------------->" << m_timecard;
+        QVector<int> dirigentiIdList = ApiService::instance().getDoctorsIdsFromUnitInTimecard(m_timecard, unitaId);
 
         QList<Doctor> doctors;
 
@@ -215,26 +225,26 @@ void DeficitRecuperiExporter::printCsv(const QString &fileName, const QString &m
             Doctor doctor;
             doctor.badge = m_competenza->badgeNumber();
             doctor.name = m_competenza->name();
-            if(m_competenza->deficitOrario() == "//")
+            if(m_competenza->deficitOrario() >= 0)
                 doctor.deficitProgressivo = "00:00";
             else
-                doctor.deficitProgressivo = m_competenza->deficitOrario();
+                doctor.deficitProgressivo = Utilities::inOrario(m_competenza->deficitOrario());
 
             if(m_competenza->deficitPuntuale() == "//")
                 doctor.deficitPuntuale = "00:00";
             else
                 doctor.deficitPuntuale = m_competenza->deficitPuntuale();
 
-            if(m_competenza->numOreRecuperabili() == 0 && m_competenza->recuperiMesiSuccessivo().second == 0)
+            if(m_competenza->minutiRecuperabili() == 0 && m_competenza->recuperiMeseSuccessivo().second == 0)
                 doctor.oreRecuperabili = "00:00";
             else {
-                doctor.oreRecuperabili = Utilities::inOrario(m_competenza->numOreRecuperabili());
+                doctor.oreRecuperabili = Utilities::inOrario(m_competenza->minutiRecuperabili());
             }
 
-            if(m_competenza->residuoOreNonRecuperabili() == "//")
+            if(m_competenza->minutiNonRecuperabili() == 0)
                 doctor.oreNonRecuperabili = "00:00";
             else {
-                doctor.oreNonRecuperabili = m_competenza->residuoOreNonRecuperabili();
+                doctor.oreNonRecuperabili = Utilities::inOrario(m_competenza->minutiNonRecuperabili());
             }
 
             doctor.ferie = m_competenza->ferieDates();

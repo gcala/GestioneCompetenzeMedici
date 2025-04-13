@@ -28,9 +28,15 @@ QSize RenderArea::sizeHint() const
     return {400, 200};
 }
 
-void RenderArea::setGuardiaMap(const QMap<int, GuardiaType> &guardiaMap)
+void RenderArea::setGuardiaMap(const QMap<int, Utilities::GuardiaType> &guardiaMap)
 {
     m_guardiaMap = guardiaMap;
+    update();
+}
+
+void RenderArea::setMezzaGuardiaMap(const QMap<int, Utilities::GuardiaType> &guardiaMap)
+{
+    m_mezzaGuardiaMap = guardiaMap;
     update();
 }
 
@@ -67,7 +73,7 @@ void RenderArea::paintEvent(QPaintEvent * /* event */)
     int cellSize = width() / 5;
     int counter = 0;
     int yCounter = 0;
-    QMap<int, GuardiaType>::const_iterator i = m_guardiaMap.constBegin();
+    QMap<int, Utilities::GuardiaType>::const_iterator i = m_guardiaMap.constBegin();
     while (i != m_guardiaMap.constEnd()) {
         QRect rect(cellSize*(counter%5),cellSize*yCounter,cellSize,cellSize);
         if(The::almanac()->isGrandeFestivita(QDate(m_anno, m_mese, i.key())) || QDate(m_anno, m_mese, i.key()).dayOfWeek() == 7 ) {
@@ -76,16 +82,56 @@ void RenderArea::paintEvent(QPaintEvent * /* event */)
         painter.drawText(rect,Qt::AlignCenter | Qt::AlignVCenter,QString::number(i.key()));
         painter.setPen(blackPen);
         switch (i.value()) {
-        case GuardiaType::Sabato:
+        case Utilities::GuardiaType::Sabato:
             if(m_diurna)
                 painter.drawEllipse(rect.adjusted(8,8,-8,-8));
             else
                 painter.drawText(rect.adjusted(0,0,0,-30),Qt::AlignCenter | Qt::AlignTop,"*");
             break;
-        case GuardiaType::Domenica:
+        case Utilities::GuardiaType::Domenica:
             painter.drawEllipse(rect.adjusted(8,8,-8,-8));
             break;
-        case GuardiaType::GrandeFestivita:
+        case Utilities::GuardiaType::GrandeFestivita:
+            if(m_diurna)
+                painter.drawEllipse(rect.adjusted(8,8,-8,-8));
+            else {
+                painter.drawText(rect.adjusted(0,0,0,-30),Qt::AlignCenter | Qt::AlignTop,"*");
+                painter.drawRect(cellSize*(counter%5)+10,cellSize*yCounter+10,cellSize-20,cellSize-20);
+            }
+            break;
+        default:
+            break;
+        }
+        i++;
+        counter++;
+        if(counter < 5)
+            yCounter = 0;
+        else if(counter < 10)
+            yCounter = 1;
+        else if(counter < 15)
+            yCounter = 2;
+        else
+            yCounter = 3;
+    }
+    i = m_mezzaGuardiaMap.constBegin();
+    while (i != m_mezzaGuardiaMap.constEnd()) {
+        QRect rect(cellSize*(counter%5),cellSize*yCounter,cellSize,cellSize);
+        if(The::almanac()->isGrandeFestivita(QDate(m_anno, m_mese, i.key())) || QDate(m_anno, m_mese, i.key()).dayOfWeek() == 7 ) {
+            painter.setPen(redPen);
+        }
+        painter.drawText(rect,Qt::AlignCenter | Qt::AlignVCenter,QString::number(i.key()));
+        painter.setPen(Qt::darkGreen);
+        switch (i.value()) {
+        case Utilities::GuardiaType::Sabato:
+            if(m_diurna)
+                painter.drawEllipse(rect.adjusted(8,8,-8,-8));
+            else
+                painter.drawText(rect.adjusted(0,0,0,-30),Qt::AlignCenter | Qt::AlignTop,"*");
+            break;
+        case Utilities::GuardiaType::Domenica:
+            painter.drawEllipse(rect.adjusted(8,8,-8,-8));
+            break;
+        case Utilities::GuardiaType::GrandeFestivita:
             if(m_diurna)
                 painter.drawEllipse(rect.adjusted(8,8,-8,-8));
             else {

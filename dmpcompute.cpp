@@ -5,10 +5,12 @@
 */
 
 #include "dmpcompute.h"
-#include "sqlqueries.h"
+//#include "sqlqueries.h"
 #include "competenza.h"
 #include "utilities.h"
+#include "dipendente.h"
 #include "sqldatabasemanager.h"
+#include "apiservice.h"
 
 #include <QSqlError>
 #include <QDebug>
@@ -36,10 +38,10 @@ void DmpCompute::ricalcolaDmp(const QStringList &timecards, const int &idDirigen
 {
     int dmp = 0;
     for(int i = 0; i < (timecards.count()); i++) {
-        if(SqlQueries::timeCardExists(timecards.at(i), idDirigente)) {
+        if(ApiService::instance().timeCardExists(timecards.at(i), idDirigente)) {
             auto competenza = new Competenza(timecards.at(i), idDirigente);
             if(i == 0) {
-                dmp = (competenza->differenzaMin() < 0 ? abs(competenza->differenzaMin()) : 0);
+                dmp = (competenza->minutiSaldoMese() < 0 ? abs(competenza->minutiSaldoMese()) : 0);
                 m_currItem++;
                 emit currentItem(m_currItem);
                 continue;
@@ -48,7 +50,24 @@ void DmpCompute::ricalcolaDmp(const QStringList &timecards, const int &idDirigen
             competenza->setDmpCalcolato(dmp);
             competenza->saveMods();
 
-            dmp = competenza->differenzaMin() < 0 ? abs(competenza->differenzaMin()) : 0;
+            dmp = competenza->minutiSaldoMese() < 0 ? abs(competenza->minutiSaldoMese()) : 0;
+
+            int anno = 0;
+            int mese = 0;
+            const auto matricola = ApiService::instance().getDoctorMatricola(idDirigente);
+            Utilities::extractAnnoMeseFromTimecard(timecards.at(i), anno, mese);
+            const QDate dataCorrente(anno,mese,1);
+            if(dataCorrente >= Utilities::regolamentoOrario2025Date) {
+                const auto saldo = competenza->saldoMinuti();
+                const auto dmp = competenza->dmp();
+                const auto rmp = competenza->dipendente()->minutiCausale("RMP");
+                const auto idSituazioneSaldo = ApiService::instance().idSituazioneSaldo(anno, mese, matricola);
+                if(idSituazioneSaldo > 0) {
+                    ApiService::instance().updateSituazioneSaldo(idSituazioneSaldo, saldo, rmp, dmp);
+                } else {
+                    ApiService::instance().addSituazioneSaldo(anno, mese, matricola, saldo, rmp, dmp);
+                }
+            }
         } else {
             dmp = 0;
         }
@@ -97,7 +116,7 @@ void DmpCompute::run()
 
     int itemsCount = 0;
 
-    QStringList timecards = SqlQueries::timecardsList();
+    QStringList timecards = ApiService::instance().getTimecardsList();
 
     for(const QString &s: timecards) {
         if(s == m_tableName)
@@ -117,38 +136,19 @@ void DmpCompute::run()
         itemsCount = timecards.count();
         emit totalItems(itemsCount);
     } else {
-        if(m_idUnita != -1) {
-            // ricalcolo deficit dei medici di una unità
-            for(const QString &card : timecards) {
-                itemsCount += SqlQueries::numDoctorsFromUnitInTimecard(card, m_idUnita);
-            }
-            emit totalItems(itemsCount*timecards.count());
-        } else {
-            // ricalcolo deficit di tutti i medici di tutte le unità
-            for(const QString &card : timecards) {
-                itemsCount += SqlQueries::numDoctorsInTimecard(card);
-            }
-            emit totalItems(itemsCount*(timecards.count()-1));
+        for(const QString &card : timecards) {
+            itemsCount += ApiService::instance().getDoctorsIdsFromUnitInTimecard(card, m_idUnita).count();
         }
+        emit totalItems(itemsCount*timecards.count());
     }
 
     m_currItem = 0;
-//    int dmp = 0;
     if(m_idDirigente != -1) {
         ricalcolaDmp(timecards, m_idDirigente);
     } else {
-        if(m_idUnita != -1) {
-            // ricalcolo deficit dei medici di una unità
-            QVector<int> idsDirigenti = SqlQueries::getDoctorsIdsFromUnitInTimecard(timecards.at(0), m_idUnita);
-            for(int id : idsDirigenti) {
-                ricalcolaDmp(timecards, id);
-            }
-        } else {
-            // ricalcolo deficit di tutti i medici di tutte le unità
-            QVector<int> idsDirigenti = SqlQueries::getDoctorsIdsFromUnitInTimecard(timecards.at(0), -1);
-            for(int id : idsDirigenti) {
-                ricalcolaDmp(timecards, id);
-            }
+        QVector<int> idsDirigenti = ApiService::instance().getDoctorsIdsFromUnitInTimecard(timecards.at(0), m_idUnita);
+        for(int id : qAsConst(idsDirigenti)) {
+            ricalcolaDmp(timecards, id);
         }
     }
 

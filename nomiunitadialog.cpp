@@ -6,7 +6,8 @@
 
 #include "nomiunitadialog.h"
 #include "ui_nomiunitadialog.h"
-#include "sqlqueries.h"
+//#include "sqlqueries.h"
+#include "apiservice.h"
 
 #include <QtWidgets>
 
@@ -26,7 +27,7 @@ NomiUnitaDialog::~NomiUnitaDialog()
 void NomiUnitaDialog::populateUnits()
 {
     ui->unitaCB->clear();
-    const QMap<int, QString> map = SqlQueries::units();
+    const QMap<int, QString> map = ApiService::instance().getUnits();
     QMap<int, QString>::const_iterator i = map.constBegin();
     while (i != map.constEnd()) {
         ui->unitaCB->addItem(QString::number(i.key()) + " - " + i.value(), i.key());
@@ -36,9 +37,9 @@ void NomiUnitaDialog::populateUnits()
     ui->unitaCB->show();
 }
 
-void NomiUnitaDialog::setUnitaLabel(const QString &name)
+void NomiUnitaDialog::setNominativoLabel(const QString &name)
 {
-    ui->unitaLabel->setText(name);
+    ui->nominativoLabel->setText(name);
     m_unitId = -1;
 }
 

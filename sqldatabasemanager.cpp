@@ -13,16 +13,6 @@
 #include <QFile>
 #include <QDebug>
 
-QString SQLiteDatabaseManager::m_dbFile;
-QString SQLiteDatabaseManager::m_dbName;
-QString SQLiteDatabaseManager::m_host;
-QString SQLiteDatabaseManager::m_user;
-QString SQLiteDatabaseManager::m_password;
-bool SQLiteDatabaseManager::m_secure;
-QString SQLiteDatabaseManager::m_certFile;
-QString SQLiteDatabaseManager::m_keyFile;
-QString SQLiteDatabaseManager::m_driver;
-
 namespace The {
     static SQLiteDatabaseManager* s_SQLiteDatabaseManager_instance = nullptr;
 
@@ -30,7 +20,6 @@ namespace The {
     {
         if( !s_SQLiteDatabaseManager_instance ) {
             s_SQLiteDatabaseManager_instance = new SQLiteDatabaseManager();
-            s_SQLiteDatabaseManager_instance->m_secure = false;
         }
 
         return s_SQLiteDatabaseManager_instance;
@@ -54,11 +43,11 @@ bool SQLiteDatabaseManager::createLocalConnection()
 {
 //    closeCurrentConnection();
 
-    QSqlDatabase db = QSqlDatabase::addDatabase(m_driver);
+    QSqlDatabase db = QSqlDatabase::addDatabase(Utilities::m_driver);
 
     if(!QSqlDatabase::connectionNames().contains(Utilities::m_connectionName)) {
-        QSqlDatabase db = QSqlDatabase::addDatabase(m_driver, Utilities::m_connectionName);
-        db.setDatabaseName(m_dbFile);
+        QSqlDatabase db = QSqlDatabase::addDatabase(Utilities::m_driver, Utilities::m_connectionName);
+        db.setDatabaseName(Utilities::m_localDbFileName);
         if (!db.open()) {
             QMessageBox::critical(nullptr, qApp->tr("Errore apertura database"),
                                   "Impossibile connettersi al database.\n" + db.lastError().text(), QMessageBox::Cancel);
@@ -66,7 +55,7 @@ bool SQLiteDatabaseManager::createLocalConnection()
         }
     }
 
-    qDebug() << m_dbFile;
+    qDebug() << Utilities::m_localDbFileName;
 
     return true;
 }
@@ -78,22 +67,23 @@ bool SQLiteDatabaseManager::createRemoteConnection()
     if(!QSqlDatabase::connectionNames().contains(Utilities::m_connectionName)) {
         QString opts = "MYSQL_OPT_RECONNECT=1;";
 
-        if(m_secure) {
-            if(m_certFile.isEmpty() || m_keyFile.isEmpty() || !QFile::exists(m_certFile) || !QFile::exists(m_keyFile)) {
-                QMessageBox::critical(nullptr, "Errore Connessione", "I file Certificato/Chiave sono necessari per una connessione protetta.\n"
-                                                               "Aprire Impostazioni e configurare Certificato e Chiave.", QMessageBox::Cancel);
-                return false;
-            }
-            opts += "SSL_KEY=" + m_keyFile + ";";
-            opts += "SSL_CERT=" + m_certFile + ";";
-        }
+//        if(true) {
+//            if(Utilities::m_certFile.isEmpty() || Utilities::m_keyFile.isEmpty() || !QFile::exists(Utilities::m_certFile) || !QFile::exists(Utilities::m_keyFile)) {
+//                QMessageBox::critical(nullptr, "Errore Connessione", "I file Certificato/Chiave sono necessari per una connessione protetta.\n"
+//                                                               "Aprire Impostazioni e configurare Certificato e Chiave.", QMessageBox::Cancel);
+//                return false;
+//            }
+//            opts += "SSL_KEY=" + Utilities::m_keyFile + ";";
+//            opts += "SSL_CERT=" + Utilities::m_certFile + ";";
+//        }
 
-        QSqlDatabase db = QSqlDatabase::addDatabase(m_driver, Utilities::m_connectionName);
+        QSqlDatabase db = QSqlDatabase::addDatabase(Utilities::m_driver, Utilities::m_connectionName);
         db.setConnectOptions(opts);
-        db.setHostName(m_host);
-        db.setDatabaseName(m_dbName);
-        db.setUserName(m_user);
-        db.setPassword(m_password);
+        db.setPort(443);
+        db.setHostName(Utilities::m_host);
+        db.setDatabaseName(Utilities::m_dbName);
+        db.setUserName(Utilities::m_lastUsername);
+        db.setPassword(Utilities::m_lastPassword);
         if (!db.open()) {
             QMessageBox::critical(nullptr, qApp->tr("Errore apertura database"),
                                   "Impossibile connettersi al database.\n" + db.lastError().text(), QMessageBox::Cancel);
@@ -137,64 +127,19 @@ QString SQLiteDatabaseManager::currentDatabaseName() const
 
 bool SQLiteDatabaseManager::createConnection()
 {
-    if(m_driver.trimmed().isEmpty()) {
+    if(Utilities::m_driver.trimmed().isEmpty()) {
         QMessageBox::critical(nullptr, qApp->tr("Errore connessione"),
                               "Non è stato indicato il driver da usare. Connessione fallita!", QMessageBox::Cancel);
         return false;
     }
 
-    if(m_driver == "QMYSQL") {
+    if(Utilities::m_driver == "QMYSQL") {
         return createRemoteConnection();
-    } else if(m_driver == "QSQLITE") {
+    } else if(Utilities::m_driver == "QSQLITE") {
         return createLocalConnection();
     }
 
     return false;
-}
-
-void SQLiteDatabaseManager::setLocalDbFileName(const QString &fileName)
-{
-    m_dbFile = fileName;
-}
-
-void SQLiteDatabaseManager::setDbName(const QString &name)
-{
-    m_dbName = name;
-}
-
-void SQLiteDatabaseManager::setHost(const QString &host)
-{
-    m_host = host;
-}
-
-void SQLiteDatabaseManager::setUser(const QString &user)
-{
-    m_user = user;
-}
-
-void SQLiteDatabaseManager::setPass(const QString &pass)
-{
-    m_password = pass;
-}
-
-void SQLiteDatabaseManager::setSecure(const bool &secure)
-{
-    m_secure = secure;
-}
-
-void SQLiteDatabaseManager::setCert(const QString &cert)
-{
-    m_certFile = cert;
-}
-
-void SQLiteDatabaseManager::setKey(const QString &key)
-{
-    m_keyFile = key;
-}
-
-void SQLiteDatabaseManager::setDriver(const QString &driver)
-{
-    m_driver = driver;
 }
 
 QSqlDatabase SQLiteDatabaseManager::database(bool &ok, const QString &connectionName)
@@ -202,29 +147,29 @@ QSqlDatabase SQLiteDatabaseManager::database(bool &ok, const QString &connection
     QSqlDatabase db;
     ok = true;
 
-    if(m_driver == "QMYSQL") {
+    if(Utilities::m_driver == "QMYSQL") {
         QString opts = "MYSQL_OPT_RECONNECT=1;";
 
-        if(m_secure) {
-            if(m_certFile.isEmpty() || m_keyFile.isEmpty() || !QFile::exists(m_certFile) || !QFile::exists(m_keyFile)) {
-                qDebug() << "I file Certificato/Chiave sono necessari per una connessione protetta.\nAprire Impostazioni e configurare Certificato e Chiave.";
-                ok = false;
-            } else {
-                opts += "SSL_KEY=" + m_keyFile + ";";
-                opts += "SSL_CERT=" + m_certFile + ";";
-            }
-        }
+//        if(true) {
+//            if(Utilities::m_certFile.isEmpty() || Utilities::m_keyFile.isEmpty() || !QFile::exists(Utilities::m_certFile) || !QFile::exists(Utilities::m_keyFile)) {
+//                qDebug() << "I file Certificato/Chiave sono necessari per una connessione protetta.\nAprire Impostazioni e configurare Certificato e Chiave.";
+//                ok = false;
+//            } else {
+//                opts += "SSL_KEY=" + Utilities::m_keyFile + ";";
+//                opts += "SSL_CERT=" + Utilities::m_certFile + ";";
+//            }
+//        }
 
-        db = QSqlDatabase::addDatabase(m_driver, connectionName);
+        db = QSqlDatabase::addDatabase(Utilities::m_driver, connectionName);
         db.setConnectOptions(opts);
-        db.setHostName(m_host);
-        db.setDatabaseName(m_dbName);
-        db.setUserName(m_user);
-        db.setPassword(m_password);
-//        return db;
+        db.setPort(443);
+        db.setHostName(Utilities::m_host);
+        db.setDatabaseName(Utilities::m_dbName);
+        db.setUserName(Utilities::m_lastUsername);
+        db.setPassword(Utilities::m_lastPassword);
     } else {
         db = QSqlDatabase::addDatabase("QSQLITE");
-        db.setDatabaseName(m_dbFile);
+        db.setDatabaseName(Utilities::m_localDbFileName);
     }
 
     return db;
@@ -237,6 +182,5 @@ QSqlDatabase SQLiteDatabaseManager::currentDatabase()
 
 QString SQLiteDatabaseManager::driverName() const
 {
-    QSqlDatabase db = QSqlDatabase::database(Utilities::m_connectionName);
-    return db.driverName();
+    return Utilities::m_driver;
 }

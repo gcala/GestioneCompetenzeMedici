@@ -7,9 +7,10 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "printdialog.h"
-#include "sqlqueries.h"
-#include "calendarmanager.h"
+#include "differenzedialog.h"
+#include "competenzeexporterdialog.h"
 #include "calendarmanagerrep.h"
+#include "calendarmanagerteleconsulto.h"
 #include "competenza.h"
 #include "utilities.h"
 #include "databasewizard.h"
@@ -23,6 +24,12 @@
 #include "switchunitdialog.h"
 #include "manageemployee.h"
 #include "manageunits.h"
+#include "causalewidget.h"
+#include "dipendente.h"
+#include "reperibilitasemplificata.h"
+#include "differenzeexporter.h"
+#include "competenzeexporter.h"
+#include "apiservice.h"
 
 #include <QtWidgets>
 #include <QDebug>
@@ -46,27 +53,18 @@ MainWindow::MainWindow(QWidget *parent) :
     tabulaProcess = new QProcess;
     connect(tabulaProcess, SIGNAL(finished(int , QProcess::ExitStatus)), this, SLOT(tabulaFinished(int , QProcess::ExitStatus)));
     connect(tabulaProcess, SIGNAL(errorOccurred(QProcess::ProcessError)), this, SLOT(tabulaError(QProcess::ProcessError)));
+    connect(tabulaProcess, SIGNAL(readyReadStandardOutput()), this, SLOT(tabulaReadOutput()));
+    connect(tabulaProcess, SIGNAL(readyReadStandardError()), this, SLOT(tabulaReadOutput()));
 
     m_loadingTimeCards = false;
+    m_anno = 0;
+    m_mese = 0;
 
     ui->restoreCompetenzeButton->setEnabled(false);
     ui->saveCompetenzeButton->setEnabled(false);
-
-    gdCalendarMenu = new QMenu(ui->gdCalendarButton);
-    gdCalendar = new CalendarManager(gdCalendarMenu);
-    gdCalendarAction = new QWidgetAction(gdCalendarMenu);
-    gdCalendarAction->setDefaultWidget(gdCalendar);
-    gdCalendarMenu->addAction(gdCalendarAction);
-    ui->gdCalendarButton->setMenu(gdCalendarMenu);
-    connect(gdCalendar, SIGNAL(clicked(QDate)), this, SLOT(gdCalendarClicked(QDate)));
-
-    gnCalendarMenu = new QMenu(ui->gnCalendarButton);
-    gnCalendar = new CalendarManager(gnCalendarMenu);
-    gnCalendarAction = new QWidgetAction(gnCalendarMenu);
-    gnCalendarAction->setDefaultWidget(gnCalendar);
-    gnCalendarMenu->addAction(gnCalendarAction);
-    ui->gnCalendarButton->setMenu(gnCalendarMenu);
-    connect(gnCalendar, SIGNAL(clicked(QDate)), this, SLOT(gnCalendarClicked(QDate)));
+    ui->meseCompetenzeCB->setEnabled(true);
+    ui->unitaCompetenzeCB->setEnabled(true);
+    ui->dirigentiCompetenzeCB->setEnabled(true);
 
     rCalendarMenu = new QMenu(ui->rCalendarButton);
     rCalendar = new CalendarManagerRep(rCalendarMenu);
@@ -74,55 +72,15 @@ MainWindow::MainWindow(QWidget *parent) :
     rCalendarAction->setDefaultWidget(rCalendar);
     rCalendarMenu->addAction(rCalendarAction);
     ui->rCalendarButton->setMenu(rCalendarMenu);
-    connect(rCalendar, SIGNAL(clicked(QDate)), this, SLOT(rCalendarClicked(QDate)));
+    connect(rCalendar, SIGNAL(datesChanged()), this, SLOT(rCalendarClicked()));
 
-    ferieCalendarMenu = new QMenu(ui->ferieCalendarButton);
-    ferieCalendar = new CalendarManager(ferieCalendarMenu);
-    ferieCalendarAction = new QWidgetAction(ferieCalendarMenu);
-    ferieCalendarAction->setDefaultWidget(ferieCalendar);
-    ferieCalendarMenu->addAction(ferieCalendarAction);
-    ui->ferieCalendarButton->setMenu(ferieCalendarMenu);
-    ferieCalendar->setSelectionMode(QCalendarWidget::NoSelection);
-
-    congediCalendarMenu = new QMenu(ui->congediCalendarButton);
-    congediCalendar = new CalendarManager(congediCalendarMenu);
-    congediCalendarAction = new QWidgetAction(congediCalendarMenu);
-    congediCalendarAction->setDefaultWidget(congediCalendar);
-    congediCalendarMenu->addAction(congediCalendarAction);
-    ui->congediCalendarButton->setMenu(congediCalendarMenu);
-    congediCalendar->setSelectionMode(QCalendarWidget::NoSelection);
-
-    malattiaCalendarMenu = new QMenu(ui->malattiaCalendarButton);
-    malattiaCalendar = new CalendarManager(malattiaCalendarMenu);
-    malattiaCalendarAction = new QWidgetAction(malattiaCalendarMenu);
-    malattiaCalendarAction->setDefaultWidget(malattiaCalendar);
-    malattiaCalendarMenu->addAction(malattiaCalendarAction);
-    ui->malattiaCalendarButton->setMenu(malattiaCalendarMenu);
-    malattiaCalendar->setSelectionMode(QCalendarWidget::NoSelection);
-
-    rmpCalendarMenu = new QMenu(ui->rmpCalendarButton);
-    rmpCalendar = new CalendarManager(rmpCalendarMenu);
-    rmpCalendarAction = new QWidgetAction(rmpCalendarMenu);
-    rmpCalendarAction->setDefaultWidget(rmpCalendar);
-    rmpCalendarMenu->addAction(rmpCalendarAction);
-    ui->rmpCalendarButton->setMenu(rmpCalendarMenu);
-    rmpCalendar->setSelectionMode(QCalendarWidget::NoSelection);
-
-    rmcCalendarMenu = new QMenu(ui->rmcCalendarButton);
-    rmcCalendar = new CalendarManager(rmcCalendarMenu);
-    rmcCalendarAction = new QWidgetAction(rmcCalendarMenu);
-    rmcCalendarAction->setDefaultWidget(rmcCalendar);
-    rmcCalendarMenu->addAction(rmcCalendarAction);
-    ui->rmcCalendarButton->setMenu(rmcCalendarMenu);
-    rmcCalendar->setSelectionMode(QCalendarWidget::NoSelection);
-
-    altreCalendarMenu = new QMenu(ui->altreCalendarButton);
-    altreCalendar = new CalendarManager(altreCalendarMenu);
-    altreCalendarAction = new QWidgetAction(altreCalendarMenu);
-    altreCalendarAction->setDefaultWidget(altreCalendar);
-    altreCalendarMenu->addAction(altreCalendarAction);
-    ui->altreCalendarButton->setMenu(altreCalendarMenu);
-    connect(altreCalendar, SIGNAL(clicked(QDate)), this, SLOT(altreCalendarClicked(QDate)));
+    tCalendarMenu = new QMenu(ui->tCalendarButton);
+    tCalendar = new CalendarManagerTeleconsulto(tCalendarMenu);
+    tCalendarAction = new QWidgetAction(tCalendarMenu);
+    tCalendarAction->setDefaultWidget(tCalendar);
+    tCalendarMenu->addAction(tCalendarAction);
+    ui->tCalendarButton->setMenu(tCalendarMenu);
+    connect(tCalendar, SIGNAL(datesChanged()), this, SLOT(tCalendarClicked()));
 
     unitaReadOnlyMode = true;
     dirigenteReadOnlyMode = true;
@@ -130,32 +88,44 @@ MainWindow::MainWindow(QWidget *parent) :
     dirigenteOp = UndefOp;
 
     printDialog = new PrintDialog(this);
+    differenzeDialog = new DifferenzeDialog(this);
+    competenzeExporterDialog = new CompetenzeExporterDialog(this);
     ui->sommV1->setVisible(false);
     ui->sommV2->setVisible(false);
+
+    causaliLayout = new QHBoxLayout(this);
+    ui->causaliGB->setLayout(causaliLayout);
+    causaliLayout->setContentsMargins(0,0,0,0);
+    causaliLayout->setSpacing(0);
 
     loadSettings();
     Utilities::m_connectionName = "";
 
-    connect(&tabulaReader, SIGNAL(timeCardsRead()), this, SLOT(handleResults()));
-    connect(&tabulaReader, SIGNAL(totalRows(int)), this, SLOT(setTotalRows(int)));
-    connect(&tabulaReader, SIGNAL(currentRow(int)), this, SLOT(setCurrentRow(int)));
-    connect(&okularReader, SIGNAL(timeCardsRead()), this, SLOT(handleResults()));
-    connect(&okularReader, SIGNAL(totalRows(int)), this, SLOT(setTotalRows(int)));
-    connect(&okularReader, SIGNAL(currentRow(int)), this, SLOT(setCurrentRow(int)));
+    differenzeExporter = new DifferenzeExporter;
+    competenzeExporter = new CompetenzeExporter;
+
+    connect(&cartellinoReader, SIGNAL(timeCardsRead()), this, SLOT(handleResults()));
+    connect(&cartellinoReader, SIGNAL(totalRows(int)), this, SLOT(setTotalRows(int)));
+    connect(&cartellinoReader, SIGNAL(currentRow(int)), this, SLOT(setCurrentRow(int)));
+    connect(&cartellinoReader, SIGNAL( selectUnit(QString, int&) ), this, SLOT( associaUnita(QString, int &) ), Qt::BlockingQueuedConnection ) ;
+    connect(&cartellinoReader, SIGNAL( cartellinoInvalido(QString) ), this, SLOT( cartellinoInvalidoMessage(QString) ), Qt::BlockingQueuedConnection ) ;
+    connect(&cartellinoReader, &CartellinoCompletoReader::anomalieFound, this, &MainWindow::openFile);
     connect(&unitaCompetenzeExporter, SIGNAL(exportFinished(QString)), this, SLOT(exported(QString)));
     connect(&unitaCompetenzeExporter, SIGNAL(totalRows(int)), this, SLOT(setTotalRows(int)));
     connect(&unitaCompetenzeExporter, SIGNAL(currentRow(int)), this, SLOT(setCurrentRow(int)));
     connect(&deficitRecuperiExporter, SIGNAL(exportFinished(QString)), this, SLOT(exported(QString)));
     connect(&deficitRecuperiExporter, SIGNAL(totalRows(int)), this, SLOT(setTotalRows(int)));
     connect(&deficitRecuperiExporter, SIGNAL(currentRow(int)), this, SLOT(setCurrentRow(int)));
-    connect(&dirigenteCompetenzeExporter, SIGNAL(exportFinished(QString)), this, SLOT(exported(QString)));
-    connect(&dirigenteCompetenzeExporter, SIGNAL(totalRows(int)), this, SLOT(setTotalRows(int)));
-    connect(&dirigenteCompetenzeExporter, SIGNAL(currentRow(int)), this, SLOT(setCurrentRow(int)));
+    connect(differenzeExporter, &DifferenzeExporter::exportFinished, this, &MainWindow::exported);
+    connect(differenzeExporter, &DifferenzeExporter::totalRows, this, &MainWindow::setTotalRows);
+    connect(differenzeExporter, &DifferenzeExporter::currentRow, this, &MainWindow::setCurrentRow);
+    connect(competenzeExporter, &CompetenzeExporter::exportFinished, this, &MainWindow::exported);
+    connect(competenzeExporter, &CompetenzeExporter::totalRows, this, &MainWindow::setTotalRows);
+    connect(competenzeExporter, &CompetenzeExporter::currentRow, this, &MainWindow::setCurrentRow);
+    connect(ui->actionGeneraFileModifiche, &QAction::triggered, this, &MainWindow::actionGeneraFileModificheTriggered);
+    connect(ui->actionGeneraCompetenze, &QAction::triggered, this, &MainWindow::actionGeneraCompetenzeTriggered);
 
     m_nomiDialog = new NomiUnitaDialog;
-    connect(&tabulaReader, SIGNAL( selectUnit(QString, int&) ), this, SLOT( associaUnita(QString, int &) ), Qt::BlockingQueuedConnection ) ;
-
-//    ui->unitaComboBox->setCurrentIndex(0);
 
     QTimer::singleShot(500, this, SLOT(delayedSetup()));
 }
@@ -164,26 +134,28 @@ MainWindow::~MainWindow()
 {
     saveSettings();
     delete printDialog;
+    delete differenzeDialog;
+    delete competenzeExporterDialog;
     delete m_nomiDialog;
     delete ui;
 }
 
 void MainWindow::askDbUserPassword()
 {
-    LoginDialog login(m_host, m_dbName, this);
-    login.setUsername(m_lastUsername);
-    login.setPassword(m_lastPassword);
-    login.disablePassButton(m_lastPassword.isEmpty());
+    LoginDialog login(Utilities::m_host, Utilities::m_dbName, this);
+    login.setUsername(Utilities::m_lastUsername);
+//    login.setPassword(Utilities::m_lastPassword);
+//    login.disablePassButton(Utilities::m_lastPassword.isEmpty());
     login.exec();
 
     if(login.canceled()) {
         return;
     }
 
-    m_lastUsername = login.username();
-    m_lastPassword = login.password();
+    Utilities::m_lastUsername = login.username();
+    Utilities::m_lastPassword = login.password();
 
-    m_driver = "QMYSQL";
+    Utilities::m_driver = "QMYSQL";
 
     setupDbConnectionParameters();
 
@@ -202,7 +174,8 @@ void MainWindow::mostraDifferenzaOre()
         ui->oreDifferenzaLabel->setStyleSheet("color:green;");
 
     ui->oreDifferenzaLabel->setText(m_competenza->differenzaOre());
-    ui->deficitOrarioLabel->setText(m_competenza->deficitOrario());
+//    ui->deficitOrarioLabel->setText(m_competenza->deficitOrario() < 0 ?
+//                                    Utilities::inOrario(abs(m_competenza->deficitOrario())) : "//");
 
     if(m_competenza->dmp() == 0) {
         ui->dmpHoursEdit->setValue(0);
@@ -237,12 +210,6 @@ void MainWindow::clearWidgets()
     ui->meseCompetenzeCB->clear();
     ui->unitaCompetenzeCB->clear();
     ui->dirigentiCompetenzeCB->clear();
-    ui->workDaysLabel->clear();
-    ui->ferieLabel->clear();
-    ui->congediLabel->clear();
-    ui->malattiaLabel->clear();
-    ui->rmpLabel->clear();
-    ui->altreLabel->clear();
 }
 
 void MainWindow::connectToDatabase()
@@ -253,8 +220,10 @@ void MainWindow::connectToDatabase()
     }
 
     QFileInfo fi(The::dbManager()->currentDatabaseName());
-
-    setWindowTitle("Gestione Competenze Medici - " + fi.completeBaseName());
+    if(Utilities::m_driver == "QMYSQL")
+        setWindowTitle("Gestione Competenze Medici - " + Utilities::m_dbName + "@" + Utilities::m_host);
+    else
+        setWindowTitle("Gestione Competenze Medici - " + fi.completeBaseName());
 
     populateMeseCompetenzeCB();
     m_nomiDialog->populateUnits();
@@ -264,16 +233,27 @@ void MainWindow::populateMeseCompetenzeCB()
 {
     ui->meseCompetenzeCB->clear();
     printDialog->clearMese();
+    differenzeDialog->clearMese();
+    competenzeExporterDialog->clearMese();
 
-    const QStringList timeCards = SqlQueries::timecardsList();
+    QString errorMsg;
+    const auto timeCards = ApiService::instance().getTimecardsList(&errorMsg);
 
+    if (!errorMsg.isEmpty()) {
+        // Gestisci l'errore se necessario
+        qDebug() << "Errore nel recupero delle timecards:" << errorMsg;
+        return;
+    }
+
+    // Procedi con i dati ottenuti
     QStringList::const_iterator i = timeCards.constEnd();
-
-    while(i != timeCards.constBegin()) {
+    while (i != timeCards.constBegin()) {
         --i;
         QString ss = (*i).split("_").last();
         ui->meseCompetenzeCB->addItem(QLocale().monthName((*i).right(2).toInt()) + " " + ss.left(4), *i);
         printDialog->addMese(QLocale().monthName((*i).right(2).toInt()) + " " + ss.left(4), *i);
+        differenzeDialog->addMese(QLocale().monthName((*i).right(2).toInt()) + " " + ss.left(4), *i);
+        competenzeExporterDialog->addMese(QLocale().monthName((*i).right(2).toInt()) + " " + ss.left(4), *i);
     }
 }
 
@@ -284,17 +264,22 @@ void MainWindow::populateUnitaCompetenzeCB()
     if(ui->meseCompetenzeCB->currentData(Qt::UserRole).toString().isEmpty())
         return;
 
-    QStringList query = SqlQueries::getUnitaDataFromTimecard(ui->meseCompetenzeCB->currentData(Qt::UserRole).toString());
+    QString errorMsg;
+    const auto unitaList = ApiService::instance().getUnitaDataFromTimecard(
+        ui->meseCompetenzeCB->currentData(Qt::UserRole).toString(),
+        &errorMsg
+        );
 
-    QStringList list;
-
-    for(const QString &s : query) {
-        QStringList l = s.split("~");
-        if(!list.contains(l.at(1))) {
-            ui->unitaCompetenzeCB->addItem(l.at(2) + " - " + l.at(1), l.at(0));
-            list << l.at(1);
-        }
+    if (!errorMsg.isEmpty()) {
+        qDebug() << "Errore nel recupero delle unità:" << errorMsg;
+        return;
     }
+
+    for (const UnitaDataTimecard& unita : unitaList) {
+        ui->unitaCompetenzeCB->addItem(QString::number(unita.idUnita) + " - " + unita.nome, unita.id);
+    }
+
+    rCalendar->setReperibilita(m_reperibilita);
 }
 
 void MainWindow::populateDirigentiCompetenzeCB()
@@ -304,11 +289,20 @@ void MainWindow::populateDirigentiCompetenzeCB()
     if(ui->unitaCompetenzeCB->currentData(Qt::UserRole).toString().isEmpty())
         return;
 
-    QStringList query = SqlQueries::getDoctorDataFromUnitaInTimecard(ui->meseCompetenzeCB->currentData(Qt::UserRole).toString(), ui->unitaCompetenzeCB->currentData(Qt::UserRole).toInt());
+    QString errorMsg;
+    const auto doctors = ApiService::instance().getDoctorDataFromUnitaInTimecard(
+        ui->meseCompetenzeCB->currentData(Qt::UserRole).toString(),
+        ui->unitaCompetenzeCB->currentData(Qt::UserRole).toInt(),
+        &errorMsg
+        );
 
-    for(const QString &s : query) {
-        QStringList l = s.split("~");
-        ui->dirigentiCompetenzeCB->addItem(l.at(1) + " - " + l.at(2), l.at(0));
+    if (!errorMsg.isEmpty()) {
+        qDebug() << "Errore nel recupero dei medici:" << errorMsg;
+        return;
+    }
+
+    for (const DoctorData& doctor : doctors) {
+        ui->dirigentiCompetenzeCB->addItem(QString::number(doctor.matricola) + " - " + doctor.nome, doctor.id);
     }
 }
 
@@ -330,7 +324,7 @@ void MainWindow::on_actionApriDatabase_triggered()
         // be sure that a valid path was selected
         if( QFile::exists( fileName ) ) {
             currentDatabase.setFile(fileName);
-            m_driver = "QSQLITE";
+            Utilities::m_driver = "QSQLITE";
             saveSettings();
             needsBackup();
             setupDbConnectionParameters();
@@ -340,37 +334,35 @@ void MainWindow::on_actionApriDatabase_triggered()
         }
         return;
     }
+    delete databaseWizard;
 
     // ultima opzione: apri database remoto
-    // salviamo innanzitutto host e database
-    m_host = databaseWizard->host();
-    m_dbName = databaseWizard->database();
-    m_driver = "QMYSQL";
-    m_useSSL = databaseWizard->useSSL();
-    m_certFile = databaseWizard->certFile();
-    m_keyFile = databaseWizard->keyFile();
-    m_lastUsername = databaseWizard->user();
-    m_lastPassword = databaseWizard->password();
-    saveSettings();
-
-    setupDbConnectionParameters();
-    connectToDatabase();
-
-    delete databaseWizard;
+    askDbUserPassword();
 }
 
 void MainWindow::loadSettings()
 {
     QSettings settings;
-    m_driver = settings.value("lastDriver", "QSQLITE").toString();
-    m_host = settings.value("host", "").toString();
-    m_dbName = settings.value("dbName", "").toString();
-    m_certFile = settings.value("certFile", "").toString();
-    m_keyFile = settings.value("keyFile", "").toString();
-    m_useSSL = settings.value("useSSL", false).toBool();
-    m_lastUsername = settings.value("lastUsername", "").toString();
+    Utilities::m_driver = settings.value("lastDriver", "QSQLITE").toString();
+    Utilities::m_lastUsername = settings.value("lastUsername", "").toString();
+    Utilities::m_importPath = settings.value("importPath", QDir::homePath()).toString();
+    Utilities::m_exportPath = settings.value("exportPath", QDir::homePath()).toString();
+    Utilities::m_useSSL = settings.value("useSSL", false).toBool();
+
+//    Utilities::m_driver = "QMYSQL";
+    Utilities::m_host = settings.value("host", "").toString();
+    Utilities::m_dbName = settings.value("dbName", "competenze").toString();
+    Utilities::m_certFile = "client-cert.pem";
+    Utilities::m_keyFile = "client-key.pem";
+
+    Utilities::m_importPath = settings.value("importPath", QDir::homePath()).toString();
+    Utilities::m_exportPath = settings.value("exportPath", QDir::homePath()).toString();
+
+
     currentDatabase.setFile(settings.value("lastDatabasePath", "").toString());
-    printDialog->setPath(settings.value("exportPath", QDir::homePath()).toString());
+    printDialog->setPath(Utilities::m_exportPath);
+    differenzeDialog->setPath(Utilities::m_exportPath);
+    competenzeExporterDialog->setPath(Utilities::m_exportPath);
     m_photosPath = settings.value("photosPath", "").toString();
     m_tabulaPath = settings.value("tabulaPath", QApplication::applicationDirPath() + QDir::separator() + "tabula.jar").toString();
 #ifdef _WIN32
@@ -395,13 +387,15 @@ void MainWindow::saveSettings()
     settings.setValue("photosPath", m_photosPath);
     settings.setValue("tabulaPath", m_tabulaPath);
     settings.setValue("javaPath", m_javaPath);
-    settings.setValue("lastDriver", m_driver);
-    settings.setValue("host", m_host);
-    settings.setValue("dbName", m_dbName);
-    settings.setValue("certFile", m_certFile);
-    settings.setValue("keyFile", m_keyFile);
-    settings.setValue("useSSL", m_useSSL);
-    settings.setValue("lastUsername", m_lastUsername);
+    settings.setValue("lastDriver", Utilities::m_driver);
+    settings.setValue("host", Utilities::m_host);
+    settings.setValue("dbName", Utilities::m_dbName);
+    settings.setValue("certFile", Utilities::m_certFile);
+    settings.setValue("keyFile", Utilities::m_keyFile);
+    settings.setValue("importPath", Utilities::m_importPath);
+    settings.setValue("exportPath", Utilities::m_exportPath);
+    settings.setValue("lastUsername", Utilities::m_lastUsername);
+    settings.setValue("useSSL", Utilities::m_useSSL);
     settings.setValue("windowGeometry", geometry());
     settings.setValue("isMaximized", isMaximized());
 }
@@ -410,11 +404,29 @@ void MainWindow::on_actionCaricaPdf_triggered()
 {
     pdfFile.clear();
     pdfFile = QFileDialog::getOpenFileName(this, tr("Seleziona pdf cartellini"),
-                                                    currentDatabase.absolutePath().isEmpty() ? QDir::homePath() : currentDatabase.absolutePath(),
+                                                    Utilities::m_importPath,
                                                     tr("PDF (*.pdf)"));
 
     if(pdfFile.isEmpty())
         return;
+
+    if(!QFile::exists(pdfFile)) {
+        QMessageBox::critical(this, "File non esistente", "Il file selezionato non esiste: " + pdfFile, QMessageBox::Ok);
+        return;
+    }
+
+    if(!QFile::exists(m_tabulaPath)) {
+        QMessageBox::critical(this, "File non esistente", "Il file tabula.jar non esiste: " + m_tabulaPath, QMessageBox::Ok);
+        return;
+    }
+
+    if(!QFile::exists(m_javaPath)) {
+        QMessageBox::critical(this, "File non esistente", "L'eseguibe java non esiste: " + m_javaPath, QMessageBox::Ok);
+        return;
+    }
+
+    const QFileInfo fi(pdfFile);
+    Utilities::m_importPath = fi.absolutePath();
 
     if(QFile::exists(pdfFile)) {
         m_loadingTimeCards = true;
@@ -424,14 +436,13 @@ void MainWindow::on_actionCaricaPdf_triggered()
         msgLabel->setText("Converto pdf in csv");
         ui->competenzeWidget->setEnabled(false);
 
-        QFileInfo fi(pdfFile);
-
         QStringList arguments;
         arguments << "-jar" << m_tabulaPath;
         arguments << "-n";
         arguments << "-p" << "all";
-        arguments << "-a" << "6.93,2.475,470.0,772.695";
-        arguments << "-c" << "23,32,72,114,155,196,237,277,318,357,395,430,466,501,529,570,597,638,665,704,731";
+        arguments << "-a" << "1.0,6.93,606.375,769.23";
+        arguments << "-c" << "21.40,28.71,53.46,70.00,78.21,114.84,150.48,187.11,222.75,259.38,296.01,331.65,368.28,401.94,435.6,470.25,504.9,537.00,567.27,594.50,624.69,653.4,682.11,710.21,739.53";
+//        arguments << "-c" << "21.978,28.908,52.668,69.498,78.408,114.048,149.688,186.318,221.958,258.588,295.218,330.858,367.488,402.138,434.808,470.448,504.108,537.768,566.478,596.178,624.888,653.598,681.318,711.018,739.728";
         arguments << pdfFile;
         arguments << "-o" << fi.absolutePath() + QDir::separator() + "cartellini.csv";
 
@@ -440,6 +451,12 @@ void MainWindow::on_actionCaricaPdf_triggered()
         m_currentMeseCompetenzeIndex = ui->meseCompetenzeCB->currentIndex();
         m_currentUnitaCompetenzeIndex = ui->unitaCompetenzeCB->currentIndex();
         m_currentDirigenteCompetenzeIndex = ui->dirigentiCompetenzeCB->currentIndex();
+
+#ifdef Q_OS_LINUX
+        QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+        env.insert("LD_LIBRARY_PATH", "/usr/lib/jvm/java-11-openjdk/lib/");
+        tabulaProcess->setProcessEnvironment(env);
+#endif
 
         tabulaProcess->start(m_javaPath, arguments);
     }
@@ -463,13 +480,17 @@ void MainWindow::handleResults()
 void MainWindow::exported(const QString &file)
 {
     Utilities::m_connectionName = "";
-    ui->actionStampaCompetenzeUnita->setEnabled(true);
-    ui->actionStampaCompetenzeDirigenti->setEnabled(true);
-    ui->actionPrintDeficit->setEnabled(true);
+    ui->mainToolBar->setEnabled(true);
     ui->competenzeWidget->setEnabled(true);
     progressBar->setVisible(false);
     msgLabel->setText("");
 
+//    if(!file.isEmpty())
+//        QDesktopServices::openUrl(QUrl::fromLocalFile(file));
+}
+
+void MainWindow::openFile(const QString &file)
+{
     if(!file.isEmpty())
         QDesktopServices::openUrl(QUrl::fromLocalFile(file));
 }
@@ -500,6 +521,9 @@ void MainWindow::setCurrentRow(int value)
 void MainWindow::on_saveCompetenzeButton_clicked()
 {
     ui->saveCompetenzeButton->setEnabled(false);
+    ui->meseCompetenzeCB->setEnabled(true);
+    ui->unitaCompetenzeCB->setEnabled(true);
+    ui->dirigentiCompetenzeCB->setEnabled(true);
     m_competenza->saveMods();
 
     // per aggiornare la situazione cambiare l'indice corrente e torniamo subito dopo su quello originale
@@ -523,31 +547,80 @@ void MainWindow::on_restoreCompetenzeButton_clicked()
     ui->dirigentiCompetenzeCB->show();
 
     ui->saveCompetenzeButton->setEnabled(false);
+    ui->meseCompetenzeCB->setEnabled(true);
+    ui->unitaCompetenzeCB->setEnabled(true);
+    ui->dirigentiCompetenzeCB->setEnabled(true);
     ui->restoreCompetenzeButton->setEnabled(m_competenza->isRestorable());
 }
 
 void MainWindow::on_meseCompetenzeCB_currentIndexChanged(int index)
 {
     Q_UNUSED(index)
-    int docIndex = ui->dirigentiCompetenzeCB->currentIndex();
-    int unitaIndex = ui->unitaCompetenzeCB->currentIndex();
+    m_anno = ui->meseCompetenzeCB->currentData(Qt::UserRole).toString().split("_").last().left(4).toInt();
+    m_mese = ui->meseCompetenzeCB->currentData(Qt::UserRole).toString().split("_").last().right(2).toInt();
+    m_currDate.setDate(m_anno,
+                       m_mese,
+                       1);
+    const int unitaData = ui->unitaCompetenzeCB->currentData(Qt::UserRole).toInt();
+    const int docData = ui->dirigentiCompetenzeCB->currentData(Qt::UserRole).toInt();
     populateUnitaCompetenzeCB();
-    ui->unitaCompetenzeCB->setCurrentIndex(unitaIndex < 0 ? 0 : unitaIndex);
+    const int unitaIndex = ui->unitaCompetenzeCB->findData(unitaData, Qt::UserRole);
     ui->unitaCompetenzeCB->show();
+    ui->unitaCompetenzeCB->setCurrentIndex(unitaIndex < 0 ? 0 : unitaIndex);
+
+    const int docIndex = ui->dirigentiCompetenzeCB->findData(docData, Qt::UserRole);
     ui->dirigentiCompetenzeCB->setCurrentIndex(docIndex < 0 ? 0 : docIndex);
     ui->dirigentiCompetenzeCB->show();
-    const QDate date(ui->meseCompetenzeCB->currentData(Qt::UserRole).toString().split("_").last().left(4).toInt(),
-                     ui->meseCompetenzeCB->currentData(Qt::UserRole).toString().split("_").last().right(2).toInt(),
-                     1);
 //    ui->sommV1->setVisible(date < Utilities::ccnl1618Date);
     ui->sommV1->setVisible(true);
-    ui->sommV2->setVisible(date >= Utilities::ccnl1618Date);
+    ui->sommV2->setVisible(m_currDate >= Utilities::ccnl1618Date);
 }
 
 void MainWindow::on_unitaCompetenzeCB_currentIndexChanged(int index)
 {
     Q_UNUSED(index)
     populateDirigentiCompetenzeCB();
+
+    QString errorMsg;
+    m_reperibilita = ApiService::instance().getReperibilitaSemplificata(
+        ui->unitaCompetenzeCB->currentData(Qt::UserRole).toInt(),
+        m_anno,
+        m_mese,
+        &errorMsg
+        );
+
+    if (!errorMsg.isEmpty()) {
+        qDebug() << "Errore nel recupero della reperibilità:" << errorMsg;
+        // Gestisci l'errore
+    }
+
+    rCalendar->setReperibilita(m_reperibilita);
+    QLocale loc;
+    ui->pdFeriale->setText(loc.toString(m_reperibilita->feriale(),'f',1));
+    ui->pdSabato->setText(loc.toString(m_reperibilita->sabato(),'f',1));
+    ui->pdFestivo->setText(loc.toString(m_reperibilita->festivo(),'f',1));
+    ui->pdPrefestivo->setText(loc.toString(m_reperibilita->prefestivo() ? m_reperibilita->sabato() : 0.0,'f',1));
+
+    const auto orePagateMap = ApiService::instance().getOrePagateFromUnit(
+        ui->unitaCompetenzeCB->currentData(Qt::UserRole).toInt(),
+        &errorMsg
+        );
+
+    if (!errorMsg.isEmpty()) {
+        qDebug() << "Errore nel recupero delle ore pagate:" << errorMsg;
+        return;
+    }
+
+    QMapIterator<QDate, OrePagate> i(orePagateMap);
+    i.toBack();
+    while (i.hasPrevious()) {
+        i.previous();
+        const QDate date(m_anno, m_mese, 1);
+        if (i.key() <= date) {
+            ui->oreNotturnePagate->setText(QString::number(i.value().orePagate));
+            break;
+        }
+    }
 }
 
 void MainWindow::on_dirigentiCompetenzeCB_currentIndexChanged(int index)
@@ -566,10 +639,14 @@ void MainWindow::on_dirigentiCompetenzeCB_currentIndexChanged(int index)
 
     m_competenza = new Competenza(ui->meseCompetenzeCB->currentData(Qt::UserRole).toString(), ui->dirigentiCompetenzeCB->currentData(Qt::UserRole).toInt());
 
+    populateCausali();
     populateCompetenzeTab();
 
     ui->restoreCompetenzeButton->setEnabled(m_competenza->isRestorable());
     ui->saveCompetenzeButton->setEnabled(false);
+    ui->meseCompetenzeCB->setEnabled(true);
+    ui->unitaCompetenzeCB->setEnabled(true);
+    ui->dirigentiCompetenzeCB->setEnabled(true);
 }
 
 void MainWindow::populateCompetenzeTab()
@@ -584,44 +661,16 @@ void MainWindow::populateCompetenzeTab()
     font.setStrikeOut(!ui->pagaStrGuardiaCB->isChecked());
     ui->oreStraordinarioGuardieLabel->setFont(font);
 
-    ferieCalendar->setDateRange(m_competenza->dataIniziale(), m_competenza->dataFinale());
-    congediCalendar->setDateRange(m_competenza->dataIniziale(), m_competenza->dataFinale());
-    malattiaCalendar->setDateRange(m_competenza->dataIniziale(), m_competenza->dataFinale());
-    rmcCalendar->setDateRange(m_competenza->dataIniziale(), m_competenza->dataFinale());
-    rmpCalendar->setDateRange(m_competenza->dataIniziale(), m_competenza->dataFinale());
-    gdCalendar->setDateRange(m_competenza->dataIniziale(), m_competenza->dataFinale());
-    gnCalendar->setDateRange(m_competenza->dataIniziale(), m_competenza->dataFinale());
+//    gdCalendar->setDateRange(m_competenza->dataIniziale(), m_competenza->dataFinale());
+//    gnCalendar->setDateRange(m_competenza->dataIniziale(), m_competenza->dataFinale());
     rCalendar->setDateRange(m_competenza->dataIniziale(), m_competenza->dataFinale());
-    altreCalendar->setDateRange(m_competenza->dataIniziale(), m_competenza->dataFinale());
+    tCalendar->setDateRange(m_competenza->dataIniziale(), m_competenza->dataFinale());
 
-    ui->workDaysLabel->setText(m_competenza->giorniLavorati());
-
-    ui->ferieLabel->setText(m_competenza->ferieCount());
-    ferieCalendar->setDates(m_competenza->ferieDates());
-
-    ui->congediLabel->setText(QString::number(m_competenza->altreCausaliDates().count()));
-    congediCalendar->setDates(m_competenza->altreCausaliDates());
-
-    ui->malattiaLabel->setText(m_competenza->malattiaCount());
-    malattiaCalendar->setDates(m_competenza->malattiaDates());
-
-    ui->rmpLabel->setText(m_competenza->rmpCount());
-    rmpCalendar->setDates(m_competenza->rmpDates());
-
-    ui->rmcLabel->setText(m_competenza->rmcCount());
-    rmcCalendar->setDates(m_competenza->rmcDates());
-
-    gdCalendar->setDates(m_competenza->gdDates());
-    gnCalendar->setDates(m_competenza->gnDates());
-    rCalendar->setDates(m_competenza->rep());
-
-    if(m_competenza->altreAssenzeDates().count() > 0)
-        ui->altreLabel->setStyleSheet("color: red;");
-    else
-        ui->altreLabel->setStyleSheet("color: black;");
-    ui->altreLabel->setText(QString::number(m_competenza->altreAssenzeDates().count()));
-    altreCalendar->setDates(m_competenza->altreAssenzeDates());
-    altreCalendar->setScopertiDates(m_competenza->scopertiDates());
+//    gdCalendar->setDates(m_competenza->gdDates());
+//    gdCalendar->setMezzeDates(m_competenza->mgdDates());
+//    gnCalendar->setDates(m_competenza->gnDates());
+    rCalendar->setDates(m_competenza->turniProntaDisponibilita());
+    tCalendar->setDates(m_competenza->teleconsulto());
 
     elaboraSommario();
 
@@ -629,8 +678,40 @@ void MainWindow::populateCompetenzeTab()
 
     connect(ui->dmpHoursEdit, SIGNAL(valueChanged(int)), this, SLOT(oreCambiate(int)));
     connect(ui->dmpMinsEdit, SIGNAL(valueChanged(int)), this, SLOT(minutiCambiati(int)));
-    connect(ui->orarioGiornalieroEdit, SIGNAL(timeChanged(QTime)), this, SLOT(orarioGiornalieroCambiato(QTime)));
+//    connect(ui->orarioGiornalieroEdit, SIGNAL(timeChanged(QTime)), this, SLOT(orarioGiornalieroCambiato(QTime)));
     connect(ui->pagaStrGuardiaCB, SIGNAL(toggled(bool)), SLOT(pagaStrGuardiaCambiato(bool)));
+}
+
+void MainWindow::populateCausali()
+{
+    QList<CausaleWidget *> wList = ui->causaliGB->findChildren< CausaleWidget *>();
+    foreach( CausaleWidget *l, wList ) {
+        l->deleteLater();
+    }
+    for (int i = 0; i < causaliLayout->count(); ++i) {
+        QLayoutItem *layoutItem = causaliLayout->itemAt(i);
+        if (layoutItem->spacerItem()) {
+            causaliLayout->removeItem(layoutItem);
+            // You could also use: layout->takeAt(i);
+            delete layoutItem;
+            --i;
+        }
+    }
+    const auto map = m_competenza->dipendente()->altreCausali(); // QMap<QString, int>
+    auto i = map.constBegin();
+
+    while (i != map.constEnd()) {
+        CausaleWidget *cw = new CausaleWidget(i.key(),
+                                              i.value().second,
+                                              m_competenza->dataIniziale().year(),
+                                              m_competenza->dataIniziale().month(),
+                                              i.value().first,
+                                              ui->causaliGB);
+
+        causaliLayout->addWidget(cw);
+        i++;
+    }
+    causaliLayout->addStretch(10);
 }
 
 void MainWindow::elaboraGuardie()
@@ -639,6 +720,7 @@ void MainWindow::elaboraGuardie()
     ui->gdPainterWidget->setMeseAnno(m_competenza->dataIniziale().month(), m_competenza->dataIniziale().year());
     ui->gnPainterWidget->setGuardiaMap(m_competenza->guardiaNotturnaMap());
     ui->gdPainterWidget->setGuardiaMap(m_competenza->guardiaDiurnaMap());
+    ui->gdPainterWidget->setMezzaGuardiaMap(m_competenza->mezzaGuardiaDiurnaMap());
 
     ui->g_d_fer_F->setText(QString::number(m_competenza->g_d_fer_F()));
     ui->g_d_fer_S->setText(QString::number(m_competenza->g_d_fer_S()));
@@ -654,26 +736,66 @@ void MainWindow::elaboraGuardie()
     ui->g_n_fes_D->setText(QString::number(m_competenza->g_n_fes_D()));
 
     ui->totOreGuardie->setText(QString::number(m_competenza->totOreGuardie()));
-    ui->notteLabel->setText(m_competenza->notte() > 0 ? QString::number(m_competenza->notte()) : "//");
-    ui->festivoLabel->setText(m_competenza->numGuarDiurne() > 0 ? QString::number(m_competenza->numGuarDiurne()) : "//");
-    ui->oreStraordinarioGuardieLabel->setText(m_competenza->oreStraordinarioGuardie());
+//    ui->notteLabel->setText(m_competenza->notte() > 0 ? QString::number(m_competenza->notte()) : "//");
+    ui->festivoLabel->setText(m_competenza->numeroGuardieDiurneFatte() > 0 ? QString::number(m_competenza->numeroGuardieDiurneFatte()) : "//");
+//    ui->oreStraordinarioGuardieLabel->setText(m_competenza->oreStraordinarioGuardie());
+    if(m_competenza->numeroOreGuardieNotturnePagate() == 0 && m_competenza->numeroGrandiFestivitaPagate() == 0) {
+        ui->oreStraordinarioGuardieLabel->setText("//");
+    } else {
+        ui->oreStraordinarioGuardieLabel->setText((m_competenza->numeroGrandiFestivitaPagate() > 0 ? QString::number(m_competenza->numeroGrandiFestivitaPagate() * 480) + " + " : "") + QString::number(m_competenza->numeroOreGuardieNotturnePagate()));
+    }
 
-    ui->numGuarDiuPag->setText(QString::number(m_competenza->numGuarDiurne()));
-    ui->numGuarNottPag->setText(QString::number(m_competenza->numGuarNottPag()));
-    ui->numGrFestPag->setText(QString::number(m_competenza->numGrFestPagabili()));
-    ui->oreRepPag->setText(QString::number(m_competenza->oreRepPagate()));
+    ui->numGuarDiuPag->setText(m_competenza->numeroGuardieDiurneFatte() > 0 ? QString::number(m_competenza->numeroGuardieDiurneFatte()) : "//");
+    ui->numGuarNottPag->setText((m_competenza->numeroGuardieNotturneFatte() + m_competenza->numeroGrandiFestivitaFatte() - m_competenza->numeroGrandiFestivitaPagate()) > 0 ? QString::number(m_competenza->numeroGuardieNotturneFatte() + m_competenza->numeroGrandiFestivitaFatte() - m_competenza->numeroGrandiFestivitaPagate()) : "//");
+    ui->numGrFestPag->setText(m_competenza->numeroGrandiFestivitaPagate() > 0 ? QString::number(m_competenza->numeroGrandiFestivitaPagate()) : "//");
 }
 
 void MainWindow::elaboraRep()
 {
-    ui->rPainterWidget->setRepMap(m_competenza->rep());
-    ui->repLabel->setText(m_competenza->repCount());
+    QLocale loc;
+    ui->rPainterWidget->setRepMap(m_competenza->turniProntaDisponibilita());
+    double whole = 0.0, fractional = 0.0;
+    if(m_competenza->numeroTurniProntaDisponibilita() > 0) {
+        fractional = std::modf(m_competenza->numeroTurniProntaDisponibilita(), &whole);
+        if(m_currDate >= Utilities::ccnl1921Date) {
+            if(whole > 10) {
+                ui->repLabel->setText(loc.toString(10.0*12.0,'f',1));
+                ui->repOltre10Label->setText(loc.toString((whole - 10 + fractional)*12.0,'f',0));
+            } else if(whole > 0) { // 25
+                ui->repLabel->setText(loc.toString((whole+fractional)*12.0,'f',1));
+                ui->repOltre10Label->setText(loc.toString(0.0,'f',0));
+            } else {
+                ui->repLabel->setText(loc.toString(0.0,'f',1));
+                ui->repOltre10Label->setText(loc.toString(0.0,'f',0));
+            }
+        } else {
+            if(whole > 10) {
+                ui->repLabel->setText(loc.toString(10.0+fractional,'f',1));
+                ui->repOltre10Label->setText(loc.toString(whole - 10,'f',0));
+            } else if(whole > 0) { // 25
+                ui->repLabel->setText(loc.toString(whole+fractional,'f',1));
+                ui->repOltre10Label->setText(loc.toString(0.0,'f',0));
+            } else {
+                ui->repLabel->setText(loc.toString(0.0,'f',1));
+                ui->repOltre10Label->setText(loc.toString(0.0,'f',0));
+            }
+        }
+    } else {
+        ui->repLabel->setText("//");
+        ui->repOltre10Label->setText("//");
+    }
 
     ui->r_d_fer->setText(Utilities::inOrario(m_competenza->r_d_fer()));
     ui->r_d_fes->setText(Utilities::inOrario(m_competenza->r_d_fes()));
     ui->r_n_fer->setText(Utilities::inOrario(m_competenza->r_n_fer()));
     ui->r_n_fes->setText(Utilities::inOrario(m_competenza->r_n_fes()));
-    ui->totOreRep->setText(m_competenza->oreGrep());
+    ui->totOreRep->setText(Utilities::inOrario(m_competenza->minutiGrep()));
+}
+
+void MainWindow::elaboraTeleconsulto()
+{
+    ui->tPainterWidget->setRepMap(m_competenza->teleconsulto());
+    ui->teleconsultoLabel->setText(m_competenza->numeroTurniTeleconsulto() > 0 ? QString::number(m_competenza->numeroTurniTeleconsulto()) : "//");
 }
 
 void MainWindow::elaboraSommario()
@@ -685,74 +807,51 @@ void MainWindow::elaboraSommario()
     ui->oreDovuteLabel->setText(m_competenza->oreDovute());
     ui->oreEffettuateLabel->setText(m_competenza->oreEffettuate());
 
-    ui->oreStraordinarioRepLabel->setText(m_competenza->oreRepPagate() > 0 ? QString::number(m_competenza->oreRepPagate()) : "//");
+//    ui->oreStraordinarioRepLabel->setText(m_competenza->oreRepPagate() > 0 ? QString::number(m_competenza->oreRepPagate()) : "//");
+    ui->oreStraordinarioRepLabel->setText(m_competenza->oreReperibilitaPagate() > 0 ? QString::number(m_competenza->oreReperibilitaPagate()) : "//");
+    ui->oreStraordinarioAltriMotiviLabel->setText(m_competenza->oreGuardieDiurnePagate() > 0 ? QString::number(m_competenza->oreGuardieDiurnePagate()) : "//");
 
     mostraDifferenzaOre();
     elaboraGuardie();
     elaboraRep();
-    ui->residuoLabel->setText(m_competenza->residuoOreNonPagate() > 0 ? Utilities::inOrario(m_competenza->residuoOreNonPagate()) : "//");
+    elaboraTeleconsulto();
+//    ui->residuoLabel->setText(m_competenza->residuoOreNonPagate() > 0 ? Utilities::inOrario(m_competenza->residuoOreNonPagate()) : "//");
+    ui->residuoLabel->setText(m_competenza->saldoMinuti() > 0 ? Utilities::inOrario(m_competenza->saldoMinuti()) : "//");
 
-    if(m_competenza->numOreRecuperabili() < 0)
+//    if(m_competenza->numOreRecuperabili() < 0)
+//        ui->oreRecLabel->setStyleSheet("color: red;");
+//    else
+//        ui->oreRecLabel->setStyleSheet("color: green;");
+
+//    if(m_competenza->numOreRecuperabili() == 0 && m_competenza->recuperiMeseSuccessivo().second == 0)
+//        ui->oreRecLabel->setText("//");
+//    else {
+//        ui->oreRecLabel->setText(Utilities::inOrario(m_competenza->numOreRecuperabili()) + " (" + QString::number(m_competenza->recuperiMeseSuccessivo().second) + ")");
+//    }
+
+    if(m_competenza->minutiRecuperabili() < 0)
         ui->oreRecLabel->setStyleSheet("color: red;");
     else
         ui->oreRecLabel->setStyleSheet("color: green;");
 
-    if(m_competenza->numOreRecuperabili() == 0 && m_competenza->recuperiMesiSuccessivo().second == 0)
+    if(m_competenza->minutiRecuperabili() == 0 && m_competenza->recuperiMeseSuccessivo().second == 0)
         ui->oreRecLabel->setText("//");
     else {
-        ui->oreRecLabel->setText(Utilities::inOrario(m_competenza->numOreRecuperabili()) + " (" + QString::number(m_competenza->recuperiMesiSuccessivo().second) + ")");
+        ui->oreRecLabel->setText(Utilities::inOrario(m_competenza->minutiRecuperabili()) + " (" + QString::number(m_competenza->recuperiMeseSuccessivo().second) + ")");
     }
 
-    ui->oreNonRecLabel->setText(m_competenza->residuoOreNonRecuperabili());
+    // ui->oreNonRecLabel->setText(m_competenza->minutiNonRecuperabili() > 0 ? Utilities::inOrario(m_competenza->minutiNonRecuperabili()) : "//");
+    ui->oreNonRecLabel->setText(m_competenza->minutiNonRecuperabili() > 0 ? Utilities::inOrario(m_competenza->minutiNonRecuperabili()) : "//");
 }
 
 void MainWindow::setupDbConnectionParameters()
 {
-    The::dbManager()->setDriver(m_driver);
-    The::dbManager()->setHost(m_host);
-    The::dbManager()->setDbName(m_dbName);
-    The::dbManager()->setCert(m_certFile);
-    The::dbManager()->setKey(m_keyFile);
-    The::dbManager()->setSecure(m_useSSL);
-    The::dbManager()->setLocalDbFileName(currentDatabase.absoluteFilePath());
-    The::dbManager()->setUser(m_lastUsername);
-    The::dbManager()->setPass(m_lastPassword);
-}
-
-void MainWindow::on_actionStampaCompetenzeDirigenti_triggered()
-{
-    ui->actionStampaCompetenzeDirigenti->setEnabled(false);
-    ui->actionStampaCompetenzeUnita->setEnabled(false);
-    ui->actionPrintDeficit->setEnabled(false);
-    printDialog->setCurrentOp(PrintDialog::ToolOps::PrintDoctors);
-
-    printDialog->setCurrentMese(ui->meseCompetenzeCB->currentIndex());
-    printDialog->setCurrentUnita(ui->unitaCompetenzeCB->currentIndex() + 1);
-    printDialog->setCurrentDirigente(ui->dirigentiCompetenzeCB->currentIndex() + 1);
-
-    printDialog->exec();
-
-    if(!printDialog->proceed) {
-        exported(QString());
-        return;
-    }
-
-    progressBar->setVisible(true);
-    msgLabel->setText("Esportazione competenze dirigenti");
-
-    ui->competenzeWidget->setEnabled(false);
-    dirigenteCompetenzeExporter.setPath(printDialog->path());
-    dirigenteCompetenzeExporter.setTable(printDialog->currentMeseData());
-    dirigenteCompetenzeExporter.setUnita(printDialog->currentUnitaData());
-    dirigenteCompetenzeExporter.setDirigente(printDialog->currentDirigenteData());
-    dirigenteCompetenzeExporter.start();
+    Utilities::m_localDbFileName = currentDatabase.absoluteFilePath();
 }
 
 void MainWindow::on_actionStampaCompetenzeUnita_triggered()
 {
-    ui->actionStampaCompetenzeDirigenti->setEnabled(false);
-    ui->actionStampaCompetenzeUnita->setEnabled(false);
-    ui->actionPrintDeficit->setEnabled(false);
+    ui->mainToolBar->setEnabled(false);
     printDialog->setCurrentOp(PrintDialog::ToolOps::PrintUnits);
 
     printDialog->setCurrentMese(ui->meseCompetenzeCB->currentIndex());
@@ -777,11 +876,65 @@ void MainWindow::on_actionStampaCompetenzeUnita_triggered()
     unitaCompetenzeExporter.start();
 }
 
+void MainWindow::actionGeneraFileModificheTriggered()
+{
+    ui->mainToolBar->setEnabled(false);
+
+    differenzeDialog->setCurrentMese(ui->meseCompetenzeCB->currentIndex());
+    differenzeDialog->setCurrentUnita(ui->unitaCompetenzeCB->currentIndex() + 1);
+
+    differenzeDialog->exec();
+
+    if(!differenzeDialog->proceed) {
+        exported(QStringLiteral());
+        return;
+    }
+
+//    exported(QStringLiteral());
+//    return;
+
+    progressBar->setVisible(true);
+    msgLabel->setText("Esportazione modifiche");
+
+    ui->competenzeWidget->setEnabled(false);
+    differenzeExporter->setPath(differenzeDialog->path());
+    differenzeExporter->setMese(differenzeDialog->currentMeseData());
+    differenzeExporter->setUnita(differenzeDialog->currentUnitaData());
+    differenzeExporter->setStoricizza(differenzeDialog->storicizzaIsChecked());
+    differenzeExporter->setMesePagamento(differenzeDialog->mesePagamento());
+    differenzeExporter->setAnnoPagamento(differenzeDialog->annoPagamento());
+    differenzeExporter->start();
+}
+
+void MainWindow::actionGeneraCompetenzeTriggered()
+{
+    ui->mainToolBar->setEnabled(false);
+
+    competenzeExporterDialog->setCurrentMese(ui->meseCompetenzeCB->currentIndex());
+    competenzeExporterDialog->setCurrentUnita(ui->unitaCompetenzeCB->currentIndex() + 1);
+
+    competenzeExporterDialog->exec();
+
+    if(!competenzeExporterDialog->proceed) {
+        exported(QStringLiteral());
+        return;
+    }
+
+    progressBar->setVisible(true);
+    msgLabel->setText("Esportazione competenze");
+
+    ui->competenzeWidget->setEnabled(false);
+    competenzeExporter->setPath(competenzeExporterDialog->path());
+    competenzeExporter->setMeseDa(competenzeExporterDialog->meseDa());
+    competenzeExporter->setMeseA(competenzeExporterDialog->meseA());
+    competenzeExporter->setUnita(competenzeExporterDialog->currentUnitaData());
+    competenzeExporter->setMatricole(competenzeExporterDialog->matricole());
+    competenzeExporter->start();
+}
+
 void MainWindow::on_actionPrintDeficit_triggered()
 {
-    ui->actionStampaCompetenzeDirigenti->setEnabled(false);
-    ui->actionStampaCompetenzeUnita->setEnabled(false);
-    ui->actionPrintDeficit->setEnabled(false);
+    ui->mainToolBar->setEnabled(false);
     printDialog->setCurrentOp(PrintDialog::ToolOps::PrintDeficit);
 
     printDialog->setCurrentMese(ui->meseCompetenzeCB->currentIndex());
@@ -810,6 +963,9 @@ void MainWindow::gdCalendarClicked(const QDate &date)
     m_competenza->addGuardiaDiurnaDay(date.day());
     elaboraGuardie();
     ui->saveCompetenzeButton->setEnabled(m_competenza->isModded());
+    ui->meseCompetenzeCB->setEnabled(!m_competenza->isModded());
+    ui->unitaCompetenzeCB->setEnabled(!m_competenza->isModded());
+    ui->dirigentiCompetenzeCB->setEnabled(!m_competenza->isModded());
 }
 
 void MainWindow::gnCalendarClicked(const QDate &date)
@@ -817,22 +973,29 @@ void MainWindow::gnCalendarClicked(const QDate &date)
     m_competenza->addGuardiaNotturnaDay(date.day());
     elaboraGuardie();
     ui->saveCompetenzeButton->setEnabled(m_competenza->isModded());
+    ui->meseCompetenzeCB->setEnabled(!m_competenza->isModded());
+    ui->unitaCompetenzeCB->setEnabled(!m_competenza->isModded());
+    ui->dirigentiCompetenzeCB->setEnabled(!m_competenza->isModded());
 }
 
-void MainWindow::rCalendarClicked(const QDate &date)
+void MainWindow::rCalendarClicked()
 {
-    Q_UNUSED(date)
-    m_competenza->setRep(rCalendar->getDates());
+    m_competenza->setTurniProntaDisponibilita(rCalendar->getDates());
     elaboraRep();
     ui->saveCompetenzeButton->setEnabled(m_competenza->isModded());
+    ui->meseCompetenzeCB->setEnabled(!m_competenza->isModded());
+    ui->unitaCompetenzeCB->setEnabled(!m_competenza->isModded());
+    ui->dirigentiCompetenzeCB->setEnabled(!m_competenza->isModded());
 }
 
-void MainWindow::altreCalendarClicked(const QDate &date)
+void MainWindow::tCalendarClicked()
 {
-    Q_UNUSED(date)
-    m_competenza->setAltreAssenze(altreCalendar->getDates());
-    populateCompetenzeTab();
+    m_competenza->setTeleconsulto(tCalendar->getDates());
+    elaboraTeleconsulto();
     ui->saveCompetenzeButton->setEnabled(m_competenza->isModded());
+    ui->meseCompetenzeCB->setEnabled(!m_competenza->isModded());
+    ui->unitaCompetenzeCB->setEnabled(!m_competenza->isModded());
+    ui->dirigentiCompetenzeCB->setEnabled(!m_competenza->isModded());
 }
 
 void MainWindow::on_actionBackupDatabase_triggered()
@@ -842,6 +1005,7 @@ void MainWindow::on_actionBackupDatabase_triggered()
 
 void MainWindow::backupDatabase(const QString &time, bool quiet)
 {
+    // curl -k -T Statistica.db -u "H8qM7nBPZkozLyx:" -H 'X-Requested-With: XMLHttpRequest' https://cloud.cuteworks.it/public.php/webdav/Statistica.d
     const QString fileName = backupFileName(time);
     QDir backupDir(currentDatabase.absolutePath() + QDir::separator() + "backups");
 
@@ -890,8 +1054,9 @@ void MainWindow::tabulaFinished(int exitCode, QProcess::ExitStatus exitStatus)
     // be sure that a valid path was selected
     if( QFile::exists( fi.absolutePath() + QDir::separator() + "cartellini.csv" ) ) {
         // leggi cartellini
-        tabulaReader.setFile(fi.absolutePath() + QDir::separator() + "cartellini.csv");
-        tabulaReader.start();
+        cartellinoReader.setFile(fi.absolutePath() + QDir::separator() + "cartellini.csv");
+        cartellinoReader.setDriver(Utilities::m_driver);
+        cartellinoReader.start();
         msgLabel->setText("Importo i cartellini");
     } else {
         handleResults();
@@ -905,56 +1070,44 @@ void MainWindow::tabulaError(QProcess::ProcessError error)
     handleResults();
 }
 
-void MainWindow::on_actionCaricaCsv_triggered()
+void MainWindow::tabulaReadOutput()
 {
-    pdfFile.clear();
-    pdfFile = QFileDialog::getOpenFileName(this, tr("Seleziona file cartellini"),
-                                                        currentDatabase.absolutePath().isEmpty() ? QDir::homePath() : currentDatabase.absolutePath(),
-                                                        tr("CSV (*.csv)"));
+    if(!tabulaProcess->readAllStandardError().isEmpty())
+        qDebug() << "StandardError:" << tabulaProcess->readAllStandardError();
 
-    if(pdfFile.isEmpty())
-        return;
-
-    // be sure that a valid path was selected
-    if( QFile::exists( pdfFile ) ) {
-        // leggi cartellini
-        m_currentMeseCompetenzeIndex = ui->meseCompetenzeCB->currentIndex();
-        m_currentUnitaCompetenzeIndex = ui->unitaCompetenzeCB->currentIndex();
-        m_currentDirigenteCompetenzeIndex = ui->dirigentiCompetenzeCB->currentIndex();
-
-        m_loadingTimeCards = true;
-        okularReader.setFile(pdfFile);
-        okularReader.start();
-        progressBar->setVisible(true);
-        msgLabel->setText("Importo i cartellini");
-        ui->competenzeWidget->setEnabled(false);
-    }
+    if(!tabulaProcess->readAllStandardOutput().isEmpty())
+        qDebug() << "StandardOutput" << tabulaProcess->readAllStandardOutput();
 }
 
 void MainWindow::minutiCambiati(int mins)
 {
     m_competenza->setDmp(ui->dmpHoursEdit->value()*60+mins);
-    mostraDifferenzaOre();
-    elaboraGuardie();
-    elaboraRep();
+    elaboraSommario();
     ui->saveCompetenzeButton->setEnabled(m_competenza->isModded());
+    ui->meseCompetenzeCB->setEnabled(!m_competenza->isModded());
+    ui->unitaCompetenzeCB->setEnabled(!m_competenza->isModded());
+    ui->dirigentiCompetenzeCB->setEnabled(!m_competenza->isModded());
 }
 
 void MainWindow::oreCambiate(int ore)
 {
     m_competenza->setDmp(ore*60+ui->dmpMinsEdit->value());
-    mostraDifferenzaOre();
-    elaboraGuardie();
-    elaboraRep();
-    ui->saveCompetenzeButton->setEnabled(m_competenza->isModded());
-}
-
-void MainWindow::orarioGiornalieroCambiato(QTime orario)
-{
-    m_competenza->setOrarioGiornalieroMod(orario.hour()*60+orario.minute());
     elaboraSommario();
     ui->saveCompetenzeButton->setEnabled(m_competenza->isModded());
+    ui->meseCompetenzeCB->setEnabled(!m_competenza->isModded());
+    ui->unitaCompetenzeCB->setEnabled(!m_competenza->isModded());
+    ui->dirigentiCompetenzeCB->setEnabled(!m_competenza->isModded());
 }
+
+//void MainWindow::orarioGiornalieroCambiato(QTime orario)
+//{
+//    m_competenza->setOrarioGiornalieroMod(orario.hour()*60+orario.minute());
+//    elaboraSommario();
+//    ui->saveCompetenzeButton->setEnabled(m_competenza->isModded());
+//    ui->meseCompetenzeCB->setEnabled(!m_competenza->isModded());
+//    ui->unitaCompetenzeCB->setEnabled(!m_competenza->isModded());
+//    ui->dirigentiCompetenzeCB->setEnabled(!m_competenza->isModded());
+//}
 
 void MainWindow::on_actionInformazioni_triggered()
 {
@@ -1009,49 +1162,48 @@ void MainWindow::on_noteLine_textEdited(const QString &arg1)
     Q_UNUSED(arg1)
     m_competenza->setNote(ui->noteLine->text().trimmed());
     ui->saveCompetenzeButton->setEnabled(m_competenza->isModded());
+    ui->meseCompetenzeCB->setEnabled(!m_competenza->isModded());
+    ui->unitaCompetenzeCB->setEnabled(!m_competenza->isModded());
+    ui->dirigentiCompetenzeCB->setEnabled(!m_competenza->isModded());
 }
 
 void MainWindow::on_actionConnettiDbRemoto_triggered()
 {
-    if(m_host.isEmpty() || m_dbName.isEmpty()) {
+    if(Utilities::m_host.isEmpty() || Utilities::m_dbName.isEmpty()) {
         QMessageBox::critical(this, "Errore Connessione", "I parametri per la connessione remota non sono corretti.\n"
                               "Aprire Impostazioni e configurare host e nome database.", QMessageBox::Cancel);
         return;
     }
 
-    if(m_useSSL) {
-        if(m_certFile.isEmpty() || m_keyFile.isEmpty() || !QFile::exists(m_certFile) || !QFile::exists(m_keyFile)) {
-            QMessageBox::critical(this, "Errore Connessione", "I file Certificato/Chiave sono necessari per una connessione protetta.\n"
-                                  "Aprire Impostazioni e configurare Certificato e Chiave.", QMessageBox::Cancel);
-            return;
-        }
-    }
+//    if(Utilities::m_certFile.isEmpty() || Utilities::m_keyFile.isEmpty() || !QFile::exists(Utilities::m_certFile) || !QFile::exists(Utilities::m_keyFile)) {
+//        QMessageBox::critical(this, "Errore Connessione", "I file Certificato/Chiave sono necessari per una connessione protetta.\n"
+//                                  "Aprire Impostazioni e configurare Certificato e Chiave.", QMessageBox::Cancel);
+//        return;
+//    }
 
     askDbUserPassword();
 }
 
 void MainWindow::delayedSetup()
 {
-    if(m_driver == "QMYSQL") {
-        if(m_host.isEmpty() || m_dbName.isEmpty()) {
+    if(Utilities::m_driver == "QMYSQL") {
+        if(Utilities::m_host.isEmpty() || Utilities::m_dbName.isEmpty()) {
             QMessageBox::warning(this, "Database non configurato",
                                  "Nessun database remoto configurato.\nAprire Impostazioni e indicare Host e Nome Database");
             ui->actionBackupDatabase->setEnabled(false);
             return;
         }
-        if(m_useSSL) {
-            if(m_certFile.isEmpty() || m_keyFile.isEmpty() || !QFile::exists(m_certFile) || !QFile::exists(m_keyFile)) {
-                QMessageBox::critical(this, "Errore Connessione", "I file Certificato/Chiave sono necessari per una connessione protetta.\n"
-                                      "Aprire Impostazioni e configurare Certificato e Chiave.", QMessageBox::Cancel);
-                ui->actionBackupDatabase->setEnabled(false);
-                return;
-            }
-        }
+//        if(Utilities::m_certFile.isEmpty() || Utilities::m_keyFile.isEmpty() || !QFile::exists(Utilities::m_certFile) || !QFile::exists(Utilities::m_keyFile)) {
+//            QMessageBox::critical(this, "Errore Connessione", "I file Certificato/Chiave sono necessari per una connessione protetta.\n"
+//                                      "Aprire Impostazioni e configurare Certificato e Chiave.", QMessageBox::Cancel);
+//            ui->actionBackupDatabase->setEnabled(false);
+//            return;
+//        }
         askDbUserPassword();
         return;
     }
 
-    if(m_driver == "QSQLITE") {
+    if(Utilities::m_driver == "QSQLITE") {
         if(currentDatabase.fileName().isEmpty()) {
             QMessageBox::warning(this, "Nessun Database", "Nessun database configurato (primo avvio?)\nUsare il menu File per aprire un database esistente \no per crearne uno nuovo.");
             ui->actionBackupDatabase->setEnabled(false);
@@ -1070,11 +1222,22 @@ void MainWindow::delayedSetup()
     connectToDatabase();
 }
 
-void MainWindow::associaUnita(const QString &nome, int &unitaId)
+void MainWindow::associaUnita(const QString &nominativo, int &unitaId)
 {
-    m_nomiDialog->setUnitaLabel(nome);
+    m_nomiDialog->setNominativoLabel(nominativo);
     m_nomiDialog->exec();
     unitaId = m_nomiDialog->currentUnit();
+}
+
+void MainWindow::cartellinoReaderError(const QString &msg)
+{
+    QMessageBox::critical(this, "Errore", msg, QMessageBox::Ok);
+    handleResults();
+}
+
+void MainWindow::cartellinoInvalidoMessage(const QString &msg)
+{
+    QMessageBox::critical(this, "Errore", msg, QMessageBox::Ok);
 }
 
 void MainWindow::pagaStrGuardiaCambiato(bool checked)
@@ -1086,7 +1249,31 @@ void MainWindow::pagaStrGuardiaCambiato(bool checked)
     QString table = ui->meseCompetenzeCB->currentData(Qt::UserRole).toString();
     table.replace("_","m_");
     int value = checked ? 1 : 0;
-    SqlQueries::saveMod(table, "pagaStrGuar", ui->dirigentiCompetenzeCB->currentData(Qt::UserRole).toInt(), value);
+    QString errorMsg;
+    bool success = ApiService::instance().saveMod(
+        table,
+        "pagaStrGuar",
+        ui->dirigentiCompetenzeCB->currentData(Qt::UserRole).toInt(),
+        value,
+        &errorMsg
+        );
+
+    if (!success && !errorMsg.isEmpty()) {
+        qDebug() << Q_FUNC_INFO << "ERROR: " << errorMsg;
+    }
+    errorMsg.clear();
+    success = ApiService::instance().abilitaDisabilitaStraordinario(
+        m_competenza->dipendente()->matricola(),
+        checked,
+        m_anno,
+        m_mese,
+        &errorMsg
+        );
+
+    if (!success && !errorMsg.isEmpty()) {
+        qDebug() << "Errore nell'abilitazione/disabilitazione straordinario:" << errorMsg;
+        // Opzionale: mostrare un messaggio di errore all'utente
+    }
     elaboraSommario();
 }
 

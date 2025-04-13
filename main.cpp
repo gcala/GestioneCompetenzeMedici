@@ -14,6 +14,10 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationDomain("cuteworks.it");
     QCoreApplication::setApplicationName("Gestione Competenze Medici");
 
+#ifdef Q_OS_WIN32
+    QApplication::setStyle("Fusion");
+#endif
+
     MainWindow w;
     w.show();
 

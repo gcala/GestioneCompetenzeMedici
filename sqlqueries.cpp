@@ -9,6 +9,10 @@
 #include "competenza.h"
 #include "sqldatabasemanager.h"
 #include "utilities.h"
+#include "reperibilitasemplificata.h"
+#include "competenzepagate.h"
+#include "indennita.h"
+#include "apiservice.h"
 
 #include <QSqlQuery>
 #include <QSqlError>
@@ -36,7 +40,7 @@ void SqlQueries::createUnitsTable()
     }
 
     if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
 }
 
@@ -62,7 +66,7 @@ void SqlQueries::createDoctorsTable()
     }
 
     if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
 }
 
@@ -90,7 +94,7 @@ void SqlQueries::createUnitsPayedHoursTable()
     }
 
     if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
 }
 
@@ -122,7 +126,7 @@ void SqlQueries::createUnitsRepTable()
     }
 
     if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
 }
 
@@ -133,14 +137,14 @@ void SqlQueries::insertUnit(const QString &id,
 {
     QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("INSERT INTO unita (id,raggruppamento,nome,breve) "
-                  "VALUES (:id,:raggruppamento, :nome, :breve);");
+    "VALUES (:id,:raggruppamento, :nome, :breve);");
     query.bindValue(":id", id);
     query.bindValue(":raggruppamento", raggruppamento);
     query.bindValue(":nome", nome);
     query.bindValue(":breve", breve);
-
+    
     if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
 }
 
@@ -151,18 +155,18 @@ void SqlQueries::editUnit(const QString &id,
 {
     QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("UPDATE unita "
-                  "SET raggruppamento=:raggruppamento,nome=:nome,breve=:breve "
-                  "WHERE id=" + id + ";");
+    "SET raggruppamento=:raggruppamento,nome=:nome,breve=:breve "
+    "WHERE id=" + id + ";");
     query.bindValue(":raggruppamento", raggruppamento);
     query.bindValue(":nome", nome);
     query.bindValue(":breve", breve);
-
+    
     if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
 }
 
-bool SqlQueries::insertDoctor(const int &matricola,
+int SqlQueries::insertDoctor(const int &matricola,
                               const QString &nome,
                               const QString &id_unita)
 {
@@ -174,10 +178,12 @@ bool SqlQueries::insertDoctor(const int &matricola,
     query.bindValue(":id_unita", id_unita);
 
     if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
-        return false;
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        return -1;
     }
-    return true;
+    if(query.lastInsertId().isValid())
+        return query.lastInsertId().toInt();
+    return -1;
 }
 
 void SqlQueries::editDoctor(const QString &id,
@@ -192,22 +198,23 @@ void SqlQueries::editDoctor(const QString &id,
     query.bindValue(":nome", nome);
 
     if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
 }
 
-void SqlQueries::insertPayload(const int &id_unita, const QString &data, const QString &ore_tot, const QString &ore_pagate)
+void SqlQueries::insertPayload(const int &id_unita, const QString &data, const int ore_tot, const int ore_pagate, const int paga_diurno)
 {
     QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
-    query.prepare("INSERT INTO unita_ore_pagate (id_unita,data,ore_tot,ore_pagate) "
-                  "VALUES (:id_unita,:data,:ore_tot,:ore_pagate);");
+    query.prepare("INSERT INTO unita_ore_pagate (id_unita,data,ore_tot,ore_pagate,paga_diurno) "
+                  "VALUES (:id_unita,:data,:ore_tot,:ore_pagate,:paga_diurno);");
     query.bindValue(":id_unita", id_unita);
     query.bindValue(":data", data);
     query.bindValue(":ore_tot", ore_tot);
     query.bindValue(":ore_pagate", ore_pagate);
+    query.bindValue(":paga_diurno", paga_diurno);
 
     if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
 }
 
@@ -224,7 +231,7 @@ void SqlQueries::insertRep(const QString &id_unita, const QString &data, const Q
     query.bindValue(":festivo", festivo);
 
     if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
 }
 
@@ -233,7 +240,7 @@ void SqlQueries::removeUnit(const QString &id)
     QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("DELETE FROM unita WHERE id=" + id + ";");
     if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
 }
 
@@ -242,7 +249,7 @@ void SqlQueries::removeDoctor(const QString &id)
     QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("DELETE FROM medici WHERE id=" + id + ";");
     if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
 }
 
@@ -251,7 +258,7 @@ void SqlQueries::removeTimeCard(const QString &tableName, const QString &doctorI
     QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("DELETE FROM " + tableName + " WHERE id_medico=" + doctorId + ";");
     if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
 }
 
@@ -263,7 +270,7 @@ void SqlQueries::resetTimeCard(const QString &tableName, const int &doctorId)
                   "ferie=:ferie,congedi=:congedi,malattia=:malattia,rmp=:rmp,"
                   "rmc=:rmc,altre_causali=:altre_causali,guardie_diurne=:guardie_diurne,guardie_notturne=:guardie_notturne,"
                   "grep=:grep,congedi_minuti=:congedi_minuti,eccr_minuti=:eccr_minuti,grep_minuti=:grep_minuti,"
-                  "guar_minuti=:guar_minuti,rmc_minuti=:rmc_minuti,minuti_fatti=:minuti_fatti,scoperti=:scoperti "
+                  "guar_minuti=:guar_minuti,rmc_minuti=:rmc_minuti,minuti_fatti=:minuti_fatti,scoperti=:scoperti,indennita_festiva=:indennita_festiva,indennita_notturna=:indennita_notturna "
                   "WHERE id_medico=" + QString::number(doctorId) + ";");
     query.bindValue(":riposi", 0);
     query.bindValue(":minuti_giornalieri", 0);
@@ -283,9 +290,11 @@ void SqlQueries::resetTimeCard(const QString &tableName, const int &doctorId)
     query.bindValue(":rmc_minuti", 0);
     query.bindValue(":minuti_fatti", 0);
     query.bindValue(":scoperti", QString());
+    query.bindValue(":indennita_festiva", QString());
+    query.bindValue(":indennita_notturna", QString());
 
     if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
 }
 
@@ -299,7 +308,7 @@ bool SqlQueries::createTimeCardsTable(const QString &tableName)
                       "id_unita INTEGER NOT NULL,"
                       "anno INTEGER NOT NULL,"
                       "mese INTEGER NOT NULL,"
-                      "riposi INTEGER NOT NULL,"
+                      "riposi TEXT DEFAULT '',"
                       "minuti_giornalieri INTEGER NOT NULL,"
                       "ferie TEXT DEFAULT '',"
                       "congedi TEXT DEFAULT '',"
@@ -316,7 +325,9 @@ bool SqlQueries::createTimeCardsTable(const QString &tableName)
                       "guar_minuti INTEGER DEFAULT (0),"
                       "rmc_minuti INTEGER DEFAULT (0),"
                       "minuti_fatti INTEGER DEFAULT (0),"
-                      "scoperti TEXT DEFAULT '');");
+                      "scoperti TEXT DEFAULT '',"
+                      "indennita_festiva TEXT DEFAULT '',"
+                      "indennita_notturna TEXT DEFAULT '');");
     } else if(The::dbManager()->driverName() == "QMYSQL") {
         query.prepare("CREATE TABLE " + tableName + " "
                       "(id INT NOT NULL AUTO_INCREMENT,"
@@ -324,7 +335,7 @@ bool SqlQueries::createTimeCardsTable(const QString &tableName)
                       "id_unita INT NOT NULL,"
                       "anno INT NOT NULL,"
                       "mese INT NOT NULL,"
-                      "riposi INT NOT NULL,"
+                      "riposi varchar(128) DEFAULT '',"
                       "minuti_giornalieri INT NOT NULL,"
                       "ferie varchar(128) DEFAULT '',"
                       "congedi varchar(128) DEFAULT '',"
@@ -342,6 +353,8 @@ bool SqlQueries::createTimeCardsTable(const QString &tableName)
                       "rmc_minuti INT DEFAULT 0,"
                       "minuti_fatti INT DEFAULT 0,"
                       "scoperti varchar(128) DEFAULT '',"
+                      "indennita_festiva varchar(128) DEFAULT '',"
+                      "indennita_notturna varchar(128) DEFAULT '',"
                       "PRIMARY KEY (id));");
     } else {
         qDebug() << Q_FUNC_INFO << "Nessun database configurato. Esco";
@@ -349,7 +362,7 @@ bool SqlQueries::createTimeCardsTable(const QString &tableName)
     }
 
     if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
         return false;
     }
 
@@ -369,7 +382,8 @@ bool SqlQueries::createTimeCardsTable(const QString &tableName)
                       "altro_str TEXT DEFAULT '',"
                       "mensa TEXT DEFAULT '',"
                       "orario_giornaliero INTEGER DEFAULT (-1),"
-                      "pagaStrGuar INTEGER DEFAULT (1) NOT NULL);");
+                      "pagaStrGuar INTEGER DEFAULT (1) NOT NULL,"
+                      "turni_teleconsulto TEXT DEFAULT '');");
     } else if(The::dbManager()->driverName() == "QMYSQL") {
         query.prepare("CREATE TABLE " + modTableName.replace("_","m_") + " "
                       "(id INT NOT NULL AUTO_INCREMENT,"
@@ -385,6 +399,7 @@ bool SqlQueries::createTimeCardsTable(const QString &tableName)
                       "mensa varchar(128) DEFAULT '',"
                       "orario_giornaliero INT DEFAULT -1,"
                       "pagaStrGuar TINYINT DEFAULT 1 NOT NULL,"
+                      "turni_teleconsulto varchar(128) DEFAULT '',"
                       "PRIMARY KEY (id));");
     } else {
         qDebug() << Q_FUNC_INFO << "Nessun database configurato. Esco";
@@ -392,7 +407,7 @@ bool SqlQueries::createTimeCardsTable(const QString &tableName)
     }
 
     if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
         return false;
     }
 
@@ -413,7 +428,7 @@ bool SqlQueries::tableExists(const QString &tableName)
     }
 
     if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
     while(query.next()) {
         count = query.value(0).toInt();
@@ -431,7 +446,7 @@ bool SqlQueries::timeCardExists(const QString &tableName, const int &doctorId)
     QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("SELECT COUNT(*) FROM " + tableName + " WHERE id_medico='" + QString::number(doctorId) + "';");
     if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
     while(query.next()) {
         count = query.value(0).toInt();
@@ -450,54 +465,66 @@ bool SqlQueries::addTimeCard(const QString &tableName, const Dipendente *dipende
     int docId = doctorId(dipendente->matricola());
 
     if(dipendente->unita() == -1) {
-        qDebug() << "Impossibile trovare l'unità" << dipendente->unita();
+        qDebug() << Q_FUNC_INFO << "Impossibile trovare l'unità" << dipendente->unita();
         return false;
     }
 
     if(docId == -1) {
-//        qDebug() << "---> INSERISCO" << dipendente->matricola() << dipendente->nome() << QString::number(unId);
-        if(!insertDoctor(dipendente->matricola(),dipendente->nome(),QString::number(dipendente->unita())))
-            return false;
+        docId = insertDoctor(dipendente->matricola(),dipendente->nome(),QString::number(dipendente->unita()));
     }
 
-    docId = doctorId(dipendente->matricola());
+    if(docId == -1) {
+        qDebug() << Q_FUNC_INFO << "id dipendente -1";
+        return false;
+    }
 
     if(timeCardExists(tableName, docId)) {
-        resetTimeCard(tableName, docId);
+        ApiService::instance().resetTimeCard(tableName, docId);
         query.prepare("UPDATE " + tableName + " " +
                       "SET riposi=:riposi,minuti_giornalieri=:minuti_giornalieri,"
                       "ferie=:ferie,congedi=:congedi,malattia=:malattia,rmp=:rmp,"
                       "rmc=:rmc,altre_causali=:altre_causali,guardie_diurne=:guardie_diurne,guardie_notturne=:guardie_notturne,"
                       "grep=:grep,congedi_minuti=:congedi_minuti,eccr_minuti=:eccr_minuti,grep_minuti=:grep_minuti,"
-                      "guar_minuti=:guar_minuti,rmc_minuti=:rmc_minuti,minuti_fatti=:minuti_fatti,scoperti=:scoperti "
+                      "guar_minuti=:guar_minuti,rmc_minuti=:rmc_minuti,minuti_fatti=:minuti_fatti,scoperti=:scoperti,indennita_festiva=:indennita_festiva,indennita_notturna=:indennita_notturna "
                       "WHERE id_medico=" + QString::number(docId) + ";");
     } else {
-        query.prepare("INSERT INTO " + tableName + " (id_medico, id_unita, anno, mese, riposi, minuti_giornalieri, ferie, congedi, malattia, rmp, rmc, altre_causali, guardie_diurne, guardie_notturne, grep, congedi_minuti, eccr_minuti, grep_minuti, guar_minuti, rmc_minuti, minuti_fatti, scoperti) "
-                      "VALUES (:id_medico, :id_unita, :anno, :mese, :riposi, :minuti_giornalieri, :ferie, :congedi, :malattia, :rmp, :rmc, :altre_causali, :guardie_diurne, :guardie_notturne, :grep, :congedi_minuti, :eccr_minuti, :grep_minuti, :guar_minuti, :rmc_minuti, :minuti_fatti, :scoperti);");
+        query.prepare("INSERT INTO " + tableName + " (id_medico, id_unita, anno, mese, riposi, minuti_giornalieri, ferie, congedi, malattia, rmp, rmc, altre_causali, guardie_diurne, guardie_notturne, grep, congedi_minuti, eccr_minuti, grep_minuti, guar_minuti, rmc_minuti, minuti_fatti, scoperti, indennita_festiva, indennita_notturna) "
+                      "VALUES (:id_medico, :id_unita, :anno, :mese, :riposi, :minuti_giornalieri, :ferie, :congedi, :malattia, :rmp, :rmc, :altre_causali, :guardie_diurne, :guardie_notturne, :grep, :congedi_minuti, :eccr_minuti, :grep_minuti, :guar_minuti, :rmc_minuti, :minuti_fatti, :scoperti, :indennita_festiva, :indennita_notturna);");
         query.bindValue(":id_medico", QString::number(docId));
         query.bindValue(":id_unita", dipendente->unita());
         query.bindValue(":anno", dipendente->anno());
         query.bindValue(":mese", dipendente->mese());
     }
 
-    query.bindValue(":riposi", dipendente->riposi());
-    query.bindValue(":minuti_giornalieri", dipendente->minutiGiornalieri());
-    query.bindValue(":ferie", dipendente->ferie().join(","));
-    query.bindValue(":congedi", dipendente->congedi().join(","));
-    query.bindValue(":malattia", dipendente->malattia().join(","));
-    query.bindValue(":rmp", dipendente->rmp().join(","));
-    query.bindValue(":rmc", dipendente->rmc().join(","));
+    query.bindValue(":riposi", Utilities::vectorIntToStringlist(dipendente->riposi()).join(","));
+    query.bindValue(":minuti_giornalieri", dipendente->minutiGiornalieriVeri());
+    if(dipendente->minutiGiornalieriVeri() <= Utilities::m_maxMinutiGiornalieri)
+        query.bindValue(":ferie", Utilities::vectorIntToStringlist(dipendente->ferie()).join(","));
+    else
+        query.bindValue(":ferie", dipendente->numGiorniCartellino());
+    query.bindValue(":congedi", Utilities::vectorIntToStringlist(dipendente->congedi()).join(","));
+    query.bindValue(":malattia", Utilities::vectorIntToStringlist(dipendente->malattia()).join(","));
+    query.bindValue(":rmp", Utilities::vectorIntToStringlist(dipendente->rmp()).join(","));
+    query.bindValue(":rmc", Utilities::vectorIntToStringlist(dipendente->rmc()).join(","));
 
     QString altreCausali = "";
-    QMap<QString, QPair<QStringList, int> >::const_iterator i = dipendente->altreCausali().constBegin();
+    auto i = dipendente->altreCausali().constBegin();
     while (i != dipendente->altreCausali().constEnd()) {
-        altreCausali += i.key() + "," + i.value().first.join("~") + "," + QString::number(i.value().second) + ";";
+        altreCausali += i.key() + "," + Utilities::vectorIntToStringlist(i.value().first).join("~") + "," + QString::number(i.value().second) + ";";
         ++i;
     }
     query.bindValue(":altre_causali", altreCausali);
 
-    query.bindValue(":guardie_diurne", dipendente->guardieDiurne().join(","));
-    query.bindValue(":guardie_notturne", dipendente->guardieNotturne().join(","));
+    QStringList mezzeGuardieDiurne;
+    for(auto i : dipendente->mezzeGuardieDiurne()) {
+        mezzeGuardieDiurne << QString::number(i) + "*";
+    }
+
+    QStringList list;
+    list << Utilities::vectorIntToStringlist(dipendente->guardieDiurne()) << mezzeGuardieDiurne;
+
+    query.bindValue(":guardie_diurne", list.join(","));
+    query.bindValue(":guardie_notturne", Utilities::vectorIntToStringlist(dipendente->guardieNotturne()).join(","));
 
     QString grep = "";
     auto it = dipendente->grep().constBegin();
@@ -513,10 +540,12 @@ bool SqlQueries::addTimeCard(const QString &tableName, const Dipendente *dipende
     query.bindValue(":guar_minuti", dipendente->minutiGuar());
     query.bindValue(":rmc_minuti", dipendente->minutiRmc());
     query.bindValue(":minuti_fatti", dipendente->minutiFatti());
-    query.bindValue(":scoperti", dipendente->scoperti().join(","));
+    query.bindValue(":scoperti", Utilities::vectorIntToStringlist(dipendente->scoperti()).join(","));
+    query.bindValue(":indennita_festiva", dipendente->indennitaFestiva());
+    query.bindValue(":indennita_notturna", Utilities::vectorIntToStringlist(dipendente->indennitaNotturna()).join(","));
 
     if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
         return false;
     }
 
@@ -528,7 +557,7 @@ bool SqlQueries::addTimeCard(const QString &tableName, const Dipendente *dipende
     if(tableExists(modTablePrevMonth)) {
         if(timeCardExists(modTablePrevMonth, docId)) {
             Competenza comp(modTablePrevMonth.replace("tcm", "tc"),docId);
-            diffMinuti = comp.differenzaMin();
+            diffMinuti = comp.minutiSaldoMese();
         }
     }
 
@@ -553,7 +582,7 @@ bool SqlQueries::addTimeCard(const QString &tableName, const Dipendente *dipende
     query.bindValue(":id_medico", docId);
     query.bindValue(":dmp_calcolato", diffMinuti);
     if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
         return false;
     }
 
@@ -566,7 +595,7 @@ int SqlQueries::doctorId(const int &matricola)
     QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("SELECT id FROM medici WHERE matricola=" + QString::number(matricola) + ";");
     if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
     while(query.next()) {
         id = query.value(0).toInt();
@@ -580,7 +609,7 @@ int SqlQueries::unitId(const int &matricola)
     QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("SELECT id_unita FROM medici WHERE matricola=" + QString::number(matricola) + ";");
     if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
     while(query.next()) {
         id = query.value(0).toInt();
@@ -595,7 +624,7 @@ QMap<int, QString> SqlQueries::units()
     QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("SELECT id,nome FROM unita;");
     if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
     while(query.next()) {
         unita[query.value(0).toInt()] = query.value(1).toString();
@@ -610,7 +639,7 @@ void SqlQueries::resetAllDoctorMods(const QString &tableName, const int &id)
     query.prepare("UPDATE " + tableName + " " +
                   "SET guardie_diurne=:guardie_diurne,guardie_notturne=:guardie_notturne,"
                   "turni_reperibilita=:turni_reperibilita,dmp=:dmp,altre_assenze=:altre_assenze,nota=:nota,"
-                  "altro_str=:altro_str,mensa=:mensa,orario_giornaliero=:orario_giornaliero "
+                  "altro_str=:altro_str,mensa=:mensa,orario_giornaliero=:orario_giornaliero,turni_teleconsulto=:turni_teleconsulto "
                   "WHERE id_medico=" + QString::number(id) + ";");
     query.bindValue(":guardie_diurne", QString());
     query.bindValue(":guardie_notturne", QString());
@@ -621,9 +650,10 @@ void SqlQueries::resetAllDoctorMods(const QString &tableName, const int &id)
     query.bindValue(":altro_str", QString());
     query.bindValue(":mensa", QString());
     query.bindValue(":orario_giornaliero", -1);
+    query.bindValue(":turni_teleconsulto", QString());
 
     if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
 }
 
@@ -636,7 +666,7 @@ void SqlQueries::resetStringValue(const QString &tableName, const QString &colum
     query.bindValue(":" + columnName, QString());
 
     if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
 }
 
@@ -649,7 +679,7 @@ void SqlQueries::resetIntValue(const QString &tableName, const QString &columnNa
     query.bindValue(":" + columnName, -1);
 
     if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
 }
 
@@ -684,7 +714,7 @@ int SqlQueries::numDoctorsInTimecard(const QString &timecard)
     QSqlQuery queryCount(QSqlDatabase::database(Utilities::m_connectionName));
     queryCount.prepare("SELECT COUNT(*) FROM " + timecard + ";");
     if(!queryCount.exec()) {
-        qDebug() << "ERROR: " << queryCount.lastQuery() << " : " << queryCount.lastError();
+        qDebug() << Q_FUNC_INFO << "ERROR: " << queryCount.lastQuery() << " : " << queryCount.lastError();
     }
     while(queryCount.next()) {
         count = queryCount.value(0).toInt();
@@ -742,8 +772,11 @@ QVariantList SqlQueries::getDoctorTimecard(const QString &tableName, const QStri
                   + tableName + ".id_unita,"
                   + modTableName + ".nota,"
                   + tableName + ".scoperti, "
-                  + modTableName + ".orario_giornaliero, "
-                  + modTableName + ".pagaStrGuar "
+                  + modTableName + ".orario_giornaliero,"
+                  + modTableName + ".pagaStrGuar,"
+                  + tableName + ".indennita_festiva,"
+                  + tableName + ".indennita_notturna,"
+                  + modTableName + ".turni_teleconsulto "
                   + "FROM " + tableName + " LEFT JOIN medici ON medici.id=" + tableName + ".id_medico "
                   + "LEFT JOIN unita ON unita.id=" + tableName + ".id_unita "
                   + "LEFT JOIN " + modTableName + " ON " + modTableName + ".id_medico=" + tableName + ".id_medico "
@@ -786,6 +819,9 @@ QVariantList SqlQueries::getDoctorTimecard(const QString &tableName, const QStri
         result << query.value(28); // scoperti
         result << query.value(29); // orario_giornaliero
         result << query.value(30); // pagaStrGuar
+        result << query.value(31); // indennita_festiva
+        result << query.value(32); // indennita_notturna
+        result << query.value(33); // turni teleconsulto
     }
 
     return result;
@@ -800,15 +836,15 @@ void SqlQueries::saveMod(const QString &tableName, const QString &columnName, co
     query.bindValue(":" + columnName, value);
 
     if(!query.exec()) {
-        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        qDebug() << Q_FUNC_INFO << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
 }
 
-QMap<QDate, QPair<int, int> > SqlQueries::getOrePagateFromUnit(const int &unitaId)
+QMap<QDate, QVector<int> > SqlQueries::getOrePagateFromUnit(const int &unitaId)
 {
-    QMap<QDate, QPair<int,int> > map;
+    QMap<QDate, QVector<int> > map;
     QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
-    query.prepare("SELECT data,ore_tot,ore_pagate FROM unita_ore_pagate WHERE id_unita=" + QString::number(unitaId) + ";");
+    query.prepare("SELECT data,ore_tot,ore_pagate,paga_diurno,paga_ore_lavorate FROM unita_ore_pagate WHERE id_unita=" + QString::number(unitaId) + ";");
     if(!query.exec()) {
         qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
         return map;
@@ -816,9 +852,11 @@ QMap<QDate, QPair<int, int> > SqlQueries::getOrePagateFromUnit(const int &unitaI
     while(query.next()) {
         QStringList meseAnno = query.value(0).toString().split("/");
         QDate date(meseAnno.at(1).toInt(),meseAnno.at(0).toInt(),1);
-        QPair<int, int> vals;
-        vals.first = query.value(1).toInt();
-        vals.second = query.value(2).toInt();
+        QVector<int> vals;
+        vals << query.value(1).toInt(); // ore_tot
+        vals << query.value(2).toInt(); // ore_pagate
+        vals << query.value(3).toInt(); // paga_diurno
+        vals << query.value(4).toInt(); // paga_ore_lavorate
         map[date] = vals;
     }
     return map;
@@ -831,7 +869,7 @@ QPair<int, QString> SqlQueries::getMatricolaNome(const int &doctorId)
     QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("SELECT matricola,nome FROM medici WHERE id='" + QString::number(doctorId) + "';");
     if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
     while(query.next()) {
         result.first = query.value(0).toInt();
@@ -863,11 +901,26 @@ QVector<int> SqlQueries::getUnitaIdsInTimecard(const QString &timecard)
     QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
     query.prepare("SELECT id_unita FROM " + timecard + " ORDER BY length(id_unita), id_unita;");
     if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
     while(query.next()) {
         if(!ids.contains(query.value(0).toInt()))
             ids << query.value(0).toInt();
+    }
+
+    return ids;
+}
+
+QVector<int> SqlQueries::getUnitaIdsAll()
+{
+    QVector<int> ids;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
+    query.prepare("SELECT id FROM unita;");
+    if(!query.exec()) {
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
+    while(query.next()) {
+        ids << query.value(0).toInt();
     }
 
     return ids;
@@ -918,7 +971,7 @@ QVector<int> SqlQueries::getDoctorsIdsFromUnitInTimecard(const QString &timecard
                   + whereClause +
                   "ORDER BY medici.nome;");
     if(!query.exec()) {
-        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
     }
     while(query.next()) {
         ids << query.value(0).toInt();
@@ -931,7 +984,7 @@ QVariantList SqlQueries::getOrePagateFromId(const int &id)
 {
     QVariantList result;
     QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
-    query.prepare("SELECT data,ore_tot,ore_pagate FROM unita_ore_pagate WHERE id=" + QString::number(id) + ";");
+    query.prepare("SELECT data,ore_tot,ore_pagate,paga_diurno FROM unita_ore_pagate WHERE id=" + QString::number(id) + ";");
     if(!query.exec()) {
         qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
         return result;
@@ -941,6 +994,7 @@ QVariantList SqlQueries::getOrePagateFromId(const int &id)
         result << query.value(0);
         result << query.value(1);
         result << query.value(2);
+        result << query.value(3);
     }
     return result;
 }
@@ -963,17 +1017,9 @@ QStringList SqlQueries::getTuttiMatricoleNomi()
 
 void SqlQueries::setUnitaOrePagateModel(QSqlQueryModel *model, const int &idUnita)
 {
-    model->setQuery("SELECT id,data,ore_tot,ore_pagate FROM unita_ore_pagate WHERE id_unita=" + QString::number(idUnita) + ";", The::dbManager()->currentDatabase());
+    model->setQuery("SELECT id,data,ore_tot,ore_pagate,paga_diurno FROM unita_ore_pagate WHERE id_unita=" + QString::number(idUnita) + ";", The::dbManager()->currentDatabase());
     if(model->lastError().isValid()) {
-        qDebug() << "ERROR: " << model->query().lastQuery() << " : " << model->lastError();
-    }
-}
-
-void SqlQueries::setUnitaReperibilitaModel(QSqlQueryModel *model, const int &idUnita)
-{
-    model->setQuery("SELECT * FROM unita_reperibilita WHERE id_unita=" + QString::number(idUnita) + ";");
-    if(model->lastError().isValid()) {
-        qDebug() << "ERROR: " << model->query().lastQuery() << " : " << model->lastError();
+        qDebug() << Q_FUNC_INFO << "ERROR: " << model->query().lastQuery() << " : " << model->lastError();
     }
 }
 
@@ -992,6 +1038,23 @@ QStringList SqlQueries::getUnitaDataFromTimecard(const QString &timecard)
 
     while(query.next()) {
         result << query.value(0).toString() + "~" + query.value(1).toString() + "~" + query.value(2).toString();
+    }
+
+    return result;
+}
+
+QStringList SqlQueries::getUnitaDataAll()
+{
+    QStringList result;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
+    query.prepare("SELECT id,nome FROM unita;");
+    if(!query.exec()) {
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+        return result;
+    }
+
+    while(query.next()) {
+        result << query.value(0).toString() + "~" + query.value(1).toString();
     }
 
     return result;
@@ -1027,7 +1090,7 @@ QVariantList SqlQueries::getUnitaDataById(const int &idUnita)
 {
     QVariantList result;
     QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
-    query.prepare("SELECT * FROM unita WHERE id=" + QString::number(idUnita) + ";");
+    query.prepare("SELECT id,raggruppamento,nome,breve,pseudo FROM unita WHERE id=" + QString::number(idUnita) + ";");
     if(!query.exec()) {
         qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
         return result;
@@ -1048,7 +1111,7 @@ QVariantList SqlQueries::getDoctorDataById(const int &idDoctor)
 {
     QVariantList result;
     QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
-    query.prepare("SELECT * FROM medici WHERE id=" + QString::number(idDoctor) + ";");
+    query.prepare("SELECT id,matricola,nome,id_unita FROM medici WHERE id=" + QString::number(idDoctor) + ";");
     if(!query.exec()) {
         qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
         return result;
@@ -1113,3 +1176,292 @@ void SqlQueries::setUnitaMedico(const int &docId, const int &unitId)
     }
 }
 
+//bool SqlQueries::noStraordinario(int matricola)
+//{
+//    int count = 0;
+//    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
+//    query.prepare("SELECT COUNT(*) FROM no_straordinario WHERE ci='" + QString::number(matricola) + "';");
+//    if(!query.exec()) {
+//        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+//    }
+//    while(query.next()) {
+//        count = query.value(0).toInt();
+//    }
+
+//    if(count <= 0)
+//        return false;
+
+//    return true;
+//}
+
+bool SqlQueries::abilitatoStraordinario(int matricola, const int &anno, const int &mese)
+{
+    bool ok = true;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
+    query.prepare("SELECT abilitato FROM abilitazione_straordinario WHERE matricola=" + QString::number(matricola) + " AND decorrenza <= " + QDate(anno, mese, 1).toString("yyyyMMdd") + " ORDER BY decorrenza DESC LIMIT 1;");
+    if(!query.exec()) {
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
+    while(query.next()) {
+        ok = query.value(0).toBool();
+    }
+
+    return ok;
+}
+
+//void SqlQueries::enableDisableStraordinario(int matricola, bool enable)
+//{
+//    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
+//    if(enable) {
+//        query.prepare("DELETE FROM no_straordinario WHERE ci=" + QString::number(matricola) + ";");
+//    } else {
+//        query.prepare("INSERT INTO no_straordinario (ci) VALUES (:ci);");
+//        query.bindValue(":ci", matricola);
+//    }
+//    if(!query.exec()) {
+//        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+//    }
+//}
+
+void SqlQueries::abilitaDisabilitaStraordinario(int matricola, bool enable, const int &anno, const int &mese)
+{
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
+    // controllare se c'è stessa matricola & anno/mese
+    // se si aggiorna, altrimenti inserisci
+    int id = 0;
+    query.prepare("SELECT id FROM abilitazione_straordinario WHERE matricola=" + QString::number(matricola) + " AND decorrenza=" + QDate(anno, mese, 1).toString("yyyyMMdd") + ";");
+    if(!query.exec()) {
+        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
+    while(query.next()) {
+        id = query.value(0).toInt();
+    }
+    if(id > 0) {
+        // aggiorno valore
+        query.prepare("UPDATE abilitazione_straordinario "
+                      "SET abilitato=:abilitato "
+                      "WHERE id=" + QString::number(id) + ";");
+        query.bindValue(":abilitato", enable ? 1 : 0);
+    } else {
+        // inserisco valore
+        query.prepare("INSERT INTO abilitazione_straordinario (matricola,decorrenza,abilitato) VALUES (:matricola,:decorrenza,:abilitato);");
+        query.bindValue(":matricola", matricola);
+        query.bindValue(":decorrenza", QDate(anno, mese, 1).toString("yyyyMMdd"));
+        query.bindValue(":abilitato", enable ? 1 : 0);
+    }
+    if(!query.exec()) {
+        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
+}
+
+ReperibilitaSemplificata *SqlQueries::reperibilita(int idUnita, int anno, int mese)
+{
+    if(idUnita == 0 || anno == 0 || mese == 0)
+        return new ReperibilitaSemplificata();
+
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
+    query.prepare("SELECT id,id_unita,feriale,sabato,festivo,decorrenza,prefestivo FROM reperibilita_semplificata WHERE id_unita=" + QString::number(idUnita) + " AND decorrenza <= " + QDate(anno, mese, 1).toString("yyyyMMdd") + " ORDER BY decorrenza DESC LIMIT 1;");
+    if(!query.exec()) {
+        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
+    while(query.next()) {
+        return new ReperibilitaSemplificata(idUnita,
+                                        QDate(anno, mese, 1),
+                                        query.value(2).toDouble(),
+                                        query.value(3).toDouble(),
+                                        query.value(4).toDouble(),
+                                        query.value(6).toBool());
+    }
+    return new ReperibilitaSemplificata();
+}
+
+CompetenzePagate *SqlQueries::competenzePagate(int ci, int anno, int mese)
+{
+    if(ci == 0 || anno == 0 || mese == 0)
+        return new CompetenzePagate();
+
+    CompetenzePagate *pagato = new CompetenzePagate;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
+    query.prepare("SELECT id,ci,deficit,ind_not,ind_fes,str_reparto_ord,str_reparto_nof,"
+                  "str_reparto_nef,str_repe_ord,str_repe_nof,str_repe_nef,str_guard_ord,"
+                  "str_guard_nof,str_guard_nef,turni_repe,ore_repe,guard_diu,guard_not,"
+                  "grande_fes,data,rep_oltre_10,teleconsulto,ore_lavorate "
+                  "FROM tcp_" + QString::number(anno) + QString::number(mese).rightJustified(2, '0') + " WHERE ci=" + QString::number(ci) + " ORDER BY data DESC LIMIT 1;");
+    if(!query.exec()) {
+        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
+    while(query.next()) {
+        pagato->setCi(query.value(1).toInt());
+        pagato->setDeficit(query.value(2).toInt());
+        pagato->setIndNotturna(query.value(3).toInt());
+        pagato->setIndFestiva(query.value(4).toDouble());
+        pagato->setStr_reparto_ord(query.value(5).toInt());
+        pagato->setStr_reparto_nof(query.value(6).toInt());
+        pagato->setStr_reparto_nef(query.value(7).toInt());
+        pagato->setStr_repe_ord(query.value(8).toInt());
+        pagato->setStr_repe_nof(query.value(9).toInt());
+        pagato->setStr_repe_nef(query.value(10).toInt());
+        pagato->setStr_guard_ord(query.value(11).toInt());
+        pagato->setStr_guard_nof(query.value(12).toInt());
+        pagato->setStr_guard_nef(query.value(13).toInt());
+        pagato->setTurni_repe(query.value(14).toInt());
+        pagato->setOre_repe(query.value(15).toInt());
+        pagato->setGuard_diu(query.value(16).toDouble());
+        pagato->setGuard_not(query.value(17).toInt());
+        pagato->setGrande_fes(query.value(18).toInt());
+        pagato->setDateTime(QDateTime::fromString(query.value(19).toString(),"yyyyMMddhhmm"));
+        pagato->setRepOltre10(query.value(20).toDouble());
+        pagato->setTeleconsulto(query.value(21).toDouble());
+        pagato->setOreLavorate(query.value(22).toDouble());
+    }
+    return pagato;
+}
+
+bool SqlQueries::competenzePagateExists(int ci, int anno, int mese)
+{
+    int count = 0;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
+    query.prepare("SELECT COUNT(*) FROM tcp_" + QString::number(anno) + QString::number(mese).rightJustified(2, '0') + " WHERE ci='" + QString::number(ci) + "';");
+    if(!query.exec()) {
+        qDebug() << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
+    while(query.next()) {
+        count = query.value(0).toInt();
+    }
+
+    if(count <= 0)
+        return false;
+
+    return true;
+}
+
+void SqlQueries::saveCompetenzePagate(CompetenzePagate *pagato, int anno, int mese)
+{
+    if(pagato->ci() == 0 || anno == 0 || mese == 0) {
+        qDebug() << "ERROR: " << Q_FUNC_INFO << " : " << "ci: " << pagato->ci() << " - anno: " << anno << " - mese: " << mese;
+        return;
+    }
+
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
+    query.prepare("INSERT INTO tcp_" + QString::number(anno) + QString::number(mese).rightJustified(2, '0') + " "
+                  "(ci,deficit,ind_not,ind_fes,str_reparto_ord,str_reparto_nof,str_reparto_nef,str_repe_ord,str_repe_nof,str_repe_nef,str_guard_ord,str_guard_nof,str_guard_nef,turni_repe,ore_repe,guard_diu,guard_not,grande_fes,data,rep_oltre_10,teleconsulto,ore_lavorate) "
+                  "VALUES (:ci,:deficit,:ind_not,:ind_fes,:str_reparto_ord,:str_reparto_nof,:str_reparto_nef,:str_repe_ord,:str_repe_nof,:str_repe_nef,:str_guard_ord,:str_guard_nof,:str_guard_nef,:turni_repe,:ore_repe,:guard_diu,:guard_not,:grande_fes,:data,:rep_oltre_10,:teleconsulto,:ore_lavorate);");
+    query.bindValue(":ci", pagato->ci());
+    query.bindValue(":deficit", pagato->deficit());
+    query.bindValue(":ind_not", pagato->indNotturna());
+    query.bindValue(":ind_fes", pagato->indFestiva());
+    query.bindValue(":str_reparto_ord", pagato->str_reparto_ord());
+    query.bindValue(":str_reparto_nof", pagato->str_reparto_nof());
+    query.bindValue(":str_reparto_nef", pagato->str_reparto_nef());
+    query.bindValue(":str_repe_ord", pagato->str_repe_ord());
+    query.bindValue(":str_repe_nof", pagato->str_repe_nof());
+    query.bindValue(":str_repe_nef", pagato->str_repe_nef());
+    query.bindValue(":str_guard_ord", pagato->str_guard_ord());
+    query.bindValue(":str_guard_nof", pagato->str_guard_nof());
+    query.bindValue(":str_guard_nef", pagato->str_guard_nef());
+    query.bindValue(":turni_repe", pagato->turni_repe());
+    query.bindValue(":ore_repe", pagato->ore_repe());
+    query.bindValue(":guard_diu", pagato->guard_diu());
+    query.bindValue(":guard_not", pagato->guard_not());
+    query.bindValue(":grande_fes", pagato->grande_fes());
+    query.bindValue(":data", pagato->dataElaborazione().toString("yyyyMMddhhmm"));
+    query.bindValue(":rep_oltre_10", pagato->repOltre10());
+    query.bindValue(":teleconsulto", pagato->teleconsulto());
+    query.bindValue(":ore_lavorate", pagato->oreLavorate());
+    if(!query.exec()) {
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
+}
+
+QString SqlQueries::doctorName(int matricola)
+{
+    QString name;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
+    query.prepare("SELECT nome FROM medici WHERE matricola=" + QString::number(matricola) + ";");
+    if(!query.exec()) {
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
+    while(query.next()) {
+        name = query.value(0).toString();
+    }
+    return name;
+}
+
+int SqlQueries::doctorMatricola(int id)
+{
+    int matricola = 0;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
+    query.prepare("SELECT matricola FROM medici WHERE id=" + QString::number(id) + ";");
+    if(!query.exec()) {
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
+    while(query.next()) {
+        matricola = query.value(0).toInt();
+    }
+    return matricola;
+}
+
+Indennita SqlQueries::getIndennita(int anno, int mese)
+{
+    Indennita indennita;
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
+    query.prepare("SELECT id,id_unita,tipo,decorrenza,voce,sub FROM voci_paga;");
+    if(!query.exec()) {
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
+    while(query.next()) {
+        indennita.addItem(Utilities::indennitaEnum(query.value(2).toString()), query.value(1).toInt(), query.value(4).toString(), query.value(5).toString());
+    }
+    return indennita;
+}
+
+int SqlQueries::idSituazioneSaldo(const int anno, const int mese, const int matricola)
+{
+    int id = 0;
+
+    if(anno == 0 || mese == 0 || matricola == 0)
+        return id;
+
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
+    query.prepare("SELECT id FROM situazione_saldo WHERE anno=" + QString::number(anno) + " AND mese=" + QString::number(mese) + " AND matricola=" + QString::number(matricola) + ";");
+    if(!query.exec()) {
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
+    while(query.next()) {
+        id =  query.value(0).toInt();
+    }
+    return id;
+}
+
+void SqlQueries::addSituazioneSaldo(const int anno, const int mese, const int matricola, const int saldo, const int rmp, const int dmp)
+{
+    if(anno == 0 || mese == 0 || matricola == 0)
+        return;
+
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
+    query.prepare("INSERT INTO situazione_saldo (matricola,anno,mese,saldo,rmp,dmp) VALUES (:matricola,:anno,:mese,:saldo,:rmp,:dmp);");
+    query.bindValue(":matricola", matricola);
+    query.bindValue(":anno", anno);
+    query.bindValue(":mese", mese);
+    query.bindValue(":saldo", saldo);
+    query.bindValue(":rmp", rmp);
+    query.bindValue(":dmp", dmp);
+    if(!query.exec()) {
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
+}
+
+void SqlQueries::updateSituazioneSaldo(const int id, const int saldo, const int rmp, const int dmp)
+{
+    if(id == 0)
+        return;
+
+    QSqlQuery query(QSqlDatabase::database(Utilities::m_connectionName));
+    query.prepare("UPDATE situazione_saldo SET saldo=:saldo,rmp=:rmp,dmp=:dmp WHERE id=" + QString::number(id) + ";");
+    query.bindValue(":saldo", saldo);
+    query.bindValue(":rmp", rmp);
+    query.bindValue(":dmp", dmp);
+    if(!query.exec()) {
+        qDebug() << Q_FUNC_INFO << "ERROR: " << query.lastQuery() << " : " << query.lastError();
+    }
+}

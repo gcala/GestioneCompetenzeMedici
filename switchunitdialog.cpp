@@ -6,7 +6,8 @@
 
 #include "switchunitdialog.h"
 #include "ui_switchunitdialog.h"
-#include "sqlqueries.h"
+//#include "sqlqueries.h"
+#include "apiservice.h"
 
 #include <algorithm>
 #include <QtWidgets>
@@ -58,7 +59,7 @@ void SwitchUnitDialog::populateMeseCompetenzeCB()
 {
     ui->meseCompetenzeCB->clear();
 
-    const QStringList timeCards = SqlQueries::timecardsList();
+    const QStringList timeCards = ApiService::instance().getTimecardsList();
 
     QStringList::const_iterator i = timeCards.constEnd();
 
@@ -78,16 +79,15 @@ void SwitchUnitDialog::populateUnitaCompetenzeCB()
     if(ui->meseCompetenzeCB->currentData(Qt::UserRole).toString().isEmpty())
         return;
 
-    QStringList query = SqlQueries::getUnitaDataFromTimecard(ui->meseCompetenzeCB->currentData(Qt::UserRole).toString());
+    const auto unitaData = ApiService::instance().getUnitaDataFromTimecard(ui->meseCompetenzeCB->currentData(Qt::UserRole).toString());
 
     QStringList list;
 
-    for(const QString &s : query) {
-        QStringList l = s.split("~");
-        if(!list.contains(l.at(1))) {
-            ui->unitaCompetenze1CB->addItem(l.at(2) + " - " + l.at(1), l.at(0));
-            ui->unitaCompetenze2CB->addItem(l.at(2) + " - " + l.at(1), l.at(0));
-            list << l.at(1);
+    for(const auto unita : unitaData) {
+        if(!list.contains(unita.nome)) {
+            ui->unitaCompetenze1CB->addItem(QString::number(unita.idUnita) + " - " + unita.nome, unita.id);
+            ui->unitaCompetenze2CB->addItem(QString::number(unita.idUnita) + " - " + unita.nome, unita.id);
+            list << unita.nome;
         }
     }
 }
@@ -162,13 +162,12 @@ void SwitchUnitDialog::on_unitaCompetenze1CB_currentIndexChanged(int index)
     if(ui->unitaCompetenze1CB->currentData(Qt::UserRole).toString().isEmpty())
         return;
 
-    QStringList query = SqlQueries::getDoctorDataFromUnitaInTimecard(ui->meseCompetenzeCB->currentData(Qt::UserRole).toString(), ui->unitaCompetenze1CB->currentData(Qt::UserRole).toInt());
+    const auto doctorData = ApiService::instance().getDoctorDataFromUnitaInTimecard(ui->meseCompetenzeCB->currentData(Qt::UserRole).toString(), ui->unitaCompetenze1CB->currentData(Qt::UserRole).toInt());
 
-    for(const QString &s : query) {
-        QStringList l = s.split("~");
-        m_dirigenti1Initial << l.at(1).toInt();
-        m_dirigenti1Current << l.at(1).toInt();
-        ui->dirigenti1List->addItem(l.at(1) + " - " + l.at(2));
+    for(const auto &doctor : doctorData) {
+        m_dirigenti1Initial << doctor.matricola;
+        m_dirigenti1Current << doctor.matricola;
+        ui->dirigenti1List->addItem(QString::number(doctor.matricola) + " - " + doctor.nome);
     }
 
     std::sort(m_dirigenti1Initial.begin(), m_dirigenti1Initial.end());
@@ -189,13 +188,12 @@ void SwitchUnitDialog::on_unitaCompetenze2CB_currentIndexChanged(int index)
     if(ui->unitaCompetenze1CB->currentData(Qt::UserRole).toString().isEmpty())
         return;
 
-    QStringList query = SqlQueries::getDoctorDataFromUnitaInTimecard(ui->meseCompetenzeCB->currentData(Qt::UserRole).toString(), ui->unitaCompetenze2CB->currentData(Qt::UserRole).toInt());
+    const auto doctorData = ApiService::instance().getDoctorDataFromUnitaInTimecard(ui->meseCompetenzeCB->currentData(Qt::UserRole).toString(), ui->unitaCompetenze2CB->currentData(Qt::UserRole).toInt());
 
-    for(const QString &s : query) {
-        QStringList l = s.split("~");
-        m_dirigenti2Initial << l.at(1).toInt();
-        m_dirigenti2Current << l.at(1).toInt();
-        ui->dirigenti2List->addItem(l.at(1) + " - " + l.at(2));
+    for(const auto &doctor : doctorData) {
+        m_dirigenti2Initial << doctor.matricola;
+        m_dirigenti2Current << doctor.matricola;
+        ui->dirigenti2List->addItem(QString::number(doctor.matricola) + " - " + doctor.nome);
     }
 
     std::sort(m_dirigenti2Initial.begin(), m_dirigenti2Initial.end());
@@ -235,15 +233,37 @@ void SwitchUnitDialog::on_saveButton_clicked()
     for(const auto &s : m_dirigenti1Initial) {
         if(m_dirigenti1Current.contains(s))
             continue;
-        SqlQueries::saveMod(ui->meseCompetenzeCB->currentData(Qt::UserRole).toString(), "id_unita", SqlQueries::doctorId(s), ui->unitaCompetenze2CB->currentData());
-        SqlQueries::setUnitaMedico(SqlQueries::doctorId(s), ui->unitaCompetenze2CB->currentData().toInt());
+        QString errorMsg;
+        bool success = ApiService::instance().saveMod(
+            ui->meseCompetenzeCB->currentData(Qt::UserRole).toString(),
+            "id_unita",
+            ApiService::instance().doctorId(s),
+            ui->unitaCompetenze2CB->currentData(),
+            &errorMsg
+            );
+
+        if (!success && !errorMsg.isEmpty()) {
+            qDebug() << Q_FUNC_INFO << "ERROR: " << errorMsg;
+        }
+        ApiService::instance().setUnitaMedico(ApiService::instance().doctorId(s), ui->unitaCompetenze2CB->currentData().toInt());
     }
 
     for(const auto &s : m_dirigenti2Initial) {
         if(m_dirigenti2Current.contains(s))
             continue;
-        SqlQueries::saveMod(ui->meseCompetenzeCB->currentData(Qt::UserRole).toString(), "id_unita", SqlQueries::doctorId(s), ui->unitaCompetenze1CB->currentData());
-        SqlQueries::setUnitaMedico(SqlQueries::doctorId(s), ui->unitaCompetenze1CB->currentData().toInt());
+        QString errorMsg;
+        bool success = ApiService::instance().saveMod(
+            ui->meseCompetenzeCB->currentData(Qt::UserRole).toString(),
+            "id_unita",
+            ApiService::instance().doctorId(s),
+            ui->unitaCompetenze1CB->currentData(),
+            &errorMsg
+            );
+
+        if (!success && !errorMsg.isEmpty()) {
+            qDebug() << Q_FUNC_INFO << "ERROR: " << errorMsg;
+        }
+        ApiService::instance().setUnitaMedico(ApiService::instance().doctorId(s), ui->unitaCompetenze1CB->currentData().toInt());
     }
 
     on_unitaCompetenze1CB_currentIndexChanged(0);

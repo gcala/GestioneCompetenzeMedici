@@ -17,34 +17,12 @@ class DipendenteData;
 class Dipendente : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY( int anno READ anno WRITE setAnno )
-    Q_PROPERTY( int mese READ mese WRITE setMese )
-    Q_PROPERTY( QString nome READ nome WRITE setNome )
-    Q_PROPERTY( int matricola READ matricola WRITE setMatricola )
-    Q_PROPERTY( int unita READ unita WRITE setUnita )
-    Q_PROPERTY( int riposi READ riposi )
-    Q_PROPERTY( QStringList guardieDiurne READ guardieDiurne )
-    Q_PROPERTY( QStringList guardieNotturne READ guardieNotturne )
-    Q_PROPERTY( QMultiMap<int, QPair<int, int> > grep READ grep )
-    Q_PROPERTY( QStringList rmp READ rmp )
-    Q_PROPERTY( QStringList rmc READ rmc )
-    Q_PROPERTY( QStringList ferie READ ferie )
-    Q_PROPERTY( QStringList congedi READ congedi )
-    Q_PROPERTY( QStringList malattia READ malattia )
-    Q_PROPERTY( QStringList scoperti READ scoperti )
-    Q_PROPERTY( QMap<QString, QPair<QStringList, int> > altreCausali READ altreCausali )
-    Q_PROPERTY( int minutiFatti READ minutiFatti WRITE addMinutiFatti )
-    Q_PROPERTY( int minutiCongedi READ minutiCongedi WRITE addMinutiCongedo )
-    Q_PROPERTY( int minutiGiornalieri READ minutiGiornalieri WRITE setMinutiGiornalieri )
-    Q_PROPERTY( int minutiGrep READ minutiGrep WRITE addMinutiGrep )
-    Q_PROPERTY( int minutiEccr READ minutiEccr WRITE addMinutiEccr )
-    Q_PROPERTY( int minutiGuar READ minutiGuar WRITE addMinutiGuar )
-    Q_PROPERTY( int minutiRmc READ minutiRmc WRITE addMinutiRmc )
 
 public:
-    explicit Dipendente(QObject *parent = nullptr);
+    explicit Dipendente();
     Dipendente(const Dipendente &);
     Dipendente &operator=(const Dipendente &);
+    bool operator==(const Dipendente &rhs) const;
     ~Dipendente();
 
     int anno() const;
@@ -57,35 +35,43 @@ public:
     void setMatricola(int matricola);
     int unita() const;
     void setUnita(int unita);
-    int riposi() const;
-    void addRiposi(int num);
-    QStringList guardieDiurne() const;
-    void addGuardiaDiurna(QString date);
-    QStringList guardieNotturne() const;
-    void addGuardiaNotturna(QString date);
+    int riposiCount() const;
+    QVector<int> riposi() const;
+    void addRiposo(int giorno);
+    QVector<int> guardieDiurne() const;
+    void addGuardiaDiurna(int giorno);
+    QVector<int> mezzeGuardieDiurne() const;
+    void addMezzaGuardiaDiurna(int giorno);
+    QVector<int> guardieNotturne() const;
+    void addGuardiaNotturna(int giorno);
     QMultiMap<int, QPair<int, int> > grep() const;
     void addGrep(int giorno, int minuti, int tipo);
-    QStringList rmp() const;
-    void addRmp(QString date);
-    QStringList rmc() const;
-    void addRmc(QString date);
-    QStringList ferie() const;
-    void addFerie(QString date);
-    QStringList scoperti() const;
-    void addScoperto(QString date);
-    QStringList congedi() const;
-    void addCongedo(QString date);
-    QStringList malattia() const;
-    void addMalattia(QString date);
-    QMap<QString, QPair<QStringList, int> > altreCausali() const;
+    QVector<int> rmp() const;
+    void addRmp(int giorno);
+    QVector<int> rmc() const;
+    void addRmc(int giorno);
+    QVector<int> ferie() const;
+    void addFerie(int giorno);
+    void addNumGiorniCartellino(int num);
+    QVector<int> scoperti() const;
+    void addScoperto(int giorno);
+    QVector<int> congedi() const;
+    void addCongedo(int giorno);
+    QVector<int> malattia() const;
+    void addMalattia(int giorno);
+    QMap<QString, QPair<QVector<int>, int> > altreCausali() const;
     void addAltraCausale(QString causale, QString date, int minuti);
+    int minutiCausale(const QString &causale);
     int altreCausaliCount() const;
     int minutiFatti() const;
     void addMinutiFatti(int minuti);
     int minutiCongedi() const;
     void addMinutiCongedo(int minuti);
     int minutiGiornalieri() const;
+    int minutiGiornalieriVeri() const;
+    int numGiorniCartellino() const;
     void setMinutiGiornalieri(int minuti);
+    void setNumGiorniCartellino(int num);
     int minutiGrep() const;
     void addMinutiGrep(int minuti);
     int minutiEccr() const;
@@ -94,8 +80,12 @@ public:
     void addMinutiGuar(int minuti);
     int minutiRmc() const;
     void addMinutiRmc(int minuti);
-    void setRiposi(int minuti);
+    void setRiposi(QVector<int> giorni);
     void resetProperties();
+    double indennitaFestiva() const;
+    void addIndennitaFestiva(double giorno);
+    QVector<int> indennitaNotturna() const;
+    void addIndennitaNotturna(int giorno);
 
 signals:
 

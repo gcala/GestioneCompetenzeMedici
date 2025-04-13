@@ -26,8 +26,6 @@ public:
     QString host() const;
     QString database() const;
     QString user() const;
-    QString password() const;
-    bool useSSL() const;
     QString certFile() const;
     QString keyFile() const;
 
@@ -49,9 +47,6 @@ private slots:
     void on_remoteDbSave_clicked();
     void on_cancelOpenButton_clicked();
     void on_userLine_textChanged(const QString &arg1);
-    void on_passLine_textChanged(const QString &arg1);
-    void on_revealButton_clicked();
-    void on_useSSL_toggled(bool checked);
     void on_certButton_clicked();
     void on_keyButton_clicked();
 
@@ -60,7 +55,6 @@ private:
     int m_startPage;
     bool m_openDb;
     bool m_canceled;
-    bool m_revealPass;
 };
 
 #endif // DATABASEWIZARD_H

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
+    <width>410</width>
     <height>362</height>
    </rect>
   </property>
@@ -19,7 +19,6 @@
      <property name="font">
       <font>
        <pointsize>12</pointsize>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -44,37 +43,6 @@
     </widget>
    </item>
    <item>
-    <widget class="QCheckBox" name="orarioGiornoCB">
-     <property name="text">
-      <string>Orario giornaliero</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QCheckBox" name="gdiurneCB">
-     <property name="font">
-      <font>
-       <pointsize>12</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Guardie diurne</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QCheckBox" name="gnotturneCB">
-     <property name="font">
-      <font>
-       <pointsize>12</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Guardie notturne</string>
-     </property>
-    </widget>
-   </item>
-   <item>
     <widget class="QCheckBox" name="repCB">
      <property name="font">
       <font>
@@ -82,7 +50,19 @@
       </font>
      </property>
      <property name="text">
-      <string>Reperibilità</string>
+      <string>Pronta disponibilità</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="teleconsultoCB">
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Teleconsulto</string>
      </property>
     </widget>
    </item>
@@ -95,18 +75,6 @@
      </property>
      <property name="text">
       <string>Deficit mese precedente</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QCheckBox" name="altreCB">
-     <property name="font">
-      <font>
-       <pointsize>12</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Altre assenze</string>
      </property>
     </widget>
    </item>

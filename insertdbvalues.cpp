@@ -6,7 +6,8 @@
 
 #include "insertdbvalues.h"
 #include "ui_insertdbvalues.h"
-#include "sqlqueries.h"
+//#include "sqlqueries.h"
+#include "apiservice.h"
 
 #include <QtWidgets>
 
@@ -31,6 +32,7 @@ void InsertDBValues::unitaAddOreSetup(const int &unitaId)
     ui->unitaData->setDate(QDate::currentDate());
     ui->unitaOrePagate->setValue(0);
     ui->unitaOreTot->setValue(8);
+    ui->unitaPagaDiurno->setValue(0);
     tableName = "unita_ore_pagate";
     idName = "id_unita";
     currentId = unitaId;
@@ -46,7 +48,7 @@ void InsertDBValues::unitaRemoveOreSetup(const int &id)
     ui->unitaMsg->setText("Sicuri di voler eliminare il seguente dato?");
     currentId = id;
     tableName = "unita_ore_pagate";
-    QVariantList query = SqlQueries::getOrePagateFromId(id);
+    QVariantList query = ApiService::instance().getOrePagateFromId(id);
 
     if(query.isEmpty()) {
         qDebug() << Q_FUNC_INFO << ":: ERRORE :: ore pagate non trovate";
@@ -70,10 +72,11 @@ void InsertDBValues::on_unitaSave_clicked()
 
     switch(currentOp) {
     case AddOre:
-        SqlQueries::insertPayload(currentId,
-                                  ui->unitaData->date().toString("MM/yyyy"),
-                                  QString::number(ui->unitaOreTot->value()),
-                                  QString::number(ui->unitaOrePagate->value()));
+        ApiService::instance().insertPayload(currentId,
+                                             ui->unitaData->date().toString("MM/yyyy"),
+                                             ui->unitaOreTot->value(),
+                                             ui->unitaOrePagate->value(),
+                                             ui->unitaPagaDiurno->value());
         break;
     default:
         break;

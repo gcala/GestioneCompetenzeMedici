@@ -22,12 +22,11 @@ public:
     ~NomiUnitaDialog();
 
     void populateUnits();
-    void setUnitaLabel(const QString &name);
+    void setNominativoLabel(const QString &name);
     int currentUnit() const;
 
 private slots:
     void on_okButton_clicked();
-
     void on_cancelButton_clicked();
 
 private:

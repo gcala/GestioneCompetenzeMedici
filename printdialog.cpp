@@ -6,7 +6,9 @@
 
 #include "printdialog.h"
 #include "ui_printdialog.h"
-#include "sqlqueries.h"
+//#include "sqlqueries.h"
+#include "utilities.h"
+#include "apiservice.h"
 
 #include <QtWidgets>
 #include <QFileDialog>
@@ -194,11 +196,10 @@ void PrintDialog::on_unitaCB_currentIndexChanged(int index)
     ui->dirigenteCB->clear();
     ui->dirigenteCB->addItem("Tutti", -1);
 
-    QStringList query = SqlQueries::getDoctorDataFromUnitaInTimecard(ui->meseCB->currentData(Qt::UserRole).toString(), ui->unitaCB->currentData(Qt::UserRole).toInt());
+    const auto doctorData = ApiService::instance().getDoctorDataFromUnitaInTimecard(ui->meseCB->currentData(Qt::UserRole).toString(), ui->unitaCB->currentData(Qt::UserRole).toInt());
 
-    for(const QString &s : query) {
-        QStringList l = s.split("~");
-        ui->dirigenteCB->addItem(l.at(1) + " - " + l.at(2), l.at(0));
+    for(const auto &doctor : doctorData) {
+        ui->dirigenteCB->addItem(QString::number(doctor.matricola) + " - " + doctor.nome, doctor.id);
     }
 }
 
@@ -212,15 +213,14 @@ void PrintDialog::on_meseCB_currentIndexChanged(int index)
     if(ui->meseCB->currentData(Qt::UserRole).toString().isEmpty())
         return;
 
-    QStringList query = SqlQueries::getUnitaDataFromTimecard(ui->meseCB->currentData(Qt::UserRole).toString());
+    const auto unitaData = ApiService::instance().getUnitaDataFromTimecard(ui->meseCB->currentData(Qt::UserRole).toString());
 
     QStringList list;
 
-    for(const QString &s : query) {
-        QStringList l = s.split("~");
-        if(!list.contains(l.at(1))) {
-            ui->unitaCB->addItem(l.at(2) + " - " + l.at(1), l.at(0));
-            list << l.at(1);
+    for(const auto unita : unitaData) {
+        if(!list.contains(unita.nome)) {
+            ui->unitaCB->addItem(QString::number(unita.idUnita) + " - " + unita.nome, unita.id);
+            list << unita.nome;
         }
     }
 }
@@ -229,10 +229,13 @@ void PrintDialog::on_browseButton_clicked()
 {
     QString dir = QFileDialog::getExistingDirectory( this,
                                                      tr( "Seleziona destinazione" ),
-                                                     ui->path->text().isEmpty() ? QDir::homePath() : ui->path->text(),
+                                                     Utilities::m_exportPath,
                                                      QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks );
 
     // be sure that a valid path was selected
-    if( QFile::exists( dir ) )
+    const QFileInfo fi(dir);
+    if( fi.exists() ) {
+        Utilities::m_exportPath = fi.absoluteFilePath();
         ui->path->setText( dir );
+    }
 }

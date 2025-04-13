@@ -6,7 +6,7 @@
 
 QT       += core gui sql
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets network
 
 TARGET = GestioneCompetenzeMedici
 TEMPLATE = app
@@ -24,15 +24,30 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
-    dateeditdelegate.cpp \
+        apidataprovider.cpp \
+        apimanager.cpp \
+        apiservice.cpp \
+        blinkinglabel.cpp \
+        calendarmanagerteleconsulto.cpp \
+        cartellinocompleto.cpp \
+        cartellinocompletoreader.cpp \
+        causalewidget.cpp \
+        competenzeexporter.cpp \
+        competenzeexporterdialog.cpp \
+        competenzepagate.cpp \
+        dateeditdelegate.cpp \
+        differenzedialog.cpp \
+        differenzeexporter.cpp \
+        giornocartellinocompleto.cpp \
+        indennita.cpp \
         main.cpp \
         mainwindow.cpp \
-    manageemployee.cpp \
-    manageunits.cpp \
+        manageemployee.cpp \
+        manageunits.cpp \
+        reperibilitasemplificata.cpp \
         searchcombobox.cpp \
         insertdbvalues.cpp \
-        okularcsvtimecardsreader.cpp \
-        tabulacsvtimecardsreader.cpp \
+        sqlitedataprovider.cpp \
         sqlqueries.cpp \
         dipendente.cpp \
         calendarmanager.cpp \
@@ -42,7 +57,8 @@ SOURCES += \
         calendarmanagerrep.cpp \
         printdialog.cpp \
         competenzeunitaexporter.cpp \
-        competenzedirigenteexporter.cpp \
+        timbratura.cpp \
+        totalicartellinocompleto.cpp \
         utilities.cpp \
         databasewizard.cpp \
         nomiunitadialog.cpp \
@@ -56,28 +72,48 @@ SOURCES += \
         almanac.cpp \
         deficitrecuperiexporter.cpp \
         twodigitsspinbox.cpp \
-    switchunitdialog.cpp
+        switchunitdialog.cpp
 
 HEADERS += \
-    dateeditdelegate.h \
+        apidataprovider.h \
+        apimanager.h \
+        apiservice.h \
+        blinkinglabel.h \
+        calendarmanagerteleconsulto.h \
+        cartellinocompleto.h \
+        cartellinocompletoreader.h \
+        causalewidget.h \
+        competenzeexporter.h \
+        competenzeexporterdialog.h \
+        competenzepagate.h \
+        dateeditdelegate.h \
+        differenzedialog.h \
+        differenzeexporter.h \
+        doctordata.h \
+        giornocartellinocompleto.h \
+        idataprovider.h \
+        indennita.h \
         mainwindow.h \
-    manageemployee.h \
-    manageunits.h \
+        manageemployee.h \
+        manageunits.h \
+        orepagate.h \
+        reperibilitasemplificata.h \
         searchcombobox.h \
         insertdbvalues.h \
-        okularcsvtimecardsreader.h \
-        tabulacsvtimecardsreader.h \
+        sqlitedataprovider.h \
         sqlqueries.h \
         dipendente.h \
         calendarmanager.h \
         competenza.h \
         renderarea.h \
         renderarearep.h \
-        defines.h \
         calendarmanagerrep.h \
         printdialog.h \
         competenzeunitaexporter.h \
-        competenzedirigenteexporter.h \
+        timbratura.h \
+        totalicartellinocompleto.h \
+        unitadata.h \
+        unitadatatimecard.h \
         utilities.h \
         databasewizard.h \
         nomiunitadialog.h \
@@ -91,13 +127,16 @@ HEADERS += \
         almanac.h \
         deficitrecuperiexporter.h \
         twodigitsspinbox.h \
-    switchunitdialog.h
+        switchunitdialog.h
 
 FORMS += \
+        causalewidget.ui \
+        competenzeexporterdialog.ui \
+        differenzedialog.ui \
         mainwindow.ui \
         insertdbvalues.ui \
-    manageemployee.ui \
-    manageunits.ui \
+        manageemployee.ui \
+        manageunits.ui \
         printdialog.ui \
         databasewizard.ui \
         nomiunitadialog.ui \
@@ -106,7 +145,7 @@ FORMS += \
         settingsitem.ui \
         resetdialog.ui \
         logindialog.ui \
-    switchunitdialog.ui
+        switchunitdialog.ui
 
 RESOURCES += \
     assets.qrc

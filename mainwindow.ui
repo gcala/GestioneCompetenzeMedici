@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1351</width>
-    <height>751</height>
+    <width>1700</width>
+    <height>774</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -234,592 +234,293 @@
         </layout>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_12">
-         <item>
-          <widget class="QLabel" name="label_8">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>11</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>Giorni Lavorati:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="workDaysLabel">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>11</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_34">
-           <property name="minimumSize">
-            <size>
-             <width>20</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>11</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>|</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_12">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>11</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>Ferie:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="ferieLabel">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>11</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="ferieCalendarButton">
-           <property name="minimumSize">
-            <size>
-             <width>36</width>
-             <height>36</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>36</width>
-             <height>36</height>
-            </size>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset resource="assets.qrc">
-             <normaloff>:/icons/view-calendar-month.svg</normaloff>:/icons/view-calendar-month.svg</iconset>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_35">
-           <property name="minimumSize">
-            <size>
-             <width>20</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>11</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>|</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_17">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>11</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>Congedi:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="congediLabel">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>11</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="congediCalendarButton">
-           <property name="minimumSize">
-            <size>
-             <width>36</width>
-             <height>36</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>36</width>
-             <height>36</height>
-            </size>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset resource="assets.qrc">
-             <normaloff>:/icons/view-calendar-month.svg</normaloff>:/icons/view-calendar-month.svg</iconset>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_36">
-           <property name="minimumSize">
-            <size>
-             <width>20</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>11</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>|</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_18">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>11</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>Malattia:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="malattiaLabel">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>11</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="malattiaCalendarButton">
-           <property name="minimumSize">
-            <size>
-             <width>36</width>
-             <height>36</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>36</width>
-             <height>36</height>
-            </size>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset resource="assets.qrc">
-             <normaloff>:/icons/view-calendar-month.svg</normaloff>:/icons/view-calendar-month.svg</iconset>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_37">
-           <property name="minimumSize">
-            <size>
-             <width>20</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>11</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>|</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_19">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>11</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>Recuperi MP:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="rmpLabel">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>11</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="rmpCalendarButton">
-           <property name="minimumSize">
-            <size>
-             <width>36</width>
-             <height>36</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>36</width>
-             <height>36</height>
-            </size>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset resource="assets.qrc">
-             <normaloff>:/icons/view-calendar-month.svg</normaloff>:/icons/view-calendar-month.svg</iconset>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_38">
-           <property name="minimumSize">
-            <size>
-             <width>20</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>11</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>|</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_20">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>11</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>Recuperi MC:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="rmcLabel">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>11</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="rmcCalendarButton">
-           <property name="minimumSize">
-            <size>
-             <width>36</width>
-             <height>36</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>36</width>
-             <height>36</height>
-            </size>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset resource="assets.qrc">
-             <normaloff>:/icons/view-calendar-month.svg</normaloff>:/icons/view-calendar-month.svg</iconset>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_64">
-           <property name="minimumSize">
-            <size>
-             <width>20</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>11</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>|</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_21">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>11</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>Altre assenze:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="altreLabel">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>11</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="styleSheet">
-            <string notr="true"/>
-           </property>
-           <property name="text">
-            <string>0</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="altreCalendarButton">
-           <property name="minimumSize">
-            <size>
-             <width>36</width>
-             <height>36</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>36</width>
-             <height>36</height>
-            </size>
-           </property>
-           <property name="toolTip">
-            <string>Calendario Reperibilità</string>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset resource="assets.qrc">
-             <normaloff>:/icons/view-calendar-month.svg</normaloff>:/icons/view-calendar-month.svg</iconset>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer_10">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
+        <widget class="QGroupBox" name="causaliGB">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>82</height>
+          </size>
+         </property>
+         <property name="title">
+          <string>Assenze</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QWidget" name="widget_2" native="true">
+         <layout class="QHBoxLayout" name="horizontalLayout_6">
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="font">
+             <font>
+              <pointsize>11</pointsize>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Parametri U.O.: Ore notturne pagate:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="oreNotturnePagate">
+            <property name="minimumSize">
+             <size>
+              <width>50</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>11</pointsize>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_32">
+            <property name="minimumSize">
+             <size>
+              <width>20</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>11</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>||</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_2">
+            <property name="font">
+             <font>
+              <pointsize>11</pointsize>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Pronta disponibilità:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_3">
+            <property name="font">
+             <font>
+              <pointsize>11</pointsize>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Feriale:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="pdFeriale">
+            <property name="minimumSize">
+             <size>
+              <width>50</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>11</pointsize>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_34">
+            <property name="minimumSize">
+             <size>
+              <width>20</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>11</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>|</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_4">
+            <property name="font">
+             <font>
+              <pointsize>11</pointsize>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Sabato:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="pdSabato">
+            <property name="minimumSize">
+             <size>
+              <width>50</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>11</pointsize>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_35">
+            <property name="minimumSize">
+             <size>
+              <width>20</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>11</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>|</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_5">
+            <property name="font">
+             <font>
+              <pointsize>11</pointsize>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Domenica/Festivo:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="pdFestivo">
+            <property name="minimumSize">
+             <size>
+              <width>50</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>11</pointsize>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_36">
+            <property name="minimumSize">
+             <size>
+              <width>20</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>11</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>|</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_6">
+            <property name="font">
+             <font>
+              <pointsize>11</pointsize>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Pre-Festivo:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="pdPrefestivo">
+            <property name="minimumSize">
+             <size>
+              <width>50</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>11</pointsize>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>313</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
        </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_13">
@@ -867,49 +568,6 @@
             <property name="bottomMargin">
              <number>2</number>
             </property>
-            <item>
-             <layout class="QVBoxLayout" name="verticalLayout_11">
-              <item>
-               <widget class="QPushButton" name="gdCalendarButton">
-                <property name="minimumSize">
-                 <size>
-                  <width>36</width>
-                  <height>36</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>36</width>
-                  <height>36</height>
-                 </size>
-                </property>
-                <property name="toolTip">
-                 <string>Calendario Guardie Diurne</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="icon">
-                 <iconset resource="assets.qrc">
-                  <normaloff>:/icons/view-calendar-month.svg</normaloff>:/icons/view-calendar-month.svg</iconset>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <spacer name="verticalSpacer_10">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>40</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
-            </item>
             <item>
              <widget class="RenderArea" name="gdPainterWidget" native="true">
               <property name="sizePolicy">
@@ -967,49 +625,6 @@
             <property name="bottomMargin">
              <number>2</number>
             </property>
-            <item>
-             <layout class="QVBoxLayout" name="verticalLayout_13">
-              <item>
-               <widget class="QPushButton" name="gnCalendarButton">
-                <property name="minimumSize">
-                 <size>
-                  <width>36</width>
-                  <height>36</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>36</width>
-                  <height>36</height>
-                 </size>
-                </property>
-                <property name="toolTip">
-                 <string>Calendario Guardie Notturne</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="icon">
-                 <iconset resource="assets.qrc">
-                  <normaloff>:/icons/view-calendar-month.svg</normaloff>:/icons/view-calendar-month.svg</iconset>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <spacer name="verticalSpacer_11">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>40</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
-            </item>
             <item>
              <widget class="RenderArea" name="gnPainterWidget" native="true">
               <property name="sizePolicy">
@@ -1158,7 +773,6 @@
                   <property name="font">
                    <font>
                     <pointsize>11</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -1175,7 +789,6 @@
                   <property name="font">
                    <font>
                     <pointsize>11</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -1192,7 +805,6 @@
                   <property name="font">
                    <font>
                     <pointsize>11</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -1236,7 +848,6 @@
                   <property name="font">
                    <font>
                     <pointsize>11</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -1253,7 +864,6 @@
                   <property name="font">
                    <font>
                     <pointsize>11</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -1270,7 +880,6 @@
                   <property name="font">
                    <font>
                     <pointsize>11</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -1314,7 +923,6 @@
                   <property name="font">
                    <font>
                     <pointsize>11</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -1331,7 +939,6 @@
                   <property name="font">
                    <font>
                     <pointsize>11</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -1348,7 +955,6 @@
                   <property name="font">
                    <font>
                     <pointsize>11</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -1392,7 +998,6 @@
                   <property name="font">
                    <font>
                     <pointsize>11</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -1409,7 +1014,6 @@
                   <property name="font">
                    <font>
                     <pointsize>11</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -1426,7 +1030,6 @@
                   <property name="font">
                    <font>
                     <pointsize>11</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -1490,7 +1093,6 @@
                 <property name="font">
                  <font>
                   <pointsize>11</pointsize>
-                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -1546,7 +1148,7 @@
             </font>
            </property>
            <property name="title">
-            <string>Reperibilità</string>
+            <string>Turni Pronta Disponibilità</string>
            </property>
            <layout class="QHBoxLayout" name="horizontalLayout_18">
             <property name="spacing">
@@ -1692,7 +1294,6 @@
                   <property name="font">
                    <font>
                     <pointsize>11</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -1742,7 +1343,6 @@
                   <property name="font">
                    <font>
                     <pointsize>11</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -1792,7 +1392,6 @@
                   <property name="font">
                    <font>
                     <pointsize>11</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -1842,7 +1441,6 @@
                   <property name="font">
                    <font>
                     <pointsize>11</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -1891,7 +1489,6 @@
                 <property name="font">
                  <font>
                   <pointsize>11</pointsize>
-                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -1920,6 +1517,106 @@
                </spacer>
               </item>
              </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox_12">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>300</width>
+             <height>200</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>300</width>
+             <height>200</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>11</pointsize>
+            </font>
+           </property>
+           <property name="title">
+            <string>Teleconsulto</string>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_19">
+            <property name="spacing">
+             <number>2</number>
+            </property>
+            <property name="leftMargin">
+             <number>2</number>
+            </property>
+            <property name="topMargin">
+             <number>2</number>
+            </property>
+            <property name="rightMargin">
+             <number>2</number>
+            </property>
+            <property name="bottomMargin">
+             <number>2</number>
+            </property>
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_17">
+              <item>
+               <widget class="QPushButton" name="tCalendarButton">
+                <property name="minimumSize">
+                 <size>
+                  <width>36</width>
+                  <height>36</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>36</width>
+                  <height>36</height>
+                 </size>
+                </property>
+                <property name="toolTip">
+                 <string>Calendario Reperibilità</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset resource="assets.qrc">
+                  <normaloff>:/icons/view-calendar-month.svg</normaloff>:/icons/view-calendar-month.svg</iconset>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="verticalSpacer_19">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>40</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="RenderAreaRep" name="tPainterWidget" native="true">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -1965,7 +1662,6 @@
               <property name="font">
                <font>
                 <pointsize>11</pointsize>
-                <weight>75</weight>
                 <bold>true</bold>
                </font>
               </property>
@@ -1983,6 +1679,9 @@
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
+              </property>
+              <property name="readOnly">
+               <bool>true</bool>
               </property>
               <property name="buttonSymbols">
                <enum>QAbstractSpinBox::NoButtons</enum>
@@ -2015,7 +1714,6 @@
               <property name="font">
                <font>
                 <pointsize>11</pointsize>
-                <weight>75</weight>
                 <bold>true</bold>
                </font>
               </property>
@@ -2068,7 +1766,6 @@
               <property name="font">
                <font>
                 <pointsize>11</pointsize>
-                <weight>75</weight>
                 <bold>true</bold>
                </font>
               </property>
@@ -2121,7 +1818,6 @@
               <property name="font">
                <font>
                 <pointsize>11</pointsize>
-                <weight>75</weight>
                 <bold>true</bold>
                </font>
               </property>
@@ -2187,7 +1883,6 @@
               <property name="font">
                <font>
                 <pointsize>11</pointsize>
-                <weight>75</weight>
                 <bold>true</bold>
                </font>
               </property>
@@ -2201,7 +1896,6 @@
               <property name="font">
                <font>
                 <pointsize>11</pointsize>
-                <weight>75</weight>
                 <bold>true</bold>
                </font>
               </property>
@@ -2252,21 +1946,20 @@
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_5">
                <item>
-                <widget class="QLabel" name="label_75">
+                <widget class="QLabel" name="label_68">
                  <property name="font">
                   <font>
                    <pointsize>11</pointsize>
-                   <weight>75</weight>
                    <bold>true</bold>
                   </font>
                  </property>
                  <property name="text">
-                  <string>Ore Reperibilità pagate:</string>
+                  <string>Guardie Diurne:</string>
                  </property>
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="oreRepPag">
+                <widget class="QLabel" name="numGuarDiuPag">
                  <property name="minimumSize">
                   <size>
                    <width>50</width>
@@ -2276,7 +1969,6 @@
                  <property name="font">
                   <font>
                    <pointsize>11</pointsize>
-                   <weight>75</weight>
                    <bold>true</bold>
                   </font>
                  </property>
@@ -2289,7 +1981,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="label_76">
+                <widget class="QLabel" name="label_75">
                  <property name="minimumSize">
                   <size>
                    <width>20</width>
@@ -2308,21 +2000,20 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="label_68">
+                <widget class="QLabel" name="label_49">
                  <property name="font">
                   <font>
                    <pointsize>11</pointsize>
-                   <weight>75</weight>
                    <bold>true</bold>
                   </font>
                  </property>
                  <property name="text">
-                  <string>Guardie Diurne pagate:</string>
+                  <string>Festivi:</string>
                  </property>
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="numGuarDiuPag">
+                <widget class="QLabel" name="festivoLabel">
                  <property name="minimumSize">
                   <size>
                    <width>50</width>
@@ -2332,12 +2023,11 @@
                  <property name="font">
                   <font>
                    <pointsize>11</pointsize>
-                   <weight>75</weight>
                    <bold>true</bold>
                   </font>
                  </property>
                  <property name="styleSheet">
-                  <string notr="true">color: green;</string>
+                  <string notr="true">color: blue;</string>
                  </property>
                  <property name="text">
                   <string/>
@@ -2368,12 +2058,11 @@
                  <property name="font">
                   <font>
                    <pointsize>11</pointsize>
-                   <weight>75</weight>
                    <bold>true</bold>
                   </font>
                  </property>
                  <property name="text">
-                  <string>Guardie Notturne pagate:</string>
+                  <string>Guardie Notturne:</string>
                  </property>
                 </widget>
                </item>
@@ -2388,7 +2077,6 @@
                  <property name="font">
                   <font>
                    <pointsize>11</pointsize>
-                   <weight>75</weight>
                    <bold>true</bold>
                   </font>
                  </property>
@@ -2424,7 +2112,6 @@
                  <property name="font">
                   <font>
                    <pointsize>11</pointsize>
-                   <weight>75</weight>
                    <bold>true</bold>
                   </font>
                  </property>
@@ -2444,7 +2131,6 @@
                  <property name="font">
                   <font>
                    <pointsize>11</pointsize>
-                   <weight>75</weight>
                    <bold>true</bold>
                   </font>
                  </property>
@@ -2505,7 +2191,6 @@
                  <property name="font">
                   <font>
                    <pointsize>11</pointsize>
-                   <weight>75</weight>
                    <bold>true</bold>
                   </font>
                  </property>
@@ -2522,7 +2207,6 @@
                  <property name="font">
                   <font>
                    <pointsize>11</pointsize>
-                   <weight>75</weight>
                    <bold>true</bold>
                   </font>
                  </property>
@@ -2558,7 +2242,6 @@
                  <property name="font">
                   <font>
                    <pointsize>11</pointsize>
-                   <weight>75</weight>
                    <bold>true</bold>
                    <strikeout>false</strikeout>
                   </font>
@@ -2579,7 +2262,6 @@
                  <property name="font">
                   <font>
                    <pointsize>11</pointsize>
-                   <weight>75</weight>
                    <bold>true</bold>
                   </font>
                  </property>
@@ -2615,7 +2297,6 @@
                  <property name="font">
                   <font>
                    <pointsize>11</pointsize>
-                   <weight>75</weight>
                    <bold>true</bold>
                   </font>
                  </property>
@@ -2635,7 +2316,6 @@
                  <property name="font">
                   <font>
                    <pointsize>11</pointsize>
-                   <weight>75</weight>
                    <bold>true</bold>
                   </font>
                  </property>
@@ -2644,62 +2324,6 @@
                  </property>
                  <property name="text">
                   <string>//</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_62">
-                 <property name="minimumSize">
-                  <size>
-                   <width>20</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="font">
-                  <font/>
-                 </property>
-                 <property name="text">
-                  <string>|</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_65">
-                 <property name="font">
-                  <font>
-                   <pointsize>11</pointsize>
-                   <weight>75</weight>
-                   <bold>true</bold>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>Residuo:</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="residuoLabel">
-                 <property name="minimumSize">
-                  <size>
-                   <width>60</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="font">
-                  <font>
-                   <pointsize>11</pointsize>
-                   <weight>75</weight>
-                   <bold>true</bold>
-                  </font>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">color: blue;</string>
-                 </property>
-                 <property name="text">
-                  <string/>
                  </property>
                 </widget>
                </item>
@@ -2721,21 +2345,20 @@
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_17">
                <item>
-                <widget class="QLabel" name="label_46">
+                <widget class="QLabel" name="label_43">
                  <property name="font">
                   <font>
                    <pointsize>11</pointsize>
-                   <weight>75</weight>
                    <bold>true</bold>
                   </font>
                  </property>
                  <property name="text">
-                  <string>Deficit orario:</string>
+                  <string>Turni Pronta Disponibilità:</string>
                  </property>
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="deficitOrarioLabel">
+                <widget class="QLabel" name="repLabel">
                  <property name="minimumSize">
                   <size>
                    <width>50</width>
@@ -2745,7 +2368,6 @@
                  <property name="font">
                   <font>
                    <pointsize>11</pointsize>
-                   <weight>75</weight>
                    <bold>true</bold>
                   </font>
                  </property>
@@ -2758,7 +2380,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="label_47">
+                <widget class="QLabel" name="label_64">
                  <property name="minimumSize">
                   <size>
                    <width>20</width>
@@ -2777,21 +2399,20 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="label_48">
+                <widget class="QLabel" name="label_79">
                  <property name="font">
                   <font>
                    <pointsize>11</pointsize>
-                   <weight>75</weight>
                    <bold>true</bold>
                   </font>
                  </property>
                  <property name="text">
-                  <string>Notte:</string>
+                  <string>Turni Reperibilità oltre 10:</string>
                  </property>
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="notteLabel">
+                <widget class="QLabel" name="repOltre10Label">
                  <property name="minimumSize">
                   <size>
                    <width>50</width>
@@ -2801,7 +2422,6 @@
                  <property name="font">
                   <font>
                    <pointsize>11</pointsize>
-                   <weight>75</weight>
                    <bold>true</bold>
                   </font>
                  </property>
@@ -2814,7 +2434,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="label_50">
+                <widget class="QLabel" name="label_78">
                  <property name="minimumSize">
                   <size>
                    <width>20</width>
@@ -2833,21 +2453,20 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="label_49">
+                <widget class="QLabel" name="label_77">
                  <property name="font">
                   <font>
                    <pointsize>11</pointsize>
-                   <weight>75</weight>
                    <bold>true</bold>
                   </font>
                  </property>
                  <property name="text">
-                  <string>Festivo:</string>
+                  <string>Ore Teleconsulto:</string>
                  </property>
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="festivoLabel">
+                <widget class="QLabel" name="teleconsultoLabel">
                  <property name="minimumSize">
                   <size>
                    <width>50</width>
@@ -2857,7 +2476,6 @@
                  <property name="font">
                   <font>
                    <pointsize>11</pointsize>
-                   <weight>75</weight>
                    <bold>true</bold>
                   </font>
                  </property>
@@ -2866,62 +2484,6 @@
                  </property>
                  <property name="text">
                   <string/>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_51">
-                 <property name="minimumSize">
-                  <size>
-                   <width>20</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="font">
-                  <font/>
-                 </property>
-                 <property name="text">
-                  <string>|</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_52">
-                 <property name="font">
-                  <font>
-                   <pointsize>11</pointsize>
-                   <weight>75</weight>
-                   <bold>true</bold>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>Mensa:</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="mensaLabel">
-                 <property name="minimumSize">
-                  <size>
-                   <width>50</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="font">
-                  <font>
-                   <pointsize>11</pointsize>
-                   <weight>75</weight>
-                   <bold>true</bold>
-                  </font>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">color: blue;</string>
-                 </property>
-                 <property name="text">
-                  <string>//</string>
                  </property>
                 </widget>
                </item>
@@ -2946,31 +2508,29 @@
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_2">
             <item>
-             <widget class="QLabel" name="label_43">
+             <widget class="QLabel" name="label_65">
               <property name="font">
                <font>
                 <pointsize>11</pointsize>
-                <weight>75</weight>
                 <bold>true</bold>
                </font>
               </property>
               <property name="text">
-               <string>Rep.:</string>
+               <string>Residuo:</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QLabel" name="repLabel">
+             <widget class="QLabel" name="residuoLabel">
               <property name="minimumSize">
                <size>
-                <width>50</width>
+                <width>60</width>
                 <height>0</height>
                </size>
               </property>
               <property name="font">
                <font>
                 <pointsize>11</pointsize>
-                <weight>75</weight>
                 <bold>true</bold>
                </font>
               </property>
@@ -2983,7 +2543,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QLabel" name="label_45">
+             <widget class="QLabel" name="label_62">
               <property name="minimumSize">
                <size>
                 <width>20</width>
@@ -3006,7 +2566,6 @@
               <property name="font">
                <font>
                 <pointsize>11</pointsize>
-                <weight>75</weight>
                 <bold>true</bold>
                </font>
               </property>
@@ -3026,7 +2585,6 @@
               <property name="font">
                <font>
                 <pointsize>11</pointsize>
-                <weight>75</weight>
                 <bold>true</bold>
                </font>
               </property>
@@ -3062,7 +2620,6 @@
               <property name="font">
                <font>
                 <pointsize>11</pointsize>
-                <weight>75</weight>
                 <bold>true</bold>
                </font>
               </property>
@@ -3082,7 +2639,6 @@
               <property name="font">
                <font>
                 <pointsize>11</pointsize>
-                <weight>75</weight>
                 <bold>true</bold>
                </font>
               </property>
@@ -3119,7 +2675,6 @@
            <property name="font">
             <font>
              <pointsize>11</pointsize>
-             <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
@@ -3133,7 +2688,6 @@
            <property name="font">
             <font>
              <pointsize>11</pointsize>
-             <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
@@ -3219,8 +2773,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1351</width>
-     <height>26</height>
+     <width>1700</width>
+     <height>30</height>
     </rect>
    </property>
    <property name="font">
@@ -3258,7 +2812,6 @@
     <property name="title">
      <string>Sta&amp;mpa</string>
     </property>
-    <addaction name="actionStampaCompetenzeDirigenti"/>
     <addaction name="actionStampaCompetenzeUnita"/>
     <addaction name="actionPrintDeficit"/>
    </widget>
@@ -3294,12 +2847,13 @@
    <addaction name="actionApriDatabase"/>
    <addaction name="actionCaricaPdf"/>
    <addaction name="separator"/>
-   <addaction name="actionStampaCompetenzeDirigenti"/>
    <addaction name="actionStampaCompetenzeUnita"/>
+   <addaction name="actionGeneraFileModifiche"/>
+   <addaction name="actionGeneraCompetenze"/>
+   <addaction name="separator"/>
    <addaction name="actionCambiaUnit"/>
    <addaction name="actionRicalcolaDeficit"/>
    <addaction name="actionTakeScreenshot"/>
-   <addaction name="actionPrintDeficit"/>
    <addaction name="separator"/>
    <addaction name="actionManageUnits"/>
    <addaction name="actionManageDirigenti"/>
@@ -3386,15 +2940,6 @@
    </property>
    <property name="text">
     <string>&amp;Nuovo database...</string>
-   </property>
-  </action>
-  <action name="actionStampaCompetenzeDirigenti">
-   <property name="icon">
-    <iconset resource="assets.qrc">
-     <normaloff>:/icons/view-process-users.svg</normaloff>:/icons/view-process-users.svg</iconset>
-   </property>
-   <property name="text">
-    <string>&amp;Stampa Competenze Dirigenti</string>
    </property>
   </action>
   <action name="actionStampaCompetenzeUnita">
@@ -3512,6 +3057,24 @@
    </property>
    <property name="toolTip">
     <string>Gestisci Dirigenti</string>
+   </property>
+  </action>
+  <action name="actionGeneraFileModifiche">
+   <property name="icon">
+    <iconset resource="assets.qrc">
+     <normaloff>:/icons/diff.svg</normaloff>:/icons/diff.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Genera File Modifiche</string>
+   </property>
+  </action>
+  <action name="actionGeneraCompetenze">
+   <property name="icon">
+    <iconset resource="assets.qrc">
+     <normaloff>:/icons/text-csv.svg</normaloff>:/icons/text-csv.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Genera Competenze</string>
    </property>
   </action>
  </widget>

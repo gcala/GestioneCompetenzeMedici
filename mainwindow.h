@@ -7,10 +7,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "tabulacsvtimecardsreader.h"
-#include "okularcsvtimecardsreader.h"
+#include "cartellinocompletoreader.h"
 #include "competenzeunitaexporter.h"
-#include "competenzedirigenteexporter.h"
 #include "deficitrecuperiexporter.h"
 
 #include <QMainWindow>
@@ -26,11 +24,18 @@ class QLabel;
 class QProgressBar;
 class QSqlQueryModel;
 class PrintDialog;
-class CalendarManager;
+class DifferenzeDialog;
+class CompetenzeExporterDialog;
+//class CalendarManager;
 class CalendarManagerRep;
+class CalendarManagerTeleconsulto;
 class QWidgetAction;
 class Competenza;
 class NomiUnitaDialog;
+class QHBoxLayout;
+class ReperibilitaSemplificata;
+class DifferenzeExporter;
+class CompetenzeExporter;
 
 class MainWindow : public QMainWindow
 {
@@ -46,13 +51,17 @@ public:
 private slots:
     void handleResults();
     void exported(const QString &file);
+    void openFile(const QString &file);
     void computed();
     void setTotalRows(int);
     void setCurrentRow(int);
     void tabulaFinished(int exitCode, QProcess::ExitStatus exitStatus);
     void tabulaError(QProcess::ProcessError error);
+    void tabulaReadOutput();
     void delayedSetup();
-    void associaUnita(const QString &, int &unitaId);
+    void associaUnita(const QString &nominativo, int &unitaId);
+    void cartellinoReaderError(const QString &msg);
+    void cartellinoInvalidoMessage(const QString &msg);
 
     void on_actionApriDatabase_triggered();
     void on_actionCaricaPdf_triggered();
@@ -62,17 +71,15 @@ private slots:
     void on_meseCompetenzeCB_currentIndexChanged(int index);
     void on_unitaCompetenzeCB_currentIndexChanged(int index);
     void on_dirigentiCompetenzeCB_currentIndexChanged(int index);
-    void on_actionStampaCompetenzeDirigenti_triggered();
     void on_actionStampaCompetenzeUnita_triggered();
     void gdCalendarClicked(const QDate &date);
     void gnCalendarClicked(const QDate &date);
-    void rCalendarClicked(const QDate &date);
-    void altreCalendarClicked(const QDate &date);
+    void rCalendarClicked();
+    void tCalendarClicked();
     void on_actionBackupDatabase_triggered();
-    void on_actionCaricaCsv_triggered();
     void minutiCambiati(int mins);
     void oreCambiate(int ore);
-    void orarioGiornalieroCambiato(QTime orario);
+//    void orarioGiornalieroCambiato(QTime orario);
     void on_actionInformazioni_triggered();
     void on_actionDonazione_triggered();
     void on_actionConfigura_triggered();
@@ -88,9 +95,12 @@ private slots:
     void on_editEmployeeButton_clicked();
     void on_editUnitButton_clicked();
     void on_actionManageUnits_triggered();
+    void actionGeneraFileModificheTriggered();
+    void actionGeneraCompetenzeTriggered();
 
 private:
     Ui::MainWindow *ui;
+    QHBoxLayout *causaliLayout;
     bool unitaReadOnlyMode;
     bool dirigenteReadOnlyMode;
     int currentUnitaIndex;
@@ -108,53 +118,25 @@ private:
     QString m_photosPath;
     QString m_javaPath;
     QString m_tabulaPath;
-    QString m_driver;
-    QString m_host;
-    QString m_dbName;
-    QString m_certFile;
-    QString m_keyFile;
-    bool m_useSSL;
-    QString m_lastUsername;
-    QString m_lastPassword;
     int m_currentMeseCompetenzeIndex;
     int m_currentUnitaCompetenzeIndex;
     int m_currentDirigenteCompetenzeIndex;
 
-    QMenu *gdCalendarMenu;
-    CalendarManager *gdCalendar;
-    QWidgetAction *gdCalendarAction;
+//    QMenu *gdCalendarMenu;
+//    CalendarManager *gdCalendar;
+//    QWidgetAction *gdCalendarAction;
 
-    QMenu *gnCalendarMenu;
-    CalendarManager *gnCalendar;
-    QWidgetAction *gnCalendarAction;
+//    QMenu *gnCalendarMenu;
+//    CalendarManager *gnCalendar;
+//    QWidgetAction *gnCalendarAction;
 
     QMenu *rCalendarMenu;
     CalendarManagerRep *rCalendar;
     QWidgetAction *rCalendarAction;
 
-    QMenu *ferieCalendarMenu;
-    CalendarManager *ferieCalendar;
-    QWidgetAction *ferieCalendarAction;
-
-    QMenu *congediCalendarMenu;
-    CalendarManager *congediCalendar;
-    QWidgetAction *congediCalendarAction;
-
-    QMenu *malattiaCalendarMenu;
-    CalendarManager *malattiaCalendar;
-    QWidgetAction *malattiaCalendarAction;
-
-    QMenu *rmpCalendarMenu;
-    CalendarManager *rmpCalendar;
-    QWidgetAction *rmpCalendarAction;
-
-    QMenu *rmcCalendarMenu;
-    CalendarManager *rmcCalendar;
-    QWidgetAction *rmcCalendarAction;
-
-    QMenu *altreCalendarMenu;
-    CalendarManager *altreCalendar;
-    QWidgetAction *altreCalendarAction;
+    QMenu *tCalendarMenu;
+    CalendarManagerTeleconsulto *tCalendar;
+    QWidgetAction *tCalendarAction;
 
     NomiUnitaDialog *m_nomiDialog;
 
@@ -169,11 +151,17 @@ private:
     QString lastDirigenteUnitaNome;
     QFileInfo currentDatabase;
     PrintDialog *printDialog;
-    TabulaCsvTimeCardsReader tabulaReader;
-    OkularCsvTimeCardsReader okularReader;
+    DifferenzeDialog *differenzeDialog;
+    CompetenzeExporterDialog *competenzeExporterDialog;
+    CartellinoCompletoReader cartellinoReader;
     CompetenzeUnitaExporter unitaCompetenzeExporter;
-    CompetenzeDirigenteExporter dirigenteCompetenzeExporter;
     DeficitRecuperiExporter deficitRecuperiExporter;
+    DifferenzeExporter *differenzeExporter;
+    CompetenzeExporter *competenzeExporter;
+    ReperibilitaSemplificata *m_reperibilita;
+    int m_anno;
+    int m_mese;
+    QDate m_currDate;
 
     QString backupFileName(const QString &time) const;
     void backupDatabase(const QString &time, bool quiet);
@@ -198,9 +186,11 @@ private:
     void populateUnitaCompetenzeCB();
     void populateDirigentiCompetenzeCB();
     void populateCompetenzeTab();
+    void populateCausali();
     void mostraDifferenzaOre();
     void elaboraGuardie();
     void elaboraRep();
+    void elaboraTeleconsulto();
     void elaboraSommario();
 
     void setupDbConnectionParameters();

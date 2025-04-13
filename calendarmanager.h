@@ -35,6 +35,7 @@ public:
 
     QList<QDate> getDates() const;
     void setDates(const QList<QDate> &dates);
+    void setMezzeDates(const QList<QDate> &dates);
 
     QList<QDate> getScopertiDates() const;
     void setScopertiDates(const QList<QDate> &dates);
@@ -56,6 +57,7 @@ private:
     QPen m_outlinePen;
     QBrush m_transparentBrush;
     QList<QDate> m_dates;
+    QList<QDate> m_mezzeDates;
     QList<QDate> m_scoperti;
 };
 

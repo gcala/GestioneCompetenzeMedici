@@ -18,7 +18,7 @@ CalendarManager::CalendarManager(QWidget *parent)
     m_transparentBrush.setColor(Qt::transparent);
     setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader);
 
-    connect(this, SIGNAL(clicked(QDate)), this, SLOT(dataSelezionata(QDate)));
+//    connect(this, SIGNAL(clicked(QDate)), this, SLOT(dataSelezionata(QDate)));
 
     setMinimumSize(400,400);
 }
@@ -46,6 +46,11 @@ void CalendarManager::setDates(const QList<QDate> &dates)
     m_dates = dates;
 }
 
+void CalendarManager::setMezzeDates(const QList<QDate> &dates)
+{
+     m_mezzeDates = dates;
+}
+
 QList<QDate> CalendarManager::getScopertiDates() const
 {
     return m_scoperti;
@@ -65,9 +70,22 @@ void CalendarManager::setScopertiDates(const QList<QDate> &dates)
     QCalendarWidget::paintCell(painter, rect, date);
 
     if( m_dates.contains(date) ) {
+        painter->save();
         painter->setPen(m_outlinePen);
         painter->setBrush(m_transparentBrush);
         painter->drawRect(rect.adjusted(4,4,-5,-5));
+        painter->restore();
+    }
+
+    if( m_mezzeDates.contains(date) ) {
+        QPen outlinePen;
+        outlinePen.setColor(Qt::darkGreen);
+        outlinePen.setWidth(2);
+        painter->save();
+        painter->setPen(outlinePen);
+        painter->setBrush(m_transparentBrush);
+        painter->drawEllipse(rect.adjusted(4,4,-5,-5));
+        painter->restore();
     }
 
     if( m_scoperti.contains(date) ) {

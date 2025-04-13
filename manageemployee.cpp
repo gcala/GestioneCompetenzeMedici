@@ -6,7 +6,8 @@
 
 #include "manageemployee.h"
 #include "ui_manageemployee.h"
-#include "sqlqueries.h"
+//#include "sqlqueries.h"
+#include "apiservice.h"
 
 #include <QSettings>
 #include <QDir>
@@ -92,9 +93,9 @@ void ManageEmployee::on_restoreButton_clicked()
 
 void ManageEmployee::on_saveButton_clicked()
 {
-    SqlQueries::editDoctor(ui->dirigentiComboBox->currentData(Qt::UserRole).toString(),
-                           ui->dirigenteMatricolaSB->text().trimmed(),
-                           ui->dirigenteNomeLE->text().trimmed());
+    ApiService::instance().editDoctor(ui->dirigentiComboBox->currentData(Qt::UserRole).toString(),
+                                       ui->dirigenteMatricolaSB->text().trimmed(),
+                                       ui->dirigenteNomeLE->text().trimmed());
 
     m_changed = true;
     populateDirigenti();
@@ -106,10 +107,9 @@ void ManageEmployee::populateDirigenti()
 {
     const int currData = ui->dirigentiComboBox->currentData(Qt::UserRole).toInt();
     ui->dirigentiComboBox->clear();
-    QStringList query = SqlQueries::getTuttiMatricoleNomi();
-    for(const QString &s : query) {
-        QStringList l = s.split("~");
-        ui->dirigentiComboBox->addItem(l.at(1) + " - " + l.at(2), l.at(0));
+    const auto doctors = ApiService::instance().getTuttiMatricoleNomi();
+    for(const auto doctor : doctors) {
+        ui->dirigentiComboBox->addItem(QString::number(doctor.matricola) + " - " + doctor.nome, doctor.id);
     }
     const int index = ui->dirigentiComboBox->findData(currData, Qt::UserRole);
     if(index > 0) {

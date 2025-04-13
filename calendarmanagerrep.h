@@ -7,10 +7,9 @@
 #ifndef CALENDARMANAGERREP_H
 #define CALENDARMANAGERREP_H
 
-#include "defines.h"
+#include "utilities.h"
 
 #include <QCalendarWidget>
-
 #include <QStringList>
 #include <QBrush>
 #include <QColor>
@@ -19,6 +18,8 @@
 #include <QDate>
 #include <QPen>
 #include <QMap>
+
+class ReperibilitaSemplificata;
 
 class CalendarManagerRep : public QCalendarWidget
 {
@@ -35,8 +36,9 @@ public:
     void setColor(const QColor &color);
     QColor getColor() const;
 
-    QMap<QDate, ValoreRep> getDates() const;
-    void setDates(const QMap<QDate, ValoreRep> &dates);
+    QMap<QDate, Utilities::ValoreRep> getDates() const;
+    void setDates(const QMap<QDate, Utilities::ValoreRep> &dates);
+    void setReperibilita(ReperibilitaSemplificata *reperibilita);
 
 protected:
 #if QT_VERSION >= 0x060000
@@ -46,22 +48,29 @@ protected:
 #endif
 
 private slots:
-    void dataSelezionata(const QDate &date);
+    void dataRightClicked(const QPoint &pos);
+    void dataLeftClicked(const QDate &date);
     void noSelected();
     void mezzoSelected();
     void unoSelected();
     void unomezzoSelected();
     void dueSelected();
+    void t6Selected();
+    void t12Selected();
+    void t18Selected();
+    void t24Selected();
 
 signals:
     void datesChanged();
 
 private:
-    QMap<QDate, ValoreRep> m_dates;
+    QMap<QDate, Utilities::ValoreRep> m_dates;
     QDate m_selectedDate;
 
     QPen m_outlinePen;
     QBrush m_transparentBrush;
+    ReperibilitaSemplificata *m_reperibilita;
+    Utilities::ValoreRep repConvert(const double value);
 };
 
 #endif // CALENDARMANAGERREP_H

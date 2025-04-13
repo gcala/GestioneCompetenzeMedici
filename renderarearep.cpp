@@ -27,7 +27,7 @@ QSize RenderAreaRep::sizeHint() const
     return {400, 200};
 }
 
-void RenderAreaRep::setRepMap(const QMap<QDate, ValoreRep> &repMap)
+void RenderAreaRep::setRepMap(const QMap<QDate, Utilities::ValoreRep> &repMap)
 {
     m_repMap = repMap;
     update();
@@ -38,6 +38,10 @@ void RenderAreaRep::paintEvent(QPaintEvent * /* event */)
     QPen blackPen;
     blackPen.setColor(Qt::black);
     blackPen.setWidth(2);
+
+    QPen greenPen;
+    greenPen.setColor(Qt::darkGreen);
+    greenPen.setWidth(2);
 
     QPen redPen;
     redPen.setColor(Qt::red);
@@ -60,7 +64,7 @@ void RenderAreaRep::paintEvent(QPaintEvent * /* event */)
     int cellSize = width() / 5;
     int counter = 0;
     int yCounter = 0;
-    QMap<QDate, ValoreRep>::const_iterator i = m_repMap.constBegin();
+    QMap<QDate, Utilities::ValoreRep>::const_iterator i = m_repMap.constBegin();
     while (i != m_repMap.constEnd()) {
         QRect rect(cellSize*(counter%5),cellSize*yCounter,cellSize,cellSize);
         QDate d = i.key();
@@ -74,25 +78,57 @@ void RenderAreaRep::paintEvent(QPaintEvent * /* event */)
         painter.drawText(rect,Qt::AlignCenter | Qt::AlignVCenter,QString::number(d.day()));
         painter.setPen(blackPen);
         switch (i.value()) {
-        case ValoreRep::Mezzo:
+        case Utilities::ValoreRep::Mezzo:
             painter.save();
             painter.setFont(fontApice);
             painter.drawText(rect.adjusted(0,0,0,0),Qt::AlignRight | Qt::AlignTop,"½");
             painter.restore();
             break;
-        case ValoreRep::Uno:
+        case Utilities::ValoreRep::Uno:
             break;
-        case ValoreRep::UnoMezzo:
+        case Utilities::ValoreRep::UnoMezzo:
             painter.drawLine(rect.x()+8,rect.y()+rect.height()-8,rect.x()+rect.width()-8,rect.y()+rect.height()-8);
             break;
-        case ValoreRep::Due:
+        case Utilities::ValoreRep::Due:
             painter.drawEllipse(rect.adjusted(8,8,-8,-8));
             break;
-        case ValoreRep::DueMezzo:
+        case Utilities::ValoreRep::DueMezzo:
             painter.save();
             painter.setFont(fontApice);
             painter.drawEllipse(rect.adjusted(8,8,-8,-8));
             painter.drawText(rect.adjusted(0,0,0,0),Qt::AlignRight | Qt::AlignTop,"½");
+            painter.restore();
+            break;
+        case Utilities::ValoreRep::Teleconsulto6:
+            painter.save();
+            painter.setPen(greenPen);
+            painter.setFont(fontApice);
+            painter.drawEllipse(rect.adjusted(8,8,-8,-8));
+            painter.drawText(rect.adjusted(0,0,0,0),Qt::AlignRight | Qt::AlignTop,"T6");
+            painter.restore();
+            break;
+        case Utilities::ValoreRep::Teleconsulto12:
+            painter.save();
+            painter.setPen(greenPen);
+            painter.setFont(fontApice);
+            painter.drawEllipse(rect.adjusted(8,8,-8,-8));
+            painter.drawText(rect.adjusted(0,0,0,0),Qt::AlignRight | Qt::AlignTop,"T12");
+            painter.restore();
+            break;
+        case Utilities::ValoreRep::Teleconsulto18:
+            painter.save();
+            painter.setPen(greenPen);
+            painter.setFont(fontApice);
+            painter.drawEllipse(rect.adjusted(8,8,-8,-8));
+            painter.drawText(rect.adjusted(0,0,0,0),Qt::AlignRight | Qt::AlignTop,"T18");
+            painter.restore();
+            break;
+        case Utilities::ValoreRep::Teleconsulto24:
+            painter.save();
+            painter.setPen(greenPen);
+            painter.setFont(fontApice);
+            painter.drawEllipse(rect.adjusted(8,8,-8,-8));
+            painter.drawText(rect.adjusted(0,0,0,0),Qt::AlignRight | Qt::AlignTop,"T24");
             painter.restore();
             break;
         default:

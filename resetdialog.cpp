@@ -6,8 +6,9 @@
 
 #include "resetdialog.h"
 #include "ui_resetdialog.h"
-#include "sqlqueries.h"
+//#include "sqlqueries.h"
 #include "competenza.h"
+#include "apiservice.h"
 
 #include <QtWidgets>
 #include <QDebug>
@@ -15,17 +16,17 @@
 
 ResetDialog::ResetDialog(QString tableName, const int &id, QWidget *parent)
     : QDialog(parent)
+    , ui(new Ui::ResetDialog)
     , m_tableName(std::move(tableName))
     , m_id(id)
-    , ui(new Ui::ResetDialog)
 {
     ui->setupUi(this);
 }
 
 ResetDialog::ResetDialog(Competenza *competenza, QWidget *parent)
     : QDialog(parent)
-    , m_competenza(competenza)
     , ui(new Ui::ResetDialog)
+    , m_competenza(competenza)
 {
     ui->setupUi(this);
 
@@ -52,34 +53,22 @@ void ResetDialog::on_restoreButton_clicked()
     }
 
     if(ui->tuttoCB->isChecked()) {
-        SqlQueries::resetAllDoctorMods(m_tableName,m_id);
+        ApiService::instance().resetAllDoctorMods(m_tableName,m_id);
     } else {
-        if(ui->gdiurneCB->isChecked()) {
-            SqlQueries::resetStringValue(m_tableName, "guardie_diurne", m_id);
-        }
-
-        if(ui->orarioGiornoCB->isChecked()) {
-            SqlQueries::resetIntValue(m_tableName, "orario_giornaliero", m_id);
-        }
-
-        if(ui->gnotturneCB->isChecked()) {
-            SqlQueries::resetStringValue(m_tableName, "guardie_notturne", m_id);
-        }
-
         if(ui->repCB->isChecked()) {
-            SqlQueries::resetStringValue(m_tableName, "turni_reperibilita", m_id);
+            ApiService::instance().resetStringValue(m_tableName, "turni_reperibilita", m_id);
         }
 
         if(ui->dmpCB->isChecked()) {
-            SqlQueries::resetIntValue(m_tableName, "dmp", m_id);
-        }
-
-        if(ui->altreCB->isChecked()) {
-            SqlQueries::resetStringValue(m_tableName, "altre_assenze", m_id);
+            ApiService::instance().resetStringValue(m_tableName, "dmp", m_id);
         }
 
         if(ui->noteCB->isChecked()) {
-            SqlQueries::resetStringValue(m_tableName, "nota", m_id);
+            ApiService::instance().resetStringValue(m_tableName, "nota", m_id);
+        }
+
+        if(ui->teleconsultoCB->isChecked()) {
+            ApiService::instance().resetStringValue(m_tableName, "turni_teleconsulto", m_id);
         }
     }
 
@@ -91,23 +80,25 @@ void ResetDialog::on_tuttoCB_toggled(bool checked)
     if(!checked) {
         enableItems();
     } else {
-        ui->gdiurneCB->setEnabled(false);
-        ui->gnotturneCB->setEnabled(false);
+//        ui->gdiurneCB->setEnabled(false);
+//        ui->gnotturneCB->setEnabled(false);
         ui->repCB->setEnabled(false);
         ui->dmpCB->setEnabled(false);
-        ui->altreCB->setEnabled(false);
+        ui->teleconsultoCB->setEnabled(false);
+        // ui->altreCB->setEnabled(false);
         ui->noteCB->setEnabled(false);
-        ui->orarioGiornoCB->setEnabled(false);
+//        ui->orarioGiornoCB->setEnabled(false);
     }
 }
 
 void ResetDialog::enableItems()
 {
-    ui->gdiurneCB->setEnabled(m_competenza->isGuardieDiurneModded());
-    ui->gnotturneCB->setEnabled(m_competenza->isGuardieNotturneModded());
+//    ui->gdiurneCB->setEnabled(m_competenza->isGuardieDiurneModded());
+//    ui->gnotturneCB->setEnabled(m_competenza->isGuardieNotturneModded());
     ui->repCB->setEnabled(m_competenza->isReperibilitaModded());
     ui->dmpCB->setEnabled(m_competenza->isDmpModded());
-    ui->altreCB->setEnabled(m_competenza->isAltreModded());
+    // ui->altreCB->setEnabled(m_competenza->isAltreModded());
     ui->noteCB->setEnabled(m_competenza->isNoteModded());
-    ui->orarioGiornoCB->setEnabled(m_competenza->isOrarioGiornalieroModded());
+    ui->teleconsultoCB->setEnabled(m_competenza->isTeleconsultoModded());
+//    ui->orarioGiornoCB->setEnabled(m_competenza->isOrarioGiornalieroModded());
 }

@@ -5,379 +5,50 @@
 */
 
 #include "dipendente.h"
+#include "utilities.h"
 
 #include <QDebug>
 
 class DipendenteData : public QSharedData
 {
 public:
-    DipendenteData() {
-        m_anno = 0;
-        m_mese = 0;
-        m_matricola = 0;
-        resetProperties();
-    }
-
-    int anno() const;
-    void setAnno(int anno);
-    int mese() const;
-    void setMese(int mese);
-    QString nome() const;
-    void setNome(QString nome);
-    int matricola() const;
-    void setMatricola(int matricola);
-    int unita() const;
-    void setUnita(int unita);
-    int riposi() const;
-    void addRiposi(int num);
-    QStringList guardieDiurne() const;
-    void addGuardiaDiurna(QString date);
-    QStringList guardieNotturne() const;
-    void addGuardiaNotturna(QString date);
-    QMultiMap<int, QPair<int, int> > grep() const;
-    void addGrep(int giorno, int minuti, int tipo);
-    QStringList rmp() const;
-    void addRmp(QString date);
-    QStringList rmc() const;
-    void addRmc(QString date);
-    QStringList ferie() const;
-    void addFerie(QString date);
-    QStringList scoperti() const;
-    void addScoperto(QString date);
-    QStringList congedi() const;
-    void addCongedo(QString date);
-    QStringList malattia() const;
-    void addMalattia(QString date);
-    QMap<QString, QPair<QStringList, int> > altreCausali() const;
-    int altreCausaliCount() const;
-    void addAltraCausale(QString causale, QString date, int minuti);
-    int minutiFatti() const;
-    void addMinutiFatti(int minuti);
-    int minutiCongedi() const;
-    void addMinutiCongedo(int minuti);
-    int minutiAssenza() const;
-    void addMinutiAssenza(int minuti);
-    int minutiGiornalieri() const;
-    void setMinutiGiornalieri(int minuti);
-    int minutiGrep() const;
-    void addMinutiGrep(int minuti);
-    int minutiEccr() const;
-    void addMinutiEccr(int minuti);
-    int minutiGuar() const;
-    void addMinutiGuar(int minuti);
-    int minutiRmc() const;
-    void addMinutiRmc(int minuti);
-    void resetProperties();
-
-private:
     int m_anno;
     int m_mese;
     QString m_nome;
     int m_matricola;
     int m_unita;
-    int m_riposi;
-    QStringList m_guardieDiurne;
-    QStringList m_guardieNotturne;
+    QVector<int> m_riposi;
+    QVector<int> m_guardieDiurne;
+    QVector<int> m_mezzeGuardieDiurne;
+    QVector<int> m_guardieNotturne;
     QMultiMap<int, QPair<int, int> > m_grep;
-    QStringList m_rmp;
-    QStringList m_rmc;
-    QStringList m_ferie;
-    QStringList m_scoperti;
-    QStringList m_congedi;
-    QStringList m_malattia;
-    QMap<QString, QPair<QStringList, int> > m_altreCausali;
+    QVector<int> m_rmp;
+    QVector<int> m_rmc;
+    QVector<int> m_ferie;
+    int m_numGiorniCartellino;
+    QVector<int> m_scoperti;
+    QVector<int> m_congedi;
+    QVector<int> m_malattia;
+    double m_indennitaFestive;
+    QVector<int> m_indennitaNotturne;
+    QMap<QString, QPair<QVector<int>, int> > m_altreCausali;
     int m_minutiFatti;
     int m_minutiCongedi;
-    int m_minutiGiornalieri;
+    int m_minutiGiornalieriVeri;
     int m_minutiGrep;
     int m_minutiEccr;
     int m_minutiGuar;
     int m_minutiRmc;
 };
 
-int DipendenteData::anno() const
+Dipendente::Dipendente()
+    : data(new DipendenteData)
 {
-    return m_anno;
+    resetProperties();
 }
 
-void DipendenteData::setAnno(int anno)
-{
-    m_anno = anno;
-}
-
-int DipendenteData::mese() const
-{
-    return m_mese;
-}
-
-void DipendenteData::setMese(int mese)
-{
-    m_mese = mese;
-}
-
-QString DipendenteData::nome() const
-{
-    return m_nome;
-}
-
-void DipendenteData::setNome(QString nome)
-{
-    m_nome = nome;
-}
-
-int DipendenteData::matricola() const
-{
-    return m_matricola;
-}
-
-void DipendenteData::setMatricola(int matricola)
-{
-    m_matricola = matricola;
-}
-
-int DipendenteData::unita() const
-{
-    return m_unita;
-}
-
-void DipendenteData::setUnita(int unita)
-{
-    m_unita = unita;
-}
-
-int DipendenteData::riposi() const
-{
-    return m_riposi;
-}
-
-void DipendenteData::addRiposi(int num)
-{
-    m_riposi += num;
-}
-
-QStringList DipendenteData::guardieDiurne() const
-{
-    return m_guardieDiurne;
-}
-
-void DipendenteData::addGuardiaDiurna(QString date)
-{
-    m_guardieDiurne.append(date);
-}
-
-QStringList DipendenteData::guardieNotturne() const
-{
-    return m_guardieNotturne;
-}
-
-void DipendenteData::addGuardiaNotturna(QString date)
-{
-    m_guardieNotturne.append(date);
-}
-
-QMultiMap<int, QPair<int, int> > DipendenteData::grep() const
-{
-    return m_grep;
-}
-
-void DipendenteData::addGrep(int giorno, int minuti, int tipo)
-{
-    QPair<int, int> value;
-    value.first = minuti;
-    value.second = tipo;
-    m_grep.insert(giorno,value);
-}
-
-QStringList DipendenteData::rmp() const
-{
-    return m_rmp;
-}
-
-void DipendenteData::addRmp(QString date)
-{
-    m_rmp.append(date);
-}
-
-QStringList DipendenteData::rmc() const
-{
-    return m_rmc;
-}
-
-void DipendenteData::addRmc(QString date)
-{
-    m_rmc.append(date);
-}
-
-QStringList DipendenteData::ferie() const
-{
-    return m_ferie;
-}
-
-void DipendenteData::addFerie(QString date)
-{
-    m_ferie.append(date);
-}
-
-QStringList DipendenteData::scoperti() const
-{
-    return m_scoperti;
-}
-
-void DipendenteData::addScoperto(QString date)
-{
-    m_scoperti.append(date);
-}
-
-QStringList DipendenteData::congedi() const
-{
-    return m_congedi;
-}
-
-void DipendenteData::addCongedo(QString date)
-{
-    m_congedi.append(date);
-}
-
-QStringList DipendenteData::malattia() const
-{
-    return m_malattia;
-}
-
-void DipendenteData::addMalattia(QString date)
-{
-    m_malattia.append(date);
-}
-
-QMap<QString, QPair<QStringList, int> > DipendenteData::altreCausali() const
-{
-    return m_altreCausali;
-}
-
-int DipendenteData::altreCausaliCount() const
-{
-    int count = 0;
-
-    QMap<QString, QPair<QStringList, int> >::const_iterator i = m_altreCausali.constBegin();
-    while(i != m_altreCausali.constEnd()) {
-        count += i.value().first.count();
-        i++;
-    }
-
-    return count;
-}
-
-void DipendenteData::addAltraCausale(QString causale, QString date, int minuti)
-{
-    if(m_altreCausali.keys().contains(causale)) {
-        QPair<QStringList, int> value = m_altreCausali[causale];
-        value.first << date.split("~");
-        value.second += minuti;
-        m_altreCausali[causale] = value;
-    } else {
-        QPair<QStringList, int> value;
-        value.first << date.split("~");
-        value.second = minuti;
-        m_altreCausali[causale] = value;
-    }
-}
-
-int DipendenteData::minutiFatti() const
-{
-    return m_minutiFatti;
-}
-
-void DipendenteData::addMinutiFatti(int minuti)
-{
-    m_minutiFatti += minuti;
-}
-
-int DipendenteData::minutiCongedi() const
-{
-    return m_minutiCongedi;
-}
-
-void DipendenteData::addMinutiCongedo(int minuti)
-{
-    m_minutiCongedi += minuti;
-}
-
-int DipendenteData::minutiGiornalieri() const
-{
-    return m_minutiGiornalieri;
-}
-
-void DipendenteData::setMinutiGiornalieri(int minuti)
-{
-    m_minutiGiornalieri = minuti;
-}
-
-int DipendenteData::minutiGrep() const
-{
-    return m_minutiGrep;
-}
-
-void DipendenteData::addMinutiGrep(int minuti)
-{
-    m_minutiGrep += minuti;
-}
-
-int DipendenteData::minutiEccr() const
-{
-    return m_minutiEccr;
-}
-
-void DipendenteData::addMinutiEccr(int minuti)
-{
-    m_minutiEccr += minuti;
-}
-
-int DipendenteData::minutiGuar() const
-{
-    return m_minutiGuar;
-}
-
-void DipendenteData::addMinutiGuar(int minuti)
-{
-    m_minutiGuar += minuti;
-}
-
-int DipendenteData::minutiRmc() const
-{
-    return m_minutiRmc;
-}
-
-void DipendenteData::addMinutiRmc(int minuti)
-{
-    m_minutiRmc += minuti;
-}
-
-void DipendenteData::resetProperties()
-{
-    m_riposi = 0;
-    m_minutiFatti = 0;
-    m_minutiGiornalieri = 0;
-    m_minutiCongedi = 0;
-    m_minutiEccr = 0;
-    m_minutiGrep = 0;
-    m_minutiGuar = 0;
-    m_minutiRmc = 0;
-    m_ferie.clear();
-    m_congedi.clear();
-    m_malattia.clear();
-    m_guardieDiurne.clear();
-    m_guardieNotturne.clear();
-    m_grep.clear();
-    m_rmc.clear();
-    m_rmp.clear();
-    m_altreCausali.clear();
-}
-
-Dipendente::Dipendente(QObject *parent) : QObject(parent), data(new DipendenteData)
-{
-
-}
-
-Dipendente::Dipendente(const Dipendente &rhs) : data(rhs.data)
+Dipendente::Dipendente(const Dipendente &rhs)
+    : data(rhs.data)
 {
 
 }
@@ -389,247 +60,416 @@ Dipendente &Dipendente::operator=(const Dipendente &rhs)
     return *this;
 }
 
+bool Dipendente::operator==(const Dipendente &rhs) const
+{
+    if(this == &rhs)
+        return true;
+
+    return data->m_anno == rhs.anno() &&
+            data->m_mese == rhs.mese() &&
+            data->m_nome == rhs.nome() &&
+            data->m_matricola == rhs.matricola() &&
+            data->m_unita == rhs.unita() &&
+            data->m_riposi == rhs.riposi() &&
+            data->m_guardieDiurne == rhs.guardieDiurne() &&
+            data->m_mezzeGuardieDiurne == rhs.mezzeGuardieDiurne() &&
+            data->m_guardieNotturne == rhs.guardieNotturne() &&
+            data->m_grep == rhs.grep() &&
+            data->m_rmp == rhs.rmp() &&
+            data->m_rmc == rhs.rmc() &&
+            data->m_ferie == rhs.ferie() &&
+            data->m_numGiorniCartellino == rhs.numGiorniCartellino() &&
+            data->m_scoperti == rhs.scoperti() &&
+            data->m_indennitaFestive == rhs.indennitaFestiva() &&
+            data->m_indennitaNotturne == rhs.indennitaNotturna() &&
+            data->m_congedi == rhs.congedi() &&
+            data->m_malattia == rhs.malattia() &&
+            data->m_altreCausali == rhs.altreCausali() &&
+            data->m_minutiFatti == rhs.minutiFatti() &&
+            data->m_minutiCongedi == rhs.minutiCongedi() &&
+            data->m_minutiGiornalieriVeri == rhs.minutiGiornalieriVeri() &&
+            data->m_minutiGrep == rhs.minutiGrep() &&
+            data->m_minutiEccr == rhs.minutiEccr() &&
+            data->m_minutiGuar == rhs.minutiGuar() &&
+            data->m_minutiRmc == rhs.minutiRmc();
+}
+
 Dipendente::~Dipendente()
 {
 
 }
 
+void Dipendente::resetProperties()
+{
+    data->m_riposi.clear();
+    data->m_minutiFatti = 0;
+    data->m_minutiGiornalieriVeri = 0;
+    data->m_minutiCongedi = 0;
+    data->m_minutiEccr = 0;
+    data->m_minutiGrep = 0;
+    data->m_minutiGuar = 0;
+    data->m_minutiRmc = 0;
+    data->m_numGiorniCartellino = 0;
+    data->m_ferie.clear();
+    data->m_congedi.clear();
+    data->m_malattia.clear();
+    data->m_guardieDiurne.clear();
+    data->m_guardieNotturne.clear();
+    data->m_grep.clear();
+    data->m_rmc.clear();
+    data->m_rmp.clear();
+    data->m_altreCausali.clear();
+    data->m_indennitaFestive = 0.0;
+    data->m_indennitaNotturne.clear();
+}
+
+double Dipendente::indennitaFestiva() const
+{
+    return data->m_indennitaFestive;
+}
+
+void Dipendente::addIndennitaFestiva(double giorno)
+{
+    data->m_indennitaFestive +=  giorno;
+}
+
+QVector<int> Dipendente::indennitaNotturna() const
+{
+    return data->m_indennitaNotturne;
+}
+
+void Dipendente::addIndennitaNotturna(int giorno)
+{
+    data->m_indennitaNotturne <<  giorno;
+}
+
 int Dipendente::anno() const
 {
-    return data->anno();
+    return data->m_anno;
 }
 
 void Dipendente::setAnno(int anno)
 {
-    data->setAnno(anno);
+    data->m_anno = anno;
 }
 
 int Dipendente::mese() const
 {
-    return data->mese();
+    return data->m_mese;
 }
 
 void Dipendente::setMese(int mese)
 {
-    data->setMese(mese);
+    data->m_mese = mese;
 }
 
 QString Dipendente::nome() const
 {
-    return data->nome();
+    return data->m_nome;
 }
 
 void Dipendente::setNome(QString nome)
 {
-    data->setNome(nome);
+    data->m_nome = nome;
 }
 
 int Dipendente::matricola() const
 {
-    return data->matricola();
+    return data->m_matricola;
 }
 
 void Dipendente::setMatricola(int matricola)
 {
-    data->setMatricola(matricola);
+    data->m_matricola = matricola;
 }
 
 int Dipendente::unita() const
 {
-    return data->unita();
+    return data->m_unita;
 }
 
 void Dipendente::setUnita(int unita)
 {
-    data->setUnita(unita);
+    data->m_unita = unita;
 }
 
-int Dipendente::riposi() const
+int Dipendente::riposiCount() const
 {
-    return data->riposi();
+    if(data->m_minutiGiornalieriVeri > Utilities::m_maxMinutiGiornalieri) {
+        return data->m_riposi.count();
+    }
+
+    if(data->m_riposi.count() > 0)
+        return data->m_riposi.at(0);
+
+    return 0;
 }
 
-void Dipendente::addRiposi(int num)
+QVector<int> Dipendente::riposi() const
 {
-    data->addRiposi(num);
+    return data->m_riposi;
 }
 
-QStringList Dipendente::guardieDiurne() const
+void Dipendente::addRiposo(int giorno)
 {
-    return data->guardieDiurne();
+    if(!data->m_riposi.contains(giorno))
+        data->m_riposi << giorno;
 }
 
-void Dipendente::addGuardiaDiurna(QString date)
+QVector<int> Dipendente::guardieDiurne() const
 {
-    data->addGuardiaDiurna(date);
+    return data->m_guardieDiurne;
 }
 
-QStringList Dipendente::guardieNotturne() const
+void Dipendente::addGuardiaDiurna(int giorno)
 {
-    return data->guardieNotturne();
+    if(!data->m_guardieDiurne.contains(giorno))
+        data->m_guardieDiurne << giorno;
 }
 
-void Dipendente::addGuardiaNotturna(QString date)
+QVector<int> Dipendente::mezzeGuardieDiurne() const
 {
-    data->addGuardiaNotturna(date);
+    return data->m_mezzeGuardieDiurne;
+}
+
+void Dipendente::addMezzaGuardiaDiurna(int giorno)
+{
+    if(!data->m_mezzeGuardieDiurne.contains(giorno))
+        data->m_mezzeGuardieDiurne << giorno;
+}
+
+QVector<int> Dipendente::guardieNotturne() const
+{
+    return data->m_guardieNotturne;
+}
+
+void Dipendente::addGuardiaNotturna(int giorno)
+{
+    if(!data->m_guardieNotturne.contains(giorno))
+        data->m_guardieNotturne << giorno;
 }
 
 QMultiMap<int, QPair<int, int> > Dipendente::grep() const
 {
-    return data->grep();
+    return data->m_grep;
 }
 
 void Dipendente::addGrep(int giorno, int minuti, int tipo)
 {
-    data->addGrep(giorno, minuti, tipo);
+    QPair<int, int> value;
+    value.first = minuti;
+    value.second = tipo;
+    data->m_grep.insert(giorno,value);
 }
 
-QStringList Dipendente::rmp() const
+QVector<int> Dipendente::rmp() const
 {
-    return data->rmp();
+    return data->m_rmp;
 }
 
-void Dipendente::addRmp(QString date)
+void Dipendente::addRmp(int giorno)
 {
-    data->addRmp(date);
+    if(!data->m_rmp.contains(giorno))
+        data->m_rmp << giorno;
 }
 
-QStringList Dipendente::rmc() const
+QVector<int> Dipendente::rmc() const
 {
-    return data->rmc();
+    return data->m_rmc;
 }
 
-void Dipendente::addRmc(QString date)
+void Dipendente::addRmc(int giorno)
 {
-    data->addRmc(date);
+    if(!data->m_rmc.contains(giorno))
+        data->m_rmc << giorno;
 }
 
-QStringList Dipendente::ferie() const
+QVector<int> Dipendente::ferie() const
 {
-    return data->ferie();
+    return data->m_ferie;
 }
 
-void Dipendente::addFerie(QString date)
+void Dipendente::addFerie(int giorno)
 {
-    data->addFerie(date);
+    if(!data->m_ferie.contains(giorno))
+        data->m_ferie << giorno;
 }
 
-QStringList Dipendente::scoperti() const
+void Dipendente::addNumGiorniCartellino(int num)
 {
-    return data->scoperti();
+    data->m_numGiorniCartellino = num;
 }
 
-void Dipendente::addScoperto(QString date)
+QVector<int> Dipendente::scoperti() const
 {
-    data->addScoperto(date);
+    return data->m_scoperti;
 }
 
-QStringList Dipendente::congedi() const
+void Dipendente::addScoperto(int giorno)
 {
-    return data->congedi();
+    if(!data->m_scoperti.contains(giorno))
+        data->m_scoperti << giorno;
 }
 
-void Dipendente::addCongedo(QString date)
+QVector<int> Dipendente::congedi() const
 {
-    data->addCongedo(date);
+    return data->m_congedi;
 }
 
-QStringList Dipendente::malattia() const
+void Dipendente::addCongedo(int giorno)
 {
-    return data->malattia();
+    if(!data->m_congedi.contains(giorno))
+        data->m_congedi << giorno;
 }
 
-void Dipendente::addMalattia(QString date)
+QVector<int> Dipendente::malattia() const
 {
-    data->addMalattia(date);
+    return data->m_malattia;
 }
 
-QMap<QString, QPair<QStringList, int> > Dipendente::altreCausali() const
+void Dipendente::addMalattia(int giorno)
 {
-    return data->altreCausali();
+    if(!data->m_malattia.contains(giorno))
+        data->m_malattia << giorno;
+}
+
+QMap<QString, QPair<QVector<int>, int> > Dipendente::altreCausali() const
+{
+    return data->m_altreCausali;
 }
 
 int Dipendente::altreCausaliCount() const
 {
-    return data->altreCausaliCount();
+    int count = 0;
+
+    auto i = data->m_altreCausali.constBegin();
+    while(i != data->m_altreCausali.constEnd()) {
+        count += i.value().first.count();
+        i++;
+    }
+
+    return count;
 }
 
 void Dipendente::addAltraCausale(QString causale, QString date, int minuti)
 {
-    data->addAltraCausale(causale, date, minuti);
+    if(data->m_altreCausali.keys().contains(causale)) {
+        auto value = data->m_altreCausali[causale];
+        const auto days = Utilities::stringlistToVectorInt(date.split("~"));
+        if(days.count() == 1) {
+            if(!value.first.contains(days.at(0))) {
+                value.first << days;
+                value.second += minuti;
+                data->m_altreCausali[causale] = value;
+            }
+        } else {
+            value.first << days;
+            value.second += minuti;
+            data->m_altreCausali[causale] = value;
+        }
+    } else {
+        QPair<QVector<int>, int> value;
+        value.first << Utilities::stringlistToVectorInt(date.split("~"));
+        value.second = minuti;
+        data->m_altreCausali[causale] = value;
+    }
+}
+
+int Dipendente::minutiCausale(const QString &causale)
+{
+    if(data->m_altreCausali.keys().contains(causale))
+        return data->m_altreCausali.value(causale).second;
+    return 0;
 }
 
 int Dipendente::minutiFatti() const
 {
-    return data->minutiFatti();
+    return data->m_minutiFatti;
 }
 
 void Dipendente::addMinutiFatti(int minuti)
 {
-    data->addMinutiFatti(minuti);
+    data->m_minutiFatti += minuti;
 }
 
 int Dipendente::minutiCongedi() const
 {
-    return data->minutiCongedi();
+    return data->m_minutiCongedi;
 }
 
 void Dipendente::addMinutiCongedo(int minuti)
 {
-    data->addMinutiCongedo(minuti);
+    data->m_minutiCongedi += minuti;
 }
 
 int Dipendente::minutiGiornalieri() const
 {
-    return data->minutiGiornalieri();
+    if(data->m_minutiGiornalieriVeri > Utilities::m_maxMinutiGiornalieri)
+        return data->m_minutiGiornalieriVeri / (data->m_numGiorniCartellino - riposiCount());
+    return data->m_minutiGiornalieriVeri;
+}
+
+int Dipendente::minutiGiornalieriVeri() const
+{
+    return data->m_minutiGiornalieriVeri;
+}
+
+int Dipendente::numGiorniCartellino() const
+{
+    return data->m_numGiorniCartellino;
 }
 
 void Dipendente::setMinutiGiornalieri(int minuti)
 {
-    data->setMinutiGiornalieri(minuti);
+    data->m_minutiGiornalieriVeri = minuti;
+}
+
+void Dipendente::setNumGiorniCartellino(int num)
+{
+    data->m_numGiorniCartellino = num;
 }
 
 int Dipendente::minutiGrep() const
 {
-    return data->minutiGrep();
+    return data->m_minutiGrep;
 }
 
 void Dipendente::addMinutiGrep(int minuti)
 {
-    data->addMinutiGrep(minuti);
+    data->m_minutiGrep += minuti;
 }
 
 int Dipendente::minutiEccr() const
 {
-    return data->minutiEccr();
+    return data->m_minutiEccr;
 }
 
 void Dipendente::addMinutiEccr(int minuti)
 {
-    data->addMinutiEccr(minuti);
+    data->m_minutiEccr += minuti;
 }
 
 int Dipendente::minutiGuar() const
 {
-    return data->minutiGuar();
+    return data->m_minutiGuar;
 }
 
 void Dipendente::addMinutiGuar(int minuti)
 {
-    data->addMinutiGuar(minuti);
+    data->m_minutiGuar += minuti;
 }
 
 int Dipendente::minutiRmc() const
 {
-    return data->minutiRmc();
+    return data->m_minutiRmc;
 }
 
 void Dipendente::addMinutiRmc(int minuti)
 {
-    data->addMinutiRmc(minuti);
+    data->m_minutiRmc += minuti;
 }
 
-void Dipendente::resetProperties()
+void Dipendente::setRiposi(QVector<int> giorni)
 {
-    data->resetProperties();
+    data->m_riposi = giorni;
 }

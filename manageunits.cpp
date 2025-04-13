@@ -6,9 +6,10 @@
 
 #include "manageunits.h"
 #include "ui_manageunits.h"
-#include "sqlqueries.h"
+//#include "sqlqueries.h"
 #include "sqldatabasemanager.h"
 #include "insertdbvalues.h"
+#include "apiservice.h"
 
 #include <QSqlTableModel>
 #include <QDebug>
@@ -60,11 +61,27 @@ void ManageUnits::populateUnita()
 {
     const int currData = ui->unitaComboBox->currentData(Qt::UserRole).toInt();
     ui->unitaComboBox->clear();
-    const QMap<int, QString> map = SqlQueries::units();
-    QMap<int, QString>::const_iterator i = map.constBegin();
-    while (i != map.constEnd()) {
-        ui->unitaComboBox->addItem(QString::number(i.key()) + " - " + i.value(), i.key());
-        ++i;
+    // const QMap<int, QString> map = SqlQueries::units();
+    // QMap<int, QString>::const_iterator i = map.constBegin();
+    // while (i != map.constEnd()) {
+    //     ui->unitaComboBox->addItem(QString::number(i.key()) + " - " + i.value(), i.key());
+    //     ++i;
+    // }
+
+    QString errorMsg;
+    const auto units = ApiService::instance().getUnits(&errorMsg);
+
+    if (!errorMsg.isEmpty()) {
+        qDebug() << "Errore nel recupero delle unità:" << errorMsg;
+        return;
+    }
+
+    // Ordiniamo le chiavi per avere un ordine consistente
+    QList<int> keys = units.keys();
+    std::sort(keys.begin(), keys.end());
+
+    for (const int& key : keys) {
+        ui->unitaComboBox->addItem(QString::number(key) + " - " + units.value(key), key);
     }
     const int index = ui->unitaComboBox->findData(currData, Qt::UserRole);
     if(index > 0)
@@ -112,17 +129,16 @@ void ManageUnits::on_unitaComboBox_currentIndexChanged(int index)
     if(ui->unitaComboBox->currentData(Qt::UserRole).toString().isEmpty())
         return;
 
-    const QVariantList query = SqlQueries::getUnitaDataById(ui->unitaComboBox->currentData(Qt::UserRole).toInt());
-
-    if(!query.isEmpty() && query.size() == 5 ) {
-        ui->unitaNomeLE->setText(query.at(2).toString());
-        ui->unitaBreveLE->setText(query.at(3).toString());
-        ui->raggrLE->setText(query.at(1).toString());
-        ui->unitaNumLE->setText(query.at(0).toString());
-        m_nome = query.at(2).toString();
-        m_breve = query.at(3).toString();
-        m_raggruppamento = query.at(1).toString();
-        m_numero = query.at(0).toString();
+    const auto unita = ApiService::instance().getUnitaDataById(ui->unitaComboBox->currentData(Qt::UserRole).toInt());
+    if(unita.id > 0 ) {
+        ui->unitaNomeLE->setText(unita.nome);
+        ui->unitaBreveLE->setText(unita.breve);
+        ui->raggrLE->setText(unita.raggruppamento);
+        ui->unitaNumLE->setText(QString::number(unita.id));
+        m_nome = unita.nome;
+        m_breve = unita.breve;
+        m_raggruppamento = unita.raggruppamento;
+        m_numero = QString::number(unita.id);
     }
 
     populateUnitaOrePagate();
@@ -193,10 +209,10 @@ void ManageUnits::on_restoreButton_clicked()
 
 void ManageUnits::on_saveButton_clicked()
 {
-    SqlQueries::editUnit(m_numero,
-                         ui->raggrLE->text().trimmed(),
-                         ui->unitaNomeLE->text().trimmed(),
-                         ui->unitaBreveLE->text().trimmed());
+    ApiService::instance().editUnit(m_numero,
+                                    ui->raggrLE->text().trimmed(),
+                                    ui->unitaNomeLE->text().trimmed(),
+                                    ui->unitaBreveLE->text().trimmed());
 
     ui->tableView->selectRow(ui->tableView->currentIndex().row());
     static_cast <QSqlTableModel*>(ui->tableView->model())->submitAll();

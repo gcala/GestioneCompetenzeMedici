@@ -30,6 +30,8 @@ private slots:
     void on_cancelButton_clicked();
     void saveSettings();
     void switchPage( int );
+    void certButtonClicked();
+    void keyButtonClicked();
 
 private:
     Ui::ConfigDialog *ui;
@@ -37,6 +39,7 @@ private:
 
     void setupSettingsCategories();
     void loadSettings();
+    QString selectFile(const QString &title);
 };
 
 #endif // CONFIGDIALOG_H

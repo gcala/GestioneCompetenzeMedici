@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>659</width>
-    <height>331</height>
+    <height>309</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -207,18 +207,6 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QCheckBox" name="casiCB">
-        <property name="font">
-         <font>
-          <pointsize>12</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Stampa casi</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QCheckBox" name="dataCB">
         <property name="font">
          <font>
@@ -227,6 +215,21 @@
         </property>
         <property name="text">
          <string>Stampa data</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="casiCB">
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Stampa totali</string>
         </property>
        </widget>
       </item>
